@@ -20,12 +20,16 @@ func New(endpoint, key string) *GUI {
 		Printer: octoprint.NewPrinter(endpoint, key),
 	}
 
-	gui.ShowHomeMenu()
+	gui.initialize()
 	return gui
 }
 
-func (g *GUI) ShowHomeMenu() {
-	g.Add(NewHomeMenu(g).Grid)
+func (g *GUI) initialize() {
+	g.ShowMenu()
+}
+
+func (g *GUI) ShowMenu() {
+	g.Add(NewMenu(g).Grid)
 }
 
 func (g *GUI) Add(grid *gtk.Grid) {

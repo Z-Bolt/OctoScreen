@@ -9,6 +9,14 @@ import (
 	"path"
 )
 
+type Axis string
+
+const (
+	XAxis Axis = "x"
+	YAxis Axis = "y"
+	ZAxis Axis = "z"
+)
+
 type Printer struct {
 	key      string
 	endpoint string

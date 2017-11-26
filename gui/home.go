@@ -1,6 +1,9 @@
 package gui
 
-import "github.com/gotk3/gotk3/gtk"
+import (
+	"github.com/gotk3/gotk3/gtk"
+	"github.com/mcuadros/OctoPrint-TFT/octoprint"
+)
 
 type HomeMenu struct {
 	*gtk.Grid
@@ -14,16 +17,21 @@ func NewHomeMenu(gui *GUI) *HomeMenu {
 }
 
 func (m *HomeMenu) initialize() {
-	m.Attach(MustButtonImage("Status", "status.svg", nil), 1, 0, 1, 1)
-	m.Attach(MustButtonImage("Heat Up", "heat-up.svg", nil), 2, 0, 1, 1)
-	m.Attach(MustButtonImage("Move", "move.svg", m.ShowMove), 3, 0, 1, 1)
-	m.Attach(MustButtonImage("Home", "home.svg", nil), 4, 0, 1, 1)
-	m.Attach(MustButtonImage("Extruct", "extruct.svg", nil), 1, 1, 1, 1)
-	m.Attach(MustButtonImage("HeatBed", "bed.svg", nil), 2, 1, 1, 1)
-	m.Attach(MustButtonImage("Fan", "fan.svg", nil), 3, 1, 1, 1)
-	m.Attach(MustButtonImage("Settings", "settings.svg", nil), 4, 1, 1, 1)
+	m.Attach(m.createMoveButton("Home All", "home.svg",
+		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
+	), 1, 0, 1, 1)
+
+	m.Attach(m.createMoveButton("Home X", "home-x.svg", octoprint.XAxis), 2, 0, 1, 1)
+	m.Attach(m.createMoveButton("Home Y", "home-y.svg", octoprint.YAxis), 3, 0, 1, 1)
+	m.Attach(m.createMoveButton("Home Z", "home-z.svg", octoprint.ZAxis), 4, 0, 1, 1)
+	m.Attach(MustButtonImage("Back", "back.svg", m.gui.ShowMenu), 4, 1, 1, 1)
 }
 
-func (m *HomeMenu) ShowMove() {
-	m.gui.Add(NewMoveMenu(m.gui).Grid)
+func (m *HomeMenu) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
+	return MustButtonImage(label, image, func() {
+		cmd := &octoprint.HomeCommand{Axes: axes}
+		if err := cmd.Do(m.gui.Printer); err != nil {
+			panic(err)
+		}
+	})
 }

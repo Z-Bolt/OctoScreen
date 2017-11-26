@@ -6,6 +6,8 @@ import (
 	"io"
 )
 
+const URIPrintHead = "/api/printer/printhead"
+
 // JogCommand jogs the print head (relatively) by a defined amount in one or
 // more axes.
 type JogCommand struct {
@@ -33,7 +35,7 @@ func (cmd *JogCommand) Do(p *Printer) error {
 		return err
 	}
 
-	_, err := p.doRequest("POST", "/api/printer/printhead", b)
+	_, err := p.doRequest("POST", URIPrintHead, b)
 	return err
 }
 
@@ -44,5 +46,31 @@ func (cmd *JogCommand) encode(w io.Writer) error {
 	}{
 		Command:    "jog",
 		JogCommand: *cmd,
+	})
+}
+
+// Homes the print head in all of the given axes.
+type HomeCommand struct {
+	// Axes is a list of axes which to home.
+	Axes []Axis `json:"axes"`
+}
+
+func (cmd *HomeCommand) Do(p *Printer) error {
+	b := bytes.NewBuffer(nil)
+	if err := cmd.encode(b); err != nil {
+		return err
+	}
+
+	_, err := p.doRequest("POST", URIPrintHead, b)
+	return err
+}
+
+func (cmd *HomeCommand) encode(w io.Writer) error {
+	return json.NewEncoder(w).Encode(struct {
+		Command string `json:"command"`
+		HomeCommand
+	}{
+		Command:     "home",
+		HomeCommand: *cmd,
 	})
 }
