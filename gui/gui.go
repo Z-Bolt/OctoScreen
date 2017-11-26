@@ -1,23 +1,25 @@
 package gui
 
 import (
-	"path/filepath"
-
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/mcuadros/OctoPrint-TFT/octoprint"
 )
 
 var ImagesFolder string
 
 type GUI struct {
 	Current *gtk.Grid
+	Printer *octoprint.Printer
 
 	*gtk.Grid
 }
 
-func New() *GUI {
-	grid, _ := gtk.GridNew()
+func New(endpoint, key string) *GUI {
+	gui := &GUI{
+		Grid:    MustGrid(),
+		Printer: octoprint.NewPrinter(endpoint, key),
+	}
 
-	gui := &GUI{Grid: grid}
 	gui.ShowHomeMenu()
 	return gui
 }
@@ -34,21 +36,4 @@ func (g *GUI) Add(grid *gtk.Grid) {
 	g.Current = grid
 	g.Attach(g.Current, 1, 0, 1, 1)
 	g.ShowAll()
-}
-
-func NewButtonImage(label, img string, clicked func()) gtk.IWidget {
-	i, err := gtk.ImageNewFromFile(filepath.Join(ImagesFolder, img))
-	if err != nil {
-		panic(err)
-	}
-
-	b, _ := gtk.ButtonNewWithLabel(label)
-	b.SetImage(i)
-	b.SetAlwaysShowImage(true)
-	b.SetImagePosition(gtk.POS_TOP)
-	b.SetVExpand(true)
-	b.SetHExpand(true)
-	b.Connect("clicked", clicked)
-
-	return b
 }

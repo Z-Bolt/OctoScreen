@@ -1,30 +1,88 @@
 package gui
 
-import "github.com/gotk3/gotk3/gtk"
+import (
+	"github.com/gotk3/gotk3/gtk"
+	"github.com/mcuadros/OctoPrint-TFT/octoprint"
+)
+
+type Axis int
+
+const (
+	XAxis Axis = iota // 0
+	YAxis
+	ZAxis
+)
+
+type step struct {
+	L string
+	V int
+}
 
 type MoveMenu struct {
+	gui   *GUI
+	step  int
+	steps []step
+
 	*gtk.Grid
-	gui *GUI
 }
 
 func NewMoveMenu(gui *GUI) *MoveMenu {
-	grid, _ := gtk.GridNew()
+	m := &MoveMenu{
+		Grid: MustGrid(),
+		gui:  gui,
+		steps: []step{
+			{"5mm", 5},
+			{"10mm", 10},
+			{"1mm", 1},
+		}}
 
-	m := &MoveMenu{Grid: grid, gui: gui}
 	m.initialize()
 	return m
 }
 
 func (m *MoveMenu) initialize() {
-	m.Attach(NewButtonImage("X+", "move-x+.svg", nil), 1, 0, 1, 1)
-	m.Attach(NewButtonImage("X-", "move-x-.svg", nil), 1, 1, 1, 1)
-	m.Attach(NewButtonImage("Y+", "move-y+.svg", nil), 2, 0, 1, 1)
-	m.Attach(NewButtonImage("Y-", "move-y-.svg", nil), 2, 1, 1, 1)
-	m.Attach(NewButtonImage("Z+", "move-z+.svg", nil), 3, 0, 1, 1)
-	m.Attach(NewButtonImage("Z-", "move-z-.svg", nil), 3, 1, 1, 1)
-	m.Attach(NewButtonImage("10mm", "move-step.svg", nil), 4, 0, 1, 1)
-	m.Attach(NewButtonImage("Back", "back.svg", m.Back), 4, 1, 1, 1)
+	m.Attach(m.createMoveButton("X+", "move-x+.svg", XAxis, 1), 1, 0, 1, 1)
+	m.Attach(m.createMoveButton("X-", "move-x-.svg", XAxis, -1), 1, 1, 1, 1)
+	m.Attach(m.createMoveButton("Y+", "move-y+.svg", YAxis, 1), 2, 0, 1, 1)
+	m.Attach(m.createMoveButton("Y-", "move-y-.svg", YAxis, -1), 2, 1, 1, 1)
+	m.Attach(m.createMoveButton("Z+", "move-z+.svg", ZAxis, 1), 3, 0, 1, 1)
+	m.Attach(m.createMoveButton("Z-", "move-z-.svg", ZAxis, -1), 3, 1, 1, 1)
+	m.Attach(m.createStepButton(), 4, 0, 1, 1)
+	m.Attach(MustButtonImage("Back", "back.svg", m.Back), 4, 1, 1, 1)
+}
 
+func (m *MoveMenu) createStepButton() gtk.IWidget {
+	b := MustButtonImage(m.steps[m.step].L, "move-step.svg", nil)
+	b.Connect("clicked", func() {
+		m.step++
+		if m.step >= len(m.steps) {
+			m.step = 0
+		}
+
+		b.SetLabel(m.steps[m.step].L)
+	})
+
+	return b
+}
+
+func (m *MoveMenu) createMoveButton(label, image string, a Axis, dir int) gtk.IWidget {
+	return MustButtonImage(label, image, func() {
+		distance := m.steps[m.step].V * dir
+
+		cmd := &octoprint.JogCommand{}
+		switch a {
+		case XAxis:
+			cmd.X = distance
+		case YAxis:
+			cmd.Y = distance
+		case ZAxis:
+			cmd.Z = distance
+		}
+
+		if err := cmd.Do(m.gui.Printer); err != nil {
+			panic(err)
+		}
+	})
 }
 
 func (m *MoveMenu) Back() {
