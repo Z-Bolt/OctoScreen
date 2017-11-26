@@ -7,7 +7,7 @@ ENV GOROOT=/usr/local/go/
 RUN go get -tags gtk_3_14 -v github.com/gotk3/gotk3/gtk/...
 
 
-ADD . /code
+ADD . /go/src/github.com/mcuadros/OctoPrint-TFT/
 
-WORKDIR /code
+WORKDIR /go/src/github.com/mcuadros/OctoPrint-TFT/
 RUN go build -tags gtk_3_14  -v .
