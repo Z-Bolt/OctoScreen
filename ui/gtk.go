@@ -1,6 +1,7 @@
-package gui
+package ui
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -14,6 +15,27 @@ func MustGrid() *gtk.Grid {
 	}
 
 	return grid
+}
+
+// MustBox returns a new gtk.Box, with the given configuration, if err panics.
+func MustBox(o gtk.Orientation, spacing int) *gtk.Box {
+	box, err := gtk.BoxNew(o, spacing)
+	if err != nil {
+		panic(err)
+	}
+
+	return box
+}
+
+// MustLabel returns a new gtk.Label, if err panics.
+func MustLabel(label string, args ...interface{}) *gtk.Label {
+	l, err := gtk.LabelNew(fmt.Sprintf(label, args...))
+	if err != nil {
+		panic(err)
+	}
+
+	//l.SetVExpand(true)
+	return l
 }
 
 // MustButtonImage returns a new gtk.Button with the given label, image and
