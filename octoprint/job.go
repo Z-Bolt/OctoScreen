@@ -30,7 +30,7 @@ func (cmd *JobCommand) Do(c *Client) (*JobResponse, error) {
 type StartCommand struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *TargetCommand) Do(c *Client) error {
+func (cmd *StartCommand) Do(c *Client) error {
 	payload := map[string]string{"command": "start"}
 
 	b := bytes.NewBuffer(nil)
