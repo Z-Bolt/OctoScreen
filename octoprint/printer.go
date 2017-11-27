@@ -20,14 +20,8 @@ type StateCommand struct {
 	Exclude []string
 }
 
-type StateResponse struct {
-	Temperature ToolResponse `json:"temperature"`
-	SD          SDState      `json:"sd"`
-	State       PrinterState `json:"state"`
-}
-
 // Do sends an API request and returns the API response.
-func (cmd *StateCommand) Do(c *Client) (*StateResponse, error) {
+func (cmd *StateCommand) Do(c *Client) (*FullStateResponse, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d&exclude=%s", PrinterTool,
 		cmd.History, cmd.Limit, strings.Join(cmd.Exclude, ","),
 	)
@@ -37,7 +31,7 @@ func (cmd *StateCommand) Do(c *Client) (*StateResponse, error) {
 		return nil, err
 	}
 
-	r := &StateResponse{}
+	r := &FullStateResponse{}
 	if err := json.Unmarshal(b, r); err != nil {
 		return nil, err
 	}

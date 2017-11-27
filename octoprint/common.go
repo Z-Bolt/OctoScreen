@@ -13,6 +13,24 @@ const (
 	ZAxis Axis = "z"
 )
 
+// FullStateResponse contains informantion about the current state of the printer.
+type FullStateResponse struct {
+	//Temperature is the printer’s temperature state data.
+	Temperature TemperatureState `json:"temperature"`
+	// SD is the printer’s sd state data.
+	SD SDState `json:"sd"`
+	// State is the printer’s general state.
+	State PrinterState `json:"state"`
+}
+
+// JobResponse is the response from a job command.
+type JobResponse struct {
+	// Job contains information regarding the target of the current print job.
+	Job JobInformation `json:"job"`
+	// Progress contains information regarding the progress of the current job.
+	Progress ProgressInformation `json:"progress"`
+}
+
 // JobInformation contains information regarding the target of the current job.
 type JobInformation struct {
 	// File is the file that is the target of the current print job.
@@ -64,16 +82,46 @@ type ProgressInformation struct {
 	PrintTimeLeft int `json:"printTimeLeft"`
 }
 
-// CurrentState of a tool.
-type CurrentState struct {
-	State
-	Offset float64 `json:"offset"`
+// TemperatureState is the printer’s temperature state data.
+type TemperatureState temperatureState
+type temperatureState struct {
+	// Current temperature stats.
+	Current map[string]TemperatureData `json:"current"`
+	// Temperature history.
+	History []*HistoricTemperatureData `json:"history"`
 }
 
-// State of a tool.
-type State struct {
+func (r *TemperatureState) UnmarshalJSON(b []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(b, &raw); err != nil {
+		return err
+	}
+
+	history := raw["history"]
+	delete(raw, "history")
+	b, _ = json.Marshal(map[string]interface{}{
+		"current": raw,
+		"history": history,
+	})
+
+	i := &temperatureState{}
+	if err := json.Unmarshal(b, i); err != nil {
+		return err
+	}
+
+	*r = TemperatureState(*i)
+	return nil
+}
+
+// TemperatureData is temperature stats for a tool.
+type TemperatureData struct {
+	// Actual current temperature.
 	Actual float64 `json:"actual"`
+	// Target temperature, may be nil if no target temperature is set.
 	Target float64 `json:"target"`
+	// Offset currently configured temperature offset to apply, will be left
+	// out for historic temperature information.
+	Offset float64 `json:"offset"`
 }
 
 // PrinterState current state of the printer.
@@ -95,14 +143,16 @@ type SDState struct {
 	Ready bool `json:"ready"`
 }
 
-// History of a tool.
-type History history
-type history struct {
-	Time  time.Time        `json:"time"`
-	Tools map[string]State `json:"tools"`
+// HistoricTemperatureData is temperature historic stats for a tool.
+type HistoricTemperatureData historicTemperatureData
+type historicTemperatureData struct {
+	// Time of this data point.
+	Time time.Time `json:"time"`
+	// Tools is temperature stats a set of tools.
+	Tools map[string]TemperatureData `json:"tools"`
 }
 
-func (h *History) UnmarshalJSON(b []byte) error {
+func (h *HistoricTemperatureData) UnmarshalJSON(b []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(b, &raw); err != nil {
 		return err
@@ -115,11 +165,11 @@ func (h *History) UnmarshalJSON(b []byte) error {
 		"tools": raw,
 	})
 
-	i := &history{}
+	i := &historicTemperatureData{}
 	if err := json.Unmarshal(b, i); err != nil {
 		return err
 	}
 
-	*h = History(*i)
+	*h = HistoricTemperatureData(*i)
 	return nil
 }

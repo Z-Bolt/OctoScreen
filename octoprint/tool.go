@@ -19,43 +19,15 @@ type ToolCommand struct {
 	Limit int
 }
 
-type ToolResponse toolResponse
-type toolResponse struct {
-	Current map[string]CurrentState `json:"current"`
-	History []*History              `json:"history"`
-}
-
-func (r *ToolResponse) UnmarshalJSON(b []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(b, &raw); err != nil {
-		return err
-	}
-
-	history := raw["history"]
-	delete(raw, "history")
-	b, _ = json.Marshal(map[string]interface{}{
-		"current": raw,
-		"history": history,
-	})
-
-	i := &toolResponse{}
-	if err := json.Unmarshal(b, i); err != nil {
-		return err
-	}
-
-	*r = ToolResponse(*i)
-	return nil
-}
-
 // Do sends an API request and returns the API response.
-func (cmd *ToolCommand) Do(c *Client) (*ToolResponse, error) {
+func (cmd *ToolCommand) Do(c *Client) (*TemperatureState, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d", URITool, cmd.History, cmd.Limit)
 	b, err := c.doRequest("GET", uri, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &ToolResponse{}
+	r := &TemperatureState{}
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, err
 	}
