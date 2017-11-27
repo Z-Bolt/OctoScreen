@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"path"
 )
 
 type Axis string
@@ -59,12 +58,11 @@ func (c *Printer) handleResponse(r *http.Response) ([]byte, error) {
 		return body, nil
 	}
 
-	fmt.Println(body)
-	return nil, nil
+	return nil, fmt.Errorf("unexpected status code: %d", r.StatusCode)
 }
 
 func joinURL(base, uri string) string {
-	u, _ := url.Parse(base)
-	u.Path = path.Join(u.Path, uri)
-	return u.String()
+	u, _ := url.Parse(uri)
+	b, _ := url.Parse(base)
+	return b.ResolveReference(u).String()
 }
