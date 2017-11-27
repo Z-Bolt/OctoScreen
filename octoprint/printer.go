@@ -6,14 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-)
-
-type Axis string
-
-const (
-	XAxis Axis = "x"
-	YAxis Axis = "y"
-	ZAxis Axis = "z"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 type Printer struct {
@@ -44,7 +40,13 @@ func (p *Printer) doRequest(method, target string, body io.Reader) ([]byte, erro
 		return nil, err
 	}
 
-	return p.handleResponse(resp)
+	js, err := p.handleResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cacheRequest(target, js)
+	return js, err
 }
 
 func (c *Printer) handleResponse(r *http.Response) ([]byte, error) {
@@ -65,4 +67,14 @@ func joinURL(base, uri string) string {
 	u, _ := url.Parse(uri)
 	b, _ := url.Parse(base)
 	return b.ResolveReference(u).String()
+}
+
+func cacheRequest(uri string, js []byte) error {
+	u, _ := url.Parse(uri)
+	path := filepath.Join("cache", strings.Replace(u.Path, "/", "-", -1), time.Now().String()+".json")
+	if err := os.MkdirAll(filepath.Dir(path), 0777); err != nil {
+		panic(err)
+	}
+
+	return ioutil.WriteFile(path, js, 0777)
 }

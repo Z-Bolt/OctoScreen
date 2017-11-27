@@ -19,16 +19,42 @@ type ToolCommand struct {
 	Limit int
 }
 
-type ToolResponse map[string]CurrentState
+type ToolResponse toolResponse
+type toolResponse struct {
+	Current map[string]CurrentState `json:"current"`
+	History []*History              `json:"history"`
+}
 
-func (cmd *ToolCommand) Do(p *Printer) (ToolResponse, error) {
+func (r *ToolResponse) UnmarshalJSON(b []byte) error {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(b, &raw); err != nil {
+		return err
+	}
+
+	history := raw["history"]
+	delete(raw, "history")
+	b, _ = json.Marshal(map[string]interface{}{
+		"current": raw,
+		"history": history,
+	})
+
+	i := &toolResponse{}
+	if err := json.Unmarshal(b, i); err != nil {
+		return err
+	}
+
+	*r = ToolResponse(*i)
+	return nil
+}
+
+func (cmd *ToolCommand) Do(p *Printer) (*ToolResponse, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d", URITool, cmd.History, cmd.Limit)
 	b, err := p.doRequest("GET", uri, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	r := make(ToolResponse)
+	r := &ToolResponse{}
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, err
 	}
