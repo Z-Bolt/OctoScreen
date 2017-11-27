@@ -7,11 +7,11 @@ import (
 const JobTool = "/api/job"
 
 // StateCommand retrieves the current state of the printer.
-type JobCommand struct {
-}
+type JobCommand struct{}
 
-func (cmd *JobCommand) Do(p *Printer) (*StateResponse, error) {
-	b, err := p.doRequest("GET", JobTool, nil)
+// Do sends an API request and returns the API response.
+func (cmd *JobCommand) Do(c *Client) (*StateResponse, error) {
+	b, err := c.doRequest("GET", JobTool, nil)
 	if err != nil {
 		return nil, err
 	}

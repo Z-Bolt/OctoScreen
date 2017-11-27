@@ -13,16 +13,19 @@ const (
 	ZAxis Axis = "z"
 )
 
+// CurrentState of a tool.
 type CurrentState struct {
 	State
 	Offset float64 `json:"offset"`
 }
 
+// State of a tool.
 type State struct {
 	Actual float64 `json:"actual"`
 	Target float64 `json:"target"`
 }
 
+// PrinterState current state of the printer.
 type PrinterState struct {
 	Text  string `json:"text"`
 	Flags struct {
@@ -36,10 +39,12 @@ type PrinterState struct {
 	} `json:"flags"`
 }
 
+// SDState is the state of the sd reader.
 type SDState struct {
 	Ready bool `json:"ready"`
 }
 
+// History of a tool.
 type History history
 type history struct {
 	Time  time.Time        `json:"time"`

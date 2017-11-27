@@ -29,13 +29,14 @@ type JogCommand struct {
 	Speed int `json:"speed,omitempty"`
 }
 
-func (cmd *JogCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *JogCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URIPrintHead, b)
+	_, err := c.doRequest("POST", URIPrintHead, b)
 	return err
 }
 
@@ -49,19 +50,20 @@ func (cmd *JogCommand) encode(w io.Writer) error {
 	})
 }
 
-// Homes the print head in all of the given axes.
+// HomeCommand homes the print head in all of the given axes.
 type HomeCommand struct {
 	// Axes is a list of axes which to home.
 	Axes []Axis `json:"axes"`
 }
 
-func (cmd *HomeCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *HomeCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URIPrintHead, b)
+	_, err := c.doRequest("POST", URIPrintHead, b)
 	return err
 }
 

@@ -47,9 +47,10 @@ func (r *ToolResponse) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func (cmd *ToolCommand) Do(p *Printer) (*ToolResponse, error) {
+// Do sends an API request and returns the API response.
+func (cmd *ToolCommand) Do(c *Client) (*ToolResponse, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d", URITool, cmd.History, cmd.Limit)
-	b, err := p.doRequest("GET", uri, nil)
+	b, err := c.doRequest("GET", uri, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -69,13 +70,14 @@ type TargetCommand struct {
 	Target map[string]int `json:"target"`
 }
 
-func (cmd *TargetCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *TargetCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URITool, b)
+	_, err := c.doRequest("POST", URITool, b)
 	return err
 }
 
@@ -89,20 +91,21 @@ func (cmd *TargetCommand) encode(w io.Writer) error {
 	})
 }
 
-// TargetCommand sets the given target temperature on the printer’s tools.
+// OffsetCommand sets the given temperature offset on the printer’s tools.
 type OffsetCommand struct {
 	// Offset is offset(s) to set, key must match the format tool{n} with n
 	// being the tool’s index starting with 0.
 	Offsets map[string]int `json:"offsets"`
 }
 
-func (cmd *OffsetCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *OffsetCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URITool, b)
+	_, err := c.doRequest("POST", URITool, b)
 	return err
 }
 
@@ -124,13 +127,14 @@ type ExtrudeCommand struct {
 	Amount int `json:"amount"`
 }
 
-func (cmd *ExtrudeCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *ExtrudeCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URITool, b)
+	_, err := c.doRequest("POST", URITool, b)
 	return err
 }
 
@@ -151,13 +155,14 @@ type SelectCommand struct {
 	Tool string `json:"tool"`
 }
 
-func (cmd *SelectCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *SelectCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URITool, b)
+	_, err := c.doRequest("POST", URITool, b)
 	return err
 }
 
@@ -177,13 +182,14 @@ type FlowrateCommand struct {
 	Factor string `json:"factor"`
 }
 
-func (cmd *FlowrateCommand) Do(p *Printer) error {
+// Do sends an API request and returns an error if any.
+func (cmd *FlowrateCommand) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
 	}
 
-	_, err := p.doRequest("POST", URITool, b)
+	_, err := c.doRequest("POST", URITool, b)
 	return err
 }
 
