@@ -16,8 +16,8 @@ const (
 	URICommand   = "/api/printer/command"
 )
 
-// StateCommand retrieves the current state of the printer.
-type StateCommand struct {
+// StateRequest retrieves the current state of the printer.
+type StateRequest struct {
 	// History if true retrieve the temperature history.
 	History bool
 	// Limit limtis amount of returned history data points.
@@ -29,7 +29,7 @@ type StateCommand struct {
 }
 
 // Do sends an API request and returns the API response.
-func (cmd *StateCommand) Do(c *Client) (*FullStateResponse, error) {
+func (cmd *StateRequest) Do(c *Client) (*FullStateResponse, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d&exclude=%s", URIPrinter,
 		cmd.History, cmd.Limit, strings.Join(cmd.Exclude, ","),
 	)
@@ -47,9 +47,9 @@ func (cmd *StateCommand) Do(c *Client) (*FullStateResponse, error) {
 	return r, err
 }
 
-// PrintHeadJogCommand jogs the print head (relatively) by a defined amount in
+// PrintHeadJogRequest jogs the print head (relatively) by a defined amount in
 // one or more axes.
-type PrintHeadJogCommand struct {
+type PrintHeadJogRequest struct {
 	// X is the amount distance to travel in mm or coordinate to jog print head
 	// on x axis.
 	X int `json:"x,omitempty"`
@@ -69,7 +69,7 @@ type PrintHeadJogCommand struct {
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *PrintHeadJogCommand) Do(c *Client) error {
+func (cmd *PrintHeadJogRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -79,24 +79,24 @@ func (cmd *PrintHeadJogCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *PrintHeadJogCommand) encode(w io.Writer) error {
+func (cmd *PrintHeadJogRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		PrintHeadJogCommand
+		PrintHeadJogRequest
 	}{
 		Command:             "jog",
-		PrintHeadJogCommand: *cmd,
+		PrintHeadJogRequest: *cmd,
 	})
 }
 
-// PrintHeadHomeCommand homes the print head in all of the given axes.
-type PrintHeadHomeCommand struct {
+// PrintHeadHomeRequest homes the print head in all of the given axes.
+type PrintHeadHomeRequest struct {
 	// Axes is a list of axes which to home.
 	Axes []Axis `json:"axes"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *PrintHeadHomeCommand) Do(c *Client) error {
+func (cmd *PrintHeadHomeRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -106,20 +106,20 @@ func (cmd *PrintHeadHomeCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *PrintHeadHomeCommand) encode(w io.Writer) error {
+func (cmd *PrintHeadHomeRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		PrintHeadHomeCommand
+		PrintHeadHomeRequest
 	}{
 		Command:              "home",
-		PrintHeadHomeCommand: *cmd,
+		PrintHeadHomeRequest: *cmd,
 	})
 }
 
-// ToolStateCommand retrieves the current temperature data (actual, target and
+// ToolStateRequest retrieves the current temperature data (actual, target and
 // offset) plus optionally a (limited) history (actual, target, timestamp) for
 // all of the printer’s available tools.
-type ToolStateCommand struct {
+type ToolStateRequest struct {
 	// History if true retrieve the temperature history.
 	History bool
 	// Limit limtis amount of returned history data points.
@@ -127,7 +127,7 @@ type ToolStateCommand struct {
 }
 
 // Do sends an API request and returns the API response.
-func (cmd *ToolStateCommand) Do(c *Client) (*TemperatureState, error) {
+func (cmd *ToolStateRequest) Do(c *Client) (*TemperatureState, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d", URITool, cmd.History, cmd.Limit)
 	b, err := c.doRequest("GET", uri, nil)
 	if err != nil {
@@ -142,15 +142,15 @@ func (cmd *ToolStateCommand) Do(c *Client) (*TemperatureState, error) {
 	return r, err
 }
 
-// ToolTargetCommand sets the given target temperature on the printer’s tools.
-type ToolTargetCommand struct {
+// ToolTargetRequest sets the given target temperature on the printer’s tools.
+type ToolTargetRequest struct {
 	// Target temperature(s) to set, key must match the format tool{n} with n
 	// being the tool’s index starting with 0.
 	Target map[string]int `json:"target"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ToolTargetCommand) Do(c *Client) error {
+func (cmd *ToolTargetRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -160,25 +160,25 @@ func (cmd *ToolTargetCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ToolTargetCommand) encode(w io.Writer) error {
+func (cmd *ToolTargetRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ToolTargetCommand
+		ToolTargetRequest
 	}{
 		Command:           "target",
-		ToolTargetCommand: *cmd,
+		ToolTargetRequest: *cmd,
 	})
 }
 
-// ToolOffsetCommand sets the given temperature offset on the printer’s tools.
-type ToolOffsetCommand struct {
+// ToolOffsetRequest sets the given temperature offset on the printer’s tools.
+type ToolOffsetRequest struct {
 	// Offset is offset(s) to set, key must match the format tool{n} with n
 	// being the tool’s index starting with 0.
 	Offsets map[string]int `json:"offsets"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ToolOffsetCommand) Do(c *Client) error {
+func (cmd *ToolOffsetRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -188,26 +188,26 @@ func (cmd *ToolOffsetCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ToolOffsetCommand) encode(w io.Writer) error {
+func (cmd *ToolOffsetRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ToolOffsetCommand
+		ToolOffsetRequest
 	}{
 		Command:           "offset",
-		ToolOffsetCommand: *cmd,
+		ToolOffsetRequest: *cmd,
 	})
 }
 
-// ToolExtrudeCommand extrudes the given amount of filament from the currently
+// ToolExtrudeRequest extrudes the given amount of filament from the currently
 // selected tool.
-type ToolExtrudeCommand struct {
+type ToolExtrudeRequest struct {
 	// Amount is the amount of filament to extrude in mm. May be negative to
 	// retract.
 	Amount int `json:"amount"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ToolExtrudeCommand) Do(c *Client) error {
+func (cmd *ToolExtrudeRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -217,25 +217,25 @@ func (cmd *ToolExtrudeCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ToolExtrudeCommand) encode(w io.Writer) error {
+func (cmd *ToolExtrudeRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ToolExtrudeCommand
+		ToolExtrudeRequest
 	}{
 		Command:            "extrude",
-		ToolExtrudeCommand: *cmd,
+		ToolExtrudeRequest: *cmd,
 	})
 }
 
-// ToolSelectCommand selects the printer’s current tool.
-type ToolSelectCommand struct {
+// ToolSelectRequest selects the printer’s current tool.
+type ToolSelectRequest struct {
 	// Tool to select, format tool{n} with n being the tool’s index starting
 	// with 0.
 	Tool string `json:"tool"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ToolSelectCommand) Do(c *Client) error {
+func (cmd *ToolSelectRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -245,25 +245,25 @@ func (cmd *ToolSelectCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ToolSelectCommand) encode(w io.Writer) error {
+func (cmd *ToolSelectRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ToolSelectCommand
+		ToolSelectRequest
 	}{
 		Command:           "select",
-		ToolSelectCommand: *cmd,
+		ToolSelectRequest: *cmd,
 	})
 }
 
-// ToolFlowrateCommand changes the flow rate factor to apply to extrusion of
+// ToolFlowrateRequest changes the flow rate factor to apply to extrusion of
 // the tool.
-type ToolFlowrateCommand struct {
+type ToolFlowrateRequest struct {
 	// Factor is the new factor, percentage as integer, between 75 and 125%.
 	Factor string `json:"factor"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ToolFlowrateCommand) Do(c *Client) error {
+func (cmd *ToolFlowrateRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -273,24 +273,24 @@ func (cmd *ToolFlowrateCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ToolFlowrateCommand) encode(w io.Writer) error {
+func (cmd *ToolFlowrateRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ToolFlowrateCommand
+		ToolFlowrateRequest
 	}{
 		Command:             "flowrate",
-		ToolFlowrateCommand: *cmd,
+		ToolFlowrateRequest: *cmd,
 	})
 }
 
-// BedStateCommand retrieves the current temperature data (actual, target and
+// BedStateRequest retrieves the current temperature data (actual, target and
 // offset) plus optionally a (limited) history (actual, target, timestamp) for
 // the printer’s heated bed.
 //
 // It’s also possible to retrieve the temperature history by supplying the
 // history query parameter set to true. The amount of returned history data
 // points can be limited using the limit query parameter.
-type BedStateCommand struct {
+type BedStateRequest struct {
 	// History if true retrieve the temperature history.
 	History bool
 	// Limit limtis amount of returned history data points.
@@ -298,7 +298,7 @@ type BedStateCommand struct {
 }
 
 // Do sends an API request and returns the API response.
-func (cmd *BedStateCommand) Do(c *Client) (*TemperatureState, error) {
+func (cmd *BedStateRequest) Do(c *Client) (*TemperatureState, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d", URIBed, cmd.History, cmd.Limit)
 	b, err := c.doRequest("GET", uri, nil)
 	if err != nil {
@@ -313,14 +313,14 @@ func (cmd *BedStateCommand) Do(c *Client) (*TemperatureState, error) {
 	return r, err
 }
 
-// BedTargetCommand sets the given target temperature on the printer’s bed.
-type BedTargetCommand struct {
+// BedTargetRequest sets the given target temperature on the printer’s bed.
+type BedTargetRequest struct {
 	// Target temperature to set.
 	Target int `json:"target"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *BedTargetCommand) Do(c *Client) error {
+func (cmd *BedTargetRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -330,24 +330,24 @@ func (cmd *BedTargetCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *BedTargetCommand) encode(w io.Writer) error {
+func (cmd *BedTargetRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		BedTargetCommand
+		BedTargetRequest
 	}{
 		Command:          "target",
-		BedTargetCommand: *cmd,
+		BedTargetRequest: *cmd,
 	})
 }
 
-// BedOffsetCommand sets the given temperature offset on the printer’s bed.
-type BedOffsetCommand struct {
+// BedOffsetRequest sets the given temperature offset on the printer’s bed.
+type BedOffsetRequest struct {
 	// Offset is offset to set.
 	Offset int `json:"offset"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *BedOffsetCommand) Do(c *Client) error {
+func (cmd *BedOffsetRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -357,26 +357,26 @@ func (cmd *BedOffsetCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *BedOffsetCommand) encode(w io.Writer) error {
+func (cmd *BedOffsetRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		BedOffsetCommand
+		BedOffsetRequest
 	}{
 		Command:          "offset",
-		BedOffsetCommand: *cmd,
+		BedOffsetRequest: *cmd,
 	})
 }
 
-// GCodeCommand sends any command to the printer via the serial interface.
+// CommandRequest sends any command to the printer via the serial interface.
 // Should be used with some care as some commands can interfere with or even
 // stop a running print job.
-type GCodeCommand struct {
+type CommandRequest struct {
 	// Commands list of commands to send to the printer.
 	Commands []string `json:"commands"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *GCodeCommand) Do(c *Client) error {
+func (cmd *CommandRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(b).Encode(cmd); err != nil {
 		return err

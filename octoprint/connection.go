@@ -8,13 +8,13 @@ import (
 
 const URIConnection = "/api/connection"
 
-// ConnectionCommand Retrieve the current connection settings, including
+// ConnectionRequest Retrieve the current connection settings, including
 // information regarding the available baudrates and serial ports and the
 // current connection state.
-type ConnectionCommand struct{}
+type ConnectionRequest struct{}
 
 // Do sends an API request and returns the API response.
-func (cmd *ConnectionCommand) Do(c *Client) (*ConnectionResponse, error) {
+func (cmd *ConnectionRequest) Do(c *Client) (*ConnectionResponse, error) {
 	b, err := c.doRequest("GET", URIVersion, nil)
 	if err != nil {
 		return nil, err
@@ -28,8 +28,8 @@ func (cmd *ConnectionCommand) Do(c *Client) (*ConnectionResponse, error) {
 	return r, err
 }
 
-// ConnectCommand sets the given target temperature on the printer’s tools.
-type ConnectCommand struct {
+// ConnectRequest sets the given target temperature on the printer’s tools.
+type ConnectRequest struct {
 	// Port specific port to connect to. If not set the current `portPreference`
 	// will be used, or if no preference is available auto detection will be
 	// attempted.
@@ -50,7 +50,7 @@ type ConnectCommand struct {
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ConnectCommand) Do(c *Client) error {
+func (cmd *ConnectRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -60,21 +60,21 @@ func (cmd *ConnectCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ConnectCommand) encode(w io.Writer) error {
+func (cmd *ConnectRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ConnectCommand
+		ConnectRequest
 	}{
 		Command:        "connect",
-		ConnectCommand: *cmd,
+		ConnectRequest: *cmd,
 	})
 }
 
-// DisconnectCommand instructs OctoPrint to disconnect from the printer.
-type DisconnectCommand struct{}
+// DisconnectRequest instructs OctoPrint to disconnect from the printer.
+type DisconnectRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *DisconnectCommand) Do(c *Client) error {
+func (cmd *DisconnectRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "disconnect"}
 
 	b := bytes.NewBuffer(nil)
@@ -86,16 +86,16 @@ func (cmd *DisconnectCommand) Do(c *Client) error {
 	return err
 }
 
-// FakesACKCommand fakes an acknowledgment message for OctoPrint in case one got
+// FakesACKRequest fakes an acknowledgment message for OctoPrint in case one got
 // lost on the serial line and the communication with the printer since stalled.
 //
 // This should only be used in “emergencies” (e.g. to save prints), the reason
 // for the lost acknowledgment should always be properly investigated and
 // removed instead of depending on this “symptom solver”.
-type FakesACKCommand struct{}
+type FakesACKRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *FakesACKCommand) Do(c *Client) error {
+func (cmd *FakesACKRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "fake_ack"}
 
 	b := bytes.NewBuffer(nil)

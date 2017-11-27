@@ -8,11 +8,11 @@ import (
 
 const JobTool = "/api/job"
 
-// JobCommand retrieve information about the current job (if there is one).
-type JobCommand struct{}
+// JobRequest retrieve information about the current job (if there is one).
+type JobRequest struct{}
 
 // Do sends an API request and returns the API response.
-func (cmd *JobCommand) Do(c *Client) (*JobResponse, error) {
+func (cmd *JobRequest) Do(c *Client) (*JobResponse, error) {
 	b, err := c.doRequest("GET", JobTool, nil)
 	if err != nil {
 		return nil, err
@@ -26,11 +26,11 @@ func (cmd *JobCommand) Do(c *Client) (*JobResponse, error) {
 	return r, err
 }
 
-// StartCommand starts the print of the currently selected file.
-type StartCommand struct{}
+// StartRequest starts the print of the currently selected file.
+type StartRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *StartCommand) Do(c *Client) error {
+func (cmd *StartRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "start"}
 
 	b := bytes.NewBuffer(nil)
@@ -42,11 +42,11 @@ func (cmd *StartCommand) Do(c *Client) error {
 	return err
 }
 
-// CancelCommand cancels the current print job.
-type CancelCommand struct{}
+// CancelRequest cancels the current print job.
+type CancelRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *CancelCommand) Do(c *Client) error {
+func (cmd *CancelRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "cancel"}
 
 	b := bytes.NewBuffer(nil)
@@ -58,13 +58,13 @@ func (cmd *CancelCommand) Do(c *Client) error {
 	return err
 }
 
-// RestartCommand restart the print of the currently selected file from the
+// RestartRequest restart the print of the currently selected file from the
 // beginning. There must be an active print job for this to work and the print
 // job must currently be paused
-type RestartCommand struct{}
+type RestartRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *RestartCommand) Do(c *Client) error {
+func (cmd *RestartRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "restart"}
 
 	b := bytes.NewBuffer(nil)
@@ -88,8 +88,8 @@ const (
 	Toggle PauseAction = "toggle"
 )
 
-// PauseCommand pauses/resumes/toggles the current print job.
-type PauseCommand struct {
+// PauseRequest pauses/resumes/toggles the current print job.
+type PauseRequest struct {
 	// Action specifies which action to take.
 	// In order to stay backwards compatible to earlier iterations of this API,
 	// the default action to take if no action parameter is supplied is to
@@ -98,7 +98,7 @@ type PauseCommand struct {
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *PauseCommand) Do(c *Client) error {
+func (cmd *PauseRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -108,12 +108,12 @@ func (cmd *PauseCommand) Do(c *Client) error {
 	return err
 }
 
-func (cmd *PauseCommand) encode(w io.Writer) error {
+func (cmd *PauseRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		PauseCommand
+		PauseRequest
 	}{
 		Command:      "pause",
-		PauseCommand: *cmd,
+		PauseRequest: *cmd,
 	})
 }
