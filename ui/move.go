@@ -1,9 +1,8 @@
 package ui
 
 import (
-	"github.com/mcuadros/OctoPrint-TFT/octoprint"
-
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/mcuadros/go-octoprint"
 )
 
 type MovePanel struct {
@@ -37,7 +36,7 @@ func (m *MovePanel) createMoveButton(label, image string, a octoprint.Axis, dir 
 	return MustButtonImage(label, image, func() {
 		distance := m.step.Value() * dir
 
-		cmd := &octoprint.JogCommand{}
+		cmd := &octoprint.PrintHeadJogRequest{}
 		switch a {
 		case octoprint.XAxis:
 			cmd.X = distance

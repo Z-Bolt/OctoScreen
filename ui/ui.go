@@ -1,17 +1,15 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/OctoPrint-TFT/octoprint"
+	"github.com/mcuadros/go-octoprint"
 )
 
 var ImagesFolder string
 
 type UI struct {
 	Current Panel
-	Printer *octoprint.Printer
+	Printer *octoprint.Client
 
 	*gtk.Grid
 }
@@ -19,7 +17,7 @@ type UI struct {
 func New(endpoint, key string) *UI {
 	ui := &UI{
 		Grid:    MustGrid(),
-		Printer: octoprint.NewPrinter(endpoint, key),
+		Printer: octoprint.NewClient(endpoint, key),
 	}
 
 	ui.initialize()
@@ -27,8 +25,6 @@ func New(endpoint, key string) *UI {
 }
 
 func (ui *UI) initialize() {
-	cmd := octoprint.ToolCommand{}
-	fmt.Println(cmd.Do(ui.Printer))
 	ui.ShowDefaultPanel()
 }
 

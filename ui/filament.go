@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mcuadros/OctoPrint-TFT/octoprint"
-
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/mcuadros/go-octoprint"
 	"github.com/sirupsen/logrus"
 )
 
@@ -61,7 +60,7 @@ func (m *FilamentPanel) update() {
 }
 
 func (m *FilamentPanel) updateInfo() {
-	r, err := (&octoprint.ToolCommand{}).Do(m.UI.Printer)
+	r, err := (&octoprint.ToolStateRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		logrus.Error("FilamentPanel: %s", err)
 	}
@@ -69,7 +68,7 @@ func (m *FilamentPanel) updateInfo() {
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	box.SetVAlign(gtk.ALIGN_CENTER)
 
-	for e, s := range r {
+	for e, s := range r.Current {
 		box.Add(MustLabel("%s: %f", e, s.Actual))
 	}
 
@@ -79,7 +78,7 @@ func (m *FilamentPanel) updateInfo() {
 
 func (m *FilamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
-		cmd := &octoprint.ExtrudeCommand{}
+		cmd := &octoprint.ToolExtrudeRequest{}
 		cmd.Amount = m.amount.Value() * dir
 
 		if err := cmd.Do(m.UI.Printer); err != nil {

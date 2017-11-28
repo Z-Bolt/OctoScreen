@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/OctoPrint-TFT/octoprint"
+	"github.com/mcuadros/go-octoprint"
 )
 
 type HomePanel struct {
@@ -28,7 +28,7 @@ func (m *HomePanel) initialize() {
 
 func (m *HomePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
-		cmd := &octoprint.HomeCommand{Axes: axes}
+		cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
 		if err := cmd.Do(m.UI.Printer); err != nil {
 			panic(err)
 		}
