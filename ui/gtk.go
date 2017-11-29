@@ -41,17 +41,12 @@ func MustLabel(label string, args ...interface{}) *gtk.Label {
 // MustButtonImage returns a new gtk.Button with the given label, image and
 // clicked callback. If error panics.
 func MustButtonImage(label, img string, clicked func()) *gtk.Button {
-	i, err := gtk.ImageNewFromFile(filepath.Join(ImagesFolder, img))
-	if err != nil {
-		panic(err)
-	}
-
 	b, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
 		panic(err)
 	}
 
-	b.SetImage(i)
+	b.SetImage(MustImageFromFile(img))
 	b.SetAlwaysShowImage(true)
 	b.SetImagePosition(gtk.POS_TOP)
 	b.SetVExpand(true)
@@ -62,4 +57,13 @@ func MustButtonImage(label, img string, clicked func()) *gtk.Button {
 	}
 
 	return b
+}
+
+func MustImageFromFile(img string) *gtk.Image {
+	i, err := gtk.ImageNewFromFile(filepath.Join(ImagesFolder, img))
+	if err != nil {
+		panic(err)
+	}
+
+	return i
 }

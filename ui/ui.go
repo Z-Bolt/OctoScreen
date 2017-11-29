@@ -1,8 +1,12 @@
 package ui
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/sirupsen/logrus"
 )
 
 var ImagesFolder string
@@ -11,6 +15,7 @@ type UI struct {
 	Current Panel
 	Printer *octoprint.Client
 
+	b *BackgroundTask
 	*gtk.Grid
 }
 
@@ -20,12 +25,50 @@ func New(endpoint, key string) *UI {
 		Printer: octoprint.NewClient(endpoint, key),
 	}
 
-	ui.initialize()
+	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
+	ui.Connect("show", ui.show)
 	return ui
 }
 
-func (ui *UI) initialize() {
-	ui.ShowDefaultPanel()
+func (ui *UI) show() {
+	fmt.Println("show called")
+	ui.b.Start()
+	ui.Add(NewDefaultPanel(ui))
+}
+
+func (ui *UI) verifyConnection() {
+	splash := NewSplashPanel(ui)
+
+	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
+	if err != nil {
+		splash.Label.SetText(fmt.Sprintf("Unexpected error: %s", err))
+		return
+	}
+
+	switch {
+	case s.Current.State.IsOperational():
+		logrus.Debug("Printer is ready")
+		if _, ok := ui.Current.(*SplashPanel); ok {
+			ui.Add(NewDefaultPanel(ui))
+		}
+		return
+	case s.Current.State.IsPrinting():
+		logrus.Warning("TODO: Show StatusPanel")
+		return
+	case s.Current.State.IsError():
+		fallthrough
+	case s.Current.State.IsOffline():
+		logrus.Infof("Connection offline, connecting: %s", s.Current.State)
+		if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
+			splash.Label.SetText(fmt.Sprintf("Error connecting to printer: %s", err))
+		}
+	case s.Current.State.IsConnecting():
+		logrus.Infof("Waiting for connection: %s", s.Current.State)
+		splash.Label.SetText(string(s.Current.State))
+	}
+
+	ui.Add(splash)
+
 }
 
 func (ui *UI) ShowDefaultPanel() {

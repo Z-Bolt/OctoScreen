@@ -38,7 +38,7 @@ func main() {
 		log.Fatal("Unable to create window:", err)
 	}
 
-	win.SetTitle("Simple Example")
+	win.SetTitle("OctoPrint")
 	win.Connect("destroy", func() {
 		gtk.MainQuit()
 	})

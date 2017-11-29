@@ -63,6 +63,7 @@ func (m *FilamentPanel) updateInfo() {
 	r, err := (&octoprint.ToolStateRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		logrus.Error("FilamentPanel: %s", err)
+		return
 	}
 
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 5)

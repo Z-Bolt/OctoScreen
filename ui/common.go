@@ -1,8 +1,12 @@
 package ui
 
 import (
+	"fmt"
+	"log"
 	"sync"
+	"time"
 
+	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 )
 
@@ -26,6 +30,57 @@ func (p *CommonPanel) Grid() *gtk.Grid {
 
 func (p *CommonPanel) Destroy() {
 	p.grid.Destroy()
+}
+
+type BackgroundTask struct {
+	Stop, Resume, Close chan bool
+
+	d    time.Duration
+	task func()
+}
+
+func NewBackgroundTask(d time.Duration, task func()) *BackgroundTask {
+	return &BackgroundTask{
+		task: task,
+		d:    d,
+
+		Stop:   make(chan bool, 1),
+		Resume: make(chan bool, 1),
+		Close:  make(chan bool, 1),
+	}
+}
+
+func (t *BackgroundTask) Start() {
+	go t.loop()
+	t.Resume <- true
+}
+
+func (t *BackgroundTask) loop() {
+	for <-t.Resume {
+		t.execute()
+
+		ticker := time.NewTicker(t.d)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				t.execute()
+			case <-t.Stop:
+				fmt.Println("stop")
+				break
+			case <-t.Close:
+				fmt.Println("close")
+				return
+			}
+		}
+	}
+}
+
+func (t *BackgroundTask) execute() {
+	_, err := glib.IdleAdd(t.task)
+	if err != nil {
+		log.Fatal("IdleAdd() failed:", err)
+	}
 }
 
 type StepButton struct {
