@@ -6,7 +6,6 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
-	"github.com/sirupsen/logrus"
 )
 
 var ImagesFolder string
@@ -31,7 +30,6 @@ func New(endpoint, key string) *UI {
 }
 
 func (ui *UI) show() {
-	fmt.Println("show called")
 	ui.b.Start()
 	ui.Add(NewDefaultPanel(ui))
 }
@@ -47,23 +45,23 @@ func (ui *UI) verifyConnection() {
 
 	switch {
 	case s.Current.State.IsOperational():
-		logrus.Debug("Printer is ready")
+		Logger.Debug("Printer is ready")
 		if _, ok := ui.Current.(*SplashPanel); ok {
 			ui.Add(NewDefaultPanel(ui))
 		}
 		return
 	case s.Current.State.IsPrinting():
-		logrus.Warning("TODO: Show StatusPanel")
+		Logger.Warning("TODO: Show StatusPanel")
 		return
 	case s.Current.State.IsError():
 		fallthrough
 	case s.Current.State.IsOffline():
-		logrus.Infof("Connection offline, connecting: %s", s.Current.State)
+		Logger.Infof("Connection offline, connecting: %s", s.Current.State)
 		if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
 			splash.Label.SetText(fmt.Sprintf("Error connecting to printer: %s", err))
 		}
 	case s.Current.State.IsConnecting():
-		logrus.Infof("Waiting for connection: %s", s.Current.State)
+		Logger.Infof("Waiting for connection: %s", s.Current.State)
 		splash.Label.SetText(string(s.Current.State))
 	}
 

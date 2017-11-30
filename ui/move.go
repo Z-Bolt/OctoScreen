@@ -34,7 +34,7 @@ func (m *MovePanel) initialize() {
 
 func (m *MovePanel) createMoveButton(label, image string, a octoprint.Axis, dir int) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
-		distance := m.step.Value() * dir
+		distance := m.step.Value().(int) * dir
 
 		cmd := &octoprint.PrintHeadJogRequest{}
 		switch a {

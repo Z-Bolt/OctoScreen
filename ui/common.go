@@ -18,10 +18,20 @@ type Panel interface {
 type CommonPanel struct {
 	UI   *UI
 	grid *gtk.Grid
+	b    *BackgroundTask
 }
 
 func NewCommonPanel(ui *UI) CommonPanel {
-	return CommonPanel{grid: MustGrid(), UI: ui}
+	return CommonPanel{
+		UI:   ui,
+		grid: MustGrid(),
+	}
+}
+
+func (p *CommonPanel) Show() {
+	if p.b != nil {
+		p.b.Start()
+	}
 }
 
 func (p *CommonPanel) Grid() *gtk.Grid {
@@ -29,11 +39,15 @@ func (p *CommonPanel) Grid() *gtk.Grid {
 }
 
 func (p *CommonPanel) Destroy() {
+	if p.b != nil {
+		p.b.Close()
+	}
+
 	p.grid.Destroy()
 }
 
 type BackgroundTask struct {
-	Stop, Resume, Close chan bool
+	stop, resume, close chan bool
 
 	d    time.Duration
 	task func()
@@ -44,19 +58,32 @@ func NewBackgroundTask(d time.Duration, task func()) *BackgroundTask {
 		task: task,
 		d:    d,
 
-		Stop:   make(chan bool, 1),
-		Resume: make(chan bool, 1),
-		Close:  make(chan bool, 1),
+		stop:   make(chan bool, 1),
+		resume: make(chan bool, 1),
+		close:  make(chan bool, 1),
 	}
 }
 
 func (t *BackgroundTask) Start() {
+	Logger.Debug("New background task started")
 	go t.loop()
-	t.Resume <- true
+	t.resume <- true
+}
+
+func (t *BackgroundTask) Stop() {
+	t.stop <- true
+}
+
+func (t *BackgroundTask) Resume() {
+	t.resume <- true
+}
+
+func (t *BackgroundTask) Close() {
+	t.close <- true
 }
 
 func (t *BackgroundTask) loop() {
-	for <-t.Resume {
+	for <-t.resume {
 		t.execute()
 
 		ticker := time.NewTicker(t.d)
@@ -65,11 +92,11 @@ func (t *BackgroundTask) loop() {
 			select {
 			case <-ticker.C:
 				t.execute()
-			case <-t.Stop:
+			case <-t.stop:
 				fmt.Println("stop")
 				break
-			case <-t.Close:
-				fmt.Println("close")
+			case <-t.close:
+				Logger.Debug("Background task closed")
 				return
 			}
 		}
@@ -94,7 +121,7 @@ type StepButton struct {
 
 type Step struct {
 	Label string
-	Value int
+	Value interface{}
 }
 
 func MustStepButton(image string, s ...Step) *StepButton {
@@ -119,7 +146,7 @@ func (b *StepButton) Label() string {
 	return b.Steps[b.Current].Label
 }
 
-func (b *StepButton) Value() int {
+func (b *StepButton) Value() interface{} {
 	b.RLock()
 	defer b.RUnlock()
 
@@ -129,6 +156,10 @@ func (b *StepButton) Value() int {
 func (b *StepButton) AddStep(s Step) {
 	b.Lock()
 	defer b.Unlock()
+
+	if len(b.Steps) == 0 {
+		b.SetLabel(s.Label)
+	}
 
 	b.Steps = append(b.Steps, s)
 }
