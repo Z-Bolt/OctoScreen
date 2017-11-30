@@ -47,7 +47,8 @@ func (m *MovePanel) createMoveButton(label, image string, a octoprint.Axis, dir 
 		}
 
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			panic(err)
+			Logger.Error(err)
+			return
 		}
 	})
 }

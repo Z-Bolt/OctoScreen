@@ -29,8 +29,10 @@ func (m *HomePanel) initialize() {
 func (m *HomePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
 		cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
+		Logger.Infof("Homing the print head in %s axes", axes)
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			panic(err)
+			Logger.Error(err)
+			return
 		}
 	})
 }
