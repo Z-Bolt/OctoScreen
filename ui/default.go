@@ -11,7 +11,7 @@ func NewDefaultPanel(ui *UI) Panel {
 }
 
 func (m *DefaultPanel) initialize() {
-	m.grid.Attach(MustButtonImage("Status", "status.svg", nil), 1, 0, 1, 1)
+	m.grid.Attach(MustButtonImage("Status", "status.svg", m.showStatus), 1, 0, 1, 1)
 	m.grid.Attach(MustButtonImage("Heat Up", "heat-up.svg", m.showTemperature), 2, 0, 1, 1)
 	m.grid.Attach(MustButtonImage("Move", "move.svg", m.showMove), 3, 0, 1, 1)
 	m.grid.Attach(MustButtonImage("Home", "home.svg", m.showHome), 4, 0, 1, 1)
@@ -19,6 +19,10 @@ func (m *DefaultPanel) initialize() {
 	m.grid.Attach(MustButtonImage("HeatBed", "bed.svg", nil), 2, 1, 1, 1)
 	m.grid.Attach(MustButtonImage("Fan", "fan.svg", nil), 3, 1, 1, 1)
 	m.grid.Attach(MustButtonImage("Settings", "settings.svg", nil), 4, 1, 1, 1)
+}
+
+func (m *DefaultPanel) showStatus() {
+	m.UI.Add(NewStatusPanel(m.UI))
 }
 
 func (m *DefaultPanel) showHome() {
