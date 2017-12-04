@@ -8,6 +8,16 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+// MustWindow returns a new gtk.Window, if error panics.
+func MustWindow(t gtk.WindowType) *gtk.Window {
+	win, err := gtk.WindowNew(t)
+	if err != nil {
+		panic(err)
+	}
+
+	return win
+}
+
 // MustGrid returns a new gtk.Grid, if error panics.
 func MustGrid() *gtk.Grid {
 	grid, err := gtk.GridNew()
@@ -95,9 +105,7 @@ func MustButtonImage(label, img string, clicked func()) *gtk.Button {
 // MustImageFromFileWithSize returns a new gtk.Image based on rescaled version
 // of the given file.
 func MustImageFromFileWithSize(img string, w, h int) *gtk.Image {
-	p, err := gdk.PixbufNewFromFileAtScale(
-		filepath.Join(ImagesFolder, img), w, h, true)
-
+	p, err := gdk.PixbufNewFromFileAtScale(imagePath(img), w, h, true)
 	if err != nil {
 		panic(err)
 	}
@@ -110,12 +118,32 @@ func MustImageFromFileWithSize(img string, w, h int) *gtk.Image {
 	return i
 }
 
-// MustImageFromFile returns a new gtk.Image based on the given file.
+// MustImageFromFile returns a new gtk.Image based on the given file, If error
+// panics.
 func MustImageFromFile(img string) *gtk.Image {
-	i, err := gtk.ImageNewFromFile(filepath.Join(ImagesFolder, img))
+	i, err := gtk.ImageNewFromFile(imagePath(img))
 	if err != nil {
 		panic(err)
 	}
 
 	return i
+}
+
+// MustCSSProviderFromFile returns a new gtk.CssProvider for a given css file,
+// If error panics.
+func MustCSSProviderFromFile(css string) *gtk.CssProvider {
+	p, err := gtk.CssProviderNew()
+	if err != nil {
+		panic(err)
+	}
+
+	if err := p.LoadFromPath(filepath.Join(StylePath, css)); err != nil {
+		panic(err)
+	}
+
+	return p
+}
+
+func imagePath(img string) string {
+	return filepath.Join(StylePath, ImageFolder, img)
 }

@@ -4,11 +4,23 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/sirupsen/logrus"
 )
 
-var ImagesFolder string
+var (
+	StylePath    string
+	WindowName   = "OctoPrint-TFT"
+	WindowHeight = 320
+	WindowWidth  = 489
+)
+
+const (
+	ImageFolder = "images"
+	CSSFilename = "style.css"
+)
 
 type UI struct {
 	Current Panel
@@ -16,18 +28,48 @@ type UI struct {
 	State   octoprint.ConnectionState
 
 	b *BackgroundTask
-	*gtk.Grid
+	g *gtk.Grid
+	*gtk.Window
 }
 
 func New(endpoint, key string) *UI {
 	ui := &UI{
-		Grid:    MustGrid(),
+		Window:  MustWindow(gtk.WINDOW_TOPLEVEL),
 		Printer: octoprint.NewClient(endpoint, key),
 	}
 
 	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
-	ui.Connect("show", ui.b.Start)
+	ui.initialize()
 	return ui
+}
+
+func (ui *UI) initialize() {
+	defer ui.ShowAll()
+
+	ui.loadStyle()
+	ui.g = MustGrid()
+
+	ui.Window.SetTitle(WindowName)
+	ui.Window.SetDefaultSize(WindowWidth, WindowHeight)
+	ui.Window.Add(ui.g)
+
+	ui.Connect("show", ui.b.Start)
+	ui.Connect("destroy", func() {
+		gtk.MainQuit()
+	})
+
+}
+
+func (ui *UI) loadStyle() {
+	p := MustCSSProviderFromFile(CSSFilename)
+
+	s, err := gdk.ScreenGetDefault()
+	if err != nil {
+		logrus.Errorf("Error getting GDK screen: %s", err)
+		return
+	}
+
+	gtk.AddProviderForScreen(s, p, gtk.STYLE_PROVIDER_PRIORITY_USER)
 }
 
 func (ui *UI) verifyConnection() {
@@ -79,6 +121,6 @@ func (ui *UI) Add(p Panel) {
 	}
 
 	ui.Current = p
-	ui.Attach(ui.Current.Grid(), 1, 0, 1, 1)
-	ui.ShowAll()
+	ui.g.Attach(ui.Current.Grid(), 1, 0, 1, 1)
+	ui.g.ShowAll()
 }

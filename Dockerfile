@@ -5,11 +5,9 @@ RUN apt install -y --no-install-recommends git build-essential libcairo2-dev lib
 RUN rm -rf /go-linux-arm-bootstrap
 ENV GOROOT=/usr/local/go/
 RUN go get -tags gtk_3_14 -v github.com/gotk3/gotk3/gtk/...
-
+RUN go get -v github.com/sirupsen/logrus/...
 
 ADD . /go/src/github.com/mcuadros/OctoPrint-TFT/
-
-RUN go get -v github.com/sirupsen/logrus/...
-WORKDIR /go/src/github.com/mcuadros/OctoPrint-TFT/
 RUN go get -tags gtk_3_14 -v ./...
+WORKDIR /go/src/github.com/mcuadros/OctoPrint-TFT/
 RUN go build -tags gtk_3_14  -v .

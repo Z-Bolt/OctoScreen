@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -9,9 +8,9 @@ import (
 )
 
 const (
-	EnvImagesFolder = "OCTOPRINT_TFT_IMAGES"
-	EnvBaseURL      = "OCTOPRINT_HOST"
-	EnvAPIKey       = "OCTOPRINT_APIKEY"
+	EnvStylePath = "OCTOPRINT_TFT_STYLE_PATH"
+	EnvBaseURL   = "OCTOPRINT_HOST"
+	EnvAPIKey    = "OCTOPRINT_APIKEY"
 
 	DefaultBaseURL = "http://127.0.0.1"
 )
@@ -22,7 +21,7 @@ var (
 )
 
 func init() {
-	ui.ImagesFolder = os.Getenv(EnvImagesFolder)
+	ui.StylePath = os.Getenv(EnvStylePath)
 	BaseURL = os.Getenv(EnvBaseURL)
 	APIKey = os.Getenv(EnvAPIKey)
 
@@ -33,20 +32,10 @@ func init() {
 
 func main() {
 	gtk.Init(nil)
-	win, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
-	if err != nil {
-		log.Fatal("Unable to create window:", err)
-	}
 
-	win.SetTitle("OctoPrint")
-	win.Connect("destroy", func() {
-		gtk.MainQuit()
-	})
+	settings, _ := gtk.SettingsGetDefault()
+	settings.SetProperty("gtk-application-prefer-dark-theme", true)
 
-	ui := ui.New(BaseURL, APIKey)
-	win.Add(ui)
-	win.SetTitle("foo")
-	win.SetDefaultSize(480, 320)
-	win.ShowAll()
+	ui.New(BaseURL, APIKey)
 	gtk.Main()
 }

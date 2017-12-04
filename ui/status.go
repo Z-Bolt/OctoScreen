@@ -199,7 +199,7 @@ func (m *StatusPanel) updateJob() {
 		return
 	}
 
-	m.file.Label.SetLabel(fmt.Sprintf("File: %s", s.Job.File.Name))
+	m.file.Label.SetLabel(fmt.Sprintf("File: %s", filenameEllipsis(s.Job.File.Name)))
 	m.pb.SetFraction(s.Progress.Completion / 100)
 
 	if m.UI.State.IsOperational() {
@@ -223,4 +223,12 @@ func (m *StatusPanel) updateJob() {
 	}
 
 	m.left.Label.SetLabel(text)
+}
+
+func filenameEllipsis(name string) string {
+	if len(name) > 26 {
+		return name[:23] + "..."
+	}
+
+	return name
 }
