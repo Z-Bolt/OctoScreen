@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -15,13 +16,13 @@ type FilamentPanel struct {
 	tool   *StepButton
 
 	box      *gtk.Box
-	labels   map[string]*gtk.Label
+	labels   map[string]*LabelWithImage
 	previous *octoprint.TemperatureState
 }
 
 func NewFilamentPanel(ui *UI) *FilamentPanel {
 	m := &FilamentPanel{CommonPanel: NewCommonPanel(ui),
-		labels: map[string]*gtk.Label{},
+		labels: map[string]*LabelWithImage{},
 	}
 
 	m.b = NewBackgroundTask(time.Second*5, m.updateTemperatures)
@@ -35,6 +36,8 @@ func (m *FilamentPanel) initialize() {
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
+	m.box.SetMarginStart(10)
+
 	m.grid.Attach(m.box, 2, 0, 2, 1)
 
 	m.amount = MustStepButton("move-step.svg", Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1})
@@ -74,7 +77,7 @@ func (m *FilamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 }
 
 func (m *FilamentPanel) addNewTool(tool string) {
-	m.labels[tool] = MustLabel("")
+	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
 	m.box.Add(m.labels[tool])
 	m.tool.AddStep(Step{tool, tool})
 
@@ -82,7 +85,7 @@ func (m *FilamentPanel) addNewTool(tool string) {
 }
 
 func (m *FilamentPanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
-	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", tool, d.Actual, d.Target)
+	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", strings.Title(tool), d.Actual, d.Target)
 
 	if m.previous != nil && d.Target > 0 {
 		if p, ok := m.previous.Current[tool]; ok {
@@ -90,12 +93,12 @@ func (m *FilamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 		}
 	}
 
-	m.labels[tool].SetText(text)
+	m.labels[tool].Label.SetText(text)
 	m.labels[tool].ShowAll()
 }
 
 func (m *FilamentPanel) createToolButton() *StepButton {
-	m.tool = MustStepButton("extruct.svg")
+	m.tool = MustStepButton("extruder.svg")
 	m.tool.Callback = func() {
 		cmd := &octoprint.ToolSelectRequest{}
 		cmd.Tool = m.tool.Value().(string)

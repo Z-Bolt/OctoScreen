@@ -13,6 +13,7 @@ var ImagesFolder string
 type UI struct {
 	Current Panel
 	Printer *octoprint.Client
+	State   octoprint.ConnectionState
 
 	b *BackgroundTask
 	*gtk.Grid
@@ -25,13 +26,8 @@ func New(endpoint, key string) *UI {
 	}
 
 	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
-	ui.Connect("show", ui.show)
+	ui.Connect("show", ui.b.Start)
 	return ui
-}
-
-func (ui *UI) show() {
-	ui.b.Start()
-	ui.Add(NewDefaultPanel(ui))
 }
 
 func (ui *UI) verifyConnection() {
@@ -43,15 +39,20 @@ func (ui *UI) verifyConnection() {
 		return
 	}
 
+	defer func() { ui.State = s.Current.State }()
+
 	switch {
 	case s.Current.State.IsOperational():
 		Logger.Debug("Printer is ready")
-		if _, ok := ui.Current.(*SplashPanel); ok {
+		if !ui.State.IsOperational() && !ui.State.IsPrinting() {
 			ui.Add(NewDefaultPanel(ui))
 		}
 		return
 	case s.Current.State.IsPrinting():
-		Logger.Warning("TODO: Show StatusPanel")
+		Logger.Warning("Printing a job")
+		if !ui.State.IsPrinting() {
+			ui.Add(NewStatusPanel(ui))
+		}
 		return
 	case s.Current.State.IsError():
 		fallthrough
@@ -66,7 +67,6 @@ func (ui *UI) verifyConnection() {
 	}
 
 	ui.Add(splash)
-
 }
 
 func (ui *UI) ShowDefaultPanel() {

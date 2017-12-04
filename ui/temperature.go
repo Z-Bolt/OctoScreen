@@ -16,13 +16,13 @@ type TemperaturePanel struct {
 	amount *StepButton
 
 	box      *gtk.Box
-	labels   map[string]*gtk.Label
+	labels   map[string]*LabelWithImage
 	previous *octoprint.TemperatureState
 }
 
 func NewTemperaturePanel(ui *UI) *TemperaturePanel {
 	m := &TemperaturePanel{CommonPanel: NewCommonPanel(ui),
-		labels: map[string]*gtk.Label{},
+		labels: map[string]*LabelWithImage{},
 	}
 
 	m.b = NewBackgroundTask(time.Second, m.updateTemperatures)
@@ -36,6 +36,7 @@ func (m *TemperaturePanel) initialize() {
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
+	m.box.SetMarginStart(10)
 	m.grid.Attach(m.box, 2, 0, 2, 1)
 
 	m.grid.Attach(m.createToolButton(), 1, 1, 1, 1)
@@ -50,7 +51,7 @@ func (m *TemperaturePanel) initialize() {
 func (m *TemperaturePanel) createToolButton() *StepButton {
 	m.tool = MustStepButton("")
 	m.tool.Callback = func() {
-		img := "extruct.svg"
+		img := "extruder.svg"
 		if m.tool.Value().(string) == "bed" {
 			img = "bed.svg"
 		}
@@ -139,7 +140,12 @@ func (m *TemperaturePanel) loadTemperatureState(s *octoprint.TemperatureState) {
 }
 
 func (m *TemperaturePanel) addNewTool(tool string) {
-	m.labels[tool] = MustLabel("")
+	img := "extruder.svg"
+	if tool == "bed" {
+		img = "bed.svg"
+	}
+
+	m.labels[tool] = MustLabelWithImage(img, "")
 	m.box.Add(m.labels[tool])
 	m.tool.AddStep(Step{strings.Title(tool), tool})
 	m.tool.Callback()
@@ -148,7 +154,7 @@ func (m *TemperaturePanel) addNewTool(tool string) {
 }
 
 func (m *TemperaturePanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
-	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", tool, d.Actual, d.Target)
+	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", strings.Title(tool), d.Actual, d.Target)
 
 	if m.previous != nil && d.Target > 0 {
 		if p, ok := m.previous.Current[tool]; ok {
@@ -156,7 +162,7 @@ func (m *TemperaturePanel) loadTemperatureData(tool string, d *octoprint.Tempera
 		}
 	}
 
-	m.labels[tool].SetText(text)
+	m.labels[tool].Label.SetText(text)
 	m.labels[tool].ShowAll()
 }
 
