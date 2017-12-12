@@ -1,0 +1,8 @@
+Package: OctoPrint-TFT
+Architecture: armel
+Maintainer: Máximo Cuadros
+Depends: libcairo2 (>= 1.14.0), libgtk-3-0 (>= 3.14)
+Priority: optional
+Version: $VERSION
+Description: My Simple backup script
+ A touch interface for TFT touch modules based on GTK+3

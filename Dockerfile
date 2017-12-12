@@ -1,13 +1,18 @@
-FROM mcuadros/golang-arm:1.9-jessie
-RUN apt update
-RUN apt install -y --no-install-recommends git build-essential libcairo2-dev libgtk-3-dev
+ARG IMAGE
+FROM ${IMAGE}
 
-RUN rm -rf /go-linux-arm-bootstrap
-ENV GOROOT=/usr/local/go/
-RUN go get -tags gtk_3_14 -v github.com/gotk3/gotk3/gtk/...
-RUN go get -v github.com/sirupsen/logrus/...
+ARG GO_TAGS
+ENV GO_TAGS=${GO_TAGS}
 
-ADD . /go/src/github.com/mcuadros/OctoPrint-TFT/
-RUN go get -tags gtk_3_14 -v ./...
-WORKDIR /go/src/github.com/mcuadros/OctoPrint-TFT/
-RUN go build -tags gtk_3_14  -v .
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  git build-essential gettext-base \
+  libcairo2-dev \
+  libgtk-3-dev
+
+# We cache go get gtk, to speed up builds.
+RUN go get -tags ${GO_TAGS} -v github.com/gotk3/gotk3/gtk/...
+
+ADD . ${GOPATH}/src/github.com/mcuadros/OctoPrint-TFT/
+RUN go get -tags ${GO_TAGS} -v ./...
+
+WORKDIR ${GOPATH}/src/github.com/mcuadros/OctoPrint-TFT/
