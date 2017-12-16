@@ -14,7 +14,7 @@ var (
 	StylePath    string
 	WindowName   = "OctoPrint-TFT"
 	WindowHeight = 320
-	WindowWidth  = 489
+	WindowWidth  = 480
 )
 
 const (
@@ -78,6 +78,9 @@ func (ui *UI) verifyConnection() {
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
 	if err != nil {
 		splash.Label.SetText(fmt.Sprintf("Unexpected error: %s", err))
+		ui.Add(splash)
+
+		Logger.Errorf("Unexpected error: %s", err)
 		return
 	}
 
