@@ -81,12 +81,39 @@ func MustLabelWithImage(img, label string, args ...interface{}) *LabelWithImage 
 // MustButtonImage returns a new gtk.Button with the given label, image and
 // clicked callback. If error panics.
 func MustButtonImage(label, img string, clicked func()) *gtk.Button {
+	return MustButtonImageFromImage(label, MustImageFromFile(img), clicked)
+}
+
+func MustButton(img *gtk.Image, clicked func()) *gtk.Button {
+	b, err := gtk.ButtonNew()
+	if err != nil {
+		panic(err)
+	}
+
+	b.SetImage(img)
+	b.SetImagePosition(gtk.POS_TOP)
+	//b.SetVExpand(true)
+	//b.SetHExpand(true)
+
+	//c, _ := b.GetStyleContext()
+	//c.AddClass("flat")
+
+	if clicked != nil {
+		b.Connect("clicked", clicked)
+	}
+
+	return b
+}
+
+// MustButtonImageFromImage returns a new gtk.Button with the given label, image
+// and clicked callback. If error panics.
+func MustButtonImageFromImage(label string, img *gtk.Image, clicked func()) *gtk.Button {
 	b, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
 		panic(err)
 	}
 
-	b.SetImage(MustImageFromFile(img))
+	b.SetImage(img)
 	b.SetAlwaysShowImage(true)
 	b.SetImagePosition(gtk.POS_TOP)
 	b.SetVExpand(true)

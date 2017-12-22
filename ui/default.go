@@ -17,7 +17,7 @@ func (m *DefaultPanel) initialize() {
 	m.grid.Attach(MustButtonImage("Home", "home.svg", m.showHome), 4, 0, 1, 1)
 	m.grid.Attach(MustButtonImage("Filament", "filament.svg", m.showFilament), 1, 1, 1, 1)
 	m.grid.Attach(MustButtonImage("Tools", "tools.svg", m.showTools), 2, 1, 1, 1)
-	m.grid.Attach(MustButtonImage("Fan", "fan.svg", nil), 3, 1, 1, 1)
+	m.grid.Attach(MustButtonImage("Files", "files.svg", m.showFiles), 3, 1, 1, 1)
 	m.grid.Attach(MustButtonImage("Settings", "settings.svg", nil), 4, 1, 1, 1)
 }
 
@@ -43,4 +43,8 @@ func (m *DefaultPanel) showMove() {
 
 func (m *DefaultPanel) showTools() {
 	m.UI.Add(NewToolsPanel(m.UI))
+}
+
+func (m *DefaultPanel) showFiles() {
+	m.UI.Add(NewFilesPanel(m.UI))
 }
