@@ -1,0 +1,8 @@
+.dialog { border: 2px solid black; }
+.error {
+    background-color:rgba(204, 30, 30, 0.7);
+    background-clip: padding-box;
+    padding: 5px;
+    border-radius: 0 0 5px 5px;
+    opacity: 0.8;
+}
