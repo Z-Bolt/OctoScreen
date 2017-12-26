@@ -92,11 +92,6 @@ func MustButton(img *gtk.Image, clicked func()) *gtk.Button {
 
 	b.SetImage(img)
 	b.SetImagePosition(gtk.POS_TOP)
-	//b.SetVExpand(true)
-	//b.SetHExpand(true)
-
-	//c, _ := b.GetStyleContext()
-	//c.AddClass("flat")
 
 	if clicked != nil {
 		b.Connect("clicked", clicked)
