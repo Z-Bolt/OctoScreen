@@ -4,6 +4,7 @@ import (
 	"path"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -29,6 +30,34 @@ func (hook ContextHook) Fire(entry *logrus.Entry) error {
 			break
 		}
 	}
+	return nil
+}
+
+type NotificationsHook struct {
+	n *Notifications
+}
+
+func NewNotificationsHook(n *Notifications) *NotificationsHook {
+	return &NotificationsHook{n: n}
+}
+
+func (h NotificationsHook) Levels() []logrus.Level {
+	return []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+		logrus.InfoLevel,
+	}
+}
+
+func (h NotificationsHook) Fire(entry *logrus.Entry) error {
+	d := 15 * time.Second
+	if entry.Level == logrus.InfoLevel {
+		d = time.Second
+	}
+
+	h.n.Show(entry.Level.String(), entry.Message, d)
 	return nil
 }
 

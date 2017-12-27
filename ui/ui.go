@@ -23,19 +23,23 @@ const (
 )
 
 type UI struct {
-	Current Panel
-	Printer *octoprint.Client
-	State   octoprint.ConnectionState
+	Current       Panel
+	Printer       *octoprint.Client
+	State         octoprint.ConnectionState
+	Notifications *Notifications
 
 	b *BackgroundTask
 	g *gtk.Grid
-	*gtk.Window
+	o *gtk.Overlay
+	w *gtk.Window
 }
 
 func New(endpoint, key string) *UI {
 	ui := &UI{
-		Window:  MustWindow(gtk.WINDOW_TOPLEVEL),
-		Printer: octoprint.NewClient(endpoint, key),
+		Printer:       octoprint.NewClient(endpoint, key),
+		Notifications: NewNotifications(),
+
+		w: MustWindow(gtk.WINDOW_TOPLEVEL),
 	}
 
 	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
@@ -44,20 +48,22 @@ func New(endpoint, key string) *UI {
 }
 
 func (ui *UI) initialize() {
-	defer ui.ShowAll()
-
+	defer ui.w.ShowAll()
 	ui.loadStyle()
-	ui.g = MustGrid()
 
-	ui.Window.SetTitle(WindowName)
-	ui.Window.SetDefaultSize(WindowWidth, WindowHeight)
-	ui.Window.Add(ui.g)
-
-	ui.Connect("show", ui.b.Start)
-	ui.Connect("destroy", func() {
+	ui.w.SetTitle(WindowName)
+	ui.w.SetDefaultSize(WindowWidth, WindowHeight)
+	ui.w.Connect("show", ui.b.Start)
+	ui.w.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
+	ui.o = MustOverlay()
+	ui.w.Add(ui.o)
+
+	ui.g = MustGrid()
+	ui.o.Add(ui.g)
+	ui.o.AddOverlay(ui.Notifications)
 }
 
 func (ui *UI) loadStyle() {

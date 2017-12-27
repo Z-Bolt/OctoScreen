@@ -169,3 +169,13 @@ func MustCSSProviderFromFile(css string) *gtk.CssProvider {
 func imagePath(img string) string {
 	return filepath.Join(StylePath, ImageFolder, img)
 }
+
+// MustOverlay returns a new gtk.Overlay, if error panics.
+func MustOverlay() *gtk.Overlay {
+	o, err := gtk.OverlayNew()
+	if err != nil {
+		panic(err)
+	}
+
+	return o
+}

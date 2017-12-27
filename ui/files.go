@@ -131,7 +131,7 @@ func (m *FilesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 func (m *FilesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInformation, print bool) gtk.IWidget {
 	return MustButton(
 		MustImageFromFileWithSize(img, 30, 30),
-		MustConfirmDialog(m.UI.Window, "Are you sure you want to proceed?", func() {
+		MustConfirmDialog(m.UI.w, "Are you sure you want to proceed?", func() {
 			r := &octoprint.SelectFileRequest{}
 			r.Location = octoprint.Local
 			r.Path = f.Path

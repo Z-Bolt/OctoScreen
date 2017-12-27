@@ -179,3 +179,39 @@ func (b *StepButton) clicked() {
 		b.Callback()
 	}
 }
+
+func MustConfirmDialog(parent *gtk.Window, msg string, cb func()) func() {
+	return func() {
+		win := gtk.MessageDialogNew(
+			parent,
+			gtk.DIALOG_MODAL,
+			gtk.MESSAGE_INFO,
+			gtk.BUTTONS_OK_CANCEL,
+			msg,
+		)
+
+		defer win.Destroy()
+
+		box, _ := win.GetContentArea()
+		box.SetMarginStart(15)
+		box.SetMarginEnd(15)
+		box.SetMarginTop(15)
+		box.SetMarginBottom(15)
+
+		ctx, _ := win.GetStyleContext()
+		ctx.AddClass("dialog")
+
+		if win.Run() == int(gtk.RESPONSE_OK) {
+			cb()
+		}
+	}
+}
+
+func EmptyContainer(c *gtk.Container) {
+	ch := c.GetChildren()
+	defer ch.Free()
+
+	ch.Foreach(func(i interface{}) {
+		c.Remove(i.(gtk.IWidget))
+	})
+}
