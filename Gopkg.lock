@@ -1,0 +1,37 @@
+memo = "43650b2e356bb2a65df12fa64ca2da4418bf1bb30ff116e57ad1bc2ff725187c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dustin/go-humanize"
+  packages = ["."]
+  revision = "2fcb5204cdc65b4bec9fd0a87606bb0d0e3c54e8"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/gotk3/gotk3"
+  packages = ["cairo","gdk","glib","gtk","pango"]
+  revision = "bc0518bd018dea9c2cdfef44fe95ff1e51d8f46b"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mcuadros/go-octoprint"
+  packages = ["."]
+  revision = "bba1c768bc8503df3fe6614b8391e7ad04957564"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "89742aefa4b206dcf400792f3bd35b542998eb3b"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["ssh/terminal"]
+  revision = "6a293f2d4b14b8e6d3f0539e383f6d0d30fce3fd"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix","windows"]
+  revision = "75813c647272dd855bda156405bf844a5414f5bf"

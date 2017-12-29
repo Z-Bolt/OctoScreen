@@ -1,0 +1,130 @@
+============================================================================
+User visible changes for gotk3
+  Go bindings for GTK3
+============================================================================
+
+Changes for next Version
+  - Add new binding support
+    - gdk: fix memory leak in Pixbuf finalizers
+    - gdk: new functions for Pixbuf: ApplyEmbeddedOrientation, SaveJPEG, SavePNG
+    - gdk: PixbufLoader wrapper
+    - gtk: new functions for Adjustment: GetPageSize, SetPageSize, Configure
+    - gtk: new functions for Range: SetIncrements, SetRange
+    - gtk: new wrappers: IRecentChooser, RecentChooser, RecentChooserMenu, 
+    - gtk: RecentFilter, RecentManager, IScrollable, Scrollable, IViewport, Viewport, Allocation
+    - gtk: new function for ScrolledWindow: SetHAdjustment
+    - gtk: new function for SpinButton: SetIncrements
+    - gtk: new functions for Widget: GetAllocation, SetAllocation, SizeAllocate
+    - gtk: new function RecentChooser
+    - gtk: added Widget.GetStyleContext, new wrappers for GtkCssProvider
+  - API Break Warning: no longer support for gtk 3.16 deprecated mark functions/elements
+
+Changes in 0.3.0 (Wed Jun 10 2015)
+  - API Break Warning: function signatures changed
+  - Add new binding support
+  	- GtkBuilder
+  	- GtkButton
+  	- GtkCellRenderer
+  	- GtkStatusIcon
+  	- GtkStatusbar
+  	- GtkTreeView
+  - better and more support for cairo
+  - better and more support for pango
+
+Changes in 0.2.0 (Mon Feb 10 2014)
+  - API BREAK: Modify function signatures for ListStore bindings so unset
+    iterators need not be created and passed as pointers to be set
+
+  - Add cairo package (currently targeting cairo 1.10) and add initial binding
+    support for cairo Surface and Context
+
+  - Add new binding support for the following GTK classes:
+    - GdkPixbuf (https://github.com/geoffholden/gotk3/issues/40)
+    - GtkAboutDialog
+    - GtkAlignment
+    - GtkArrow
+    - GtkCalendar
+    - GtkDrawingArea
+    - GtkEventBox
+    - GtkOffscreenWindow (https://github.com/geoffholden/gotk3/issues/33)
+    - GtkSpinner
+    - GtkSwitch
+
+  - Add additional bindings for gtk.Label
+
+  - Add glib.TimeoutAdd (https://github.com/geoffholden/gotk3/issues/41)
+
+  - Call correct C function to create a new TextTagTable
+    (https://github.com/geoffholden/gotk3/issues/40)
+
+  - Create correct go values from glib values
+    (https://github.com/geoffholden/gotk3/issues/39 and
+    https://github.com/geoffholden/gotk3/issues/41)
+
+Changes in 0.1.1 (Tue Jan 14 2014)
+  - Fix a (*glib.Object).Connect crash where an allocated GValue was
+    prematurely unset
+
+  - Fix memory leaks when adding callbacks with (*glib.Object).Connect and
+    glib.IdleAdd
+
+  - Make all constants typed for increased compile-time type safety
+
+  - Remove a duplicate example file (resulting in two main functions)
+    which broke recursive go get
+
+  - Add ALIGN_BASELINE const (since GTK 3.10)
+
+Changes in 0.1.0 (Thu Jan 09 2014)
+  - Modify signal callback API to remove glib.CallbackContext
+
+  - New support for the following types:
+    - gtk.CellRendererToggle
+    - gtk.HeaderBar
+    - gtk.TextView
+
+  - Additional function support for the following types:
+    - gtk.MessageDialog
+    - gtk.Window
+
+  - Add examples for gtk.TextView bindings
+
+  - Fix build when building with gccgo
+    (https://github.com/geoffholden/gotk3/issues/19 and
+    https://github.com/geoffholden/gotk3/issues/20)
+
+Changes in 0.0.2 (Wed Nov 13 2013)
+  - Begin GTK 3.10 support
+
+  - Add support for targeting GTK 3.6
+
+  - Add build tags to target previous GTK releases
+
+  - Additional function support for the following types:
+    - gtk.Label
+    - gtk.Misc
+    - gtk.Scrollbar
+    - gtk.SpinButton
+    - gtk.Window
+
+  - New support for the following types:
+    - gtk.Builder
+    - gtk.CheckButton
+    - gtk.Frame
+    - gtk.Range
+    - gtk.Scrollbar
+    - gtk.Separator
+    - gtk.SeparatorMenuItem
+    - gtk.ShadowType
+    - gtk.ToggleButton
+
+  - Add glib.GetUserSpecialDir
+
+  - Use C constants directly instead of using iota
+
+  - Fix several nil pointer dereferences
+
+  - General code cleanup
+
+Initial Release 0.0.1 (Tue Jul 16 2013)
+  - Initial release

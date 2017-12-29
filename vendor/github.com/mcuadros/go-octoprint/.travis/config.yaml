@@ -1,0 +1,41 @@
+accessControl:
+  enabled: false
+api:
+  key: 48C135F39D9B4CF593C89F0B8424EA3F
+devel:
+  virtualPrinter:
+    enabled: true
+plugins:
+  announcements:
+    _config_version: 1
+    channels:
+      _blog:
+        read_until: 1512119700
+      _important:
+        read_until: 1509547500
+      _octopi:
+        read_until: 1499253000
+      _plugins:
+        read_until: 1512172800
+      _releases:
+        read_until: 1513079100
+  discovery:
+    upnpUuid: 083dba00-d405-45e5-abc6-34846194d25a
+  softwareupdate:
+    _config_version: 6
+printerProfiles:
+  default: _default
+serial:
+  autoconnect: true
+  baudrate: 0
+  port: VIRTUAL
+server:
+  firstRun: false
+  onlineCheck:
+    enabled: false
+  pluginBlacklist:
+    enabled: false
+  secretKey: Gi1BdGGbrO8CWPwCxgmmHSWGwcDwYuXL
+  seenWizards:
+    corewizard: 3
+    cura: null
