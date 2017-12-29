@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE := 1
+export DH_GOPKG := github.com/mcuadros/OctoPrint-TFT
+export DH_GOLANG_INSTALL_ALL := 1
+export DH_GOLANG_EXCLUDES := vendor
+
+%:
+	dh $@ --buildsystem=golang --with=golang,systemd
+
+override_dh_auto_build:
+	env; \
+	dh_auto_build -O--buildsystem=golang -O--no-parallel -- --tags $(GO_TAGS)
+
+override_dh_install:
+	mkdir -p $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
+	cp -r styles $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
+	rm -rf $(CURDIR)/debian/octoprint-tft/usr/share/gocode
+	dh_install -XLICENSE
+
+override_dh_auto_test:
+	echo "skip no tests"

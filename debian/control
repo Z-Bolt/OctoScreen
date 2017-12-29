@@ -1,0 +1,36 @@
+Source: octoprint-tft
+Section: devel
+Priority: optional
+Maintainer: Debian Go Packaging Team <pkg-go-maintainers@lists.alioth.debian.org>
+Uploaders: Máximo Cuadros <mcuadros@gmail.com>
+Build-Depends: debhelper (>= 9),
+               dh-golang,
+               dh-systemd,
+               libcairo2-dev (>= 1.14.0),
+               libgtk-3-dev (>= 3.14)
+Standards-Version: 4.1.1
+Homepage: https://github.com/mcuadros/OctoPrint-TFT
+Vcs-Browser: https://anonscm.debian.org/cgit/pkg-go/packages/octoprint-tft.git
+Vcs-Git: https://anonscm.debian.org/git/pkg-go/packages/octoprint-tft.git
+XS-Go-Import-Path: github.com/mcuadros/OctoPrint-TFT
+Testsuite: autopkgtest-pkg-go
+
+Package: octoprint-tft
+Architecture: any
+Built-Using: ${misc:Built-Using}
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libcairo2 (>= 1.14.0),
+         libgtk-3-0 (>= 3.14)
+Description: A OctoPrint touch interface for TFT touch modules based on GTK+3
+ OctoPrint-TFT OctoPrint-TFT, a touch interface for TFT touch modules
+ based on GTK+3.
+ .
+ Is a X application to be executed directly in the X Server without any
+ windows manager, as frontend of a OctoPrint (http://octoprint.org)
+ server in a Raspberry Pi equipped with any TFT Touch module
+ (https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)).
+ .
+ Allows you to control your 3D Printer, like you can do with any TFT/LCD
+ panel (http://reprap.org/wiki/RepRapTouch), but using OctoPrint and a
+ Raspberry Pi.

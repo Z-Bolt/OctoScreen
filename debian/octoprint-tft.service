@@ -1,0 +1,16 @@
+[Unit]
+Description=OctoPrint-TFT
+Conflicts=getty@tty7.service
+After=systemd-user-sessions.service getty@tty7.service plymouth-quit.service
+
+[Service]
+ExecStart=/usr/bin/OctoPrint-TFT
+StandardOutput=journal
+Restart=always
+RestartSec=1s
+TimeoutStopSec=5s
+IgnoreSIGPIPE=no
+
+[Install]
+WantedBy=graphical.target
+Alias=display-manager.service

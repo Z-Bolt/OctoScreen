@@ -11,7 +11,8 @@ GOGET = $(GOCMD) get -v -t
 GOTEST = $(GOCMD) test -v
 
 # Environment
-BUILD_PATH := $(shell pwd)/build
+WORKDIR := $(shell pwd)
+BUILD_PATH := $(WORKDIR)/build
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
 DEBIAN_PACKAGES = JESSIE
@@ -26,18 +27,15 @@ JESSIE_GO_TAGS := gtk_3_14
 
 # Build information
 GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
-GIT_DIRTY = $(shell test -n "`git status --porcelain`" && echo "-dirty" || true)
-DEV_PREFIX := 0.dev
-VERSION ?= $(DEV_PREFIX)-$(GIT_COMMIT)$(GIT_DIRTY)
+DEV_PREFIX := 0.0
+VERSION ?= $(DEV_PREFIX)~git$(GIT_COMMIT)
 
 ifneq ($(origin TRAVIS_TAG), undefined)
 	VERSION := $(TRAVIS_TAG)
 endif
 
 # Package information
-BINARY_NAME = octoprint-tft
-INSTALL_FOLDER = /opt/octoprint-tft
-PACKAGE_NAME =  ${BINARY_NAME}_${VERSION}_$(shell uname -m).deb
+PACKAGE_NAME = octoprint-tft
 
 # we export the variable to allow envsubst, substitute the vars in the
 # Dockerfiles
@@ -57,18 +55,18 @@ $(DEBIAN_PACKAGES):
 	docker run -it --rm \
 		-v ${BUILD_PATH}/${${@}_NAME}:/build \
 		${DOCKER_IMAGE_BUILD}:${${@}_NAME} \
-		make package-internal
+		make build-internal
 
-build-internal:
-	go build --tags ${GO_TAGS} -v -o /build/bin/${BINARY_NAME} main.go
+build-internal: prepare-internal
+	#go build --tags ${GO_TAGS} -v -o /build/bin/${BINARY_NAME} main.go
+	cd $(WORKDIR); \
+	debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc; \
+	cp ../*.deb /build/;
 
-package-internal: build-internal
-	mkdir -p /build/deb/${INSTALL_FOLDER}/bin/; \
-	cp -rf styles /build/deb/${INSTALL_FOLDER}; \
-	cp -rf /build/bin/${BINARY_NAME} /build/deb/${INSTALL_FOLDER}/bin/; \
-	cp -rf etc/DEBIAN /build/deb/; \
-	envsubst < etc/DEBIAN/control > /build/deb/DEBIAN/control; \
-	dpkg-deb --build /build/deb/ /build/${PACKAGE_NAME}
+prepare-internal:
+	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
+	cd $(WORKDIR)/..; \
+	tar -czf octoprint-tft_$(VERSION).orig.tar.gz --exclude-vcs OctoPrint-TFT
 
 clean:
 	rm -rf ${BUILD_PATH}
