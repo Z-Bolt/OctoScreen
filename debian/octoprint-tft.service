@@ -4,7 +4,8 @@ Conflicts=getty@tty7.service
 After=systemd-user-sessions.service getty@tty7.service plymouth-quit.service
 
 [Service]
-ExecStart=/usr/bin/OctoPrint-TFT
+EnvironmentFile=/etc/octoprint-tft-environment
+ExecStart=/usr/bin/xinit /usr/bin/OctoPrint-TFT -- :0 -nolisten tcp -nocursor
 StandardOutput=journal
 Restart=always
 RestartSec=1s

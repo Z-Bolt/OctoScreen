@@ -7,14 +7,14 @@ set -e
 THIS_PACKAGE=octoprint-tft
 DEFAULT_DISPLAY_MANAGER_FILE=/etc/X11/default-display-manager
 
-
-# debconf is not a registry, so we only fiddle with the default file if it
-# does not exist
-if [ ! -e $DEFAULT_DISPLAY_MANAGER_FILE ]; then
+# debconf is not a registry, so we only fiddle with the default file if
+# the configure script requested an update
+if [ -e $DEFAULT_DISPLAY_MANAGER_FILE.debconf-update ]; then
+  rm -f $DEFAULT_DISPLAY_MANAGER_FILE.debconf-update
   if db_get shared/default-x-display-manager; then
     # workaround debconf passthru bug (#379198)
     if [ -z "$RET" ]; then
-      $RET="$THIS_PACKAGE"
+      RET="$THIS_PACKAGE"
     fi
     if [ "$THIS_PACKAGE" != "$RET" ]; then
       echo "Please be sure to run \"dpkg --configure $RET\"."
@@ -25,15 +25,12 @@ if [ ! -e $DEFAULT_DISPLAY_MANAGER_FILE ]; then
   fi
 fi
 
-# Registering the init scripts or starting the daemon may cause output to
-# stdout, which can confuse debconf.
-db_stop
-
 DEFAULT_SERVICE=/etc/systemd/system/display-manager.service
 # set default-display-manager systemd service link according to our config
 if [ "$1" = configure ] && [ -d /etc/systemd/system/ ]; then
   if [ -e "$DEFAULT_DISPLAY_MANAGER_FILE" ]; then
-    SERVICE=/lib/systemd/system/$(basename $(cat "$DEFAULT_DISPLAY_MANAGER_FILE")).service
+    SERVICE=/lib/systemd/system/$(basename $(cat "$DEFAULT_DISPLAY_MANAGER_FILE") | awk '{print tolower($0)}').service
+    echo "Installing service $SERVICE"
     if [ -h "$DEFAULT_SERVICE" ] && [ $(readlink "$DEFAULT_SERVICE") = /dev/null ]; then
       echo "Display manager service is masked" >&2
     elif [ -e "$SERVICE" ]; then
@@ -46,6 +43,8 @@ if [ "$1" = configure ] && [ -d /etc/systemd/system/ ]; then
     rm -f "$DEFAULT_SERVICE"
   fi
 fi
+
+db_stop || true
 
 #DEBHELPER#
 
