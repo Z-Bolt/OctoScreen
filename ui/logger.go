@@ -47,13 +47,12 @@ func (h NotificationsHook) Levels() []logrus.Level {
 		logrus.FatalLevel,
 		logrus.ErrorLevel,
 		logrus.WarnLevel,
-		logrus.InfoLevel,
 	}
 }
 
 func (h NotificationsHook) Fire(entry *logrus.Entry) error {
-	d := 15 * time.Second
-	if entry.Level == logrus.InfoLevel {
+	d := 10 * time.Second
+	if entry.Level == logrus.WarnLevel {
 		d = time.Second
 	}
 

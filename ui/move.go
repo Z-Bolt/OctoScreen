@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"strings"
+
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
 )
@@ -45,6 +47,10 @@ func (m *MovePanel) createMoveButton(label, image string, a octoprint.Axis, dir 
 		case octoprint.ZAxis:
 			cmd.Z = distance
 		}
+
+		Logger.Warningf("Jogging print head axis %s in %dmm",
+			strings.ToUpper(string(a)), distance,
+		)
 
 		if err := cmd.Do(m.UI.Printer); err != nil {
 			Logger.Error(err)

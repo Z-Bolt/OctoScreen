@@ -24,7 +24,6 @@ func init() {
 	ui.StylePath = os.Getenv(EnvStylePath)
 	BaseURL = os.Getenv(EnvBaseURL)
 	APIKey = os.Getenv(EnvAPIKey)
-
 	if BaseURL == "" {
 		BaseURL = DefaultBaseURL
 	}

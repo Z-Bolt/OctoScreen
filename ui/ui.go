@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gotk3/gotk3/gdk"
@@ -83,10 +84,12 @@ func (ui *UI) verifyConnection() {
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
 	if err != nil {
-		splash.Label.SetText(fmt.Sprintf("Unexpected error: %s", err))
+
+		splash.Label.SetText(ui.errToUser(err))
 		ui.Add(splash)
 
-		Logger.Errorf("Unexpected error: %s", err)
+		// Isn't an error since, error is being displayed already on the panel.
+		Logger.Debugf("Unexpected error: %s", err)
 		return
 	}
 
@@ -94,14 +97,14 @@ func (ui *UI) verifyConnection() {
 
 	switch {
 	case s.Current.State.IsOperational():
-		Logger.Debug("Printer is ready")
 		if !ui.State.IsOperational() && !ui.State.IsPrinting() {
+			Logger.Info("Printer is ready")
 			ui.Add(NewDefaultPanel(ui))
 		}
 		return
 	case s.Current.State.IsPrinting():
-		Logger.Warning("Printing a job")
 		if !ui.State.IsPrinting() {
+			Logger.Info("Printing a job")
 			ui.Add(NewStatusPanel(ui))
 		}
 		return
@@ -132,4 +135,16 @@ func (ui *UI) Add(p Panel) {
 	ui.Current = p
 	ui.g.Attach(ui.Current.Grid(), 1, 0, 1, 1)
 	ui.g.ShowAll()
+}
+
+func (ui *UI) errToUser(err error) string {
+	text := err.Error()
+	if strings.Contains(text, "connection refused") {
+		return fmt.Sprintf(
+			"Unable to connect to %q (API: %v), maybe OctoPrint not running?",
+			ui.Printer.Endpoint, ui.Printer.Endpoint == "",
+		)
+	}
+
+	return fmt.Sprintf("Unexpected error: %s", err)
 }
