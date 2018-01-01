@@ -1264,6 +1264,20 @@ func BuilderNew() (*Builder, error) {
 	return &Builder{obj}, nil
 }
 
+// BuilderNewFromFile is a wrapper around gtk_builder_new_from_file().
+func BuilderNewFromFile(filePath string) (*Builder, error) {
+	cstr := C.CString(filePath)
+	defer C.free(unsafe.Pointer(cstr))
+
+	c := C.gtk_builder_new_from_file((*C.gchar)(cstr))
+	if c == nil {
+		return nil, nilPtrErr
+	}
+
+	obj := glib.Take(unsafe.Pointer(c))
+	return &Builder{obj}, nil
+}
+
 // BuilderNewFromResource is a wrapper around gtk_builder_new_from_resource().
 func BuilderNewFromResource(resourcePath string) (*Builder, error) {
 	cstr := C.CString(resourcePath)
@@ -3288,11 +3302,12 @@ func (v *Entry) ResetIMContext() {
 	C.gtk_entry_reset_im_context(v.native())
 }
 
-// TODO(jrick) GdkPixbuf
-/*
-func (v *Entry) SetIconFromPixbuf() {
+// SetIconFromPixbuf is a wrapper around gtk_entry_set_icon_from_pixbuf().
+func (v *Entry) SetIconFromPixbuf(iconPos EntryIconPosition, pixbuf *gdk.Pixbuf) {
+	C.gtk_entry_set_icon_from_pixbuf(v.native(),
+		C.GtkEntryIconPosition(iconPos),
+		(*C.GdkPixbuf)(unsafe.Pointer(pixbuf.Native())))
 }
-*/
 
 // SetIconFromIconName() is a wrapper around
 // gtk_entry_set_icon_from_icon_name().
@@ -8253,6 +8268,12 @@ func (v *TreeModel) GetValue(iter *TreeIter, column int) (*glib.Value, error) {
 	return val, nil
 }
 
+// IterHasChild() is a wrapper around gtk_tree_model_iter_has_child().
+func (v *TreeModel) IterHasChild(iter *TreeIter) bool {
+	c := C.gtk_tree_model_iter_has_child(v.native(), iter.native())
+	return gobool(c)
+}
+
 // IterNext() is a wrapper around gtk_tree_model_iter_next().
 func (v *TreeModel) IterNext(iter *TreeIter) bool {
 	c := C.gtk_tree_model_iter_next(v.native(), iter.native())
@@ -8262,6 +8283,12 @@ func (v *TreeModel) IterNext(iter *TreeIter) bool {
 // IterPrevious is a wrapper around gtk_tree_model_iter_previous().
 func (v *TreeModel) IterPrevious(iter *TreeIter) bool {
 	c := C.gtk_tree_model_iter_previous(v.native(), iter.native())
+	return gobool(c)
+}
+
+// IterParent is a wrapper around gtk_tree_model_iter_parent().
+func (v *TreeModel) IterParent(iter, child *TreeIter) bool {
+	c := C.gtk_tree_model_iter_parent(v.native(), iter.native(), child.native())
 	return gobool(c)
 }
 

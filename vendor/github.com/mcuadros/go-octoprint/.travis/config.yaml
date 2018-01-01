@@ -39,3 +39,9 @@ server:
   seenWizards:
     corewizard: 3
     cura: null
+system:
+  actions:
+  - name: Shutdown
+    action: shutdown
+    command: sudo shutdown -h now
+    confirm: You are about to shutdown the system.

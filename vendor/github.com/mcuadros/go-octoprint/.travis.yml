@@ -10,6 +10,7 @@ go:
 
 before_install:
   - docker run -d -p 5000:5000 -v $PWD/.travis/config.yaml:/home/octoprint/.octoprint/config.yaml --name octoprint octoprint/octoprint
+  - sleep 5
 
 script:
   - go get -t -v ./...

@@ -109,9 +109,9 @@ for tool, state := range s.Temperature.Current {
 - [ ] DELETE `/api/slicing/<slicer>/profiles/<key>`
 
 ### [System](http://docs.octoprint.org/en/master/api/system.html)
-- [ ] GET `/api/system/commands`
+- [x] GET `/api/system/commands`
 - [ ] GET `/api/system/commands/<source>`
-- [ ] POST `/api/system/commands/<source>/<action>`
+- [x] POST `/api/system/commands/<source>/<action>`
 
 ### [Timelapse](http://docs.octoprint.org/en/master/api/timelapse.html)
 - [ ] GET `/api/timelapse`
