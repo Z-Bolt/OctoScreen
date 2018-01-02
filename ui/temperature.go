@@ -9,6 +9,8 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
+var temperaturePanel *TemperaturePanel
+
 type TemperaturePanel struct {
 	CommonPanel
 
@@ -19,14 +21,19 @@ type TemperaturePanel struct {
 	labels map[string]*LabelWithImage
 }
 
-func NewTemperaturePanel(ui *UI) *TemperaturePanel {
-	m := &TemperaturePanel{CommonPanel: NewCommonPanel(ui),
-		labels: map[string]*LabelWithImage{},
+func NewTemperaturePanel(ui *UI, parent Panel) *TemperaturePanel {
+	if temperaturePanel == nil {
+		m := &TemperaturePanel{CommonPanel: NewCommonPanel(ui, parent),
+			labels: map[string]*LabelWithImage{},
+		}
+
+		m.b = NewBackgroundTask(time.Second, m.updateTemperatures)
+		m.initialize()
+
+		temperaturePanel = m
 	}
 
-	m.b = NewBackgroundTask(time.Second, m.updateTemperatures)
-	m.initialize()
-	return m
+	return temperaturePanel
 }
 
 func (m *TemperaturePanel) initialize() {
@@ -44,7 +51,7 @@ func (m *TemperaturePanel) initialize() {
 	m.amount = MustStepButton("move-step.svg", Step{"5°C", 5.}, Step{"10°C", 10.}, Step{"1°C", 1.})
 	m.Grid().Attach(m.amount, 2, 1, 1, 1)
 
-	m.Grid().Attach(MustButtonImage("Cool Down", "cool-down.svg", m.coolDown), 3, 1, 1, 1)
+	m.Grid().Attach(MustButtonImage("Profiles", "heat-up.svg", m.profilePanel), 3, 1, 1, 1)
 }
 
 func (m *TemperaturePanel) createToolButton() *StepButton {
@@ -82,12 +89,11 @@ func (m *TemperaturePanel) increaseTarget(tool string, value float64) error {
 		target = 0
 	}
 
+	Logger.Infof("Setting target temperature for %s to %1.f°C.", tool, target)
 	return m.setTarget(tool, target)
 }
 
 func (m *TemperaturePanel) setTarget(tool string, target float64) error {
-	Logger.Infof("Setting target temperature for %s to %1.f°C.", tool, target)
-
 	if tool == "bed" {
 		cmd := &octoprint.BedTargetRequest{Target: target}
 		return cmd.Do(m.UI.Printer)
@@ -156,11 +162,69 @@ func (m *TemperaturePanel) loadTemperatureData(tool string, d *octoprint.Tempera
 	m.labels[tool].ShowAll()
 }
 
-func (m *TemperaturePanel) coolDown() {
-	Logger.Info("Cooling down printer")
-	for tool := range m.labels {
-		if err := m.setTarget(tool, 0); err != nil {
+func (m *TemperaturePanel) profilePanel() {
+	m.UI.Add(NewProfilesPanel(m.UI, m))
+}
+
+var profilePanel *ProfilesPanel
+
+type ProfilesPanel struct {
+	CommonPanel
+}
+
+func NewProfilesPanel(ui *UI, parent Panel) Panel {
+	if profilePanel == nil {
+		m := &ProfilesPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.initialize()
+		profilePanel = m
+	}
+
+	return profilePanel
+}
+
+func (m *ProfilesPanel) initialize() {
+	defer m.Initialize()
+	m.loadProfiles()
+}
+
+func (m *ProfilesPanel) loadProfiles() {
+	s, err := (&octoprint.SettingsRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return
+	}
+
+	for _, profile := range s.Temperature.Profiles {
+		m.AddButton(m.createProfileButton("filament.svg", profile))
+	}
+
+	m.AddButton(m.createProfileButton("cool-down.svg", &octoprint.TemperatureProfile{
+		Name:     "Cool Down",
+		Bed:      0,
+		Extruder: 0,
+	}))
+}
+
+func (m *ProfilesPanel) createProfileButton(img string, p *octoprint.TemperatureProfile) gtk.IWidget {
+	return MustButtonImage(p.Name, img, func() {
+		Logger.Warningf("Setting temperature profile %s.", p.Name)
+		if err := m.setProfile(p); err != nil {
 			Logger.Error(err)
 		}
+	})
+}
+
+func (m *ProfilesPanel) setProfile(p *octoprint.TemperatureProfile) error {
+	for tool := range temperaturePanel.labels {
+		temp := p.Extruder
+		if tool == "bed" {
+			temp = p.Bed
+		}
+
+		if err := temperaturePanel.setTarget(tool, temp); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
