@@ -9,7 +9,9 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-type StatusPanel struct {
+var statusPanelInstance *statusPanel
+
+type statusPanel struct {
 	CommonPanel
 	step *StepButton
 	pb   *gtk.ProgressBar
@@ -19,15 +21,19 @@ type StatusPanel struct {
 	print, pause, stop *gtk.Button
 }
 
-func NewStatusPanel(ui *UI, parent Panel) *StatusPanel {
-	m := &StatusPanel{CommonPanel: NewCommonPanel(ui, parent)}
+func StatusPanel(ui *UI, parent Panel) Panel {
+	if statusPanelInstance == nil {
+		m := &statusPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.b = NewBackgroundTask(time.Second*5, m.update)
+		m.initialize()
 
-	m.b = NewBackgroundTask(time.Second*5, m.update)
-	m.initialize()
-	return m
+		statusPanelInstance = m
+	}
+
+	return statusPanelInstance
 }
 
-func (m *StatusPanel) initialize() {
+func (m *statusPanel) initialize() {
 	defer m.Initialize()
 
 	m.Grid().Attach(m.createMainBox(), 1, 0, 4, 1)
@@ -36,7 +42,7 @@ func (m *StatusPanel) initialize() {
 	m.Grid().Attach(m.createStopButton(), 3, 1, 1, 1)
 }
 
-func (m *StatusPanel) createProgressBar() *gtk.ProgressBar {
+func (m *statusPanel) createProgressBar() *gtk.ProgressBar {
 	m.pb = MustProgressBar()
 	m.pb.SetShowText(true)
 	m.pb.SetMarginTop(10)
@@ -46,7 +52,7 @@ func (m *StatusPanel) createProgressBar() *gtk.ProgressBar {
 	return m.pb
 }
 
-func (m *StatusPanel) createMainBox() *gtk.Box {
+func (m *statusPanel) createMainBox() *gtk.Box {
 	grid := MustGrid()
 	grid.SetHExpand(true)
 	grid.Add(m.createInfoBox())
@@ -61,7 +67,7 @@ func (m *StatusPanel) createMainBox() *gtk.Box {
 	return box
 }
 
-func (m *StatusPanel) createInfoBox() *gtk.Box {
+func (m *statusPanel) createInfoBox() *gtk.Box {
 	m.file = MustLabelWithImage("file.svg", "")
 	m.left = MustLabelWithImage("speed-step.svg", "")
 
@@ -76,7 +82,7 @@ func (m *StatusPanel) createInfoBox() *gtk.Box {
 	return info
 }
 
-func (m *StatusPanel) createTemperatureBox() *gtk.Box {
+func (m *statusPanel) createTemperatureBox() *gtk.Box {
 	m.bed = MustLabelWithImage("bed.svg", "")
 	m.tool0 = MustLabelWithImage("extruder.svg", "")
 	m.tool1 = MustLabelWithImage("extruder.svg", "")
@@ -92,7 +98,7 @@ func (m *StatusPanel) createTemperatureBox() *gtk.Box {
 	return temp
 }
 
-func (m *StatusPanel) createPrintButton() gtk.IWidget {
+func (m *statusPanel) createPrintButton() gtk.IWidget {
 	m.print = MustButtonImage("Print", "status.svg", func() {
 		defer m.updateTemperature()
 
@@ -106,7 +112,7 @@ func (m *StatusPanel) createPrintButton() gtk.IWidget {
 	return m.print
 }
 
-func (m *StatusPanel) createPauseButton() gtk.IWidget {
+func (m *statusPanel) createPauseButton() gtk.IWidget {
 	m.pause = MustButtonImage("Pause", "pause.svg", func() {
 		defer m.updateTemperature()
 
@@ -121,7 +127,7 @@ func (m *StatusPanel) createPauseButton() gtk.IWidget {
 	return m.pause
 }
 
-func (m *StatusPanel) createStopButton() gtk.IWidget {
+func (m *statusPanel) createStopButton() gtk.IWidget {
 	m.stop = MustButtonImage("Stop", "stop.svg", func() {
 		defer m.updateTemperature()
 
@@ -135,12 +141,12 @@ func (m *StatusPanel) createStopButton() gtk.IWidget {
 	return m.stop
 }
 
-func (m *StatusPanel) update() {
+func (m *statusPanel) update() {
 	m.updateTemperature()
 	m.updateJob()
 }
 
-func (m *StatusPanel) updateTemperature() {
+func (m *statusPanel) updateTemperature() {
 	s, err := (&octoprint.StateRequest{Exclude: []string{"sd"}}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -164,7 +170,7 @@ func (m *StatusPanel) updateTemperature() {
 	}
 }
 
-func (m *StatusPanel) doUpdateState(s *octoprint.PrinterState) {
+func (m *statusPanel) doUpdateState(s *octoprint.PrinterState) {
 	switch {
 	case s.Flags.Printing:
 		m.print.SetSensitive(false)
@@ -191,7 +197,7 @@ func (m *StatusPanel) doUpdateState(s *octoprint.PrinterState) {
 	m.pause.SetImage(MustImageFromFile("pause.svg"))
 }
 
-func (m *StatusPanel) updateJob() {
+func (m *statusPanel) updateJob() {
 	s, err := (&octoprint.JobRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)

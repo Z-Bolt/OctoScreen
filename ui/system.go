@@ -12,26 +12,32 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
-type SystemPanel struct {
+var systemPanelInstance *systemPanel
+
+type systemPanel struct {
 	CommonPanel
 
 	list *gtk.Box
 }
 
-func NewSystemPanel(ui *UI, parent Panel) *SystemPanel {
-	m := &SystemPanel{CommonPanel: NewCommonPanel(ui, parent)}
-	m.initialize()
-	return m
+func SystemPanel(ui *UI, parent Panel) *systemPanel {
+	if systemPanelInstance == nil {
+		m := &systemPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.initialize()
+		systemPanelInstance = m
+	}
+
+	return systemPanelInstance
 }
 
-func (m *SystemPanel) initialize() {
+func (m *systemPanel) initialize() {
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(m.createInfoBox())
 	box.Add(m.createActionBar())
 	m.Grid().Add(box)
 }
 
-func (m *SystemPanel) createActionBar() gtk.IWidget {
+func (m *systemPanel) createActionBar() gtk.IWidget {
 	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	bar.SetHAlign(gtk.ALIGN_END)
 	bar.SetHExpand(true)
@@ -48,7 +54,7 @@ func (m *SystemPanel) createActionBar() gtk.IWidget {
 	return bar
 }
 
-func (m *SystemPanel) createRestartButton() gtk.IWidget {
+func (m *systemPanel) createRestartButton() gtk.IWidget {
 	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -69,7 +75,7 @@ func (m *SystemPanel) createRestartButton() gtk.IWidget {
 	return m.doCreateButtonFromCommand(cmd)
 }
 
-func (m *SystemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition) gtk.IWidget {
+func (m *systemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition) gtk.IWidget {
 	do := func() {
 		r := &octoprint.SystemExecuteCommandRequest{
 			Source: octoprint.Core,
@@ -90,7 +96,7 @@ func (m *SystemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition
 	return MustButton(MustImageFromFileWithSize(cmd.Action+".svg", 40, 40), cb)
 }
 
-func (m *SystemPanel) createInfoBox() gtk.IWidget {
+func (m *systemPanel) createInfoBox() gtk.IWidget {
 	main := MustBox(gtk.ORIENTATION_HORIZONTAL, 10)
 	main.SetHExpand(true)
 	main.SetHAlign(gtk.ALIGN_CENTER)
@@ -116,7 +122,7 @@ func (m *SystemPanel) createInfoBox() gtk.IWidget {
 	return main
 }
 
-func (m *SystemPanel) addOctoPrintTFT(box *gtk.Box) {
+func (m *systemPanel) addOctoPrintTFT(box *gtk.Box) {
 	title := MustLabel("<b>OctoPrint-TFT Version</b>")
 	title.SetMarginBottom(5)
 
@@ -127,7 +133,7 @@ func (m *SystemPanel) addOctoPrintTFT(box *gtk.Box) {
 	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
 }
 
-func (m *SystemPanel) addOctoPi(box *gtk.Box) {
+func (m *systemPanel) addOctoPi(box *gtk.Box) {
 	v, err := ioutil.ReadFile("/etc/octopi_version")
 	if err != nil {
 		Logger.Error(err)
@@ -137,7 +143,7 @@ func (m *SystemPanel) addOctoPi(box *gtk.Box) {
 	box.Add(MustLabel("OctoPi Version: <b>%s</b>", bytes.Trim(v, "\n")))
 }
 
-func (m *SystemPanel) addOctoPrint(box *gtk.Box) {
+func (m *systemPanel) addOctoPrint(box *gtk.Box) {
 	r, err := (&octoprint.VersionRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -147,7 +153,7 @@ func (m *SystemPanel) addOctoPrint(box *gtk.Box) {
 	box.Add(MustLabel("OctoPrint Version: <b>%s (%s)</b>", r.Server, r.API))
 }
 
-func (m *SystemPanel) addSystemInfo(box *gtk.Box) {
+func (m *systemPanel) addSystemInfo(box *gtk.Box) {
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(info)
 

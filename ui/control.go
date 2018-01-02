@@ -18,17 +18,23 @@ var control = []*octoprint.ControlDefinition{{
 	Command: "M106 S0",
 }}
 
-type ControlPanel struct {
+var controlPanelInstance *controlPanel
+
+type controlPanel struct {
 	CommonPanel
 }
 
-func NewControlPanel(ui *UI, parent Panel) *ControlPanel {
-	m := &ControlPanel{CommonPanel: NewCommonPanel(ui, parent)}
-	m.initialize()
-	return m
+func ControlPanel(ui *UI, parent Panel) Panel {
+	if controlPanelInstance == nil {
+		m := &controlPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.initialize()
+		controlPanelInstance = m
+	}
+
+	return controlPanelInstance
 }
 
-func (m *ControlPanel) initialize() {
+func (m *controlPanel) initialize() {
 	defer m.Initialize()
 
 	for _, c := range m.getControl() {
@@ -42,7 +48,7 @@ func (m *ControlPanel) initialize() {
 	}
 }
 
-func (m *ControlPanel) getControl() []*octoprint.ControlDefinition {
+func (m *controlPanel) getControl() []*octoprint.ControlDefinition {
 	control := control
 
 	Logger.Info("Retrieving custom controls")
@@ -59,7 +65,7 @@ func (m *ControlPanel) getControl() []*octoprint.ControlDefinition {
 	return control
 }
 
-func (m *ControlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.IWidget {
+func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.IWidget {
 	icon := strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
 	do := func() {
 		r := &octoprint.CommandRequest{
@@ -85,7 +91,7 @@ func (m *ControlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.I
 	return MustButtonImage(c.Name, icon+".svg", cb)
 }
 
-func (m *ControlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.IWidget {
+func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.IWidget {
 	do := func() {
 		r := &octoprint.SystemExecuteCommandRequest{
 			Source: octoprint.Custom,
@@ -106,7 +112,7 @@ func (m *ControlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.I
 	return MustButtonImage(c.Name, c.Action+".svg", cb)
 }
 
-func (m *ControlPanel) getCommands() []*octoprint.CommandDefinition {
+func (m *controlPanel) getCommands() []*octoprint.CommandDefinition {
 	Logger.Info("Retrieving custom commands")
 	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {

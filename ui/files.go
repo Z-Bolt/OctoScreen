@@ -10,19 +10,25 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-type FilesPanel struct {
+var filesPanelInstance *filesPanel
+
+type filesPanel struct {
 	CommonPanel
 
 	list *gtk.Box
 }
 
-func NewFilesPanel(ui *UI, parent Panel) *FilesPanel {
-	m := &FilesPanel{CommonPanel: NewCommonPanel(ui, parent)}
-	m.initialize()
-	return m
+func FilesPanel(ui *UI, parent Panel) Panel {
+	if filesPanelInstance == nil {
+		m := &filesPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.initialize()
+		filesPanelInstance = m
+	}
+
+	return filesPanelInstance
 }
 
-func (m *FilesPanel) initialize() {
+func (m *filesPanel) initialize() {
 	m.list = MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	m.list.SetVExpand(true)
 
@@ -37,7 +43,7 @@ func (m *FilesPanel) initialize() {
 	m.doLoadFiles()
 }
 
-func (m *FilesPanel) createActionBar() gtk.IWidget {
+func (m *filesPanel) createActionBar() gtk.IWidget {
 	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	bar.SetHAlign(gtk.ALIGN_END)
 	bar.SetHExpand(true)
@@ -52,11 +58,11 @@ func (m *FilesPanel) createActionBar() gtk.IWidget {
 	return bar
 }
 
-func (m *FilesPanel) createRefreshButton() gtk.IWidget {
+func (m *filesPanel) createRefreshButton() gtk.IWidget {
 	return MustButton(MustImageFromFileWithSize("refresh.svg", 40, 40), m.doLoadFiles)
 }
 
-func (m *FilesPanel) doLoadFiles() {
+func (m *filesPanel) doLoadFiles() {
 	Logger.Info("Refreshing list of files")
 	m.doRefreshSD()
 
@@ -79,13 +85,13 @@ func (m *FilesPanel) doLoadFiles() {
 	m.list.ShowAll()
 }
 
-func (m *FilesPanel) doRefreshSD() {
+func (m *filesPanel) doRefreshSD() {
 	if err := (&octoprint.SDRefreshRequest{}).Do(m.UI.Printer); err != nil {
 		Logger.Error(err)
 	}
 }
 
-func (m *FilesPanel) doLoadFilesFromLocation(l octoprint.Location) []*octoprint.FileInformation {
+func (m *filesPanel) doLoadFilesFromLocation(l octoprint.Location) []*octoprint.FileInformation {
 	r := &octoprint.FilesRequest{Location: l, Recursive: true}
 	files, err := r.Do(m.UI.Printer)
 	if err != nil {
@@ -96,7 +102,7 @@ func (m *FilesPanel) doLoadFilesFromLocation(l octoprint.Location) []*octoprint.
 	return files.Files
 }
 
-func (m *FilesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
+func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	frame, _ := gtk.FrameNew("")
 
 	name := MustLabel(f.Name)
@@ -132,7 +138,7 @@ func (m *FilesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	b.Add(frame)
 }
 
-func (m *FilesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInformation, print bool) gtk.IWidget {
+func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInformation, print bool) gtk.IWidget {
 	return MustButton(
 		MustImageFromFileWithSize(img, 30, 30),
 		MustConfirmDialog(m.UI.w, "Are you sure you want to proceed?", func() {
@@ -150,7 +156,7 @@ func (m *FilesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 	)
 }
 
-func (m *FilesPanel) createInitReleaseSDButton() gtk.IWidget {
+func (m *filesPanel) createInitReleaseSDButton() gtk.IWidget {
 	release := MustImageFromFileWithSize("sd_eject.svg", 40, 40)
 	init := MustImageFromFileWithSize("sd.svg", 40, 40)
 	b := MustButton(release, nil)
@@ -183,7 +189,7 @@ func (m *FilesPanel) createInitReleaseSDButton() gtk.IWidget {
 	return b
 }
 
-func (m *FilesPanel) isReady() bool {
+func (m *filesPanel) isReady() bool {
 	state, err := (&octoprint.SDStateRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)

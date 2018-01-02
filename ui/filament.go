@@ -9,7 +9,9 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-type FilamentPanel struct {
+var filamentPanelInstance *filamentPanel
+
+type filamentPanel struct {
 	CommonPanel
 
 	amount *StepButton
@@ -20,17 +22,21 @@ type FilamentPanel struct {
 	previous *octoprint.TemperatureState
 }
 
-func NewFilamentPanel(ui *UI, parent Panel) *FilamentPanel {
-	m := &FilamentPanel{CommonPanel: NewCommonPanel(ui, parent),
-		labels: map[string]*LabelWithImage{},
+func FilamentPanel(ui *UI, parent Panel) Panel {
+	if filamentPanelInstance == nil {
+		m := &filamentPanel{CommonPanel: NewCommonPanel(ui, parent),
+			labels: map[string]*LabelWithImage{},
+		}
+
+		m.b = NewBackgroundTask(time.Second*5, m.updateTemperatures)
+		m.initialize()
+		filamentPanelInstance = m
 	}
 
-	m.b = NewBackgroundTask(time.Second*5, m.updateTemperatures)
-	m.initialize()
-	return m
+	return filamentPanelInstance
 }
 
-func (m *FilamentPanel) initialize() {
+func (m *filamentPanel) initialize() {
 	defer m.Initialize()
 
 	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
@@ -49,7 +55,7 @@ func (m *FilamentPanel) initialize() {
 	m.Grid().Attach(m.createFlowrateButton(), 3, 1, 1, 1)
 }
 
-func (m *FilamentPanel) updateTemperatures() {
+func (m *filamentPanel) updateTemperatures() {
 	s, err := (&octoprint.ToolStateRequest{
 		History: true,
 		Limit:   1,
@@ -63,7 +69,7 @@ func (m *FilamentPanel) updateTemperatures() {
 	m.loadTemperatureState(s)
 }
 
-func (m *FilamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
+func (m *filamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 	for tool, current := range s.Current {
 		if _, ok := m.labels[tool]; !ok {
 			m.addNewTool(tool)
@@ -75,7 +81,7 @@ func (m *FilamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 	m.previous = s
 }
 
-func (m *FilamentPanel) addNewTool(tool string) {
+func (m *filamentPanel) addNewTool(tool string) {
 	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
 	m.box.Add(m.labels[tool])
 	m.tool.AddStep(Step{strings.Title(tool), tool})
@@ -83,7 +89,7 @@ func (m *FilamentPanel) addNewTool(tool string) {
 	Logger.Infof("New tool detected %s", tool)
 }
 
-func (m *FilamentPanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
+func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
 	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", strings.Title(tool), d.Actual, d.Target)
 
 	if m.previous != nil && d.Target > 0 {
@@ -96,7 +102,7 @@ func (m *FilamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 	m.labels[tool].ShowAll()
 }
 
-func (m *FilamentPanel) createToolButton() *StepButton {
+func (m *filamentPanel) createToolButton() *StepButton {
 	m.tool = MustStepButton("extruder.svg")
 	m.tool.Callback = func() {
 		cmd := &octoprint.ToolSelectRequest{}
@@ -112,7 +118,7 @@ func (m *FilamentPanel) createToolButton() *StepButton {
 	return m.tool
 }
 
-func (m *FilamentPanel) createFlowrateButton() *StepButton {
+func (m *filamentPanel) createFlowrateButton() *StepButton {
 	b := MustStepButton("speed-step.svg", Step{"Normal", 100}, Step{"High", 125}, Step{"Slow", 75})
 	b.Callback = func() {
 		cmd := &octoprint.ToolFlowrateRequest{}
@@ -128,7 +134,7 @@ func (m *FilamentPanel) createFlowrateButton() *StepButton {
 	return b
 }
 
-func (m *FilamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
+func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
 		cmd := &octoprint.ToolExtrudeRequest{}
 		cmd.Amount = m.amount.Value().(int) * dir

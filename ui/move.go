@@ -7,18 +7,24 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-type MovePanel struct {
+var movePanelInstance *movePanel
+
+type movePanel struct {
 	CommonPanel
 	step *StepButton
 }
 
-func NewMovePanel(ui *UI, parent Panel) Panel {
-	m := &MovePanel{CommonPanel: NewCommonPanel(ui, parent)}
-	m.initialize()
-	return m
+func MovePanel(ui *UI, parent Panel) Panel {
+	if movePanelInstance == nil {
+		m := &movePanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.initialize()
+		movePanelInstance = m
+	}
+
+	return movePanelInstance
 }
 
-func (m *MovePanel) initialize() {
+func (m *movePanel) initialize() {
 	defer m.Initialize()
 
 	m.AddButton(m.createMoveButton("X+", "move-x+.svg", octoprint.XAxis, 1))
@@ -35,7 +41,7 @@ func (m *MovePanel) initialize() {
 	m.AddButton(m.createMoveButton("Z-", "move-z-.svg", octoprint.ZAxis, -1))
 }
 
-func (m *MovePanel) createMoveButton(label, image string, a octoprint.Axis, dir int) gtk.IWidget {
+func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir int) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
 		distance := m.step.Value().(int) * dir
 

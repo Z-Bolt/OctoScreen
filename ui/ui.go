@@ -107,13 +107,13 @@ func (ui *UI) verifyConnection() {
 	case s.Current.State.IsOperational():
 		if !ui.State.IsOperational() && !ui.State.IsPrinting() {
 			Logger.Info("Printer is ready")
-			ui.Add(NewDefaultPanel(ui))
+			ui.Add(DefaultPanel(ui))
 		}
 		return
 	case s.Current.State.IsPrinting():
 		if !ui.State.IsPrinting() {
 			Logger.Info("Printing a job")
-			ui.Add(NewStatusPanel(ui, NewDefaultPanel(ui)))
+			ui.Add(StatusPanel(ui, DefaultPanel(ui)))
 		}
 		return
 	case s.Current.State.IsError():

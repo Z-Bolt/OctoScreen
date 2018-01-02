@@ -5,17 +5,23 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-type HomePanel struct {
+var homePanelInstance *homePanel
+
+type homePanel struct {
 	CommonPanel
 }
 
-func NewHomePanel(ui *UI, parent Panel) *HomePanel {
-	m := &HomePanel{CommonPanel: NewCommonPanel(ui, parent)}
-	m.initialize()
-	return m
+func HomePanel(ui *UI, parent Panel) Panel {
+	if homePanelInstance == nil {
+		m := &homePanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.initialize()
+		homePanelInstance = m
+	}
+
+	return homePanelInstance
 }
 
-func (m *HomePanel) initialize() {
+func (m *homePanel) initialize() {
 	defer m.Initialize()
 
 	m.AddButton(m.createMoveButton("Home All", "home.svg",
@@ -27,7 +33,7 @@ func (m *HomePanel) initialize() {
 	m.AddButton(m.createMoveButton("Home Z", "home-z.svg", octoprint.ZAxis))
 }
 
-func (m *HomePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
+func (m *homePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
 		cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
 		Logger.Warningf("Homing the print head in %s axes", axes)
