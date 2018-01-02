@@ -1,2 +1,15 @@
-OCTOPRINT_TFT_STYLE_PATH=/opt/octoprint-tft/styles/default/
+# OctoPrint HTTP address, default http://localhost
+OCTOPRINT_HOST=
+
+# OctoPrint-TFT expects an API key to be supplied. This API key can be either
+# the globally configured one or a user specific one if “Access Control”.
+# http://docs.octoprint.org/en/master/api/general.html
 OCTOPRINT_APIKEY=
+
+# Location of the OctoPrint's config.yaml file, if OCTOPRINT_APIKEY is empty
+# a the gobal API will be read from the config file. If empty the file will
+# be search at the `pi` home folder or the current user.
+OCTOPRINT_CONFIG_FILE=
+
+# Location of the application theme.
+OCTOPRINT_TFT_STYLE_PATH=/opt/octoprint-tft/styles/default/
