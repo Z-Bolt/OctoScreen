@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
-	"os/exec"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -102,15 +100,15 @@ func (m *SystemPanel) createInfoBox() gtk.IWidget {
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	info.SetVExpand(true)
 	info.SetVAlign(gtk.ALIGN_CENTER)
+	m.addOctoPrintTFT(info)
 
 	title := MustLabel("<b>Versions Information</b>")
+	title.SetMarginTop(15)
 	title.SetMarginBottom(5)
 	info.Add(title)
 
-	m.addOctoPrintTFT(info)
 	m.addOctoPrint(info)
 	m.addOctoPi(info)
-	m.addKernel(info)
 	m.addSystemInfo(info)
 
 	main.Add(info)
@@ -119,7 +117,14 @@ func (m *SystemPanel) createInfoBox() gtk.IWidget {
 }
 
 func (m *SystemPanel) addOctoPrintTFT(box *gtk.Box) {
-	box.Add(MustLabel("OctoPrint-TFT Version: <b>%s (%s)</b>", Version, Build))
+	title := MustLabel("<b>OctoPrint-TFT Version</b>")
+	title.SetMarginBottom(5)
+
+	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	box.Add(info)
+
+	info.Add(title)
+	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
 }
 
 func (m *SystemPanel) addOctoPi(box *gtk.Box) {
@@ -142,21 +147,13 @@ func (m *SystemPanel) addOctoPrint(box *gtk.Box) {
 	box.Add(MustLabel("OctoPrint Version: <b>%s (%s)</b>", r.Server, r.API))
 }
 
-func (m *SystemPanel) addKernel(box *gtk.Box) {
-	out, err := exec.Command("uname", "-r").Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	box.Add(MustLabel("Kernel Version: <b>%s</b>", out))
-}
-
 func (m *SystemPanel) addSystemInfo(box *gtk.Box) {
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(info)
 
 	title := MustLabel("<b>System Information</b>")
 	title.SetMarginBottom(5)
+	title.SetMarginTop(15)
 	info.Add(title)
 
 	v, _ := mem.VirtualMemory()

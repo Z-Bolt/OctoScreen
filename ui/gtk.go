@@ -127,7 +127,7 @@ func MustButtonImageFromImage(label string, img *gtk.Image, clicked func()) *gtk
 func MustImageFromFileWithSize(img string, w, h int) *gtk.Image {
 	p, err := gdk.PixbufNewFromFileAtScale(imagePath(img), w, h, true)
 	if err != nil {
-		panic(err)
+		Logger.Error(err)
 	}
 
 	i, err := gtk.ImageNewFromPixbuf(p)

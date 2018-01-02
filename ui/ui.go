@@ -33,6 +33,7 @@ type UI struct {
 	g *gtk.Grid
 	o *gtk.Overlay
 	w *gtk.Window
+	t time.Time
 }
 
 func New(endpoint, key string) *UI {
@@ -41,6 +42,7 @@ func New(endpoint, key string) *UI {
 		Notifications: NewNotifications(),
 
 		w: MustWindow(gtk.WINDOW_TOPLEVEL),
+		t: time.Now(),
 	}
 
 	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
@@ -79,16 +81,19 @@ func (ui *UI) loadStyle() {
 	gtk.AddProviderForScreen(s, p, gtk.STYLE_PROVIDER_PRIORITY_USER)
 }
 
+var errMercyPeriod = time.Second * 30
+
 func (ui *UI) verifyConnection() {
 	splash := NewSplashPanel(ui)
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
 	if err != nil {
-
-		splash.Label.SetText(ui.errToUser(err))
 		ui.Add(splash)
+		if time.Since(ui.t) > errMercyPeriod {
+			splash.Label.SetText(ui.errToUser(err))
+		}
 
-		// Isn't an error since, error is being displayed already on the panel.
+		// It's not an error since, error is being displayed already on the panel.
 		Logger.Debugf("Unexpected error: %s", err)
 		return
 	}
@@ -141,8 +146,8 @@ func (ui *UI) errToUser(err error) string {
 	text := err.Error()
 	if strings.Contains(text, "connection refused") {
 		return fmt.Sprintf(
-			"Unable to connect to %q (API: %v), maybe OctoPrint not running?",
-			ui.Printer.Endpoint, ui.Printer.Endpoint == "",
+			"Unable to connect to %q (Key: %v), \nmaybe OctoPrint not running?",
+			ui.Printer.Endpoint, ui.Printer.APIKey != "",
 		)
 	}
 
