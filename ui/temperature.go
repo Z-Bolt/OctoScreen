@@ -30,7 +30,7 @@ func NewTemperaturePanel(ui *UI) *TemperaturePanel {
 }
 
 func (m *TemperaturePanel) initialize() {
-	m.Initialize()
+	defer m.Initialize()
 
 	m.grid.Attach(m.createChangeButton("Increase", "increase.svg", 1), 1, 0, 1, 1)
 	m.grid.Attach(m.createChangeButton("Decrease", "decrease.svg", -1), 4, 0, 1, 1)

@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"log"
+	"math"
 	"sync"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 )
 
 const panelW = 4
+const panelH = 2
 
 type Panel interface {
 	Grid() *gtk.Grid
@@ -37,11 +39,17 @@ func NewCommonPanel(ui *UI) CommonPanel {
 }
 
 func (p *CommonPanel) Initialize() {
-	for i := 1; i <= panelW; i++ {
-		p.grid.Attach(MustBox(gtk.ORIENTATION_HORIZONTAL, 0), i, 0, 1, 1)
+	last := panelW * panelH
+	if last < len(p.buttons) {
+		cols := math.Ceil(float64(len(p.buttons)) / float64(panelW))
+		last = int(cols) * panelW
 	}
 
-	p.grid.Attach(MustButtonImage("Back", "back.svg", p.UI.ShowDefaultPanel), 4, 1, 1, 1)
+	for i := len(p.buttons) + 1; i < last; i++ {
+		p.AddButton(MustBox(gtk.ORIENTATION_HORIZONTAL, 0))
+	}
+
+	p.AddButton(MustButtonImage("Back", "back.svg", p.UI.ShowDefaultPanel))
 }
 
 func (p *CommonPanel) AddButton(b gtk.IWidget) {

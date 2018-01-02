@@ -16,7 +16,7 @@ func NewHomePanel(ui *UI) *HomePanel {
 }
 
 func (m *HomePanel) initialize() {
-	m.Initialize()
+	defer m.Initialize()
 
 	m.AddButton(m.createMoveButton("Home All", "home.svg",
 		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,

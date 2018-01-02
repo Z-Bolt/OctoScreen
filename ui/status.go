@@ -28,11 +28,12 @@ func NewStatusPanel(ui *UI) *StatusPanel {
 }
 
 func (m *StatusPanel) initialize() {
+	defer m.Initialize()
+
 	m.grid.Attach(m.createMainBox(), 1, 0, 4, 1)
 	m.grid.Attach(m.createPrintButton(), 1, 1, 1, 1)
 	m.grid.Attach(m.createPauseButton(), 2, 1, 1, 1)
 	m.grid.Attach(m.createStopButton(), 3, 1, 1, 1)
-	m.grid.Attach(MustButtonImage("Return", "back.svg", m.UI.ShowDefaultPanel), 4, 1, 1, 1)
 
 	m.grid.Connect("show", m.Show)
 }
@@ -199,7 +200,12 @@ func (m *StatusPanel) updateJob() {
 		return
 	}
 
-	m.file.Label.SetLabel(fmt.Sprintf("File: %s", filenameEllipsis(s.Job.File.Name)))
+	file := "<not-set>"
+	if s.Job.File.Name != "" {
+		file = filenameEllipsis(s.Job.File.Name)
+	}
+
+	m.file.Label.SetLabel(fmt.Sprintf("File: %s", file))
 	m.pb.SetFraction(s.Progress.Completion / 100)
 
 	if m.UI.State.IsOperational() {

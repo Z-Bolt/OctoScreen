@@ -19,7 +19,7 @@ func NewMovePanel(ui *UI) Panel {
 }
 
 func (m *MovePanel) initialize() {
-	m.Initialize()
+	defer m.Initialize()
 
 	m.AddButton(m.createMoveButton("X+", "move-x+.svg", octoprint.XAxis, 1))
 	m.AddButton(m.createMoveButton("Y+", "move-y+.svg", octoprint.YAxis, 1))

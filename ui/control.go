@@ -29,7 +29,7 @@ func NewControlPanel(ui *UI) *ControlPanel {
 }
 
 func (m *ControlPanel) initialize() {
-	m.Initialize()
+	defer m.Initialize()
 
 	for _, c := range m.getControl() {
 		b := m.createControlButton(c)

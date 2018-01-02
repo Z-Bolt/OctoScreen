@@ -27,7 +27,3 @@ func (m *SplashPanel) initialize() {
 
 	m.grid.Attach(box, 1, 0, 1, 1)
 }
-
-func (m *SplashPanel) Connect() {
-
-}

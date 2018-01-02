@@ -31,7 +31,7 @@ func NewFilamentPanel(ui *UI) *FilamentPanel {
 }
 
 func (m *FilamentPanel) initialize() {
-	m.Initialize()
+	defer m.Initialize()
 
 	m.grid.Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
 	m.grid.Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
@@ -79,7 +79,7 @@ func (m *FilamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 func (m *FilamentPanel) addNewTool(tool string) {
 	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
 	m.box.Add(m.labels[tool])
-	m.tool.AddStep(Step{tool, tool})
+	m.tool.AddStep(Step{strings.Title(tool), tool})
 
 	Logger.Infof("New tool detected %s", tool)
 }
