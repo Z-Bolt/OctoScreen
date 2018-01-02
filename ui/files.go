@@ -38,12 +38,16 @@ func (m *FilesPanel) initialize() {
 }
 
 func (m *FilesPanel) createActionBar() gtk.IWidget {
-	bar, _ := gtk.ActionBarNew()
+	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	bar.SetHAlign(gtk.ALIGN_END)
+	bar.SetHExpand(true)
+	bar.SetMarginTop(5)
+	bar.SetMarginBottom(5)
+	bar.SetMarginEnd(5)
+
 	bar.Add(m.createRefreshButton())
 	bar.Add(m.createInitReleaseSDButton())
 	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.ShowDefaultPanel))
-	bar.SetHAlign(gtk.ALIGN_END)
-	bar.SetHExpand(true)
 
 	return bar
 }

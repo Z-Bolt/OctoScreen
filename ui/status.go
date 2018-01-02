@@ -200,7 +200,7 @@ func (m *StatusPanel) updateJob() {
 		return
 	}
 
-	file := "<not-set>"
+	file := "<i>not-set</i>"
 	if s.Job.File.Name != "" {
 		file = filenameEllipsis(s.Job.File.Name)
 	}

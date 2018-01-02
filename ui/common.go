@@ -11,6 +11,10 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+// Set at compilation time.
+const Version = "0.1.x"
+const Commit = "0000000"
+
 const panelW = 4
 const panelH = 2
 

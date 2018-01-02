@@ -50,11 +50,12 @@ func MustProgressBar() *gtk.ProgressBar {
 
 // MustLabel returns a new gtk.Label, if err panics.
 func MustLabel(label string, args ...interface{}) *gtk.Label {
-	l, err := gtk.LabelNew(fmt.Sprintf(label, args...))
+	l, err := gtk.LabelNew("")
 	if err != nil {
 		panic(err)
 	}
 
+	l.SetMarkup(fmt.Sprintf(label, args...))
 	return l
 }
 
