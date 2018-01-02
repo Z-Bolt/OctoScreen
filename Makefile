@@ -29,6 +29,7 @@ JESSIE_GO_TAGS := gtk_3_14
 GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
 DEV_PREFIX := 0.0
 VERSION ?= $(DEV_PREFIX)~git$(GIT_COMMIT)
+BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
 
 ifneq ($(origin TRAVIS_TAG), undefined)
 	VERSION := $(TRAVIS_TAG)

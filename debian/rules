@@ -9,8 +9,12 @@ export DH_GOLANG_EXCLUDES := vendor
 	dh $@ --buildsystem=golang --with=golang,systemd
 
 override_dh_auto_build:
-	env; \
-	dh_auto_build -O--buildsystem=golang -O--no-parallel -- --tags $(GO_TAGS)
+	dh_auto_build -O--buildsystem=golang -O--no-parallel -- \
+		--tags $(GO_TAGS) \
+		-ldflags "\
+			-X $(DH_GOPKG)/ui.Version=$(VERSION) \
+			-X $(DH_GOPKG)/ui.Build=$(BUILD_DATE)\
+		"
 
 override_dh_install:
 	mkdir -p $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
