@@ -30,12 +30,10 @@ func NewStatusPanel(ui *UI) *StatusPanel {
 func (m *StatusPanel) initialize() {
 	defer m.Initialize()
 
-	m.grid.Attach(m.createMainBox(), 1, 0, 4, 1)
-	m.grid.Attach(m.createPrintButton(), 1, 1, 1, 1)
-	m.grid.Attach(m.createPauseButton(), 2, 1, 1, 1)
-	m.grid.Attach(m.createStopButton(), 3, 1, 1, 1)
-
-	m.grid.Connect("show", m.Show)
+	m.Grid().Attach(m.createMainBox(), 1, 0, 4, 1)
+	m.Grid().Attach(m.createPrintButton(), 1, 1, 1, 1)
+	m.Grid().Attach(m.createPauseButton(), 2, 1, 1, 1)
+	m.Grid().Attach(m.createStopButton(), 3, 1, 1, 1)
 }
 
 func (m *StatusPanel) createProgressBar() *gtk.ProgressBar {

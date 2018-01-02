@@ -33,21 +33,20 @@ func NewFilamentPanel(ui *UI) *FilamentPanel {
 func (m *FilamentPanel) initialize() {
 	defer m.Initialize()
 
-	m.grid.Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
-	m.grid.Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
+	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
+	m.Grid().Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
 	m.box.SetMarginStart(10)
 
-	m.grid.Attach(m.box, 2, 0, 2, 1)
+	m.Grid().Attach(m.box, 2, 0, 2, 1)
 
 	m.amount = MustStepButton("move-step.svg", Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1})
-	m.grid.Attach(m.amount, 2, 1, 1, 1)
+	m.Grid().Attach(m.amount, 2, 1, 1, 1)
 
-	m.grid.Attach(m.createToolButton(), 1, 1, 1, 1)
-	m.grid.Attach(m.createFlowrateButton(), 3, 1, 1, 1)
-	m.grid.Connect("show", m.Show)
+	m.Grid().Attach(m.createToolButton(), 1, 1, 1, 1)
+	m.Grid().Attach(m.createFlowrateButton(), 3, 1, 1, 1)
 }
 
 func (m *FilamentPanel) updateTemperatures() {

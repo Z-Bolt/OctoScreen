@@ -21,13 +21,14 @@ const panelH = 2
 
 type Panel interface {
 	Grid() *gtk.Grid
-	Destroy()
+	Hide()
 }
 
 type CommonPanel struct {
-	UI   *UI
-	grid *gtk.Grid
-	b    *BackgroundTask
+	UI *UI
+	g  *gtk.Grid
+	b  *BackgroundTask
+	p  Panel
 
 	buttons []gtk.IWidget
 }
@@ -38,8 +39,9 @@ func NewCommonPanel(ui *UI) CommonPanel {
 	g.SetColumnHomogeneous(true)
 
 	return CommonPanel{
-		UI:   ui,
-		grid: g,
+		UI: ui,
+		g:  g,
+		p:  ui.Current,
 	}
 }
 
@@ -54,32 +56,35 @@ func (p *CommonPanel) Initialize() {
 		p.AddButton(MustBox(gtk.ORIENTATION_HORIZONTAL, 0))
 	}
 
-	p.AddButton(MustButtonImage("Back", "back.svg", p.UI.ShowDefaultPanel))
+	p.AddButton(MustButtonImage("Back", "back.svg", p.GoBack))
+	p.g.Connect("show", p.show)
+}
+
+func (p *CommonPanel) GoBack() {
+	p.UI.Add(p.p)
 }
 
 func (p *CommonPanel) AddButton(b gtk.IWidget) {
 	x := len(p.buttons) % panelW
 	y := len(p.buttons) / panelW
-	p.grid.Attach(b, x+1, y, 1, 1)
+	p.g.Attach(b, x+1, y, 1, 1)
 	p.buttons = append(p.buttons, b)
 }
 
-func (p *CommonPanel) Show() {
+func (p *CommonPanel) show() {
 	if p.b != nil {
 		p.b.Start()
 	}
 }
 
-func (p *CommonPanel) Grid() *gtk.Grid {
-	return p.grid
-}
-
-func (p *CommonPanel) Destroy() {
+func (p *CommonPanel) Hide() {
 	if p.b != nil {
 		p.b.Close()
 	}
+}
 
-	p.grid.Destroy()
+func (p *CommonPanel) Grid() *gtk.Grid {
+	return p.g
 }
 
 type BackgroundTask struct {

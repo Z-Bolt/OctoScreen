@@ -28,7 +28,7 @@ func (m *SystemPanel) initialize() {
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(m.createInfoBox())
 	box.Add(m.createActionBar())
-	m.grid.Add(box)
+	m.Grid().Add(box)
 }
 
 func (m *SystemPanel) createActionBar() gtk.IWidget {
@@ -43,7 +43,7 @@ func (m *SystemPanel) createActionBar() gtk.IWidget {
 		bar.Add(b)
 	}
 
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.ShowDefaultPanel))
+	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.GoBack))
 
 	return bar
 }

@@ -32,7 +32,7 @@ func (m *FilesPanel) initialize() {
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(scroll)
 	box.Add(m.createActionBar())
-	m.grid.Add(box)
+	m.Grid().Add(box)
 
 	m.doLoadFiles()
 }
@@ -47,7 +47,7 @@ func (m *FilesPanel) createActionBar() gtk.IWidget {
 
 	bar.Add(m.createRefreshButton())
 	bar.Add(m.createInitReleaseSDButton())
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.ShowDefaultPanel))
+	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.GoBack))
 
 	return bar
 }

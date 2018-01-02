@@ -32,20 +32,19 @@ func NewTemperaturePanel(ui *UI) *TemperaturePanel {
 func (m *TemperaturePanel) initialize() {
 	defer m.Initialize()
 
-	m.grid.Attach(m.createChangeButton("Increase", "increase.svg", 1), 1, 0, 1, 1)
-	m.grid.Attach(m.createChangeButton("Decrease", "decrease.svg", -1), 4, 0, 1, 1)
+	m.Grid().Attach(m.createChangeButton("Increase", "increase.svg", 1), 1, 0, 1, 1)
+	m.Grid().Attach(m.createChangeButton("Decrease", "decrease.svg", -1), 4, 0, 1, 1)
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
 	m.box.SetMarginStart(10)
-	m.grid.Attach(m.box, 2, 0, 2, 1)
+	m.Grid().Attach(m.box, 2, 0, 2, 1)
 
-	m.grid.Attach(m.createToolButton(), 1, 1, 1, 1)
+	m.Grid().Attach(m.createToolButton(), 1, 1, 1, 1)
 	m.amount = MustStepButton("move-step.svg", Step{"5°C", 5.}, Step{"10°C", 10.}, Step{"1°C", 1.})
-	m.grid.Attach(m.amount, 2, 1, 1, 1)
+	m.Grid().Attach(m.amount, 2, 1, 1, 1)
 
-	m.grid.Attach(MustButtonImage("Cool Down", "cool-down.svg", m.coolDown), 3, 1, 1, 1)
-	m.grid.Connect("show", m.Show)
+	m.Grid().Attach(MustButtonImage("Cool Down", "cool-down.svg", m.coolDown), 3, 1, 1, 1)
 }
 
 func (m *TemperaturePanel) createToolButton() *StepButton {

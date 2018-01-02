@@ -25,5 +25,5 @@ func (m *SplashPanel) initialize() {
 	box.Add(logo)
 	box.Add(m.Label)
 
-	m.grid.Attach(box, 1, 0, 1, 1)
+	m.Grid().Attach(box, 1, 0, 1, 1)
 }

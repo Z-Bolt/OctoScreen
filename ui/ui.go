@@ -128,18 +128,19 @@ func (ui *UI) verifyConnection() {
 	ui.Add(splash)
 }
 
-func (ui *UI) ShowDefaultPanel() {
-	ui.Add(NewDefaultPanel(ui))
-}
-
 func (ui *UI) Add(p Panel) {
 	if ui.Current != nil {
-		ui.Current.Destroy()
+		ui.Remove(ui.Current)
 	}
 
 	ui.Current = p
 	ui.g.Attach(ui.Current.Grid(), 1, 0, 1, 1)
 	ui.g.ShowAll()
+}
+
+func (ui *UI) Remove(p Panel) {
+	p.Hide()
+	ui.g.Remove(p.Grid())
 }
 
 func (ui *UI) errToUser(err error) string {
