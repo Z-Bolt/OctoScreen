@@ -1,4 +1,4 @@
-memo = "5e14b781404a262f09b8acb628f9990b9eba6e0b022e746e9714da98546a6181"
+memo = "1d6b648d9b1c526dfce34fe8a2dd8a2efad3406a3d4a346852da0ce192f63d30"
 
 [[projects]]
   branch = "master"
@@ -53,3 +53,9 @@ memo = "5e14b781404a262f09b8acb628f9990b9eba6e0b022e746e9714da98546a6181"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
   revision = "83801418e1b59fb1880e363299581ee543af32ca"
+
+[[projects]]
+  branch = "v1"
+  name = "gopkg.in/yaml.v1"
+  packages = ["."]
+  revision = "9f9df34309c04878acc86042b16630b0f696e1de"
