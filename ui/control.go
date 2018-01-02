@@ -22,8 +22,8 @@ type ControlPanel struct {
 	CommonPanel
 }
 
-func NewControlPanel(ui *UI) *ControlPanel {
-	m := &ControlPanel{CommonPanel: NewCommonPanel(ui)}
+func NewControlPanel(ui *UI, parent Panel) *ControlPanel {
+	m := &ControlPanel{CommonPanel: NewCommonPanel(ui, parent)}
 	m.initialize()
 	return m
 }

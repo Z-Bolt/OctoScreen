@@ -16,8 +16,8 @@ type FilesPanel struct {
 	list *gtk.Box
 }
 
-func NewFilesPanel(ui *UI) *FilesPanel {
-	m := &FilesPanel{CommonPanel: NewCommonPanel(ui)}
+func NewFilesPanel(ui *UI, parent Panel) *FilesPanel {
+	m := &FilesPanel{CommonPanel: NewCommonPanel(ui, parent)}
 	m.initialize()
 	return m
 }
@@ -47,7 +47,7 @@ func (m *FilesPanel) createActionBar() gtk.IWidget {
 
 	bar.Add(m.createRefreshButton())
 	bar.Add(m.createInitReleaseSDButton())
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.GoBack))
+	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.GoHistory))
 
 	return bar
 }

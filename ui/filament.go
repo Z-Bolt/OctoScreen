@@ -20,8 +20,8 @@ type FilamentPanel struct {
 	previous *octoprint.TemperatureState
 }
 
-func NewFilamentPanel(ui *UI) *FilamentPanel {
-	m := &FilamentPanel{CommonPanel: NewCommonPanel(ui),
+func NewFilamentPanel(ui *UI, parent Panel) *FilamentPanel {
+	m := &FilamentPanel{CommonPanel: NewCommonPanel(ui, parent),
 		labels: map[string]*LabelWithImage{},
 	}
 

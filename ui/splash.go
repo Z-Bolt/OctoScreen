@@ -8,7 +8,7 @@ type SplashPanel struct {
 }
 
 func NewSplashPanel(ui *UI) *SplashPanel {
-	m := &SplashPanel{CommonPanel: NewCommonPanel(ui)}
+	m := &SplashPanel{CommonPanel: NewCommonPanel(ui, nil)}
 	m.initialize()
 	return m
 }

@@ -21,7 +21,9 @@ const panelH = 2
 
 type Panel interface {
 	Grid() *gtk.Grid
+	Show()
 	Hide()
+	Parent() Panel
 }
 
 type CommonPanel struct {
@@ -33,16 +35,12 @@ type CommonPanel struct {
 	buttons []gtk.IWidget
 }
 
-func NewCommonPanel(ui *UI) CommonPanel {
+func NewCommonPanel(ui *UI, parent Panel) CommonPanel {
 	g := MustGrid()
 	g.SetRowHomogeneous(true)
 	g.SetColumnHomogeneous(true)
 
-	return CommonPanel{
-		UI: ui,
-		g:  g,
-		p:  ui.Current,
-	}
+	return CommonPanel{UI: ui, g: g, p: parent}
 }
 
 func (p *CommonPanel) Initialize() {
@@ -56,12 +54,11 @@ func (p *CommonPanel) Initialize() {
 		p.AddButton(MustBox(gtk.ORIENTATION_HORIZONTAL, 0))
 	}
 
-	p.AddButton(MustButtonImage("Back", "back.svg", p.GoBack))
-	p.g.Connect("show", p.show)
+	p.AddButton(MustButtonImage("Back", "back.svg", p.UI.GoHistory))
 }
 
-func (p *CommonPanel) GoBack() {
-	p.UI.Add(p.p)
+func (p *CommonPanel) Parent() Panel {
+	return p.p
 }
 
 func (p *CommonPanel) AddButton(b gtk.IWidget) {
@@ -71,7 +68,7 @@ func (p *CommonPanel) AddButton(b gtk.IWidget) {
 	p.buttons = append(p.buttons, b)
 }
 
-func (p *CommonPanel) show() {
+func (p *CommonPanel) Show() {
 	if p.b != nil {
 		p.b.Start()
 	}
@@ -88,10 +85,12 @@ func (p *CommonPanel) Grid() *gtk.Grid {
 }
 
 type BackgroundTask struct {
-	stop, resume, close chan bool
+	close chan bool
 
-	d    time.Duration
-	task func()
+	d       time.Duration
+	task    func()
+	running bool
+	sync.Mutex
 }
 
 func NewBackgroundTask(d time.Duration, task func()) *BackgroundTask {
@@ -99,47 +98,43 @@ func NewBackgroundTask(d time.Duration, task func()) *BackgroundTask {
 		task: task,
 		d:    d,
 
-		stop:   make(chan bool, 1),
-		resume: make(chan bool, 1),
-		close:  make(chan bool, 1),
+		close: make(chan bool, 1),
 	}
 }
 
 func (t *BackgroundTask) Start() {
+	t.Lock()
+	defer t.Unlock()
+
 	Logger.Debug("New background task started")
 	go t.loop()
-	t.resume <- true
-}
 
-func (t *BackgroundTask) Stop() {
-	t.stop <- true
-}
-
-func (t *BackgroundTask) Resume() {
-	t.resume <- true
+	t.running = true
 }
 
 func (t *BackgroundTask) Close() {
+	t.Lock()
+	defer t.Unlock()
+	if !t.running {
+		return
+	}
+
 	t.close <- true
+	t.running = false
 }
 
 func (t *BackgroundTask) loop() {
-	for <-t.resume {
-		t.execute()
+	t.execute()
 
-		ticker := time.NewTicker(t.d)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				t.execute()
-			case <-t.stop:
-				fmt.Println("stop")
-				break
-			case <-t.close:
-				Logger.Debug("Background task closed")
-				return
-			}
+	ticker := time.NewTicker(t.d)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			t.execute()
+		case <-t.close:
+			Logger.Debug("Background task closed")
+			return
 		}
 	}
 }

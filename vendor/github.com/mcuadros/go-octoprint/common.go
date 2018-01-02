@@ -529,3 +529,311 @@ type ControlInput struct {
 		Step int `json:"step"`
 	} `json:"slider"`
 }
+
+// Settings are the current configuration of OctoPrint.
+type Settings struct {
+	// API REST API settings.
+	API *APIConfig `json:"api"`
+	// Features settings to enable or disable OctoPrint features.
+	Feature *FeaturesConfig `json:"feature"`
+	//Folder settings to set custom paths for folders used by OctoPrint.
+	Folder *FolderConfig `json:"folder"`
+	// Serial settings to configure the serial connection to the printer.
+	Serial *SerialConfig `json:"serial"`
+	// Server settings to configure the server.
+	Server *ServerConfig `json:"server"`
+	// Temperature profiles which will be displayed in the temperature tab.
+	Temperature *TemperatureConfig `json:"temperature"`
+	// TerminalFilters to display in the terminal tab for filtering certain
+	// lines from the display terminal log.
+	TerminalFilters []*TerminalFilter `json:"terminalFilters"`
+	// Webcam settings to configure webcam support.
+	Webcam *WebcamConfig `json:"json"`
+
+	// Un-handled values
+	Appearance interface{} `json:"appearance"`
+	Plugins    interface{} `json:"plugins"`
+	Printer    interface{} `json:"printer"`
+}
+
+// APIConfig REST API settings.
+type APIConfig struct {
+	// Enabled whether to enable the API.
+	Enabled bool `json:"enabled"`
+	// Key current API key needed for accessing the API
+	Key string `json:"key"`
+}
+
+// FeaturesConfig settings to enable or disable OctoPrint features.
+type FeaturesConfig struct {
+	// SizeThreshold maximum size a GCODE file may have to automatically be
+	// loaded into the viewer, defaults to 20MB	Maps to
+	//gcodeViewer.sizeThreshold in config.yaml.
+	SizeThreshold int
+	// MobileSizeThreshold maximum size a GCODE file may have on mobile devices
+	// to automatically be loaded into the viewer, defaults to 2MB. Maps to
+	// gcodeViewer.mobileSizeThreshold in config.yaml.
+	MobileSizeThreshold int `json:"mobileSizeThreshold"`
+	// TemperatureGraph whether to enable the temperature graph in the UI or not.
+	TemperatureGraph bool `json:"temperatureGraph"`
+	// WaitForStart specifies whether OctoPrint should wait for the start
+	// response from the printer before trying to send commands during connect.
+	WaitForStart bool `json:"waitForStart"`
+	// AlwaysSendChecksum specifies whether OctoPrint should send linenumber +
+	// checksum with every printer command. Needed for successful communication
+	// with Repetier firmware.
+	AlwaysSendChecksum bool `json:"alwaysSendChecksum"`
+	NeverSendChecksum  bool `json:"neverSendChecksum"`
+	// SDSupport specifies whether support for SD printing and file management
+	// should be enabled
+	SDSupport bool `json:"sdSupport"`
+	// SDAlwaysAvailable whether to always assume that an SD card is present in
+	// the printer. Needed by some firmwares which don't report the SD card
+	// status properly.
+	SDAlwaysAvailable bool `json:"sdAlwaysAvailable"`
+	// SDReleativePath Specifies whether firmware expects relative paths for
+	// selecting SD files.
+	SDRelativePath bool `json:"sdRelativePath"`
+	// SwallowOkAfterResend whether to ignore the first ok after a resend
+	// response. Needed for successful communication with Repetier firmware.
+	SwallowOkAfterResend bool `json:"swallowOkAfterResend"`
+	// RepetierTargetTemp whether the printer sends repetier style target
+	// temperatures in the format `TargetExtr0:<temperature>` instead of
+	// attaching that information to the regular M105 responses.
+	RepetierTargetTemp bool `json:"repetierTargetTemp"`
+	// ExternalHeatupDetection whether to enable external heatup detection (to
+	// detect heatup triggered e.g. through the printer's LCD panel or while
+	// printing from SD) or not. Causes issues with Repetier's "first ok then
+	// response" approach to communication, so disable for printers running
+	// Repetier firmware.
+	ExternalHeatupDetection bool `json:"externalHeatupDetection"`
+	// KeyboardControl whether to enable the keyboard control feature in the
+	// control tab.
+	KeyboardControl bool `json:"keyboardControl"`
+	// PollWatched whether to actively poll the watched folder (true) or to rely
+	// on the OS's file system notifications instead (false).
+	PollWatched bool `json:"pollWatched"`
+	// IgnoreIdenticalResends whether to ignore identical resends from the
+	// printer (true, repetier) or not (false).
+	IgnoreIdenticalResends bool `json:"ignoreIdenticalResends"`
+	// ModelSizeDetection whether to enable model size detection and warning
+	// (true) or not (false)
+	ModelSizeDetection bool `json:"modelSizeDetection"`
+	// FirmwareDetection whether to attempt to auto detect the firmware of the
+	// printer and adjust settings  accordingly (true) or not and rely on manual
+	// configuration (false)
+	FirmwareDetection bool `json:"firmwareDetection"`
+	// PrintCancelConfirmation whether to show a confirmation on print
+	// cancelling (true) or not (false).
+	PrintCancelConfirmation bool `json:"printCancelConfirmation"`
+	// BlockWhileDwelling whether to block all sending to the printer while a G4
+	// (dwell) command is active (true, repetier) or not (false).
+	BlockWhileDwelling bool `json:"blockWhileDwelling"`
+}
+
+// FolderConfig settings to set custom paths for folders used by OctoPrint.
+type FolderConfig struct {
+	// Uploads absolute path where to store gcode uploads. Defaults to the
+	// uploads folder in the OctoPrint settings folder.
+	Uploads string `json:"uploads"`
+	// Timelapse absolute path where to store finished timelapse recordings.
+	// Defaults to the timelapse folder in the OctoPrint settings dir.
+	Timelapse string `json:"timelapse"`
+	// TimelapseTmp absolute path where to store temporary timelapse files.
+	// Defaults to the timelapse/tmp folder in the OctoPrint settings dir Maps
+	// to folder.timelapse_tmp in config.yaml.
+	TimelapseTmp string `json:"timelapseTmp"`
+	// Logs absolute path where to store log files. Defaults to the logs folder
+	// in the OctoPrint settings dir
+	Logs string `json:"logs"`
+	// Watched absolute path to a folder being watched for new files which then
+	// get automatically added to OctoPrint (and deleted from that folder).
+	// Can e.g. be used to define a folder which can then be mounted from remote
+	// machines and used as local folder for quickly adding downloaded and/or
+	// sliced objects to print in the future.
+	Watched string `json:"watched"`
+}
+
+// SerialConfig settings to configure the serial connection to the printer.
+type SerialConfig struct {
+	// Port is the default serial port, defaults to unset (= AUTO)
+	Port string `json:"port"`
+	// Baudrate is the default baudrate, defaults to unset (= AUTO)
+	Baudrate int `json:"baudrate"`
+	// 	Available serial ports
+	PortOptions []string `json:"portOptions"`
+	//	Available serial baudrates
+	BaudrateOptions []int `json:"baudrateOptions"`
+	// Autoconnect whether to automatically connect to the printer on server
+	// startup (if available).
+	Autoconnect bool `json:"autoconnect"`
+	// TimeoutConnection for waiting to establish a connection with the selected
+	// port, in seconds. Defaults to 2 sec. Maps to serial.timeout.connection in
+	// config.yaml
+	TimeoutConnection float64 `json:"timeoutConnection"`
+	// TimeoutDetection for waiting for a response from the currently tested
+	// port during autodetect, in seconds. Defaults to 0.5 sec Maps to
+	// serial.timeout.detection in config.yaml
+	TimeoutDetection float64 `json:"timeoutDetection"`
+	// TimeoutCommunication during serial communication, in seconds. Defaults to
+	// 30 sec. Maps to serial.timeout.communication in config.yaml
+	TimeoutCommunication float64 `json:"timeoutCommunication"`
+	// TimeoutTemperature after which to query temperature when no target is
+	// set. Maps to serial.timeout.temperature in config.yaml
+	TimeoutTemperature float64 `json:"timeoutTemperature"`
+	// TimeoutTemperatureTargetSet after which to query temperature when a
+	// target is set. Maps to serial.timeout.temperatureTargetSet in config.yaml
+	TimeoutTemperatureTargetSet float64 `json:"timeoutTemperatureTargetSet"`
+	// TimeoutSDStatus after which to query the SD status while SD printing.
+	// Maps to serial.timeout.sdStatus in config.yaml
+	TimeoutSDStatus float64 `json:"timeoutSdStatus"`
+	// Log whether to log whole communication to serial.log (warning: might
+	// decrease performance)
+	Log bool `json:"log"`
+	// AdditionalPorts use this to define additional patterns to consider for
+	// serial port listing. Must be a valid "glob" pattern (see
+	// http://docs.python.org/2/library/glob.html). Defaults to not set.
+	AdditionalPorts []string `json:"additionalPorts"`
+	// AdditionalBaudrates use this to define additional baud rates to offer for
+	// connecting to serial ports. Must be a valid integer. Defaults to not set
+	AdditionalBaudrates []int `json:"additionalBaudrates"`
+	// LongRunningCommands which are known to take a long time to be
+	// acknowledged by the firmware. E.g. homing, dwelling, auto leveling etc.
+	LongRunningCommands []string `json:"longRunningCommands"`
+	// ChecksumRequiringCommands which need to always be send with a checksum.
+	// Defaults to only M110
+	ChecksumRequiringCommands []string `json:"checksumRequiringCommands"`
+	// HelloCommand to send in order to initiate a handshake with the printer.
+	// Defaults to "M110 N0" which simply resets the line numbers in the
+	// firmware and which should be acknowledged with a simple "ok".
+	HelloCommand string `json:"helloCommand"`
+	// IgnoreErrorsFromFirmware whether to completely ignore errors from the
+	// firmware or not
+	IgnoreErrorsFromFirmware bool `json:"ignoreErrorsFromFirmware"`
+	// DisconnectOnErrors whether to disconnect on errors or not.
+	DisconnectOnErrors bool `json:"disconnectOnErrors"`
+	// TriggerOkForM29 whether to "manually" trigger an ok for M29 (a lot of
+	// versions of this command are buggy and the responds skips on the ok)
+	TriggerOkForM29 bool `json:"triggerOkForM29"`
+	// SupportResendsWIthoutOk whether to support resends without follow-up ok
+	// or not.
+	SupportResendsWIthoutOk bool `json:"supportResendsWIthoutOk"`
+	// Maps to serial.maxCommunicationTimeouts.idle in config.yaml
+	MaxTimeoutsIdle float64 `json:"maxTimeoutsIdle"`
+	// MaxTimeoutsPrinting maximum number of consecutive communication timeouts
+	// after which the printer will be considered dead and OctoPrint disconnects
+	// with an error. Maps to serial.maxCommunicationTimeouts.printing in
+	// config.yaml
+	MaxTimeoutsPrinting float64 `json:"maxTimeoutsPrinting"`
+	// MaxTimeoutsPrinting maximum number of consecutive communication timeouts
+	// after which the printer will be considered dead and OctoPrint disconnects
+	// with an error. Maps to serial.maxCommunicationTimeouts.log in config.yaml
+	MaxTimeoutsLong float64 `json:"maxTimeoutsLong"`
+}
+
+// ServerConfig settings to configure the server.
+type ServerConfig struct {
+	// Commands to restart/shutdown octoprint or the system it's running on.
+	Commands struct {
+		// ServerRestartCommand to restart OctoPrint, defaults to being unset
+		ServerRestartCommand string `json:"serverRestartCommand"`
+		//SystemRestartCommand  to restart the system OctoPrint is running on,
+		// defaults to being unset
+		SystemRestartCommand string `json:"systemRestartCommand"`
+		// SystemShutdownCommand Command to shut down the system OctoPrint is
+		// running on, defaults to being unset
+		SystemShutdownCommand string `json:"systemShutdownCommand"`
+	} `json:"commands"`
+	// Diskspace settings of when to display what disk space warning
+	Diskspace struct {
+		// Warning threshold (bytes) after which to consider disk space becoming
+		// sparse, defaults to 500MB.
+		Warning int `json:"warning"`
+		// Critical threshold (bytes) after which to consider disk space becoming
+		// critical, defaults to 200MB.
+		Critical int `json:"critical"`
+	} `json:"diskspace"`
+	// OnlineCheck configuration of the regular online connectivity check.
+	OnlineCheck struct {
+		// Enabled whether the online check is enabled, defaults to false due to
+		// valid privacy concerns.
+		Enabled bool `json:"enabled"`
+		// Interval in which to check for online connectivity (in seconds)
+		Interval int `json:"interval"`
+		// Host DNS host against which to check (default: 8.8.8.8 aka Google's DNS)
+		Host string `json:"host"`
+		// DNS port against which to check (default: 53 - the default DNS port)
+		Port int `json:"port"`
+	} `json:"onlineCheck"`
+	// PluginBlacklist configuration of the plugin blacklist
+	PluginBlacklist struct {
+		// Enabled whether use of the blacklist is enabled, defaults to false
+		Enabled bool `json:"enabled"`
+		/// URL from which to fetch the blacklist
+		URL string `json:"url"`
+		// TTL is time to live of the cached blacklist, in secs (default: 15mins)
+		TTL int `json:"ttl"`
+	} `json:"pluginBlacklist"`
+}
+
+// TemperatureConfig temperature profiles which will be displayed in the
+// temperature tab.
+type TemperatureConfig struct {
+	// Graph cutoff in minutes.
+	Cutoff int `json:"cutoff"`
+	// Profiles  which will be displayed in the temperature tab.
+	Profiles []*TemperatureProfile `json:"profiles"`
+	// SendAutomatically enable this to have temperature fine adjustments you
+	// do via the + or - button be sent to the printer automatically.
+	SendAutomatically bool `json:"sendAutomatically"`
+	// SendAutomaticallyAfter OctoPrint will use this delay to limit the number
+	// of sent temperature commands should you perform multiple fine adjustments
+	// in a short time.
+	SendAutomaticallyAfter float64 `json:"sendAutomaticallyAfter"`
+}
+
+// TerminalFilter to display in the terminal tab for filtering certain lines
+// from the display terminal log.
+type TerminalFilter struct {
+	Name  string `json:"name"`
+	RegEx string `json:"regex"`
+}
+
+// WebcamConfig settings to configure webcam support.
+type WebcamConfig struct {
+	// StreamUrl use this option to enable display of a webcam stream in the
+	// UI, e.g. via MJPG-Streamer. Webcam support will be disabled if not
+	// set. Maps to webcam.stream in config.yaml.
+	StreamURL int `json:"streamUrl"`
+	// SnapshotURL use this option to enable timelapse support via snapshot,
+	// e.g. via MJPG-Streamer. Timelapse support will be disabled if not set.
+	// Maps to webcam.snapshot in config.yaml.
+	SnapshotURL int `json:"snapshotUrl"`
+	// FFmpegPath path to ffmpeg binary to use for creating timelapse
+	// recordings. Timelapse support will be disabled if not set. Maps to
+	// webcam.ffmpeg in config.yaml.
+	FFmpegPath int `json:"ffmpegPath"`
+	// Bitrate to use for rendering the timelapse video. This gets directly
+	// passed to ffmpeg.
+	Bitrate int `json:"bitrate"`
+	// FFmpegThreads number of how many threads to instruct ffmpeg to use for
+	// encoding. Defaults to 1. Should be left at 1 for RPi1.
+	FFmpegThreads int `json:"ffmpegThreads"`
+	// Watermark whether to include a "created with OctoPrint" watermark in the
+	// generated timelapse movies.
+	Watermark int `json:"watermark"`
+	// FlipH whether to flip the webcam horizontally.
+	FlipH int `json:"flipH"`
+	// FlipV whether to flip the webcam vertically.
+	FlipV int `json:"flipV"`
+	// Rotate90 whether to rotate the webcam 90° counter clockwise.
+	Rotate90 int `json:"rotate90"`
+}
+
+// TemperatureProfile describes the temperature profile preset for a given
+// material.
+type TemperatureProfile struct {
+	Name     string  `json:"name"`
+	Bed      float64 `json:"bed"`
+	Extruder float64 `json:"extruder"`
+}

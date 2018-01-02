@@ -18,8 +18,8 @@ type SystemPanel struct {
 	list *gtk.Box
 }
 
-func NewSystemPanel(ui *UI) *SystemPanel {
-	m := &SystemPanel{CommonPanel: NewCommonPanel(ui)}
+func NewSystemPanel(ui *UI, parent Panel) *SystemPanel {
+	m := &SystemPanel{CommonPanel: NewCommonPanel(ui, parent)}
 	m.initialize()
 	return m
 }
@@ -43,7 +43,7 @@ func (m *SystemPanel) createActionBar() gtk.IWidget {
 		bar.Add(b)
 	}
 
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.GoBack))
+	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.GoHistory))
 
 	return bar
 }

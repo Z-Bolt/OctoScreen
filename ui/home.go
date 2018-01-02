@@ -9,8 +9,8 @@ type HomePanel struct {
 	CommonPanel
 }
 
-func NewHomePanel(ui *UI) *HomePanel {
-	m := &HomePanel{CommonPanel: NewCommonPanel(ui)}
+func NewHomePanel(ui *UI, parent Panel) *HomePanel {
+	m := &HomePanel{CommonPanel: NewCommonPanel(ui, parent)}
 	m.initialize()
 	return m
 }

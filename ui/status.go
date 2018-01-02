@@ -19,8 +19,8 @@ type StatusPanel struct {
 	print, pause, stop *gtk.Button
 }
 
-func NewStatusPanel(ui *UI) *StatusPanel {
-	m := &StatusPanel{CommonPanel: NewCommonPanel(ui)}
+func NewStatusPanel(ui *UI, parent Panel) *StatusPanel {
+	m := &StatusPanel{CommonPanel: NewCommonPanel(ui, parent)}
 
 	m.b = NewBackgroundTask(time.Second*5, m.update)
 	m.initialize()

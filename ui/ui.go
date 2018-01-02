@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gotk3/gotk3/gdk"
@@ -34,6 +35,8 @@ type UI struct {
 	o *gtk.Overlay
 	w *gtk.Window
 	t time.Time
+
+	sync.Mutex
 }
 
 func New(endpoint, key string) *UI {
@@ -110,7 +113,7 @@ func (ui *UI) verifyConnection() {
 	case s.Current.State.IsPrinting():
 		if !ui.State.IsPrinting() {
 			Logger.Info("Printing a job")
-			ui.Add(NewStatusPanel(ui))
+			ui.Add(NewStatusPanel(ui, NewDefaultPanel(ui)))
 		}
 		return
 	case s.Current.State.IsError():
@@ -134,13 +137,18 @@ func (ui *UI) Add(p Panel) {
 	}
 
 	ui.Current = p
+	ui.Current.Show()
 	ui.g.Attach(ui.Current.Grid(), 1, 0, 1, 1)
 	ui.g.ShowAll()
 }
 
 func (ui *UI) Remove(p Panel) {
-	p.Hide()
+	defer p.Hide()
 	ui.g.Remove(p.Grid())
+}
+
+func (ui *UI) GoHistory() {
+	ui.Add(ui.Current.Parent())
 }
 
 func (ui *UI) errToUser(err error) string {

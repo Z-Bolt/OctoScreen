@@ -1,13 +1,19 @@
 package ui
 
+var defaultPanel *DefaultPanel
+
 type DefaultPanel struct {
 	CommonPanel
 }
 
 func NewDefaultPanel(ui *UI) Panel {
-	m := &DefaultPanel{CommonPanel: NewCommonPanel(ui)}
-	m.initialize()
-	return m
+	if defaultPanel == nil {
+		m := &DefaultPanel{CommonPanel: NewCommonPanel(ui, nil)}
+		m.initialize()
+		defaultPanel = m
+	}
+
+	return defaultPanel
 }
 
 func (m *DefaultPanel) initialize() {
@@ -22,33 +28,33 @@ func (m *DefaultPanel) initialize() {
 }
 
 func (m *DefaultPanel) showStatus() {
-	m.UI.Add(NewStatusPanel(m.UI))
+	m.UI.Add(NewStatusPanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showHome() {
-	m.UI.Add(NewHomePanel(m.UI))
+	m.UI.Add(NewHomePanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showTemperature() {
-	m.UI.Add(NewTemperaturePanel(m.UI))
+	m.UI.Add(NewTemperaturePanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showFilament() {
-	m.UI.Add(NewFilamentPanel(m.UI))
+	m.UI.Add(NewFilamentPanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showMove() {
-	m.UI.Add(NewMovePanel(m.UI))
+	m.UI.Add(NewMovePanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showControl() {
-	m.UI.Add(NewControlPanel(m.UI))
+	m.UI.Add(NewControlPanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showFiles() {
-	m.UI.Add(NewFilesPanel(m.UI))
+	m.UI.Add(NewFilesPanel(m.UI, m))
 }
 
 func (m *DefaultPanel) showSystem() {
-	m.UI.Add(NewSystemPanel(m.UI))
+	m.UI.Add(NewSystemPanel(m.UI, m))
 }

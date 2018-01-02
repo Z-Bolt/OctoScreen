@@ -98,7 +98,7 @@ for tool, state := range s.Temperature.Current {
 - [ ] DELETE `/api/printerprofiles/<profile>`
 
 ### [Settings](http://docs.octoprint.org/en/master/api/settings.html)
-- [ ] GET `/api/settings`
+- [x] GET `/api/settings`
 - [ ] POST `/api/settings`
 - [ ] POST `/api/settings/apikey`
 

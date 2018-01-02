@@ -12,8 +12,8 @@ type MovePanel struct {
 	step *StepButton
 }
 
-func NewMovePanel(ui *UI) Panel {
-	m := &MovePanel{CommonPanel: NewCommonPanel(ui)}
+func NewMovePanel(ui *UI, parent Panel) Panel {
+	m := &MovePanel{CommonPanel: NewCommonPanel(ui, parent)}
 	m.initialize()
 	return m
 }
