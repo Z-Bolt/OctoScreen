@@ -1,10 +1,22 @@
-memo = "43650b2e356bb2a65df12fa64ca2da4418bf1bb30ff116e57ad1bc2ff725187c"
+memo = "5e14b781404a262f09b8acb628f9990b9eba6e0b022e746e9714da98546a6181"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/StackExchange/wmi"
+  packages = ["."]
+  revision = "ea383cf3ba6ec950874b8486cd72356d007c768f"
 
 [[projects]]
   branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
   revision = "bb3d318650d48840a39aa21a027c6630e198e626"
+
+[[projects]]
+  name = "github.com/go-ole/go-ole"
+  packages = [".","oleutil"]
+  revision = "0e87ea779d9deb219633b828a023b32e1244dd57"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
@@ -17,6 +29,12 @@ memo = "43650b2e356bb2a65df12fa64ca2da4418bf1bb30ff116e57ad1bc2ff725187c"
   name = "github.com/mcuadros/go-octoprint"
   packages = ["."]
   revision = "706644f9e16a4d76ad35528aae506725b86f5f85"
+
+[[projects]]
+  name = "github.com/shirou/gopsutil"
+  packages = ["internal/common","load","mem"]
+  revision = "7ec06ec280df1dd1f08befc535049d49d63ae18a"
+  version = "v2.17.12"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
