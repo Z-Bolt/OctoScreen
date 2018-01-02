@@ -10,6 +10,8 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+const panelW = 4
+
 type Panel interface {
 	Grid() *gtk.Grid
 	Destroy()
@@ -19,13 +21,34 @@ type CommonPanel struct {
 	UI   *UI
 	grid *gtk.Grid
 	b    *BackgroundTask
+
+	buttons []gtk.IWidget
 }
 
 func NewCommonPanel(ui *UI) CommonPanel {
+	g := MustGrid()
+	g.SetRowHomogeneous(true)
+	g.SetColumnHomogeneous(true)
+
 	return CommonPanel{
 		UI:   ui,
-		grid: MustGrid(),
+		grid: g,
 	}
+}
+
+func (p *CommonPanel) Initialize() {
+	for i := 1; i <= panelW; i++ {
+		p.grid.Attach(MustBox(gtk.ORIENTATION_HORIZONTAL, 0), i, 0, 1, 1)
+	}
+
+	p.grid.Attach(MustButtonImage("Back", "back.svg", p.UI.ShowDefaultPanel), 4, 1, 1, 1)
+}
+
+func (p *CommonPanel) AddButton(b gtk.IWidget) {
+	x := len(p.buttons) % panelW
+	y := len(p.buttons) / panelW
+	p.grid.Attach(b, x+1, y, 1, 1)
+	p.buttons = append(p.buttons, b)
 }
 
 func (p *CommonPanel) Show() {

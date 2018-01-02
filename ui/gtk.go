@@ -114,9 +114,6 @@ func MustButtonImageFromImage(label string, img *gtk.Image, clicked func()) *gtk
 	b.SetVExpand(true)
 	b.SetHExpand(true)
 
-	//c, _ := b.GetStyleContext()
-	//c.AddClass("flat")
-
 	if clicked != nil {
 		b.Connect("clicked", clicked)
 	}

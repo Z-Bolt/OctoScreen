@@ -15,9 +15,8 @@ type TemperaturePanel struct {
 	tool   *StepButton
 	amount *StepButton
 
-	box      *gtk.Box
-	labels   map[string]*LabelWithImage
-	previous *octoprint.TemperatureState
+	box    *gtk.Box
+	labels map[string]*LabelWithImage
 }
 
 func NewTemperaturePanel(ui *UI) *TemperaturePanel {
@@ -31,6 +30,8 @@ func NewTemperaturePanel(ui *UI) *TemperaturePanel {
 }
 
 func (m *TemperaturePanel) initialize() {
+	m.Initialize()
+
 	m.grid.Attach(m.createChangeButton("Increase", "increase.svg", 1), 1, 0, 1, 1)
 	m.grid.Attach(m.createChangeButton("Decrease", "decrease.svg", -1), 4, 0, 1, 1)
 
@@ -44,7 +45,6 @@ func (m *TemperaturePanel) initialize() {
 	m.grid.Attach(m.amount, 2, 1, 1, 1)
 
 	m.grid.Attach(MustButtonImage("Cool Down", "cool-down.svg", m.coolDown), 3, 1, 1, 1)
-	m.grid.Attach(MustButtonImage("Return", "back.svg", m.UI.ShowDefaultPanel), 4, 1, 1, 1)
 	m.grid.Connect("show", m.Show)
 }
 
@@ -135,8 +135,6 @@ func (m *TemperaturePanel) loadTemperatureState(s *octoprint.TemperatureState) {
 
 		m.loadTemperatureData(tool, &current)
 	}
-
-	m.previous = s
 }
 
 func (m *TemperaturePanel) addNewTool(tool string) {
@@ -155,13 +153,6 @@ func (m *TemperaturePanel) addNewTool(tool string) {
 
 func (m *TemperaturePanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
 	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", strings.Title(tool), d.Actual, d.Target)
-
-	if m.previous != nil && d.Target > 0 {
-		if p, ok := m.previous.Current[tool]; ok {
-			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual-p.Actual)
-		}
-	}
-
 	m.labels[tool].Label.SetText(text)
 	m.labels[tool].ShowAll()
 }

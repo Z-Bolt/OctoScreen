@@ -16,14 +16,15 @@ func NewHomePanel(ui *UI) *HomePanel {
 }
 
 func (m *HomePanel) initialize() {
-	m.grid.Attach(m.createMoveButton("Home All", "home.svg",
-		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
-	), 1, 0, 1, 1)
+	m.Initialize()
 
-	m.grid.Attach(m.createMoveButton("Home X", "home-x.svg", octoprint.XAxis), 2, 0, 1, 1)
-	m.grid.Attach(m.createMoveButton("Home Y", "home-y.svg", octoprint.YAxis), 3, 0, 1, 1)
-	m.grid.Attach(m.createMoveButton("Home Z", "home-z.svg", octoprint.ZAxis), 4, 0, 1, 1)
-	m.grid.Attach(MustButtonImage("Back", "back.svg", m.UI.ShowDefaultPanel), 4, 1, 1, 1)
+	m.AddButton(m.createMoveButton("Home All", "home.svg",
+		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
+	))
+
+	m.AddButton(m.createMoveButton("Home X", "home-x.svg", octoprint.XAxis))
+	m.AddButton(m.createMoveButton("Home Y", "home-y.svg", octoprint.YAxis))
+	m.AddButton(m.createMoveButton("Home Z", "home-z.svg", octoprint.ZAxis))
 }
 
 func (m *HomePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {

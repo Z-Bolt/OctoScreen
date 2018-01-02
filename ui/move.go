@@ -19,19 +19,20 @@ func NewMovePanel(ui *UI) Panel {
 }
 
 func (m *MovePanel) initialize() {
-	m.grid.Attach(m.createMoveButton("X+", "move-x+.svg", octoprint.XAxis, 1), 1, 0, 1, 1)
-	m.grid.Attach(m.createMoveButton("X-", "move-x-.svg", octoprint.XAxis, -1), 1, 1, 1, 1)
-	m.grid.Attach(m.createMoveButton("Y+", "move-y+.svg", octoprint.YAxis, 1), 2, 0, 1, 1)
-	m.grid.Attach(m.createMoveButton("Y-", "move-y-.svg", octoprint.YAxis, -1), 2, 1, 1, 1)
-	m.grid.Attach(m.createMoveButton("Z+", "move-z+.svg", octoprint.ZAxis, 1), 3, 0, 1, 1)
-	m.grid.Attach(m.createMoveButton("Z-", "move-z-.svg", octoprint.ZAxis, -1), 3, 1, 1, 1)
+	m.Initialize()
+
+	m.AddButton(m.createMoveButton("X+", "move-x+.svg", octoprint.XAxis, 1))
+	m.AddButton(m.createMoveButton("Y+", "move-y+.svg", octoprint.YAxis, 1))
+	m.AddButton(m.createMoveButton("Z+", "move-z+.svg", octoprint.ZAxis, 1))
 
 	m.step = MustStepButton("move-step.svg",
 		Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1},
 	)
-	m.grid.Attach(m.step, 4, 0, 1, 1)
 
-	m.grid.Attach(MustButtonImage("Back", "back.svg", m.UI.ShowDefaultPanel), 4, 1, 1, 1)
+	m.AddButton(m.step)
+	m.AddButton(m.createMoveButton("X-", "move-x-.svg", octoprint.XAxis, -1))
+	m.AddButton(m.createMoveButton("Y-", "move-y-.svg", octoprint.YAxis, -1))
+	m.AddButton(m.createMoveButton("Z-", "move-z-.svg", octoprint.ZAxis, -1))
 }
 
 func (m *MovePanel) createMoveButton(label, image string, a octoprint.Axis, dir int) gtk.IWidget {

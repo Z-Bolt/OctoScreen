@@ -31,6 +31,8 @@ func NewFilamentPanel(ui *UI) *FilamentPanel {
 }
 
 func (m *FilamentPanel) initialize() {
+	m.Initialize()
+
 	m.grid.Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
 	m.grid.Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
 
@@ -45,8 +47,6 @@ func (m *FilamentPanel) initialize() {
 
 	m.grid.Attach(m.createToolButton(), 1, 1, 1, 1)
 	m.grid.Attach(m.createFlowrateButton(), 3, 1, 1, 1)
-	m.grid.Attach(MustButtonImage("Return", "back.svg", m.UI.ShowDefaultPanel), 4, 1, 1, 1)
-
 	m.grid.Connect("show", m.Show)
 }
 
