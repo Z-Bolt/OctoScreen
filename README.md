@@ -73,4 +73,4 @@ If not, just use the compiled binary.
 License
 -------
 
-MIT, see [LICENSE](LICENSE)
+GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
