@@ -40,14 +40,60 @@ func (m *SystemPanel) createActionBar() gtk.IWidget {
 	bar.SetMarginTop(5)
 	bar.SetMarginBottom(5)
 	bar.SetMarginEnd(5)
-	bar.Add(MustButton(MustImageFromFileWithSize("power.svg", 40, 40), m.UI.ShowDefaultPanel))
+
+	if b := m.createRestartButton(); b != nil {
+		bar.Add(b)
+	}
+
 	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.ShowDefaultPanel))
 
 	return bar
 }
 
+func (m *SystemPanel) createRestartButton() gtk.IWidget {
+	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return nil
+	}
+
+	var cmd *octoprint.CommandDefinition
+	for _, c := range r.Core {
+		if c.Action == "restart" {
+			cmd = c
+		}
+	}
+
+	if cmd == nil {
+		return nil
+	}
+
+	return m.doCreateButtonFromCommand(cmd)
+}
+
+func (m *SystemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition) gtk.IWidget {
+	do := func() {
+		r := &octoprint.SystemExecuteCommandRequest{
+			Source: octoprint.Core,
+			Action: cmd.Action,
+		}
+
+		if err := r.Do(m.UI.Printer); err != nil {
+			Logger.Error(err)
+			return
+		}
+	}
+
+	cb := do
+	if len(cmd.Confirm) != 0 {
+		cb = MustConfirmDialog(m.UI.w, cmd.Confirm, do)
+	}
+
+	return MustButton(MustImageFromFileWithSize(cmd.Action+".svg", 40, 40), cb)
+}
+
 func (m *SystemPanel) createInfoBox() gtk.IWidget {
-	main := MustBox(gtk.ORIENTATION_HORIZONTAL, 20)
+	main := MustBox(gtk.ORIENTATION_HORIZONTAL, 10)
 	main.SetHExpand(true)
 	main.SetHAlign(gtk.ALIGN_CENTER)
 	main.SetVExpand(true)
@@ -73,7 +119,7 @@ func (m *SystemPanel) createInfoBox() gtk.IWidget {
 }
 
 func (m *SystemPanel) addOctoPrintTFT(box *gtk.Box) {
-	box.Add(MustLabel("OctoPrint-TFT Version: <b>%s (%s)</b>", Version, Commit[:7]))
+	box.Add(MustLabel("OctoPrint-TFT Version: <b>%s (%s)</b>", Version, Build))
 }
 
 func (m *SystemPanel) addOctoPi(box *gtk.Box) {

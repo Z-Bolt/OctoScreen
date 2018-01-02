@@ -66,5 +66,4 @@ func init() {
 	logrus.AddHook(ContextHook{})
 	logrus.SetLevel(logrus.DebugLevel)
 	Logger = logrus.WithFields(logrus.Fields{})
-
 }

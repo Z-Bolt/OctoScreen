@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/gotk3/gotk3/gtk"
-	octoprint "github.com/mcuadros/go-octoprint"
+	"github.com/mcuadros/go-octoprint"
 )
 
 var control = []*octoprint.ControlDefinition{{
@@ -35,12 +35,17 @@ func (m *ControlPanel) initialize() {
 		b := m.createControlButton(c)
 		m.AddButton(b)
 	}
+
+	for _, c := range m.getCommands() {
+		b := m.createCommandButton(c)
+		m.AddButton(b)
+	}
 }
 
 func (m *ControlPanel) getControl() []*octoprint.ControlDefinition {
 	control := control
 
-	Logger.Info("Retrieving custom commands")
+	Logger.Info("Retrieving custom controls")
 	r, err := (&octoprint.CustomCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -56,7 +61,7 @@ func (m *ControlPanel) getControl() []*octoprint.ControlDefinition {
 
 func (m *ControlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.IWidget {
 	icon := strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
-	return MustButtonImage(c.Name, icon+".svg", func() {
+	do := func() {
 		r := &octoprint.CommandRequest{
 			Commands: c.Commands,
 		}
@@ -70,5 +75,44 @@ func (m *ControlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.I
 			Logger.Error(err)
 			return
 		}
-	})
+	}
+
+	cb := do
+	if len(c.Confirm) != 0 {
+		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
+	}
+
+	return MustButtonImage(c.Name, icon+".svg", cb)
+}
+
+func (m *ControlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.IWidget {
+	do := func() {
+		r := &octoprint.SystemExecuteCommandRequest{
+			Source: octoprint.Custom,
+			Action: c.Action,
+		}
+
+		if err := r.Do(m.UI.Printer); err != nil {
+			Logger.Error(err)
+			return
+		}
+	}
+
+	cb := do
+	if len(c.Confirm) != 0 {
+		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
+	}
+
+	return MustButtonImage(c.Name, c.Action+".svg", cb)
+}
+
+func (m *ControlPanel) getCommands() []*octoprint.CommandDefinition {
+	Logger.Info("Retrieving custom commands")
+	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return nil
+	}
+
+	return r.Custom
 }

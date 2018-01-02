@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"strings"
 	"sync"
 	"time"
 
@@ -12,8 +13,8 @@ import (
 )
 
 // Set at compilation time.
-const Version = "0.1.x"
-const Commit = "0000000"
+var Version = "0.1.x"
+var Build = "no-set"
 
 const panelW = 4
 const panelH = 2
@@ -217,14 +218,15 @@ func (b *StepButton) clicked() {
 
 func MustConfirmDialog(parent *gtk.Window, msg string, cb func()) func() {
 	return func() {
-		win := gtk.MessageDialogNew(
+		win := gtk.MessageDialogNewWithMarkup(
 			parent,
 			gtk.DIALOG_MODAL,
 			gtk.MESSAGE_INFO,
 			gtk.BUTTONS_OK_CANCEL,
-			msg,
+			"",
 		)
 
+		win.SetMarkup(CleanHTML(msg))
 		defer win.Destroy()
 
 		box, _ := win.GetContentArea()
@@ -249,4 +251,32 @@ func EmptyContainer(c *gtk.Container) {
 	ch.Foreach(func(i interface{}) {
 		c.Remove(i.(gtk.IWidget))
 	})
+}
+
+var translatedTags = [][2]string{{"strong", "b"}}
+var disallowedTags = []string{"p"}
+
+func CleanHTML(html string) string {
+	for _, tag := range translatedTags {
+		html = replaceHTMLTag(html, tag[0], tag[1])
+	}
+
+	for _, tag := range disallowedTags {
+		html = replaceHTMLTag(html, tag, " ")
+	}
+
+	return html
+}
+
+func replaceHTMLTag(html, from, to string) string {
+	for _, pattern := range []string{"<%s>", "</%s>", "<%s/>"} {
+		to := to
+		if to != "" && to != " " {
+			to = fmt.Sprintf(pattern, to)
+		}
+
+		html = strings.Replace(html, fmt.Sprintf(pattern, from), to, -1)
+	}
+
+	return html
 }
