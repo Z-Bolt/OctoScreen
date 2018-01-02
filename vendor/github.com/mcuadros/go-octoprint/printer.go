@@ -9,12 +9,13 @@ import (
 )
 
 const (
-	URIPrinter   = "/api/printer"
-	URIPrintHead = "/api/printer/printhead"
-	URIPrintTool = "/api/printer/tool"
-	URIPrintBed  = "/api/printer/bed"
-	URIPrintSD   = "/api/printer/sd"
-	URICommand   = "/api/printer/command"
+	URIPrinter       = "/api/printer"
+	URIPrintHead     = "/api/printer/printhead"
+	URIPrintTool     = "/api/printer/tool"
+	URIPrintBed      = "/api/printer/bed"
+	URIPrintSD       = "/api/printer/sd"
+	URICommand       = "/api/printer/command"
+	URICommandCustom = "/api/printer/command/custom"
 )
 
 var (
@@ -407,6 +408,24 @@ func (cmd *CommandRequest) Do(c *Client) error {
 
 	_, err := c.doJSONRequest("POST", URICommand, b, nil)
 	return err
+}
+
+// CustomCommandsRequest retrieves all configured system controls.
+type CustomCommandsRequest struct{}
+
+// Do sends an API request and returns the API response.
+func (cmd *CustomCommandsRequest) Do(c *Client) (*CustomCommandsResponse, error) {
+	b, err := c.doJSONRequest("GET", URICommandCustom, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &CustomCommandsResponse{}
+	if err := json.Unmarshal(b, r); err != nil {
+		return nil, err
+	}
+
+	return r, err
 }
 
 // SDStateRequest retrieves the current state of the printer’s SD card. For this

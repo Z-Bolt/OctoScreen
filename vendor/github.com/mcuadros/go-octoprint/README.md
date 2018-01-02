@@ -89,6 +89,7 @@ for tool, state := range s.Temperature.Current {
 - [x] POST `/api/printer/sd`
 - [x] GET `/api/printer/sd`
 - [x] POST `/api/printer/command`
+- [x] GET `/api/printer/command/custom` ([un-documented at REST API](https://github.com/foosel/OctoPrint/blob/7f5d03d0549bcbd26f40e7e4a3297ea5204fb1cc/src/octoprint/server/api/printer.py#L376))
 
 ### [Printer profile operations](http://docs.octoprint.org/en/master/api/printerprofiles.html)
 - [ ] GET `/api/printerprofiles`

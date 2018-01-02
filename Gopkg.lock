@@ -16,7 +16,7 @@ memo = "43650b2e356bb2a65df12fa64ca2da4418bf1bb30ff116e57ad1bc2ff725187c"
   branch = "master"
   name = "github.com/mcuadros/go-octoprint"
   packages = ["."]
-  revision = "27f7e4a9941cc3b7e485089a16b2fa31b8e9a7ed"
+  revision = "706644f9e16a4d76ad35528aae506725b86f5f85"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"

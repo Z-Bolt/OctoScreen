@@ -79,3 +79,17 @@ func TestSDRefreshRequest_Do(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, state.Ready)
 }
+
+func TestCustomCommandsRequest_Do(t *testing.T) {
+	cli := NewClient("http://localhost:5000", "")
+
+	r := &CustomCommandsRequest{}
+	s, err := r.Do(cli)
+	assert.NoError(t, err)
+
+	assert.Len(t, s.Controls, 1)
+	assert.Equal(t, s.Controls[0].Name, "Example for multiple commands")
+	assert.Len(t, s.Controls[0].Children, 1)
+	assert.Equal(t, s.Controls[0].Children[0].Name, "Move X (static)")
+	assert.Len(t, s.Controls[0].Children[0].Commands, 3)
+}
