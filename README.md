@@ -45,13 +45,13 @@ If you are using `Raspian` or any other `Debian` based distribution, GTK+3 can
 be installed using:
 
 ```sh
-sudo apt-get install libgtk-3
+sudo apt-get install libgtk-3-0
 ```
 
 ### Installation Raspbian/OctoPi (recomened)
 
 The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
-from the [Release](https://github.com/mcuadros/OctoPrint-TFT) page. The packages
+from the [Releases](https://github.com/mcuadros/OctoPrint-TFT/releases) page. The packages
 are available for Debian based distributions such as Raspbian and OctoPi for
 versions `jessie` and `stretch`.
 
