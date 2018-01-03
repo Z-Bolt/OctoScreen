@@ -6,10 +6,9 @@ import (
 	"os/user"
 	"path/filepath"
 
-	yaml "gopkg.in/yaml.v1"
-
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/OctoPrint-TFT/ui"
+	"gopkg.in/yaml.v1"
 )
 
 const (
@@ -41,7 +40,7 @@ func init() {
 		ConfigFile = findConfigFile()
 	}
 
-	if APIKey != "" && ConfigFile != "" {
+	if APIKey == "" && ConfigFile != "" {
 		APIKey = readAPIKey(ConfigFile)
 		ui.Logger.Infof("Found API key at %q file", ConfigFile)
 	}

@@ -30,9 +30,10 @@ GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
 DEV_PREFIX := 0.0
 VERSION ?= $(DEV_PREFIX)~git$(GIT_COMMIT)
 BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
+BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
-ifneq ($(origin TRAVIS_TAG), undefined)
-	VERSION := $(TRAVIS_TAG)
+ifneq ($(BRANCH), master)
+	VERSION := $(shell echo $(BRANCH)| sed -e 's/v//g')
 endif
 
 # Package information
