@@ -1,4 +1,4 @@
-OctoPrint-TFT
+OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/OctoPrint-TFT.svg)](https://github.com/mcuadros/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/mcuadros/OctoPrint-TFT.svg)]()
 =============
 
 _OctoPrint-TFT_, a touch interface for TFT touch modules based on GTK+3.
@@ -10,6 +10,12 @@ equipped with any [TFT Touch module](https://www.waveshare.com/wiki/3.5inch_RPi_
 Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
 <img width="480" src="https://user-images.githubusercontent.com/1573114/33559609-a73a969e-d90d-11e7-9cf2-cf212412aaa5.png" />
+
+### Those are some of the functionalities supported:
+
+- Print jobs monitoring.
+- Temperature and Filament management.
+- Jogging operations.
 
 ### How this is different from TouchUI?
 
@@ -42,6 +48,20 @@ be installed using:
 sudo apt-get install libgtk-3
 ```
 
+### Installation Raspbian/OctoPi (recomened)
+
+The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
+from the [Release](https://github.com/mcuadros/OctoPrint-TFT) page. The packages
+are available for Debian based distributions such as Raspbian and OctoPi for
+versions `jessie` and `stretch`.
+
+For example for a Raspbian Jessie:
+```sh
+> wget https://github.com/mcuadros/OctoPrint-TFT/releases/download/v0.1.0/octoprint-tft_0.1.0-1.jessie_armhf.deb
+> dpkg -i octoprint-tft_0.1.0-1.jessie_armhf.deb
+```
+
+
 ### Install from source
 
 The compilation and packaging tasks are managed by the [`Makefile`](Makefile)
@@ -69,6 +89,25 @@ and debian packages:
 
 If you are using `Raspbian` you can install any of the `.deb` generated packages.
 If not, just use the compiled binary.
+
+Configuration
+-------------
+
+### Basic Configuration
+
+The basic configuration is handle via environment variables, if your are using
+the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
+
+- `OCTOPRINT_HOST` - OctoPrint HTTP address, default `http://localhost`
+- `OCTOPRINT_APIKEY` - OctoPrint-TFT expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”.
+- `OCTOPRINT_CONFIG_FILE` - Location of the OctoPrint's config.yaml file, if `OCTOPRINT_APIKEY` is empty a the gobal API will be read from the config file. If empty the file will be search at the `pi` home folder or the current user.
+- `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done 	through CSS. This variable defines the location of the application theme.
+
+### Custom controls and commands
+
+Custom [controls](http://docs.octoprint.org/en/master/configuration/config_yaml.html#controls) to execute GCODE instructions and [commands](http://docs.octoprint.org/en/master/configuration/config_yaml.html#system) to execute shell commands can be defined in the `config.yaml` file.
+
+The controls are limit to static controls without `inputs`.
 
 License
 -------
