@@ -51,7 +51,7 @@ type JobInformation struct {
 		// Volume of filament used, in cm³
 		Volume float64 `json:"volume"`
 	} `json:"filament"`
-	FilePosition int `json:"filepos"`
+	FilePosition uint64 `json:"filepos"`
 }
 
 // ProgressInformation contains information regarding the progress of the
@@ -61,7 +61,7 @@ type ProgressInformation struct {
 	Completion float64 `json:"completion"`
 	// FilePosition current position in the file being printed, in bytes
 	// from the beginning.
-	FilePosition int `json:"filepos"`
+	FilePosition uint64 `json:"filepos"`
 	// PrintTime is time already spent printing, in seconds
 	PrintTime float64 `json:"printTime"`
 	// PrintTimeLeft is estimate of time left to print, in seconds
@@ -253,7 +253,7 @@ type FilesResponse struct {
 	// Free is the amount of disk space in bytes available in the local disk
 	// space (refers to OctoPrint’s `uploads` folder). Only returned if file
 	// list was requested for origin `local` or all origins.
-	Free int
+	Free uint64
 }
 
 // FileInformation contains information regarding a file.
@@ -276,7 +276,7 @@ type FileInformation struct {
 	Hash string `json:"hash"`
 	// Size of the file in bytes. Only available for `local` files or `sdcard`
 	// files if the printer supports file sizes for sd card files.
-	Size int `json:"size"`
+	Size uint64 `json:"size"`
 	// Date when this file was uploaded. Only available for `local` files.
 	Date JSONTime `json:"date"`
 	// Origin of the file, `local` when stored in OctoPrint’s `uploads` folder,
@@ -319,7 +319,7 @@ type GCodeAnalysisInformation struct {
 	// Filament estimated usage of filament
 	Filament struct {
 		// Length estimated of filament used, in mm
-		Length int `json:"length"`
+		Length uint32 `json:"length"`
 		// Volume estimated of filament used, in cm³
 		Volume float64 `json:"volume"`
 	} `json:"filament"`
@@ -567,13 +567,13 @@ type APIConfig struct {
 // FeaturesConfig settings to enable or disable OctoPrint features.
 type FeaturesConfig struct {
 	// SizeThreshold maximum size a GCODE file may have to automatically be
-	// loaded into the viewer, defaults to 20MB	Maps to
-	//gcodeViewer.sizeThreshold in config.yaml.
-	SizeThreshold int
+	// loaded into the viewer, defaults to 20MB. Maps to
+	// gcodeViewer.sizeThreshold in config.yaml.
+	SizeThreshold uint64
 	// MobileSizeThreshold maximum size a GCODE file may have on mobile devices
 	// to automatically be loaded into the viewer, defaults to 2MB. Maps to
 	// gcodeViewer.mobileSizeThreshold in config.yaml.
-	MobileSizeThreshold int `json:"mobileSizeThreshold"`
+	MobileSizeThreshold uint64 `json:"mobileSizeThreshold"`
 	// TemperatureGraph whether to enable the temperature graph in the UI or not.
 	TemperatureGraph bool `json:"temperatureGraph"`
 	// WaitForStart specifies whether OctoPrint should wait for the start
@@ -748,10 +748,10 @@ type ServerConfig struct {
 	Diskspace struct {
 		// Warning threshold (bytes) after which to consider disk space becoming
 		// sparse, defaults to 500MB.
-		Warning int `json:"warning"`
+		Warning uint64 `json:"warning"`
 		// Critical threshold (bytes) after which to consider disk space becoming
 		// critical, defaults to 200MB.
-		Critical int `json:"critical"`
+		Critical uint64 `json:"critical"`
 	} `json:"diskspace"`
 	// OnlineCheck configuration of the regular online connectivity check.
 	OnlineCheck struct {
@@ -804,15 +804,15 @@ type WebcamConfig struct {
 	// StreamUrl use this option to enable display of a webcam stream in the
 	// UI, e.g. via MJPG-Streamer. Webcam support will be disabled if not
 	// set. Maps to webcam.stream in config.yaml.
-	StreamURL int `json:"streamUrl"`
+	StreamURL string `json:"streamUrl"`
 	// SnapshotURL use this option to enable timelapse support via snapshot,
 	// e.g. via MJPG-Streamer. Timelapse support will be disabled if not set.
 	// Maps to webcam.snapshot in config.yaml.
-	SnapshotURL int `json:"snapshotUrl"`
+	SnapshotURL string `json:"snapshotUrl"`
 	// FFmpegPath path to ffmpeg binary to use for creating timelapse
 	// recordings. Timelapse support will be disabled if not set. Maps to
 	// webcam.ffmpeg in config.yaml.
-	FFmpegPath int `json:"ffmpegPath"`
+	FFmpegPath string `json:"ffmpegPath"`
 	// Bitrate to use for rendering the timelapse video. This gets directly
 	// passed to ffmpeg.
 	Bitrate int `json:"bitrate"`
@@ -821,13 +821,13 @@ type WebcamConfig struct {
 	FFmpegThreads int `json:"ffmpegThreads"`
 	// Watermark whether to include a "created with OctoPrint" watermark in the
 	// generated timelapse movies.
-	Watermark int `json:"watermark"`
+	Watermark string `json:"watermark"`
 	// FlipH whether to flip the webcam horizontally.
-	FlipH int `json:"flipH"`
+	FlipH bool `json:"flipH"`
 	// FlipV whether to flip the webcam vertically.
-	FlipV int `json:"flipV"`
+	FlipV bool `json:"flipV"`
 	// Rotate90 whether to rotate the webcam 90° counter clockwise.
-	Rotate90 int `json:"rotate90"`
+	Rotate90 bool `json:"rotate90"`
 }
 
 // TemperatureProfile describes the temperature profile preset for a given

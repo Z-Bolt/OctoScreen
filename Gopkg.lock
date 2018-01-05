@@ -28,7 +28,7 @@ memo = "1d6b648d9b1c526dfce34fe8a2dd8a2efad3406a3d4a346852da0ce192f63d30"
   branch = "master"
   name = "github.com/mcuadros/go-octoprint"
   packages = ["."]
-  revision = "0f10f0366541b1af3eebec51ee11890ebbaf493e"
+  revision = "01362f94e21fd2fd43e430358b250cfa89eeab44"
 
 [[projects]]
   name = "github.com/shirou/gopsutil"
@@ -52,7 +52,7 @@ memo = "1d6b648d9b1c526dfce34fe8a2dd8a2efad3406a3d4a346852da0ce192f63d30"
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "83801418e1b59fb1880e363299581ee543af32ca"
+  revision = "a3f2cbd54cf5dfe3fbaccf76375fdb12f67654c8"
 
 [[projects]]
   branch = "v1"
