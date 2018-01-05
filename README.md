@@ -113,3 +113,5 @@ License
 -------
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
+
+The artwork being use in the at the [default style](`styles/default`) created by [@majurca](https://github.com/majurca) is under the lincese [Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/) 
