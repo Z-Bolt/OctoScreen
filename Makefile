@@ -15,7 +15,7 @@ WORKDIR := $(shell pwd)
 BUILD_PATH := $(WORKDIR)/build
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
-DEBIAN_PACKAGES = JESSIE
+DEBIAN_PACKAGES = JESSIE STRETCH
 STRETCH_NAME := stretch
 STRETCH_IMAGE := golang:1.9-stretch
 STRETCH_GO_TAGS := gtk_3_22

@@ -16,6 +16,11 @@ override_dh_auto_build:
 			-X $(DH_GOPKG)/ui.Build=$(BUILD_DATE)\
 		"
 
+override_dh_golang:
+	# The dh_golang is used to add the Built-using field to the deb. This is only for reference.
+	# https://github.com/git-lfs/git-lfs/pull/2203/files
+	# dh_golang errors out because the go compiler used was not installed via a package. Therefore the step is skipped
+
 override_dh_install:
 	mkdir -p $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
 	cp -r styles $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
