@@ -11,7 +11,7 @@ Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](
 
 <img width="480" src="https://user-images.githubusercontent.com/1573114/33559609-a73a969e-d90d-11e7-9cf2-cf212412aaa5.png" />
 
-### Those are some of the functionalities supported:
+### These are some of the functionalities supported:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
@@ -34,10 +34,10 @@ in my 3d printer.
 Installation
 ------------
 
-### Depedencies
+### Dependencies
 
 *OctoPrint-TFT* is based on [Golang](golang.org), usually this means that is
-dependency less, but in this cases [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
+dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
 is used, this means that GTK+3 libraries are required to be installed on
 the system.
 
@@ -48,7 +48,7 @@ be installed using:
 sudo apt-get install libgtk-3-0
 ```
 
-### Installation Raspbian/OctoPi (recomened)
+### Installation on Raspbian/OctoPi (recommended)
 
 The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
 from the [Releases](https://github.com/mcuadros/OctoPrint-TFT/releases) page. The packages
@@ -65,7 +65,7 @@ For example for a Raspbian Jessie:
 ### Install from source
 
 The compilation and packaging tasks are managed by the [`Makefile`](Makefile)
-and backed on [Docker](Dockerfile). Docker is used to avoid install any other
+and backed on [Docker](Dockerfile). Docker is used to avoid installing any other
 dependencies since all the operations are done inside of the container.
 
 If you need to install docker inside `Raspbian` or any other linux distrubution
@@ -78,7 +78,7 @@ sh get-docker.sh
 
 > You can read more about this at [`docker-install`](https://github.com/docker/docker-install)
 
-To compile the project, assuming that your already cloned this repository, just
+To compile the project, assuming that you already cloned this repository, just
 execute the `build` target, this will generate in `build` folder all the binaries
 and debian packages:
 
@@ -95,12 +95,12 @@ Configuration
 
 ### Basic Configuration
 
-The basic configuration is handle via environment variables, if your are using
+The basic configuration is handled via environment variables, if you are using
 the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
 
 - `OCTOPRINT_HOST` - OctoPrint HTTP address, default `http://localhost`
 - `OCTOPRINT_APIKEY` - OctoPrint-TFT expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”.
-- `OCTOPRINT_CONFIG_FILE` - Location of the OctoPrint's config.yaml file, if `OCTOPRINT_APIKEY` is empty a the gobal API will be read from the config file. If empty the file will be search at the `pi` home folder or the current user.
+- `OCTOPRINT_CONFIG_FILE` - Location of the OctoPrint's config.yaml file, if `OCTOPRINT_APIKEY` is empty a the global API key will be read from the config file. If empty the file will be searched at the `pi` home folder or the current user.
 - `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done 	through CSS. This variable defines the location of the application theme.
 
 ### Custom controls and commands
