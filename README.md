@@ -84,7 +84,7 @@ and debian packages:
 
 ```sh
 > make build
-> ls -l build/
+> ls -1 build/
 ```
 
 If you are using `Raspbian` you can install any of the `.deb` generated packages.
