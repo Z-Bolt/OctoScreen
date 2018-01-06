@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/OctoPrint-TFT/ui"
@@ -13,6 +15,7 @@ import (
 
 const (
 	EnvStylePath  = "OCTOPRINT_TFT_STYLE_PATH"
+	EnvResolution = "OCTOPRINT_TFT_RESOLUTION"
 	EnvBaseURL    = "OCTOPRINT_HOST"
 	EnvAPIKey     = "OCTOPRINT_APIKEY"
 	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
@@ -24,11 +27,13 @@ var (
 	BaseURL    string
 	APIKey     string
 	ConfigFile string
+	Resolution string
 )
 
 func init() {
 	ui.StylePath = os.Getenv(EnvStylePath)
 	APIKey = os.Getenv(EnvAPIKey)
+	Resolution = os.Getenv(EnvResolution)
 
 	BaseURL = os.Getenv(EnvBaseURL)
 	if BaseURL == "" {
@@ -52,7 +57,9 @@ func main() {
 	settings, _ := gtk.SettingsGetDefault()
 	settings.SetProperty("gtk-application-prefer-dark-theme", true)
 
-	ui.New(BaseURL, APIKey)
+	width, height := getSize()
+	_ = ui.New(BaseURL, APIKey, width, height)
+
 	gtk.Main()
 }
 
@@ -99,4 +106,33 @@ func doFindConfigFile(home string) string {
 	}
 
 	return ""
+}
+
+func getSize() (width, height int) {
+	if Resolution == "" {
+		return
+	}
+
+	parts := strings.SplitN(Resolution, "x", 2)
+	if len(parts) != 2 {
+		ui.Logger.Fatalf("Malformed %s variable: %q", EnvResolution, Resolution)
+		return
+	}
+
+	var err error
+	width, err = strconv.Atoi(parts[0])
+	if err != nil {
+		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
+			EnvResolution, Resolution, err)
+		return
+	}
+
+	height, err = strconv.Atoi(parts[0])
+	if err != nil {
+		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
+			EnvResolution, Resolution, err)
+		return
+	}
+
+	return
 }

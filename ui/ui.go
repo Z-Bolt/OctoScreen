@@ -36,16 +36,25 @@ type UI struct {
 	w *gtk.Window
 	t time.Time
 
+	width, height int
 	sync.Mutex
 }
 
-func New(endpoint, key string) *UI {
+func New(endpoint, key string, width, height int) *UI {
+	if width == 0 || height == 0 {
+		width = WindowWidth
+		height = WindowHeight
+	}
+
 	ui := &UI{
 		Printer:       octoprint.NewClient(endpoint, key),
 		Notifications: NewNotifications(),
 
 		w: MustWindow(gtk.WINDOW_TOPLEVEL),
 		t: time.Now(),
+
+		width:  width,
+		height: height,
 	}
 
 	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
@@ -58,7 +67,8 @@ func (ui *UI) initialize() {
 	ui.loadStyle()
 
 	ui.w.SetTitle(WindowName)
-	ui.w.SetDefaultSize(WindowWidth, WindowHeight)
+	ui.w.SetDefaultSize(ui.width, ui.height)
+
 	ui.w.Connect("show", ui.b.Start)
 	ui.w.Connect("destroy", func() {
 		gtk.MainQuit()

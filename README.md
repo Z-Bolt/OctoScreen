@@ -107,7 +107,9 @@ the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
 - `OCTOPRINT_HOST` - OctoPrint HTTP address, default `http://localhost`
 - `OCTOPRINT_APIKEY` - OctoPrint-TFT expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”.
 - `OCTOPRINT_CONFIG_FILE` - Location of the OctoPrint's config.yaml file, if `OCTOPRINT_APIKEY` is empty a the global API key will be read from the config file. If empty the file will be searched at the `pi` home folder or the current user.
-- `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done 	through CSS. This variable defines the location of the application theme.
+- `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
+- `OCTOPRINT_TFT_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `800x480`. By default `480x320`.
+
 
 ### Custom controls and commands
 
