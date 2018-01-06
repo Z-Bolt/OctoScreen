@@ -41,12 +41,18 @@ dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/g
 is used, this means that GTK+3 libraries are required to be installed on
 the system.
 
-If you are using `Raspian` or any other `Debian` based distribution, GTK+3 can
+If you are using `Raspbian` or any other `Debian` based distribution, GTK+3 can
 be installed using:
 
 ```sh
 sudo apt-get install libgtk-3-0
 ```
+OctoPi does not come with graphical environment, additionally install:
+
+```sh
+sudo apt-get install xserver-xorg xinit
+```
+
 
 ### Installation on Raspbian/OctoPi (recommended)
 
@@ -114,4 +120,4 @@ License
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
 
-The artwork being use in the at the [default style](`styles/default`) created by [@majurca](https://github.com/majurca) is under the lincese [Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/) 
+The artwork being use in the at the [default style](`styles/default`) created by [@majurca](https://github.com/majurca) is under the lincese [Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/)
