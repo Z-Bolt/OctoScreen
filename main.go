@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/user"
@@ -8,8 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/OctoPrint-TFT/ui"
+
+	"github.com/gotk3/gotk3/gtk"
 	"gopkg.in/yaml.v1"
 )
 
@@ -19,8 +21,6 @@ const (
 	EnvBaseURL    = "OCTOPRINT_HOST"
 	EnvAPIKey     = "OCTOPRINT_APIKEY"
 	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
-
-	DefaultBaseURL = "http://localhost"
 )
 
 var (
@@ -32,22 +32,28 @@ var (
 
 func init() {
 	ui.StylePath = os.Getenv(EnvStylePath)
-	APIKey = os.Getenv(EnvAPIKey)
 	Resolution = os.Getenv(EnvResolution)
-
-	BaseURL = os.Getenv(EnvBaseURL)
-	if BaseURL == "" {
-		BaseURL = DefaultBaseURL
-	}
 
 	ConfigFile = os.Getenv(EnvConfigFile)
 	if ConfigFile == "" {
 		ConfigFile = findConfigFile()
 	}
 
-	if APIKey == "" && ConfigFile != "" {
-		APIKey = readAPIKey(ConfigFile)
-		ui.Logger.Infof("Found API key at %q file", ConfigFile)
+	cfg := readConfig(ConfigFile)
+
+	BaseURL = os.Getenv(EnvBaseURL)
+	if BaseURL == "" {
+		BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
+		ui.Logger.Infof("Using %q as server address", BaseURL)
+
+	}
+
+	APIKey = os.Getenv(EnvAPIKey)
+	if APIKey == "" {
+		APIKey = cfg.API.Key
+		if cfg.API.Key != "" {
+			ui.Logger.Infof("Found API key at %q file", ConfigFile)
+		}
 	}
 }
 
@@ -68,21 +74,49 @@ var (
 	homeOctoPi     = "/home/pi/"
 )
 
-func readAPIKey(config string) string {
-	var cfg struct{ API struct{ Key string } }
+type config struct {
+	// API Settings.
+	API struct {
+		// Key is the current API key needed for accessing the API.
+		Key string
+	}
+	// Server settings.
+	Server struct {
+		// Hosts define the host to which to bind the server, defaults to "0.0.0.0".
+		Host string
+		// Port define the port to which to bind the server, defaults to 5000.
+		Port int
+	}
+}
 
-	data, err := ioutil.ReadFile(config)
+func readConfig(configFile string) *config {
+	cfg := &config{}
+	if configFile == "" {
+		return cfg
+	}
+
+	ui.Logger.Infof("OctoPrint's config file found: %q", configFile)
+
+	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		ui.Logger.Fatal(err)
-		return ""
+		return cfg
 	}
 
-	if err := yaml.Unmarshal([]byte(data), &cfg); err != nil {
-		ui.Logger.Fatalf("Error decoding YAML config file %q: %s", config, err)
-		return ""
+	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
+		ui.Logger.Fatalf("Error decoding YAML config file %q: %s", configFile, err)
+		return cfg
 	}
 
-	return cfg.API.Key
+	if cfg.Server.Host == "" {
+		cfg.Server.Host = "localhost"
+	}
+
+	if cfg.Server.Port == 0 {
+		cfg.Server.Port = 5000
+	}
+
+	return cfg
 }
 
 func findConfigFile() string {
