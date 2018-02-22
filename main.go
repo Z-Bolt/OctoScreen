@@ -161,7 +161,7 @@ func getSize() (width, height int) {
 		return
 	}
 
-	height, err = strconv.Atoi(parts[0])
+	height, err = strconv.Atoi(parts[1])
 	if err != nil {
 		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
 			EnvResolution, Resolution, err)
