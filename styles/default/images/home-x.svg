@@ -85,13 +85,13 @@
          inkscape:connector-curvature="0"
          id="path7561-4"
          d="M 50.958201,63.223502 33.122106,45.704877 50.640734,27.868782 l 7.134442,7.007842 -5.613196,5.714691 20.737849,-0.314541 0.151657,9.99885 -20.68512,0.313741 5.599675,5.499693 z"
-         style="fill:#232323;fill-opacity:1;fill-rule:evenodd;stroke:#fbb351;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:#232323;fill-opacity:1;fill-rule:evenodd;stroke:#ff670f;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <circle
          r="5"
          cy="45.785713"
          cx="21.25"
          id="path8128"
-         style="fill:#fbb351;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:#ff670f;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

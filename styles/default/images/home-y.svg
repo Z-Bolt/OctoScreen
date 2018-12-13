@@ -85,14 +85,14 @@
          inkscape:connector-curvature="0"
          id="path7561-4"
          d="M 59.591359,39.025291 41.881524,56.671543 24.235271,38.961705 l 7.084326,-7.058501 5.653863,5.67446 -0.09102,-20.740035 9.999904,-0.04389 0.09079,20.6873 5.559723,-5.540077 7.058503,7.084325 z"
-         style="fill:#232323;fill-opacity:1;fill-rule:evenodd;stroke:#fbb351;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:#232323;fill-opacity:1;fill-rule:evenodd;stroke:#ff670f;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <circle
          transform="rotate(-89.382484)"
          r="5"
          cy="42.570702"
          cx="-68.088982"
          id="path8128"
-         style="fill:#fbb351;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:#ff670f;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>

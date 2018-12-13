@@ -68,7 +68,7 @@
        style="display:inline;opacity:1"
        id="g83">
       <ellipse
-         style="fill:#fbb351;fill-opacity:1;stroke:#fbb351;stroke-width:1.909554;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:#ff670f;fill-opacity:1;stroke:#ff670f;stroke-width:1.909554;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="path5114-3"
          cx="39.563484"
          cy="38.301231"
@@ -80,14 +80,14 @@
          height="10"
          width="25"
          id="rect5970"
-         style="fill:none;fill-opacity:1;stroke:#fbb351;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;fill-opacity:1;stroke:#ff670f;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <rect
          y="52.048012"
          x="24.429358"
          height="17"
          width="31"
          id="rect5972"
-         style="fill:none;fill-opacity:1;stroke:#fbb351;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;fill-opacity:1;stroke:#ff670f;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <ellipse
          ry="0.89524311"
          rx="0.63924158"
@@ -99,7 +99,7 @@
          inkscape:connector-curvature="0"
          id="path5977"
          d="m 23.795355,60.560016 h -8 v -24 h 47 v 24 h -7"
-         style="fill:none;fill-rule:evenodd;stroke:#fbb351;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+         style="fill:none;fill-rule:evenodd;stroke:#ff670f;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
 </svg>
