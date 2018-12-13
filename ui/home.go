@@ -31,12 +31,13 @@ func (m *homePanel) initialize() {
 	m.AddButton(m.createMoveButton("Home X", "home-x.svg", octoprint.XAxis))
 	m.AddButton(m.createMoveButton("Home Y", "home-y.svg", octoprint.YAxis))
 	m.AddButton(m.createMoveButton("Home Z", "home-z.svg", octoprint.ZAxis))
+	m.Grid().Attach(MustButtonImage("Back", "back.svg", m.UI.GoHistory), 4, 1, 1, 1)
 }
 
 func (m *homePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
 	return MustButtonImage(label, image, func() {
 		cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
-		Logger.Warningf("Homing the print head in %s axes", axes)
+		Logger.Warningf("Homing %s axes", axes)
 		if err := cmd.Do(m.UI.Printer); err != nil {
 			Logger.Error(err)
 			return
