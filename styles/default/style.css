@@ -1,16 +1,42 @@
-.dialog { border: 2px solid black; }
+.dialog { border: 2px solid #333333; }
 
 .notification {
     background-clip: padding-box;
     padding: 5px;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0;
     opacity: 0.8;
 }
 
 .warning {
-    background-color:rgba(30, 204, 39, 0.7);
+    background-color:rgba(23, 153, 29, 0.7);
 }
 
 .error {
-    background-color:rgba(204, 30, 30, 0.7);
+    background-color:rgba(165, 23, 23, 0.7);
+}
+
+GtkWindow {
+    background-color: #000000;
+}
+
+GtkButton {
+    background-image: none;
+    background-color:#101010;
+    /*border:0;*/
+    margin:2px;
+    border-radius:0;
+}
+
+.scrollbar {
+    -GtkRange-slider-width: 4px;
+}
+
+.slider{
+    border-radius:0;
+    border-width:0;
+}
+
+.progress, .trough{
+    border-radius:0;
+    border-width:0;
 }
