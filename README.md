@@ -1,5 +1,14 @@
 OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/OctoPrint-TFT.svg)](https://github.com/mcuadros/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/mcuadros/OctoPrint-TFT.svg)]()
 =============
+### My changes to the original software:
+
+- Changed the order of the homescreen elements
+- Reworked status screen to have more space for the important stuff and smaller buttons
+- Reworked files list:
+  - Added delete function
+  - Removed the load button (for small screens). If you want to load a file press print and in the dialog press "no"
+  - More narrow list elements for small screens
+- Lots of other changes to make it look good on 320x240 pixel screens (you can run it bigger screens anyway)
 
 _OctoPrint-TFT_, a touch interface for TFT touch modules based on GTK+3.
 
