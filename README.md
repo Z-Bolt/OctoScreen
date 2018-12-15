@@ -7,6 +7,7 @@ OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/
 - Reworked files list:
   - Added delete function
   - Removed the load button (for small screens). If you want to load a file press print and in the dialog press "no"
+  - Reload every time when the list is opened
   - More narrow list elements for small screens
 - Lots of other changes to make it look good on 320x240 pixel screens (you can run it bigger screens anyway)
 
