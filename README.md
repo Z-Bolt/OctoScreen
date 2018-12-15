@@ -1,6 +1,6 @@
 OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/OctoPrint-TFT.svg)](https://github.com/mcuadros/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/mcuadros/OctoPrint-TFT.svg)]()
 =============
-### My changes to the original software:
+### My changes to the original software (I'm also working on some bugs):
 
 - Changed the order of the homescreen elements
 - Reworked status screen to have more space for the important stuff and smaller buttons
@@ -9,7 +9,12 @@ OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/
   - Removed the load button (for small screens). If you want to load a file press print and in the dialog press "no"
   - Reload every time when the list is opened
   - More narrow list elements for small screens
+- Changed temperature pages order. When you press temp, you get the presets first and can press a button to get to the finetune settings
 - Lots of other changes to make it look good on 320x240 pixel screens (you can run it bigger screens anyway)
+
+<img src="home.png" /> <img src="status.png" /> <img src="files.png" /> <img src="files_print.png" /> <img src="temp.png" /> <img src="temp2.png" />
+
+### Original description:
 
 _OctoPrint-TFT_, a touch interface for TFT touch modules based on GTK+3.
 
