@@ -144,7 +144,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInformation) gtk.IWidget {
 	return MustButton(
 		MustImageFromFileWithSize(img, 20, 20),
-		PrintDialog(m.UI.w, "Start printing?\n"+filenameEllipsis_short(f.Name), f.Path, m),
+		PrintDialog(m.UI.w, "File loaded. Start printing?\n"+filenameEllipsis_short(f.Name), f.Path, m),
 	)
 }
 
