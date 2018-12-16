@@ -198,21 +198,6 @@ func (m *profilesPanel) loadProfiles() {
 		m.AddButton(m.createProfileButton("filament.svg", profile))
 	}
 
-	m.AddButton(m.createProfileButton("heat-up.svg", &octoprint.TemperatureProfile{
-		Name:     "PLA",
-		Bed:      60,
-		Extruder: 215,
-	}))
-	m.AddButton(m.createProfileButton("heat-up.svg", &octoprint.TemperatureProfile{
-		Name:     "PETG",
-		Bed:      85,
-		Extruder: 230,
-	}))
-	m.AddButton(m.createProfileButton("heat-up.svg", &octoprint.TemperatureProfile{
-		Name:     "ABS",
-		Bed:      100,
-		Extruder: 255,
-	}))
 	m.AddButton(m.createProfileButton("cool-down.svg", &octoprint.TemperatureProfile{
 		Name:     "Cool",
 		Bed:      0,
