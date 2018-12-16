@@ -12,7 +12,7 @@ OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/
 - Changed temperature pages order. When you press temp, you get the presets first and can press a button to get to the finetune settings
 - Improved contrast and color
 - Lots of other changes to make it look good even on 320x240 pixel screens (you can run it bigger screens anyway)
-- Profiles from OctoPrint should be working now (thanks to blondak).
+- Temperature profiles from OctoPrint are working now (thanks to blondak).
 
 At the moment SD card is removed (because I created this fork for myself in the first place) - I'll add it back soon.
 
