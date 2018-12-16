@@ -195,7 +195,7 @@ func (m *profilesPanel) loadProfiles() {
 	}
 
 	for _, profile := range s.Temperature.Profiles {
-		m.AddButton(m.createProfileButton("filament.svg", profile))
+		m.AddButton(m.createProfileButton("heat-up.svg", profile))
 	}
 
 	m.AddButton(m.createProfileButton("cool-down.svg", &octoprint.TemperatureProfile{
