@@ -10,7 +10,8 @@ OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/
   - Reload every time when the list is opened
   - More narrow list elements for small screens
 - Changed temperature pages order. When you press temp, you get the presets first and can press a button to get to the finetune settings
-- Lots of other changes to make it look good on 320x240 pixel screens (you can run it bigger screens anyway)
+- Improved contrast and color
+- Lots of other changes to make it look good even on 320x240 pixel screens (you can run it bigger screens anyway)
 
 At the moment SD card is removed (because I created this fork for myself in the first place) - I'll add it back soon.
 The presets are hardcoded at the moment. I'll try to fix the bug so they work as intended.
