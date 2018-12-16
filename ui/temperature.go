@@ -188,15 +188,15 @@ func (m *profilesPanel) initialize() {
 }
 
 func (m *profilesPanel) loadProfiles() {
-	// s, err := (&octoprint.SettingsRequest{}).Do(m.UI.Printer)
-	// if err != nil {
-	// 	Logger.Error(err)
-	// 	return
-	// }
+	s, err := (&octoprint.SettingsRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return
+	}
 
-	// for _, profile := range s.Temperature.Profiles {
-	// 	m.AddButton(m.createProfileButton("filament.svg", profile))
-	// }
+	for _, profile := range s.Temperature.Profiles {
+		m.AddButton(m.createProfileButton("filament.svg", profile))
+	}
 
 	m.AddButton(m.createProfileButton("heat-up.svg", &octoprint.TemperatureProfile{
 		Name:     "PLA",
