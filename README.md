@@ -94,7 +94,7 @@ git clone https://github.com/noxhirsch/OctoPrint-TFT
 ```
 
 To compile just execute the `build` target, this will generate in `build` folder all the binaries
-and debian packages:
+and debian packages. This will take a while (10-20mins on a Raspberry Pi 3):
 
 ```sh
 sudo make build
