@@ -27,8 +27,6 @@ equipped with any [TFT Touch module](https://www.waveshare.com/wiki/3.5inch_RPi_
 
 Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
-<img width="480" src="https://user-images.githubusercontent.com/1573114/33559609-a73a969e-d90d-11e7-9cf2-cf212412aaa5.png" />
-
 ### These are some of the functionalities supported:
 
 - Print jobs monitoring.
@@ -72,20 +70,6 @@ sudo apt-get install xserver-xorg xinit
 ```
 
 
-### Installation on Raspbian/OctoPi (recommended)
-
-The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
-from the [Releases](https://github.com/mcuadros/OctoPrint-TFT/releases) page. The packages
-are available for Debian based distributions such as Raspbian and OctoPi for
-versions `jessie` and `stretch`.
-
-For example for a Raspbian Jessie:
-```sh
-> wget https://github.com/mcuadros/OctoPrint-TFT/releases/download/v0.1.0/octoprint-tft_0.1.0-1.jessie_armhf.deb
-> dpkg -i octoprint-tft_0.1.0-1.jessie_armhf.deb
-```
-
-
 ### Install from source
 
 The compilation and packaging tasks are managed by the [`Makefile`](Makefile)
@@ -102,17 +86,34 @@ sh get-docker.sh
 
 > You can read more about this at [`docker-install`](https://github.com/docker/docker-install)
 
-To compile the project, assuming that you already cloned this repository, just
-execute the `build` target, this will generate in `build` folder all the binaries
+Install git and clone this repository:
+
+```sh
+sudo apt-get install git -y
+git clone https://github.com/noxhirsch/OctoPrint-TFT
+```
+
+To compile just execute the `build` target, this will generate in `build` folder all the binaries
 and debian packages:
 
 ```sh
-> make build
-> ls -1 build/
+sudo make build
+ls -1 build/
 ```
 
 If you are using `Raspbian` you can install any of the `.deb` generated packages.
-If not, just use the compiled binary.
+If not, just use the compiled binary. Example:
+
+```sh
+cd build/jessie
+ls
+```
+
+Now you can see the filename of the package. Use it to run this command:
+
+```sh
+dpkg -i octoprint-tft_0.1.0-1.jessie_armhf.deb
+```
 
 Configuration
 -------------
@@ -130,7 +131,7 @@ the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
 
 - `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
-- `OCTOPRINT_TFT_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `800x480`. By default `480x320`.
+- `OCTOPRINT_TFT_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `800x480` or `480x320`. By default it is `320x240`.
 
 
 ### Custom controls and commands
