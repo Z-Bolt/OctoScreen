@@ -389,7 +389,8 @@ type CommandDefinition struct {
 	// Confirm if present and set, this text will be displayed to the user in a
 	// confirmation dialog they have to acknowledge in order to really execute
 	// the command.
-	Confirm string `json:"confirm"`
+	RawConfirm json.RawMessage `json:"confirm"`
+	Confirm string `json:"-"`
 	// Async whether to execute the command asynchronously or wait for its
 	// result before responding to the HTTP execution request.
 	Async bool `json:"async"`
@@ -717,7 +718,7 @@ type SerialConfig struct {
 	TriggerOkForM29 bool `json:"triggerOkForM29"`
 	// SupportResendsWIthoutOk whether to support resends without follow-up ok
 	// or not.
-	SupportResendsWIthoutOk bool `json:"supportResendsWIthoutOk"`
+	SupportResendsWIthoutOk string `json:"supportResendsWIthoutOk"`
 	// Maps to serial.maxCommunicationTimeouts.idle in config.yaml
 	MaxTimeoutsIdle float64 `json:"maxTimeoutsIdle"`
 	// MaxTimeoutsPrinting maximum number of consecutive communication timeouts
