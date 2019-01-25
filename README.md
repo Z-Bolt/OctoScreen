@@ -1,3 +1,6 @@
+Changes by devsfan1830: Implemented the hanging workaround here "https://github.com/mcuadros/OctoPrint-TFT/issues/34#issuecomment-417065437"
+
+
 OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/OctoPrint-TFT.svg)](https://github.com/mcuadros/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/mcuadros/OctoPrint-TFT.svg)]()
 =============
 ### My changes to the original software (I'm also working on some bugs):

@@ -96,7 +96,7 @@ func (m *statusPanel) createInfoBox() *gtk.Box {
 
 func (m *statusPanel) createPrintButton() gtk.IWidget {
 	m.print = MustButton(MustImageFromFileWithSize("status.svg", 40, 40), func() {
-		defer m.updateTemperature()
+		//defer m.updateTemperature()
 
 		Logger.Warning("Starting a new job")
 		if err := (&octoprint.StartRequest{}).Do(m.UI.Printer); err != nil {
@@ -110,7 +110,7 @@ func (m *statusPanel) createPrintButton() gtk.IWidget {
 
 func (m *statusPanel) createPauseButton() gtk.IWidget {
 	m.pause = MustButton(MustImageFromFileWithSize("pause.svg", 40, 40), func() {
-		defer m.updateTemperature()
+		//defer m.updateTemperature()
 
 		Logger.Warning("Pausing/Resuming job")
 		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
@@ -125,7 +125,7 @@ func (m *statusPanel) createPauseButton() gtk.IWidget {
 
 func (m *statusPanel) createStopButton() gtk.IWidget {
 	m.stop = MustButton(MustImageFromFileWithSize("stop.svg", 40, 40), func() {
-		defer m.updateTemperature()
+		//defer m.updateTemperature()
 
 		Logger.Warning("Stopping job")
 		if err := (&octoprint.CancelRequest{}).Do(m.UI.Printer); err != nil {
@@ -138,7 +138,7 @@ func (m *statusPanel) createStopButton() gtk.IWidget {
 }
 
 func (m *statusPanel) update() {
-	m.updateTemperature()
+	//m.updateTemperature()
 	m.updateJob()
 }
 
