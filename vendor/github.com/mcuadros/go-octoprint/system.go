@@ -26,6 +26,18 @@ func (cmd *SystemCommandsRequest) Do(c *Client) (*SystemCommandsResponse, error)
 	if err := json.Unmarshal(b, r); err != nil {
 		return nil, err
 	}
+	for i := range r.Core {
+		x := r.Core[i]
+		if err2 := json.Unmarshal(x.RawConfirm, x.Confirm); err2 != nil {
+		    x.Confirm = ""
+		}
+	}
+	for i := range r.Custom {
+		x := r.Custom[i]
+		if err2 := json.Unmarshal(x.RawConfirm, x.Confirm); err2 != nil {
+		    x.Confirm = ""
+		}
+	}
 
 	return r, err
 }
