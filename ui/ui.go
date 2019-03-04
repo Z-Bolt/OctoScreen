@@ -15,8 +15,8 @@ import (
 var (
 	StylePath    string
 	WindowName   = "OctoPrint-TFT"
-	WindowHeight = 320
-	WindowWidth  = 480
+	WindowHeight = 240
+	WindowWidth  = 320
 )
 
 const (
@@ -138,7 +138,7 @@ func (ui *UI) verifyConnection() {
 		splash.Label.SetText(string(s.Current.State))
 	}
 
-	ui.Add(splash)
+	//ui.Add(splash)
 }
 
 func (ui *UI) Add(p Panel) {
@@ -165,7 +165,7 @@ func (ui *UI) errToUser(err error) string {
 	text := err.Error()
 	if strings.Contains(text, "connection refused") {
 		return fmt.Sprintf(
-			"Unable to connect to %q (Key: %v), \nmaybe OctoPrint not running?",
+			"Unable to connect to %q (Key: %v)",
 			ui.Printer.Endpoint, ui.Printer.APIKey != "",
 		)
 	}

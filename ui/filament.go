@@ -28,7 +28,7 @@ func FilamentPanel(ui *UI, parent Panel) Panel {
 			labels: map[string]*LabelWithImage{},
 		}
 
-		m.b = NewBackgroundTask(time.Second*5, m.updateTemperatures)
+		m.b = NewBackgroundTask(time.Second*2, m.updateTemperatures)
 		m.initialize()
 		filamentPanelInstance = m
 	}
@@ -39,8 +39,8 @@ func FilamentPanel(ui *UI, parent Panel) Panel {
 func (m *filamentPanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
-	m.Grid().Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
+	m.Grid().Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 1, 0, 1, 1)
+	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 4, 0, 1, 1)
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
@@ -53,6 +53,8 @@ func (m *filamentPanel) initialize() {
 
 	m.Grid().Attach(m.createToolButton(), 1, 1, 1, 1)
 	m.Grid().Attach(m.createFlowrateButton(), 3, 1, 1, 1)
+	
+	m.Grid().Attach(MustButtonImage("Back", "back.svg", m.UI.GoHistory), 4, 1, 1, 1)
 }
 
 func (m *filamentPanel) updateTemperatures() {
@@ -79,7 +81,7 @@ func (m *filamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 	}
 
 	m.previous = s
-}
+} 
 
 func (m *filamentPanel) addNewTool(tool string) {
 	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
@@ -90,11 +92,11 @@ func (m *filamentPanel) addNewTool(tool string) {
 }
 
 func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
-	text := fmt.Sprintf("%s: %.1f°C / %.1f°C", strings.Title(tool), d.Actual, d.Target)
+	text := fmt.Sprintf("%s: %.1f°C \n⇒ %.1f°C", strings.Title(tool), d.Actual, d.Target)
 
 	if m.previous != nil && d.Target > 0 {
 		if p, ok := m.previous.Current[tool]; ok {
-			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual-p.Actual)
+			text = fmt.Sprintf("%s\nΔ (%.1f°C)", text, d.Actual-p.Actual)
 		}
 	}
 

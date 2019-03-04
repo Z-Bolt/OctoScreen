@@ -9,7 +9,7 @@ import (
 
 var control = []*octoprint.ControlDefinition{{
 	Name:    "Motor Off",
-	Command: "M18",
+	Command: "M84",
 }, {
 	Name:    "Fan On",
 	Command: "M106",
@@ -46,6 +46,7 @@ func (m *controlPanel) initialize() {
 		b := m.createCommandButton(c)
 		m.AddButton(b)
 	}
+	m.Grid().Attach(MustButtonImage("Back", "back.svg", m.UI.GoHistory), 4, 1, 1, 1)
 }
 
 func (m *controlPanel) getControl() []*octoprint.ControlDefinition {

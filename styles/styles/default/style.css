@@ -1,0 +1,56 @@
+
+.dialog { border: 2px solid #333333; }
+
+.notification {
+    background-clip: padding-box;
+    padding: 5px;
+    border-radius: 0;
+    opacity: 0.8;
+}
+
+.warning {
+    background-color:rgba(23, 153, 29, 0.7);
+}
+
+.error {
+    background-color:rgba(165, 23, 23, 0.7);
+}
+
+GtkWindow {
+    background-color: #000000;
+}
+
+GtkButton {
+    background-image: none;
+    background-color:#101010;
+    /*border:0;*/
+    margin:2px;
+    border-radius:0;
+}
+
+.scrollbar {
+    -GtkRange-slider-width: 4px;
+}
+
+.slider{
+    border-radius:0;
+    border-width:0;
+}
+
+
+@define-color progress_bg_color #37C8AB;
+
+#PrintProg {
+    color: white;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    min-height: 20px;
+    border-radius: 5px;
+    border-width: 1px;
+}
+
+#TimeLabel {
+    font-size: 18px;
+    font-weight: bold;
+}

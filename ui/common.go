@@ -53,8 +53,6 @@ func (p *CommonPanel) Initialize() {
 	for i := len(p.buttons) + 1; i < last; i++ {
 		p.AddButton(MustBox(gtk.ORIENTATION_HORIZONTAL, 0))
 	}
-
-	p.AddButton(MustButtonImage("Back", "back.svg", p.UI.GoHistory))
 }
 
 func (p *CommonPanel) Parent() Panel {

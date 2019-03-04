@@ -49,7 +49,12 @@ func (m *systemPanel) createActionBar() gtk.IWidget {
 		bar.Add(b)
 	}
 
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.GoHistory))
+	if c := m.createShutdownButton(); c != nil {
+		bar.Add(c)
+	}
+
+
+	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 60, 60), m.UI.GoHistory))
 
 	return bar
 }
@@ -75,6 +80,28 @@ func (m *systemPanel) createRestartButton() gtk.IWidget {
 	return m.doCreateButtonFromCommand(cmd)
 }
 
+func (m *systemPanel) createShutdownButton() gtk.IWidget {
+	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return nil
+	}
+
+	var cmd *octoprint.CommandDefinition
+	for _, c := range r.Core {
+		if c.Action == "shutdown" {
+			cmd = c
+		}
+	}
+
+	if cmd == nil {
+		return nil
+	}
+
+	return m.doCreateButtonFromCommand(cmd)
+}
+
+
 func (m *systemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition) gtk.IWidget {
 	do := func() {
 		r := &octoprint.SystemExecuteCommandRequest{
@@ -93,7 +120,7 @@ func (m *systemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition
 		cb = MustConfirmDialog(m.UI.w, cmd.Confirm, do)
 	}
 
-	return MustButton(MustImageFromFileWithSize(cmd.Action+".svg", 40, 40), cb)
+	return MustButton(MustImageFromFileWithSize(cmd.Action+".svg", 60, 60), cb)
 }
 
 func (m *systemPanel) createInfoBox() gtk.IWidget {
@@ -101,7 +128,7 @@ func (m *systemPanel) createInfoBox() gtk.IWidget {
 	main.SetHExpand(true)
 	main.SetHAlign(gtk.ALIGN_CENTER)
 	main.SetVExpand(true)
-	main.Add(MustImageFromFileWithSize("octoprint-logo.png", 140, 140))
+	// main.Add(MustImageFromFileWithSize("octoprint-logo.png", 140, 140))
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	info.SetVExpand(true)
