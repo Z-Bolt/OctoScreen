@@ -52,6 +52,11 @@ OctoPi does not come with graphical environment, additionally install:
 ```sh
 sudo apt-get install xserver-xorg xinit
 ```
+In order for the DPMS management to work correctly, install:
+
+```sh
+sudo apt-get install x11-xserver-utils
+```
 
 
 ### Installation on Raspbian/OctoPi (recommended)
