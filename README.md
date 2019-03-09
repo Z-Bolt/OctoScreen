@@ -31,6 +31,20 @@ resources.
 This is the main reason because I develop this X application to be executed
 in my 3d printer.
 
+## This version brings some major improvements and fixes:
+
+### Improvements:
+- Built-in DPMS control to disable screen blanking
+- Status screen optimized, with larger and more visible progress bar and larger buttons
+- New button has been added to the temperature controls, allowing to heat only the nozzle up, for example for filament changes
+- Redesigned reboot / shutdown buttons in the system menu
+- New confirmation dialog when pressing Stop print button
+
+### Fixes:
+- Mid-print freezing of the interface has been fixed
+- Print/pause/stop buttons now work correctly 
+- Random appearance of splash screen after pressing pause / resume has been fixed
+
 Installation
 ------------
 
@@ -52,19 +66,28 @@ OctoPi does not come with graphical environment, additionally install:
 ```sh
 sudo apt-get install xserver-xorg xinit
 ```
+In order for the DPMS management to work correctly, install:
 
+```sh
+sudo apt-get install x11-xserver-utils
+```
+
+Prior to installation, I recommend removing Lightdm GUI, if installed, as it could interefere with the successful installation of OctoPrint TFT:
+```sh
+sudo apt remove lightdm
+```
 
 ### Installation on Raspbian/OctoPi (recommended)
 
 The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
-from the [Releases](https://github.com/mcuadros/OctoPrint-TFT/releases) page. The packages
+from the [Releases](https://github.com/darksid3r/OctoPrint-TFT/releases) page. The packages
 are available for Debian based distributions such as Raspbian and OctoPi for
-versions `jessie` and `stretch`.
+version `stretch`.
 
-For example for a Raspbian Jessie:
+For example for a Raspbian Stretch:
 ```sh
-> wget https://github.com/mcuadros/OctoPrint-TFT/releases/download/v0.1.0/octoprint-tft_0.1.0-1.jessie_armhf.deb
-> dpkg -i octoprint-tft_0.1.0-1.jessie_armhf.deb
+> wget https://github.com/darksid3r/OctoPrint-TFT/releases/download/1.0/octoprint-tft_0.0.git223e415-1_armhf.deb
+> sudo dpkg -i octoprint-tft_0.0.git223e415-1_armhf.deb
 ```
 
 
