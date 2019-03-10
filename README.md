@@ -84,7 +84,7 @@ from the [Releases](https://github.com/darksid3r/OctoPrint-TFT/releases) page. T
 are available for Debian based distributions such as Raspbian and OctoPi for
 version `stretch`.
 
-For example for a Raspbian Stretch:
+For example for a Raspbian Stretch, version 0.0 (please note that you should head to the "Releases" section" and download the latest version that suits your debian - Jessie or Stretch):
 ```sh
 > wget https://github.com/darksid3r/OctoPrint-TFT/releases/download/1.0/octoprint-tft_0.0.git223e415-1_armhf.deb
 > sudo dpkg -i octoprint-tft_0.0.git223e415-1_armhf.deb
