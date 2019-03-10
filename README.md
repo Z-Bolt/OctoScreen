@@ -66,15 +66,16 @@ OctoPi does not come with graphical environment, additionally install:
 ```sh
 sudo apt-get install xserver-xorg xinit
 ```
-In order for the DPMS management to work correctly, install:
+IMPORTANT!!! In order for the DPMS management to work correctly, you need to install:
 
 ```sh
 sudo apt-get install x11-xserver-utils
 ```
 
-Prior to installation, I recommend removing Lightdm GUI, if installed, as it could interefere with the successful installation of OctoPrint TFT:
+Prior to installation, I recommend removing Lightdm GUI, if installed, as it could interefere with the successful installation of OctoPrint TFT. In order to do this, without removing dependencies that are also required by Octoprint-TFT, run:
+
 ```sh
-sudo apt remove lightdm
+sudo dpkg -r --force-depends lightdm
 ```
 
 ### Installation on Raspbian/OctoPi (recommended)
@@ -82,13 +83,21 @@ sudo apt remove lightdm
 The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
 from the [Releases](https://github.com/darksid3r/OctoPrint-TFT/releases) page. The packages
 are available for Debian based distributions such as Raspbian and OctoPi for
-version `stretch`.
+versions `Jessie` or `Stretch`.
 
-For example for a Raspbian Stretch, version 0.0 (please note that you should head to the "Releases" section" and download the latest version that suits your debian - Jessie or Stretch):
+In order to check which Debian version you have installed, run the following command:
+
 ```sh
-> wget https://github.com/darksid3r/OctoPrint-TFT/releases/download/1.0/octoprint-tft_0.0.git223e415-1_armhf.deb
-> sudo dpkg -i octoprint-tft_0.0.git223e415-1_armhf.deb
+cat /etc/os-release | grep PRETTY_NAME
 ```
+
+For example, for a Raspbian Stretch, version 1.1:
+
+```sh
+> wget https://github.com/darksid3r/OctoPrint-TFT/releases/download/1.1/octoprint-tft_stretch_1.1.git91fa718-1_armhf.deb 
+> sudo dpkg -i octoprint-tft_stretch_1.1.git91fa718-1_armhf.deb 
+```
+##Please note that in order to get the latest version of Octoprint-TFT for your specific Debian release, go to the "Releases" section of this page.
 
 
 ### Install from source
