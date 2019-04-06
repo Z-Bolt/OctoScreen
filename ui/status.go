@@ -15,8 +15,8 @@ type statusPanel struct {
 	step *StepButton
 	pb   *gtk.ProgressBar
 
-	bed, tool0         *LabelWithImage
-	file, left         *LabelWithImage
+	bed, tool0                 *LabelWithImage
+	file, left, finish         *LabelWithImage
 	//status			   *LabelWithImage
 	print, pause, stop *gtk.Button
 	taskRunning bool
@@ -47,10 +47,10 @@ func (m *statusPanel) initialize() {
 func (m *statusPanel) createProgressBar() *gtk.ProgressBar {
 	m.pb = MustProgressBar()
 	m.pb.SetShowText(true)
-	m.pb.SetMarginTop(12)
-	m.pb.SetMarginStart(5)
-	m.pb.SetMarginEnd(5)
-	m.pb.SetMarginBottom(47)
+	//m.pb.SetMarginTop(12)
+	//m.pb.SetMarginStart(5)
+	//m.pb.SetMarginEnd(5)
+	//m.pb.SetMarginBottom(20)
 	m.pb.SetName("PrintProg")
 	return m.pb
 }
@@ -66,23 +66,22 @@ func (m *statusPanel) createMainBox() *gtk.Box {
 	grid.Add(m.createInfoBox())
 	grid.SetVAlign(gtk.ALIGN_START)
 	grid.SetMarginTop(20)
+	
 	box.Add(grid)
 
-	pb_box := MustBox(gtk.ORIENTATION_VERTICAL, 50)
+	pb_box := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	pb_box.SetVExpand(true)
 	pb_box.SetHExpand(true)
-
-	pb_box.Add(m.createProgressBar())
-	
+	//pb_box.Add(MustButton(MustImageFromFileWithSize("back.svg", 60, 60), m.UI.GoHistory))
+	pb_box.Add(m.createProgressBar())	
 	box.Add(pb_box)
 
-		
-	butt := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	butt := MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
 	butt.SetHAlign(gtk.ALIGN_END)
 	butt.SetVAlign(gtk.ALIGN_END)
 	butt.SetVExpand(true)
-	butt.SetMarginTop(5)
-	butt.SetMarginEnd(5)
+	butt.SetMarginTop(0)
+	butt.SetMarginEnd(0)
 	butt.Add(m.createPrintButton())
 	butt.Add(m.createPauseButton())
 	butt.Add(m.createStopButton())
@@ -93,10 +92,15 @@ func (m *statusPanel) createMainBox() *gtk.Box {
 
 func (m *statusPanel) createInfoBox() *gtk.Box {
 	m.file = MustLabelWithImage("file.svg", "")
+	m.file.SetName("NameLabel")
 	m.left = MustLabelWithImage("speed-step.svg", "")
 	m.left.SetName("TimeLabel")
+	m.finish = MustLabelWithImage("finish.svg", "")
+	m.finish.SetName("TimeLabel")
 	m.bed = MustLabelWithImage("bed.svg", "")
+	m.bed.SetName("TempLabel")
 	m.tool0 = MustLabelWithImage("extruder.svg", "")
+	m.tool0.SetName("TempLabel")
 //	m.status = MustLabelWithImage("file.svg", "")
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 5)
@@ -104,6 +108,7 @@ func (m *statusPanel) createInfoBox() *gtk.Box {
 	info.SetHExpand(true)
 	info.Add(m.file)
 	info.Add(m.left)
+	info.Add(m.finish)
 	info.Add(m.tool0)
 	info.Add(m.bed)
 //	info.Add(m.status)
@@ -215,8 +220,8 @@ func (m *statusPanel) updateJob() {
 	if err != nil {
 		Logger.Error(err)
 		return
-	}
 
+	}
 	file := "<i>File not set</i>"
 	if s.Job.File.Name != "" {
 		file = filenameEllipsis_long(s.Job.File.Name)
@@ -227,10 +232,13 @@ func (m *statusPanel) updateJob() {
 
 	if m.UI.State.IsOperational() {
 		m.left.Label.SetLabel("Printer is ready")
+		m.finish.Label.SetLabel("-")
 		return
 	}
 
 	var text string
+	var finishText string
+    finishText = fmt.Sprintf("-")
 	switch s.Progress.Completion {
 	case 100:
 		text = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime)*1e9))
@@ -239,13 +247,15 @@ func (m *statusPanel) updateJob() {
 	default:
 		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
 		l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		f := time.Now().Local().Add(time.Duration(int64(s.Progress.PrintTimeLeft)) * time.Second)
 		text = fmt.Sprintf("Elapsed: %s / Left: %s", e, l)
+		finishText = fmt.Sprintf("Finish time: %s", f.Format("15:04 02-Jan-06"))
 		if l == 0 {
 			text = fmt.Sprintf("Elapsed: %s", e)
 		}
 	}
-
 	m.left.Label.SetLabel(text)
+	m.finish.Label.SetLabel(finishText)
 }
 
 func filenameEllipsis_long(name string) string {

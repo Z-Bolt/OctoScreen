@@ -46,10 +46,22 @@ GtkButton {
     font-size: 18px;
     min-height: 40px;
     min-width: 60px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+#NameLabel {
+    font-size: 16px;
+    font-weight: bold;
 }
 
 #TimeLabel {
     font-size: 18px;
+    font-weight: bold;
+}
+
+#TempLabel {
+    font-size: 16px;
     font-weight: bold;
 }
 
@@ -58,21 +70,7 @@ GtkButton {
 
 
 progress, trough {
-  min-height: 30px;
-/*
- background-image:
-        linear-gradient(
-            to bottom,
-            shade (
-               @progress_bg_color,
-                1.3
-            ),
-            shade (
-                @progress_bg_color1,
-                1.08
-            )
-        );
-*/
+ min-height: 30px;
  border: 1px solid shade (@progress_bg_color, 0.9);
  color: #000000;
 }
