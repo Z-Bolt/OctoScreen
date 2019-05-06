@@ -101,7 +101,7 @@ func (m *systemPanel) createInfoBox() gtk.IWidget {
 	main.SetHExpand(true)
 	main.SetHAlign(gtk.ALIGN_CENTER)
 	main.SetVExpand(true)
-	main.Add(MustImageFromFileWithSize("octoprint-logo.png", 140, 140))
+	main.Add(MustImageFromFileWithSize("logo-white.svg", 140, 140))
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	info.SetVExpand(true)

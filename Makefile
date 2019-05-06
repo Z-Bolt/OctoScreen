@@ -15,7 +15,7 @@ WORKDIR := $(shell pwd)
 BUILD_PATH := $(WORKDIR)/build
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
-DEBIAN_PACKAGES = JESSIE STRETCH
+DEBIAN_PACKAGES = STRETCH
 STRETCH_NAME := stretch
 STRETCH_IMAGE := golang:1.9-stretch
 STRETCH_GO_TAGS := gtk_3_22
@@ -26,15 +26,15 @@ JESSIE_GO_TAGS := gtk_3_14
 
 
 # Build information
-GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
-DEV_PREFIX := 0.0
-VERSION ?= $(DEV_PREFIX)~git$(GIT_COMMIT)
+#GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
+#DEV_PREFIX := 1.0
+VERSION := 1.2
 BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
-BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+#BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
-ifneq ($(BRANCH), master)
-	VERSION := $(shell echo $(BRANCH)| sed -e 's/v//g')
-endif
+#ifneq ($(BRANCH), master)
+#	VERSION := $(shell echo $(BRANCH)| sed -e 's/v//g')
+#endif
 
 # Package information
 PACKAGE_NAME = octoprint-tft
