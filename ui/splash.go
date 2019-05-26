@@ -15,7 +15,7 @@ func NewSplashPanel(ui *UI) *SplashPanel {
 
 func (m *SplashPanel) initialize() {
 	logo := MustImageFromFile("logo-white.svg")
-	m.Label = MustLabel("Connecting to OctoPrint...")
+	m.Label = MustLabel("Initializing printer...")
 
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 15)
 	box.SetVAlign(gtk.ALIGN_CENTER)

@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/mcuadros/OctoPrint-TFT/ui"
+	// "github.com/me/OctoPrint-TFT/ui"
 
 	"github.com/gotk3/gotk3/gtk"
 	"gopkg.in/yaml.v1"
@@ -61,6 +62,7 @@ func main() {
 	gtk.Init(nil)
 
 	settings, _ := gtk.SettingsGetDefault()
+
 	settings.SetProperty("gtk-application-prefer-dark-theme", true)
 
 	width, height := getSize()

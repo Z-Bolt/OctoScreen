@@ -17,7 +17,8 @@ var Version = "0.1.x"
 var Build = "no-set"
 
 const panelW = 4
-const panelH = 2
+
+var panelH = 2
 
 type Panel interface {
 	Grid() *gtk.Grid

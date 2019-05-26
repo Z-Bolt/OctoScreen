@@ -1,9 +1,8 @@
 package ui
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
+	"net"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -101,20 +100,17 @@ func (m *systemPanel) createInfoBox() gtk.IWidget {
 	main.SetHExpand(true)
 	main.SetHAlign(gtk.ALIGN_CENTER)
 	main.SetVExpand(true)
-	main.Add(MustImageFromFileWithSize("logo-white.svg", 140, 140))
+
+	img := MustImageFromFileWithSize("logo-white.svg", 140, 112)
+	img.SetMarginTop(35)
+	main.Add(img)
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	info.SetVExpand(true)
 	info.SetVAlign(gtk.ALIGN_CENTER)
-	m.addOctoPrintTFT(info)
 
-	title := MustLabel("<b>Versions Information</b>")
-	title.SetMarginTop(15)
-	title.SetMarginBottom(5)
-	info.Add(title)
-
+	m.addNetwork(info)
 	m.addOctoPrint(info)
-	m.addOctoPi(info)
 	m.addSystemInfo(info)
 
 	main.Add(info)
@@ -122,35 +118,50 @@ func (m *systemPanel) createInfoBox() gtk.IWidget {
 	return main
 }
 
-func (m *systemPanel) addOctoPrintTFT(box *gtk.Box) {
-	title := MustLabel("<b>OctoPrint-TFT Version</b>")
+// func (m *systemPanel) addOctoPrintTFT(box *gtk.Box) {
+// 	title := MustLabel("<b>OctoPrint-TFT Version</b>")
+// 	title.SetMarginTop(15)
+// 	title.SetMarginBottom(5)
+
+// 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+// 	box.Add(info)
+
+// 	info.Add(title)
+// 	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
+// }
+
+func (m *systemPanel) addNetwork(box *gtk.Box) {
+	title := MustLabel("<b>Network Information</b>")
+	title.SetMarginTop(40)
 	title.SetMarginBottom(5)
 
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	box.Add(info)
+	box.Add(title)
+	addrs, _ := net.InterfaceAddrs()
 
-	info.Add(title)
-	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
-}
-
-func (m *systemPanel) addOctoPi(box *gtk.Box) {
-	v, err := ioutil.ReadFile("/etc/octopi_version")
-	if err != nil {
-		Logger.Error(err)
-		return
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				box.Add(MustLabel("IP Address <b>%s</b>", ipnet.IP.String()))
+			}
+		}
 	}
-
-	box.Add(MustLabel("OctoPi Version: <b>%s</b>", bytes.Trim(v, "\n")))
 }
 
 func (m *systemPanel) addOctoPrint(box *gtk.Box) {
+	title := MustLabel("<b>Versions Information</b>")
+	title.SetMarginTop(15)
+	title.SetMarginBottom(5)
+	box.Add(title)
+
 	r, err := (&octoprint.VersionRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
 		return
 	}
 
+	box.Add(MustLabel("UI Version: <b>%s (%s)</b>", Version, Build))
 	box.Add(MustLabel("OctoPrint Version: <b>%s (%s)</b>", r.Server, r.API))
+
 }
 
 func (m *systemPanel) addSystemInfo(box *gtk.Box) {

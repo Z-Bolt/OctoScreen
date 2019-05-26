@@ -11,14 +11,16 @@ import (
 
 var statusPanelInstance *statusPanel
 
+// var panelH = 3
+
 type statusPanel struct {
 	CommonPanel
 	step *StepButton
 	pb   *gtk.ProgressBar
 
-	bed, tool0, tool1  *LabelWithImage
-	file, left         *LabelWithImage
-	print, pause, stop *gtk.Button
+	bed, tool0, tool1, tool2, tool3 *LabelWithImage
+	file, left                      *LabelWithImage
+	print, pause, stop              *gtk.Button
 }
 
 func StatusPanel(ui *UI, parent Panel) Panel {
@@ -34,12 +36,13 @@ func StatusPanel(ui *UI, parent Panel) Panel {
 }
 
 func (m *statusPanel) initialize() {
+	panelH = 3
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createMainBox(), 1, 0, 4, 1)
-	m.Grid().Attach(m.createPrintButton(), 1, 1, 1, 1)
-	m.Grid().Attach(m.createPauseButton(), 2, 1, 1, 1)
-	m.Grid().Attach(m.createStopButton(), 3, 1, 1, 1)
+	m.Grid().Attach(m.createMainBox(), 1, 0, 4, 2)
+	m.Grid().Attach(m.createPrintButton(), 1, 2, 1, 1)
+	m.Grid().Attach(m.createPauseButton(), 2, 2, 1, 1)
+	m.Grid().Attach(m.createStopButton(), 3, 2, 1, 1)
 }
 
 func (m *statusPanel) createProgressBar() *gtk.ProgressBar {
@@ -86,6 +89,8 @@ func (m *statusPanel) createTemperatureBox() *gtk.Box {
 	m.bed = MustLabelWithImage("bed.svg", "")
 	m.tool0 = MustLabelWithImage("extruder.svg", "")
 	m.tool1 = MustLabelWithImage("extruder.svg", "")
+	m.tool2 = MustLabelWithImage("extruder.svg", "")
+	m.tool3 = MustLabelWithImage("extruder.svg", "")
 
 	temp := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	temp.SetHAlign(gtk.ALIGN_START)
@@ -94,6 +99,8 @@ func (m *statusPanel) createTemperatureBox() *gtk.Box {
 	temp.Add(m.bed)
 	temp.Add(m.tool0)
 	temp.Add(m.tool1)
+	temp.Add(m.tool2)
+	temp.Add(m.tool3)
 
 	return temp
 }
@@ -156,6 +163,9 @@ func (m *statusPanel) updateTemperature() {
 	m.doUpdateState(&s.State)
 
 	m.tool1.Hide()
+	m.tool2.Hide()
+	m.tool3.Hide()
+
 	for tool, s := range s.Temperature.Current {
 		text := fmt.Sprintf("%s: %.0f°C / %.0f°C", strings.Title(tool), s.Actual, s.Target)
 		switch tool {
@@ -166,6 +176,12 @@ func (m *statusPanel) updateTemperature() {
 		case "tool1":
 			m.tool1.Label.SetLabel(text)
 			m.tool1.Show()
+		case "tool2":
+			m.tool2.Label.SetLabel(text)
+			m.tool2.Show()
+		case "tool3":
+			m.tool3.Label.SetLabel(text)
+			m.tool3.Show()
 		}
 	}
 }
@@ -224,20 +240,23 @@ func (m *statusPanel) updateJob() {
 	case 0:
 		text = "Warming up ..."
 	default:
-		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-		text = fmt.Sprintf("Elapsed/Left: %s / %s", e, l)
-		if l == 0 {
-			text = fmt.Sprintf("Elapsed: %s", e)
-		}
+		text = "Printing in progess ;)"
+		// e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
+		// l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		// // eta := time.Now().Add(l).Format("3:04 PM")
+		// if l == 0 {
+		// 	text = fmt.Sprintf("Elapsed: %s", e)
+		// } else {
+		// 	text = fmt.Sprintf("Elapsed: %s | Left: %s", e, l)
+		// }
 	}
 
 	m.left.Label.SetLabel(text)
 }
 
 func filenameEllipsis(name string) string {
-	if len(name) > 26 {
-		return name[:23] + "..."
+	if len(name) > 46 {
+		return name[:43] + "..."
 	}
 
 	return name
