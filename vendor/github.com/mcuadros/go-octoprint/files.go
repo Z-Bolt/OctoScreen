@@ -98,6 +98,10 @@ func (cmd *FilesRequest) Do(c *Client) (*FilesResponse, error) {
 		return nil, err
 	}
 
+	if len(r.Children) > 0 {
+		r.Files = r.Children
+	}
+
 	return r, err
 }
 

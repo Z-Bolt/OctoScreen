@@ -249,7 +249,8 @@ type Profile struct {
 type FilesResponse struct {
 	// Files is the list of requested files. Might be an empty list if no files
 	// are available
-	Files []*FileInformation
+	Files    []*FileInformation
+	Children []*FileInformation
 	// Free is the amount of disk space in bytes available in the local disk
 	// space (refers to OctoPrint’s `uploads` folder). Only returned if file
 	// list was requested for origin `local` or all origins.
@@ -390,7 +391,7 @@ type CommandDefinition struct {
 	// confirmation dialog they have to acknowledge in order to really execute
 	// the command.
 	RawConfirm json.RawMessage `json:"confirm"`
-	Confirm string `json:"-"`
+	Confirm    string          `json:"-"`
 	// Async whether to execute the command asynchronously or wait for its
 	// result before responding to the HTTP execution request.
 	Async bool `json:"async"`

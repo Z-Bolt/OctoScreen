@@ -11,8 +11,6 @@ import (
 
 var statusPanelInstance *statusPanel
 
-// var panelH = 3
-
 type statusPanel struct {
 	CommonPanel
 	step *StepButton
@@ -26,6 +24,7 @@ type statusPanel struct {
 func StatusPanel(ui *UI, parent Panel) Panel {
 	if statusPanelInstance == nil {
 		m := &statusPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.panelH = 3
 		m.b = NewBackgroundTask(time.Second*5, m.update)
 		m.initialize()
 
@@ -36,7 +35,6 @@ func StatusPanel(ui *UI, parent Panel) Panel {
 }
 
 func (m *statusPanel) initialize() {
-	panelH = 3
 	defer m.Initialize()
 
 	m.Grid().Attach(m.createMainBox(), 1, 0, 4, 2)
@@ -240,23 +238,26 @@ func (m *statusPanel) updateJob() {
 	case 0:
 		text = "Warming up ..."
 	default:
+		Logger.Info(s.Progress.PrintTime)
+		Logger.Info(s.Progress.PrintTimeLeft)
 		text = "Printing in progess ;)"
-		// e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		// l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-		// // eta := time.Now().Add(l).Format("3:04 PM")
-		// if l == 0 {
-		// 	text = fmt.Sprintf("Elapsed: %s", e)
-		// } else {
-		// 	text = fmt.Sprintf("Elapsed: %s | Left: %s", e, l)
-		// }
+		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
+		l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		// eta := time.Now().Add(l).Format("3:04 PM")
+		if l == 0 {
+			text = fmt.Sprintf("Elapsed: %s", e)
+		} else {
+			text = fmt.Sprintf("Elapsed: %s | Left: %s", e, l)
+		}
 	}
 
 	m.left.Label.SetLabel(text)
 }
 
 func filenameEllipsis(name string) string {
-	if len(name) > 46 {
-		return name[:43] + "..."
+	l := len(name)
+	if l > 35 {
+		return name[:14] + "..." + name[l-18:l]
 	}
 
 	return name

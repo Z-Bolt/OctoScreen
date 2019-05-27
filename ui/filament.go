@@ -27,7 +27,7 @@ func FilamentPanel(ui *UI, parent Panel) Panel {
 		m := &filamentPanel{CommonPanel: NewCommonPanel(ui, parent),
 			labels: map[string]*LabelWithImage{},
 		}
-
+		m.panelH = 3
 		m.b = NewBackgroundTask(time.Second*5, m.updateTemperatures)
 		m.initialize()
 		filamentPanelInstance = m
@@ -39,6 +39,9 @@ func FilamentPanel(ui *UI, parent Panel) Panel {
 func (m *filamentPanel) initialize() {
 	defer m.Initialize()
 
+	m.Grid().Attach(m.createExtrudeButton("Load", "extrude.svg", 1), 1, 1, 1, 1)
+	m.Grid().Attach(m.createExtrudeButton("Unload", "retract.svg", -1), 4, 1, 1, 1)
+
 	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
 	m.Grid().Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
 
@@ -46,13 +49,13 @@ func (m *filamentPanel) initialize() {
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
 	m.box.SetMarginStart(10)
 
-	m.Grid().Attach(m.box, 2, 0, 2, 1)
+	m.Grid().Attach(m.box, 2, 0, 2, 2)
 
 	m.amount = MustStepButton("move-step.svg", Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1})
-	m.Grid().Attach(m.amount, 2, 1, 1, 1)
+	m.Grid().Attach(m.amount, 2, 2, 1, 1)
 
-	m.Grid().Attach(m.createToolButton(), 1, 1, 1, 1)
-	m.Grid().Attach(m.createFlowrateButton(), 3, 1, 1, 1)
+	m.Grid().Attach(m.createToolButton(), 1, 2, 1, 1)
+	m.Grid().Attach(m.createFlowrateButton(), 3, 2, 1, 1)
 }
 
 func (m *filamentPanel) updateTemperatures() {

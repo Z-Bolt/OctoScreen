@@ -16,10 +16,6 @@ import (
 var Version = "0.1.x"
 var Build = "no-set"
 
-const panelW = 4
-
-var panelH = 2
-
 type Panel interface {
 	Grid() *gtk.Grid
 	Show()
@@ -28,10 +24,12 @@ type Panel interface {
 }
 
 type CommonPanel struct {
-	UI *UI
-	g  *gtk.Grid
-	b  *BackgroundTask
-	p  Panel
+	UI     *UI
+	g      *gtk.Grid
+	b      *BackgroundTask
+	p      Panel
+	panelW int
+	panelH int
 
 	buttons []gtk.IWidget
 }
@@ -41,14 +39,14 @@ func NewCommonPanel(ui *UI, parent Panel) CommonPanel {
 	g.SetRowHomogeneous(true)
 	g.SetColumnHomogeneous(true)
 
-	return CommonPanel{UI: ui, g: g, p: parent}
+	return CommonPanel{UI: ui, g: g, p: parent, panelW: 4, panelH: 2}
 }
 
 func (p *CommonPanel) Initialize() {
-	last := panelW * panelH
+	last := p.panelW * p.panelH
 	if last < len(p.buttons) {
-		cols := math.Ceil(float64(len(p.buttons)) / float64(panelW))
-		last = int(cols) * panelW
+		cols := math.Ceil(float64(len(p.buttons)) / float64(p.panelW))
+		last = int(cols) * p.panelW
 	}
 
 	for i := len(p.buttons) + 1; i < last; i++ {
@@ -63,8 +61,8 @@ func (p *CommonPanel) Parent() Panel {
 }
 
 func (p *CommonPanel) AddButton(b gtk.IWidget) {
-	x := len(p.buttons) % panelW
-	y := len(p.buttons) / panelW
+	x := len(p.buttons) % p.panelW
+	y := len(p.buttons) / p.panelW
 	p.g.Attach(b, x+1, y, 1, 1)
 	p.buttons = append(p.buttons, b)
 }

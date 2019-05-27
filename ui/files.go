@@ -10,17 +10,44 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
+type locationHistory struct {
+	locations []octoprint.Location
+}
+
+func (l *locationHistory) current() octoprint.Location {
+	return l.locations[len(l.locations)-1]
+}
+
+func (l *locationHistory) goForward(folder string) {
+	newLocation := string(l.current()) + "/" + folder
+	l.locations = append(l.locations, octoprint.Location(newLocation))
+}
+
+func (l *locationHistory) goBack() {
+	l.locations = l.locations[0 : len(l.locations)-1]
+}
+
+func (l *locationHistory) isRoot() bool {
+	if len(l.locations) > 1 {
+		return false
+	} else {
+		return true
+	}
+}
+
 var filesPanelInstance *filesPanel
 
 type filesPanel struct {
 	CommonPanel
 
-	list *gtk.Box
+	list     *gtk.Box
+	location locationHistory
 }
 
 func FilesPanel(ui *UI, parent Panel) Panel {
 	if filesPanelInstance == nil {
-		m := &filesPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		l := locationHistory{locations: []octoprint.Location{octoprint.Local}}
+		m := &filesPanel{CommonPanel: NewCommonPanel(ui, parent), location: l}
 		m.initialize()
 		filesPanelInstance = m
 	}
@@ -33,6 +60,7 @@ func (m *filesPanel) initialize() {
 	m.list.SetVExpand(true)
 
 	scroll, _ := gtk.ScrolledWindowNew(nil, nil)
+	scroll.SetProperty("overlay-scrolling", false)
 	scroll.Add(m.list)
 
 	box := MustBox(gtk.ORIENTATION_VERTICAL, 0)
@@ -53,7 +81,7 @@ func (m *filesPanel) createActionBar() gtk.IWidget {
 
 	bar.Add(m.createRefreshButton())
 	bar.Add(m.createInitReleaseSDButton())
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.GoHistory))
+	bar.Add(m.createBackButton())
 
 	return bar
 }
@@ -62,24 +90,45 @@ func (m *filesPanel) createRefreshButton() gtk.IWidget {
 	return MustButton(MustImageFromFileWithSize("refresh.svg", 40, 40), m.doLoadFiles)
 }
 
+func (m *filesPanel) createBackButton() gtk.IWidget {
+	return MustButton(MustImageFromFileWithSize("back.svg", 40, 40), func() {
+		if m.location.isRoot() {
+			m.UI.GoHistory()
+		} else {
+			m.location.goBack()
+			m.doLoadFiles()
+		}
+	})
+	// return MustButton(MustImageFromFileWithSize("refresh.svg", 40, 40), m.doLoadFiles)
+}
+
 func (m *filesPanel) doLoadFiles() {
-	Logger.Info("Refreshing list of files")
+	var files []*octoprint.FileInformation
+
+	Logger.Info("Loading list of files from: ", string(m.location.current()))
+
 	m.doRefreshSD()
 
-	local := m.doLoadFilesFromLocation(octoprint.Local)
-	sdcard := m.doLoadFilesFromLocation(octoprint.SDCard)
+	r := &octoprint.FilesRequest{Location: m.location.current(), Recursive: false}
+	folder, err := r.Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		files = []*octoprint.FileInformation{}
+	} else {
+		files = folder.Files
+	}
 
-	s := byDate(local)
-	s = append(s, sdcard...)
+	s := byDate(files)
+	// s = append(s, sdcard...)
 	sort.Sort(s)
 
 	EmptyContainer(&m.list.Container)
 	for _, f := range s {
 		if f.IsFolder() {
-			continue
+			m.addFolder(m.list, f)
+		} else {
+			m.addFile(m.list, f)
 		}
-
-		m.addFile(m.list, f)
 	}
 
 	m.list.ShowAll()
@@ -89,17 +138,6 @@ func (m *filesPanel) doRefreshSD() {
 	if err := (&octoprint.SDRefreshRequest{}).Do(m.UI.Printer); err != nil {
 		Logger.Error(err)
 	}
-}
-
-func (m *filesPanel) doLoadFilesFromLocation(l octoprint.Location) []*octoprint.FileInformation {
-	r := &octoprint.FilesRequest{Location: l, Recursive: true}
-	files, err := r.Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return []*octoprint.FileInformation{}
-	}
-
-	return files.Files
 }
 
 func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
@@ -119,7 +157,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	labels.Add(info)
 
 	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actions.Add(m.createLoadAndPrintButton("load.svg", f, false))
+	// actions.Add(m.createLoadAndPrintButton("load.svg", f, false))
 	actions.Add(m.createLoadAndPrintButton("status.svg", f, true))
 
 	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -130,6 +168,41 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	file.SetHExpand(true)
 
 	file.Add(MustImageFromFileWithSize("file.svg", 35, 35))
+
+	file.Add(labels)
+	file.Add(actions)
+
+	frame.Add(file)
+	b.Add(frame)
+}
+
+func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
+	frame, _ := gtk.FrameNew("")
+
+	name := MustLabel(f.Name)
+	name.SetMarkup(fmt.Sprintf("<big>%s</big>", filenameEllipsis(f.Name)))
+	name.SetHExpand(true)
+
+	info := MustLabel("")
+	info.SetMarkup(fmt.Sprintf("<small>Size: <b>%s</b></small>",
+		humanize.Bytes(uint64(f.Size)),
+	))
+
+	labels := MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	labels.Add(name)
+	labels.Add(info)
+
+	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	actions.Add(m.createOpenFolderButton(f))
+
+	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	file.SetMarginTop(15)
+	file.SetMarginEnd(15)
+	file.SetMarginStart(15)
+	file.SetMarginBottom(15)
+	file.SetHExpand(true)
+
+	file.Add(MustImageFromFileWithSize("files.svg", 35, 35))
 
 	file.Add(labels)
 	file.Add(actions)
@@ -154,6 +227,15 @@ func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 			}
 		}),
 	)
+}
+
+func (m *filesPanel) createOpenFolderButton(f *octoprint.FileInformation) gtk.IWidget {
+	return MustButton(MustImageFromFileWithSize("open.svg", 30, 30), func() {
+		m.location.goForward(f.Path)
+		// m.currentFolder = octoprint.Location(f.Origin + "/" + string())
+		// m.parentFolder = octoprint.Location(f.Origin)
+		m.doLoadFiles()
+	})
 }
 
 func (m *filesPanel) createInitReleaseSDButton() gtk.IWidget {

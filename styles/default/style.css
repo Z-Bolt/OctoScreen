@@ -14,3 +14,11 @@
 .error {
     background-color:rgba(204, 30, 30, 0.7);
 }
+
+scrollbar, scrollbar button, scrollbar slider {
+    -GtkScrollbar-has-backward-stepper: true;
+    -GtkScrollbar-has-forward-stepper: true;
+    min-width: 52px;
+    min-height: 52px;
+    border-radius: 0px;
+}
