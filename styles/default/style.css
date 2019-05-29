@@ -1,3 +1,4 @@
+
 .dialog { border: 2px solid black; }
 
 .notification {
@@ -15,10 +16,46 @@
     background-color:rgba(204, 30, 30, 0.7);
 }
 
-scrollbar, scrollbar button, scrollbar slider {
-    -GtkScrollbar-has-backward-stepper: true;
-    -GtkScrollbar-has-forward-stepper: true;
-    min-width: 52px;
-    min-height: 52px;
-    border-radius: 0px;
+scrollbar, scrollbar button {
+    border: none;
+    background-color: #000;
 }
+
+window {
+    background-color: #000;
+}
+
+scrollbar slider {
+    /* -GtkScrollbar-has-backward-stepper: true; */
+    /* -GtkScrollbar-has-forward-stepper: true; */
+    min-width: 52px;
+    border-radius: 8px;
+}
+
+progress, trough {
+    min-height: 20px;
+}
+
+
+
+/* GtkWindow {
+    background-color: green;
+    border-width: 3px;
+    border-color: blue;
+} */
+
+/* GtkButton {
+    background-image: none;
+    background-color:#1010FF;
+    margin:2px;
+    border-radius:0;
+} */
+
+
+/* button, entry {
+    color: #ff00ea;
+    font: 12px "Comic Sans";
+    background-color: #1010FF;
+  } */
+
+
