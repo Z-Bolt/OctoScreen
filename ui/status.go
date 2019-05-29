@@ -241,14 +241,14 @@ func (m *statusPanel) updateJob() {
 		Logger.Info(s.Progress.PrintTime)
 		Logger.Info(s.Progress.PrintTimeLeft)
 		text = "Printing in progess ;)"
-		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-		// eta := time.Now().Add(l).Format("3:04 PM")
-		if l == 0 {
-			text = fmt.Sprintf("Elapsed: %s", e)
-		} else {
-			text = fmt.Sprintf("Elapsed: %s | Left: %s", e, l)
-		}
+		// e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
+		// l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		// // eta := time.Now().Add(l).Format("3:04 PM")
+		// if l == 0 {
+		// 	text = fmt.Sprintf("Elapsed: %s", e)
+		// } else {
+		// 	text = fmt.Sprintf("Elapsed: %s | Left: %s", e, l)
+		// }
 	}
 
 	m.left.Label.SetLabel(text)
@@ -256,8 +256,8 @@ func (m *statusPanel) updateJob() {
 
 func filenameEllipsis(name string) string {
 	l := len(name)
-	if l > 35 {
-		return name[:14] + "..." + name[l-18:l]
+	if l > 32 {
+		return name[:12] + "..." + name[l-17:l]
 	}
 
 	return name

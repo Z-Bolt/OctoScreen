@@ -39,8 +39,8 @@ func FilamentPanel(ui *UI, parent Panel) Panel {
 func (m *filamentPanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createExtrudeButton("Load", "extrude.svg", 1), 1, 1, 1, 1)
-	m.Grid().Attach(m.createExtrudeButton("Unload", "retract.svg", -1), 4, 1, 1, 1)
+	m.Grid().Attach(m.createLoadButton(), 1, 1, 1, 1)
+	m.Grid().Attach(m.createUnloadButton(), 4, 1, 1, 1)
 
 	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
 	m.Grid().Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
@@ -137,8 +137,37 @@ func (m *filamentPanel) createFlowrateButton() *StepButton {
 	return b
 }
 
+func (m *filamentPanel) createLoadButton() gtk.IWidget {
+
+	return MustButtonImage("Load", "extrude.svg", func() {
+		cmd := &octoprint.CommandRequest{}
+		cmd.Commands = []string{"G92 E0", "G0 E600 F5000", "G92 E0", "G0 E65 F500"}
+
+		Logger.Info("Sending filament load request")
+		if err := cmd.Do(m.UI.Printer); err != nil {
+			Logger.Error(err)
+			return
+		}
+	})
+}
+
+func (m *filamentPanel) createUnloadButton() gtk.IWidget {
+
+	return MustButtonImage("Unload", "retract.svg", func() {
+		cmd := &octoprint.CommandRequest{}
+		cmd.Commands = []string{"G92 E0", "G0 E-800 F5000"}
+
+		Logger.Info("Sending filament unload request")
+		if err := cmd.Do(m.UI.Printer); err != nil {
+			Logger.Error(err)
+			return
+		}
+	})
+}
+
 func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
-	return MustButtonImage(label, image, func() {
+
+	return MustPressedButton(label, image, func() {
 		cmd := &octoprint.ToolExtrudeRequest{}
 		cmd.Amount = m.amount.Value().(int) * dir
 
@@ -147,5 +176,16 @@ func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IW
 			Logger.Error(err)
 			return
 		}
-	})
+	}, 200)
+
+	// return MustButtonImage(label, image, func() {
+	// 	cmd := &octoprint.ToolExtrudeRequest{}
+	// 	cmd.Amount = m.amount.Value().(int) * dir
+
+	// 	Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
+	// 	if err := cmd.Do(m.UI.Printer); err != nil {
+	// 		Logger.Error(err)
+	// 		return
+	// 	}
+	// })
 }

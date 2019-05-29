@@ -107,8 +107,7 @@ func (m *filesPanel) doLoadFiles() {
 
 	Logger.Info("Loading list of files from: ", string(m.location.current()))
 
-	m.doRefreshSD()
-
+	// m.doRefreshSD()
 	r := &octoprint.FilesRequest{Location: m.location.current(), Recursive: false}
 	folder, err := r.Do(m.UI.Printer)
 	if err != nil {
@@ -132,12 +131,6 @@ func (m *filesPanel) doLoadFiles() {
 	}
 
 	m.list.ShowAll()
-}
-
-func (m *filesPanel) doRefreshSD() {
-	if err := (&octoprint.SDRefreshRequest{}).Do(m.UI.Printer); err != nil {
-		Logger.Error(err)
-	}
 }
 
 func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
