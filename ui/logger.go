@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"os"
 	"path"
 	"runtime"
 	"strings"
@@ -63,7 +64,22 @@ func (h NotificationsHook) Fire(entry *logrus.Entry) error {
 var Logger *logrus.Entry
 
 func init() {
-	logrus.AddHook(ContextHook{})
-	logrus.SetLevel(logrus.DebugLevel)
-	Logger = logrus.WithFields(logrus.Fields{})
+	var LogFile = os.Getenv("OCTOPRINT_TFT_LOG_FILE")
+
+	var log = logrus.New()
+	log.AddHook(ContextHook{})
+	log.SetLevel(logrus.DebugLevel)
+
+	if LogFile == "" {
+		log.Out = os.Stdout
+	} else {
+		file, err := os.OpenFile(LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err == nil {
+			log.Out = file
+		} else {
+			log.Info("Failed to log to file, using default stderr")
+		}
+	}
+
+	Logger = log.WithFields(logrus.Fields{})
 }

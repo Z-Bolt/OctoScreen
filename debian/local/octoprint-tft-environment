@@ -19,3 +19,6 @@ OCTOPRINT_TFT_STYLE_PATH=/opt/octoprint-tft/styles/default/
 # Resolution of the application, should be configured to the resolution of your
 # screen, for example 800x480. By default 480x320.
 OCTOPRINT_TFT_RESOLUTION=
+
+# Location of file for logging (Optional)
+OCTOPRINT_TFT_LOG_FILE=
