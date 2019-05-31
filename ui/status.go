@@ -105,7 +105,7 @@ func (m *statusPanel) createTemperatureBox() *gtk.Box {
 
 func (m *statusPanel) createPrintButton() gtk.IWidget {
 	m.print = MustButtonImage("Print", "status.svg", func() {
-		defer m.updateTemperature()
+		// defer m.updateTemperature()
 
 		Logger.Warning("Starting a new job")
 		if err := (&octoprint.StartRequest{}).Do(m.UI.Printer); err != nil {
@@ -119,7 +119,7 @@ func (m *statusPanel) createPrintButton() gtk.IWidget {
 
 func (m *statusPanel) createPauseButton() gtk.IWidget {
 	m.pause = MustButtonImage("Pause", "pause.svg", func() {
-		defer m.updateTemperature()
+		// defer m.updateTemperature()
 
 		Logger.Warning("Pausing/Resuming job")
 		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
@@ -133,16 +133,9 @@ func (m *statusPanel) createPauseButton() gtk.IWidget {
 }
 
 func (m *statusPanel) createStopButton() gtk.IWidget {
-	m.stop = MustButtonImage("Stop", "stop.svg", func() {
-		defer m.updateTemperature()
-
-		Logger.Warning("Stopping job")
-		if err := (&octoprint.CancelRequest{}).Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
-			return
-		}
-	})
-
+	m.stop = MustButtonImage("Stop", "stop.svg",
+		ConfirmStopDialog(m.UI.w, "Are you sure you want to stop current print?", m),
+	)
 	return m.stop
 }
 
@@ -234,12 +227,12 @@ func (m *statusPanel) updateJob() {
 	var text string
 	switch s.Progress.Completion {
 	case 100:
-		text = fmt.Sprintf("Job Completed in %s", time.Duration(int64(s.Job.LastPrintTime)*1e9))
+		text = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime)*1e9))
 	case 0:
 		text = "Warming up ..."
 	default:
-		Logger.Info(s.Progress.PrintTime)
-		Logger.Info(s.Progress.PrintTimeLeft)
+		// Logger.Info(s.Progress.PrintTime)
+		Logger.Info("Printing in progess ;)")
 		text = "Printing in progess ;)"
 		// e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
 		// l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
@@ -261,4 +254,46 @@ func filenameEllipsis(name string) string {
 	}
 
 	return name
+}
+
+func btou(b bool) uint8 {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func ConfirmStopDialog(parent *gtk.Window, msg string, ma *statusPanel) func() {
+	return func() {
+		win := gtk.MessageDialogNewWithMarkup(
+			parent,
+			gtk.DIALOG_MODAL,
+			gtk.MESSAGE_INFO,
+			gtk.BUTTONS_YES_NO,
+			"",
+		)
+
+		win.SetMarkup(CleanHTML(msg))
+		defer win.Destroy()
+
+		box, _ := win.GetContentArea()
+		box.SetMarginStart(15)
+		box.SetMarginEnd(15)
+		box.SetMarginTop(15)
+		box.SetMarginBottom(15)
+
+		ctx, _ := win.GetStyleContext()
+		ctx.AddClass("dialog")
+
+		ergebnis := win.Run()
+
+		if ergebnis == int(gtk.RESPONSE_YES) {
+
+			Logger.Warning("Stopping job")
+			if err := (&octoprint.CancelRequest{}).Do(ma.UI.Printer); err != nil {
+				Logger.Error(err)
+				return
+			}
+		}
+	}
 }
