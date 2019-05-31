@@ -35,6 +35,7 @@ if [ "$1" = configure ] && [ -d /etc/systemd/system/ ]; then
       echo "Display manager service is masked" >&2
     elif [ -e "$SERVICE" ]; then
       ln -sf "$SERVICE" "$DEFAULT_SERVICE"
+      chmod +x /etc/disablescreenblank.sh
     else
       echo "WARNING: $SERVICE is the selected default display manager but does not exist" >&2
       rm -f "$DEFAULT_SERVICE"

@@ -1,2 +1,3 @@
 debian/local/octoprint-tft-environment	etc
 debian/local/insserv.conf.d			    etc
+debian/local/disablescreenblank.sh      etc
