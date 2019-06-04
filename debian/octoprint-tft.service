@@ -4,14 +4,14 @@ Conflicts=getty@tty7.service
 After=systemd-user-sessions.service getty@tty7.service plymouth-quit.service
 
 [Service]
+Type=notify
+NotifyAccess=all
 EnvironmentFile=/etc/octoprint-tft-environment
 ExecStart=/usr/bin/xinit /usr/bin/OctoPrint-TFT -- :0 -nolisten tcp -nocursor
 ExecStartPost=/etc/disablescreenblank.sh 0
 StandardOutput=journal
 Restart=always
-RestartSec=1s
-TimeoutStopSec=5s
-IgnoreSIGPIPE=no
+WatchdogSec=10s
 
 [Install]
 WantedBy=graphical.target

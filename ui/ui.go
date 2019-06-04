@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/coreos/go-systemd/daemon"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
@@ -80,6 +81,8 @@ func (ui *UI) initialize() {
 	ui.g = MustGrid()
 	ui.o.Add(ui.g)
 	ui.o.AddOverlay(ui.Notifications)
+
+	daemon.SdNotify(false, "READY=1")
 }
 
 func (ui *UI) loadStyle() {
@@ -97,6 +100,8 @@ func (ui *UI) loadStyle() {
 var errMercyPeriod = time.Second * 30
 
 func (ui *UI) verifyConnection() {
+	daemon.SdNotify(false, "WATCHDOG=1")
+
 	splash := NewSplashPanel(ui)
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
