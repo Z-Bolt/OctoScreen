@@ -154,7 +154,7 @@ func (m *temperaturePanel) addNewTool(tool string) {
 	m.tool.AddStep(Step{strings.Title(tool), tool})
 	m.tool.Callback()
 
-	Logger.Infof("New tool detected %s", tool)
+	Logger.Infof("Tool detected %s", tool)
 }
 
 func (m *temperaturePanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
@@ -212,6 +212,7 @@ func (m *profilesPanel) createProfileButton(img string, p *octoprint.Temperature
 		if err := m.setProfile(p); err != nil {
 			Logger.Error(err)
 		}
+		m.UI.GoHistory()
 	})
 }
 
