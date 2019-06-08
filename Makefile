@@ -66,7 +66,7 @@ build-internal: prepare-internal
 	cp ../*.deb /build/;
 
 prepare-internal:
-	dch --create -v $(VERSION) --package $(PACKAGE_NAME) empty; \
+	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
 	cd $(WORKDIR)/..; \
 	tar -czf octoprint-tft_$(VERSION).orig.tar.gz --exclude-vcs OctoPrint-TFT
 
