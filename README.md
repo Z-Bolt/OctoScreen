@@ -1,4 +1,4 @@
-OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/mcuadros/OctoPrint-TFT.svg)](https://github.com/mcuadros/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/mcuadros/OctoPrint-TFT.svg)]()
+OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoPrint-TFT.svg)](https://github.com/Z-Bolt/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoPrint-TFT.svg)]()
 =============
 
 _OctoPrint-TFT_, a touch interface for TFT touch modules based on GTK+3.
