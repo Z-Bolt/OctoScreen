@@ -82,7 +82,7 @@ func (ui *UI) initialize() {
 	ui.o.Add(ui.g)
 	ui.o.AddOverlay(ui.Notifications)
 
-	daemon.SdNotify(false, "READY=1")
+	ui.sdNotify("READY=1")
 }
 
 func (ui *UI) loadStyle() {
@@ -100,7 +100,7 @@ func (ui *UI) loadStyle() {
 var errMercyPeriod = time.Second * 30
 
 func (ui *UI) verifyConnection() {
-	daemon.SdNotify(false, "WATCHDOG=1")
+	ui.sdNotify("WATCHDOG=1")
 
 	splash := NewSplashPanel(ui)
 
@@ -144,6 +144,15 @@ func (ui *UI) verifyConnection() {
 	}
 
 	ui.Add(splash)
+}
+
+func (ui *UI) sdNotify(m string) {
+	_, err := daemon.SdNotify(false, m)
+
+	if err != nil {
+		logrus.Errorf("Error sending notification: %s", err)
+		return
+	}
 }
 
 func (ui *UI) Add(p Panel) {
