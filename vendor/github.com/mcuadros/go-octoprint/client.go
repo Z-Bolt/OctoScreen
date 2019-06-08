@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // ErrUnauthorized missing or invalid API key
@@ -31,6 +32,7 @@ func NewClient(endpoint, apiKey string) *Client {
 		Endpoint: endpoint,
 		APIKey:   apiKey,
 		c: &http.Client{
+			Timeout: time.Second * 3,
 			Transport: &http.Transport{
 				DisableKeepAlives: true,
 			},

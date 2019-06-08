@@ -25,7 +25,7 @@ func StatusPanel(ui *UI, parent Panel) Panel {
 	if statusPanelInstance == nil {
 		m := &statusPanel{CommonPanel: NewCommonPanel(ui, parent)}
 		m.panelH = 3
-		m.b = NewBackgroundTask(time.Second*5, m.update)
+		m.b = NewBackgroundTask(time.Second*2, m.update)
 		m.initialize()
 
 		statusPanelInstance = m
@@ -105,7 +105,7 @@ func (m *statusPanel) createTemperatureBox() *gtk.Box {
 
 func (m *statusPanel) createPrintButton() gtk.IWidget {
 	m.print = MustButtonImage("Print", "status.svg", func() {
-		// defer m.updateTemperature()
+		defer m.updateTemperature()
 
 		Logger.Warning("Starting a new job")
 		if err := (&octoprint.StartRequest{}).Do(m.UI.Printer); err != nil {
@@ -119,7 +119,7 @@ func (m *statusPanel) createPrintButton() gtk.IWidget {
 
 func (m *statusPanel) createPauseButton() gtk.IWidget {
 	m.pause = MustButtonImage("Pause", "pause.svg", func() {
-		// defer m.updateTemperature()
+		defer m.updateTemperature()
 
 		Logger.Warning("Pausing/Resuming job")
 		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
@@ -231,17 +231,16 @@ func (m *statusPanel) updateJob() {
 	case 0:
 		text = "Warming up ..."
 	default:
-		// Logger.Info(s.Progress.PrintTime)
-		Logger.Info("Printing in progess ;)")
-		text = "Printing in progess ;)"
-		// e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		// l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-		// // eta := time.Now().Add(l).Format("3:04 PM")
-		// if l == 0 {
-		// 	text = fmt.Sprintf("Elapsed: %s", e)
-		// } else {
-		// 	text = fmt.Sprintf("Elapsed: %s | Left: %s", e, l)
-		// }
+		Logger.Info(s.Progress.PrintTime)
+
+		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
+		l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		// eta := time.Now().Add(l).Format("3:04 PM")
+		if l == 0 {
+			text = fmt.Sprintf("Print Time: %s", e)
+		} else {
+			text = fmt.Sprintf("Print Time: %s | Left: %s", e, l)
+		}
 	}
 
 	m.left.Label.SetLabel(text)
