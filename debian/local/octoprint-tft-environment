@@ -1,11 +1,11 @@
 # Location of the OctoPrint's config.yaml file. If empty the file will
 # be search at the `pi` home folder or the current user. Only used for locally
 # installed OctoPrint servers.
-OCTOPRINT_CONFIG_FILE=
+OCTOPRINT_CONFIG_FILE=/home/octoprint/.octoprint/config.yaml
 
 # OctoPrint HTTP address, example `http://localhost:5000`, if OctoPrint is
 # locally installed will be read from the config file.
-OCTOPRINT_HOST=
+OCTOPRINT_HOST=http://localhost:5000
 
 # OctoPrint-TFT expects an API key to be supplied. This API key can be either
 # the globally configured one or a user specific one if “Access Control”.
