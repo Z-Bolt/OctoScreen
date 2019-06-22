@@ -215,7 +215,7 @@ func (m *statusPanel) updateJob() {
 
 	file := "<i>not-set</i>"
 	if s.Job.File.Name != "" {
-		file = filenameEllipsis(s.Job.File.Name)
+		file = strEllipsis(s.Job.File.Name)
 	}
 
 	m.file.Label.SetLabel(fmt.Sprintf("File: %s", file))
@@ -245,15 +245,6 @@ func (m *statusPanel) updateJob() {
 	}
 
 	m.left.Label.SetLabel(text)
-}
-
-func filenameEllipsis(name string) string {
-	l := len(name)
-	if l > 32 {
-		return name[:12] + "..." + name[l-17:l]
-	}
-
-	return name
 }
 
 func btou(b bool) uint8 {

@@ -50,7 +50,6 @@ func (m *defaultPanel) showMove() {
 
 func (m *defaultPanel) showControl() {
 	m.UI.Add(ControlPanel(m.UI, m))
-	// m.UI.Add(NetworkPanel(m.UI, m))
 }
 
 func (m *defaultPanel) showFiles() {

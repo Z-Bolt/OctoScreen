@@ -109,7 +109,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	frame, _ := gtk.FrameNew("")
 
 	name := MustLabel(f.Name)
-	name.SetMarkup(fmt.Sprintf("<big>%s</big>", filenameEllipsis(f.Name)))
+	name.SetMarkup(fmt.Sprintf("<big>%s</big>", strEllipsis(f.Name)))
 	name.SetHExpand(true)
 
 	info := MustLabel("")
@@ -146,7 +146,7 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 	frame, _ := gtk.FrameNew("")
 
 	name := MustLabel(f.Name)
-	name.SetMarkup(fmt.Sprintf("<big>%s</big>", filenameEllipsis(f.Name)))
+	name.SetMarkup(fmt.Sprintf("<big>%s</big>", strEllipsis(f.Name)))
 	name.SetHExpand(true)
 
 	info := MustLabel("")

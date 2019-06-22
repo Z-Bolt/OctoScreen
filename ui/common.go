@@ -326,3 +326,21 @@ func replaceHTMLTag(html, from, to string) string {
 
 	return html
 }
+
+func strEllipsis(name string) string {
+	l := len(name)
+	if l > 32 {
+		return name[:12] + "..." + name[l-17:l]
+	}
+
+	return name
+}
+
+func strEllipsisLen(name string, length int) string {
+	l := len(name)
+	if l > length {
+		return name[:(length/3)] + "..." + name[l-(length/3):l]
+	}
+
+	return name
+}
