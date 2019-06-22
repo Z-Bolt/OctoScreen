@@ -69,6 +69,7 @@ func (m *statusPanel) createMainBox() *gtk.Box {
 }
 
 func (m *statusPanel) createInfoBox() *gtk.Box {
+
 	m.file = MustLabelWithImage("file.svg", "")
 	m.left = MustLabelWithImage("speed-step.svg", "")
 
@@ -78,7 +79,7 @@ func (m *statusPanel) createInfoBox() *gtk.Box {
 	info.SetVExpand(true)
 	info.Add(m.file)
 	info.Add(m.left)
-	info.SetMarginStart(10)
+	info.SetMarginStart(m.Scaled(35))
 
 	return info
 }
@@ -99,6 +100,7 @@ func (m *statusPanel) createTemperatureBox() *gtk.Box {
 	temp.Add(m.tool1)
 	temp.Add(m.tool2)
 	temp.Add(m.tool3)
+	temp.SetMarginStart(m.Scaled(35))
 
 	return temp
 }
@@ -232,15 +234,14 @@ func (m *statusPanel) updateJob() {
 		text = "Warming up ..."
 	default:
 		Logger.Info(s.Progress.PrintTime)
-
 		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		// l := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
 		// eta := time.Now().Add(l).Format("3:04 PM")
-		if l == 0 {
-			text = fmt.Sprintf("Print Time: %s", e)
-		} else {
-			text = fmt.Sprintf("Print Time: %s | Left: %s", e, l)
-		}
+		// if l == 0 {
+		text = fmt.Sprintf("Print Time: %s", e)
+		// } else {
+		// text = fmt.Sprintf("Print Time: %s | Left: %s", e, l)
+		// }
 	}
 
 	m.left.Label.SetLabel(text)
