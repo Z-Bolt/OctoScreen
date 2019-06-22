@@ -83,6 +83,10 @@ func (p *CommonPanel) Grid() *gtk.Grid {
 	return p.g
 }
 
+func (p *CommonPanel) Scaled(s int) int {
+	return s * p.UI.scaleFactor
+}
+
 type BackgroundTask struct {
 	close chan bool
 

@@ -38,6 +38,8 @@ type UI struct {
 	t time.Time
 
 	width, height int
+	scaleFactor   int
+
 	sync.Mutex
 }
 
@@ -56,6 +58,15 @@ func New(endpoint, key string, width, height int) *UI {
 
 		width:  width,
 		height: height,
+	}
+
+	switch {
+	case width > 480:
+		ui.scaleFactor = 2
+	case width > 1000:
+		ui.scaleFactor = 3
+	default:
+		ui.scaleFactor = 1
 	}
 
 	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
@@ -102,45 +113,47 @@ var errMercyPeriod = time.Second * 30
 func (ui *UI) verifyConnection() {
 	ui.sdNotify("WATCHDOG=1")
 
+	var currentState octoprint.ConnectionState
+
 	splash := NewSplashPanel(ui)
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
-	if err != nil {
+	if err != nil && time.Since(ui.t) > errMercyPeriod {
+		currentState = octoprint.ConnectionState("Error")
 		ui.Add(splash)
-		if time.Since(ui.t) > errMercyPeriod {
-			splash.Label.SetText(ui.errToUser(err))
-		}
-
-		// It's not an error since, error is being displayed already on the panel.
+		splash.Label.SetText(ui.errToUser(err))
 		Logger.Debugf("Unexpected error: %s", err)
 		return
+		// It's not an error since, error is being displayed already on the panel.
+	} else {
+		currentState = s.Current.State
 	}
 
-	defer func() { ui.State = s.Current.State }()
+	defer func() { ui.State = currentState }()
 
 	switch {
-	case s.Current.State.IsOperational():
+	case currentState.IsOperational():
 		if !ui.State.IsOperational() && !ui.State.IsPrinting() {
 			Logger.Info("Printer is ready")
 			ui.Add(DefaultPanel(ui))
 		}
 		return
-	case s.Current.State.IsPrinting():
+	case currentState.IsPrinting():
 		if !ui.State.IsPrinting() {
 			Logger.Info("Printing a job")
 			ui.Add(StatusPanel(ui, DefaultPanel(ui)))
 		}
 		return
-	case s.Current.State.IsError():
+	case currentState.IsError():
 		fallthrough
-	case s.Current.State.IsOffline():
-		Logger.Infof("Connection offline, connecting: %s", s.Current.State)
+	case currentState.IsOffline():
+		Logger.Infof("Connection offline, connecting: %s", currentState)
 		if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
 			splash.Label.SetText(fmt.Sprintf("Error connecting to printer: %s", err))
 		}
-	case s.Current.State.IsConnecting():
-		Logger.Infof("Waiting for connection: %s", s.Current.State)
-		splash.Label.SetText(string(s.Current.State))
+	case currentState.IsConnecting():
+		Logger.Infof("Waiting for connection: %s", currentState)
+		splash.Label.SetText(string(currentState))
 	}
 
 	ui.Add(splash)

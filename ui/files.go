@@ -80,18 +80,18 @@ func (m *filesPanel) createActionBar() gtk.IWidget {
 	bar.SetMarginEnd(5)
 
 	bar.Add(m.createRefreshButton())
-	bar.Add(m.createInitReleaseSDButton())
+	// bar.Add(m.createInitReleaseSDButton())
 	bar.Add(m.createBackButton())
 
 	return bar
 }
 
 func (m *filesPanel) createRefreshButton() gtk.IWidget {
-	return MustButton(MustImageFromFileWithSize("refresh.svg", 40, 40), m.doLoadFiles)
+	return MustButton(MustImageFromFileWithSize("refresh.svg", m.Scaled(40), m.Scaled(40)), m.doLoadFiles)
 }
 
 func (m *filesPanel) createBackButton() gtk.IWidget {
-	return MustButton(MustImageFromFileWithSize("back.svg", 40, 40), func() {
+	return MustButton(MustImageFromFileWithSize("back.svg", m.Scaled(40), m.Scaled(40)), func() {
 		if m.location.isRoot() {
 			m.UI.GoHistory()
 		} else {
@@ -137,7 +137,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	frame, _ := gtk.FrameNew("")
 
 	name := MustLabel(f.Name)
-	name.SetMarkup(fmt.Sprintf("<big>%s</big>", filenameEllipsis(f.Name)))
+	name.SetMarkup(fmt.Sprintf("<big>1- %s</big>", filenameEllipsis(f.Name)))
 	name.SetHExpand(true)
 
 	info := MustLabel("")
@@ -148,19 +148,21 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	labels := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	labels.Add(name)
 	labels.Add(info)
+	labels.SetVExpand(true)
+	labels.SetVAlign(gtk.ALIGN_CENTER)
 
 	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	// actions.Add(m.createLoadAndPrintButton("load.svg", f, false))
 	actions.Add(m.createLoadAndPrintButton("status.svg", f, true))
 
 	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	file.SetMarginTop(15)
+	file.SetMarginTop(5)
 	file.SetMarginEnd(15)
 	file.SetMarginStart(15)
-	file.SetMarginBottom(15)
+	file.SetMarginBottom(5)
 	file.SetHExpand(true)
 
-	file.Add(MustImageFromFileWithSize("file.svg", 35, 35))
+	file.Add(MustImageFromFileWithSize("file.svg", m.Scaled(35), m.Scaled(35)))
 
 	file.Add(labels)
 	file.Add(actions)
@@ -184,18 +186,20 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 	labels := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	labels.Add(name)
 	labels.Add(info)
+	labels.SetVExpand(true)
+	labels.SetVAlign(gtk.ALIGN_CENTER)
 
 	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actions.Add(m.createOpenFolderButton(f))
 
 	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	file.SetMarginTop(15)
+	file.SetMarginTop(5)
 	file.SetMarginEnd(15)
 	file.SetMarginStart(15)
-	file.SetMarginBottom(15)
+	file.SetMarginBottom(5)
 	file.SetHExpand(true)
 
-	file.Add(MustImageFromFileWithSize("files.svg", 35, 35))
+	file.Add(MustImageFromFileWithSize("files.svg", m.Scaled(35), m.Scaled(35)))
 
 	file.Add(labels)
 	file.Add(actions)
@@ -206,7 +210,7 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 
 func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInformation, print bool) gtk.IWidget {
 	return MustButton(
-		MustImageFromFileWithSize(img, 30, 30),
+		MustImageFromFileWithSize(img, m.Scaled(40), m.Scaled(40)),
 		MustConfirmDialog(m.UI.w, "Are you sure you want to proceed?", func() {
 			r := &octoprint.SelectFileRequest{}
 			r.Location = octoprint.Local
@@ -223,7 +227,7 @@ func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 }
 
 func (m *filesPanel) createOpenFolderButton(f *octoprint.FileInformation) gtk.IWidget {
-	return MustButton(MustImageFromFileWithSize("open.svg", 30, 30), func() {
+	return MustButton(MustImageFromFileWithSize("open.svg", m.Scaled(40), m.Scaled(40)), func() {
 		m.location.goForward(f.Path)
 		// m.currentFolder = octoprint.Location(f.Origin + "/" + string())
 		// m.parentFolder = octoprint.Location(f.Origin)
@@ -232,8 +236,8 @@ func (m *filesPanel) createOpenFolderButton(f *octoprint.FileInformation) gtk.IW
 }
 
 func (m *filesPanel) createInitReleaseSDButton() gtk.IWidget {
-	release := MustImageFromFileWithSize("sd_eject.svg", 40, 40)
-	init := MustImageFromFileWithSize("sd.svg", 40, 40)
+	release := MustImageFromFileWithSize("sd_eject.svg", m.Scaled(40), m.Scaled(40))
+	init := MustImageFromFileWithSize("sd.svg", m.Scaled(40), m.Scaled(40))
 	b := MustButton(release, nil)
 
 	state := func() {

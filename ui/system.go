@@ -48,7 +48,7 @@ func (m *systemPanel) createActionBar() gtk.IWidget {
 		bar.Add(b)
 	}
 
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", 40, 40), m.UI.GoHistory))
+	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", m.Scaled(40), m.Scaled(40)), m.UI.GoHistory))
 
 	return bar
 }
