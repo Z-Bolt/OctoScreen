@@ -103,6 +103,21 @@ func MustButton(img *gtk.Image, clicked func()) *gtk.Button {
 
 // MustButtonImageFromImage returns a new gtk.Button with the given label, image
 // and clicked callback. If error panics.
+func MustButtonText(label string, clicked func()) *gtk.Button {
+	b, err := gtk.ButtonNewWithLabel(label)
+	if err != nil {
+		panic(err)
+	}
+
+	if clicked != nil {
+		b.Connect("clicked", clicked)
+	}
+
+	return b
+}
+
+// MustButtonImageFromImage returns a new gtk.Button with the given label, image
+// and clicked callback. If error panics.
 func MustButtonImageFromImage(label string, img *gtk.Image, clicked func()) *gtk.Button {
 	b, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
