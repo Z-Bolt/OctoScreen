@@ -10,31 +10,6 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-type locationHistory struct {
-	locations []octoprint.Location
-}
-
-func (l *locationHistory) current() octoprint.Location {
-	return l.locations[len(l.locations)-1]
-}
-
-func (l *locationHistory) goForward(folder string) {
-	newLocation := string(l.current()) + "/" + folder
-	l.locations = append(l.locations, octoprint.Location(newLocation))
-}
-
-func (l *locationHistory) goBack() {
-	l.locations = l.locations[0 : len(l.locations)-1]
-}
-
-func (l *locationHistory) isRoot() bool {
-	if len(l.locations) > 1 {
-		return false
-	} else {
-		return true
-	}
-}
-
 var filesPanelInstance *filesPanel
 
 type filesPanel struct {
@@ -80,7 +55,6 @@ func (m *filesPanel) createActionBar() gtk.IWidget {
 	bar.SetMarginEnd(5)
 
 	bar.Add(m.createRefreshButton())
-	// bar.Add(m.createInitReleaseSDButton())
 	bar.Add(m.createBackButton())
 
 	return bar
@@ -99,7 +73,6 @@ func (m *filesPanel) createBackButton() gtk.IWidget {
 			m.doLoadFiles()
 		}
 	})
-	// return MustButton(MustImageFromFileWithSize("refresh.svg", 40, 40), m.doLoadFiles)
 }
 
 func (m *filesPanel) doLoadFiles() {
@@ -118,7 +91,6 @@ func (m *filesPanel) doLoadFiles() {
 	}
 
 	s := byDate(files)
-	// s = append(s, sdcard...)
 	sort.Sort(s)
 
 	EmptyContainer(&m.list.Container)
@@ -137,7 +109,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	frame, _ := gtk.FrameNew("")
 
 	name := MustLabel(f.Name)
-	name.SetMarkup(fmt.Sprintf("<big>1- %s</big>", filenameEllipsis(f.Name)))
+	name.SetMarkup(fmt.Sprintf("<big>%s</big>", filenameEllipsis(f.Name)))
 	name.SetHExpand(true)
 
 	info := MustLabel("")
@@ -152,8 +124,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	labels.SetVAlign(gtk.ALIGN_CENTER)
 
 	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	// actions.Add(m.createLoadAndPrintButton("load.svg", f, false))
-	actions.Add(m.createLoadAndPrintButton("status.svg", f, true))
+	actions.Add(m.createLoadAndPrintButton("print.svg", f, true))
 
 	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	file.SetMarginTop(5)
@@ -283,3 +254,28 @@ type byDate []*octoprint.FileInformation
 func (s byDate) Len() int           { return len(s) }
 func (s byDate) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s byDate) Less(i, j int) bool { return s[j].Date.Time.Before(s[i].Date.Time) }
+
+type locationHistory struct {
+	locations []octoprint.Location
+}
+
+func (l *locationHistory) current() octoprint.Location {
+	return l.locations[len(l.locations)-1]
+}
+
+func (l *locationHistory) goForward(folder string) {
+	newLocation := string(l.current()) + "/" + folder
+	l.locations = append(l.locations, octoprint.Location(newLocation))
+}
+
+func (l *locationHistory) goBack() {
+	l.locations = l.locations[0 : len(l.locations)-1]
+}
+
+func (l *locationHistory) isRoot() bool {
+	if len(l.locations) > 1 {
+		return false
+	} else {
+		return true
+	}
+}
