@@ -66,3 +66,7 @@
 [[dependencies]]
   branch = "master"
   name = "github.com/sirupsen/logrus"
+
+[[dependencies]]
+  branch = "master"
+  name = "pifke.org/wpasupplicant"
