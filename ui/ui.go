@@ -111,49 +111,47 @@ func (ui *UI) loadStyle() {
 var errMercyPeriod = time.Second * 30
 
 func (ui *UI) verifyConnection() {
-	ui.sdNotify("WATCHDOG=1")
-
-	var currentState octoprint.ConnectionState
-
 	splash := NewSplashPanel(ui)
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
-	if err != nil && time.Since(ui.t) > errMercyPeriod {
-		currentState = octoprint.ConnectionState("Error")
+	if err != nil {
 		ui.Add(splash)
-		splash.Label.SetText(ui.errToUser(err))
+		if time.Since(ui.t) > errMercyPeriod {
+			splash.Label.SetText(ui.errToUser(err))
+		}
+
+		// It's not an error since, error is being displayed already on the panel.
 		Logger.Debugf("Unexpected error: %s", err)
 		return
-		// It's not an error since, error is being displayed already on the panel.
-	} else {
-		currentState = s.Current.State
 	}
 
-	defer func() { ui.State = currentState }()
+	ui.sdNotify("WATCHDOG=1")
+
+	defer func() { ui.State = s.Current.State }()
 
 	switch {
-	case currentState.IsOperational():
+	case s.Current.State.IsOperational():
 		if !ui.State.IsOperational() && !ui.State.IsPrinting() {
 			Logger.Info("Printer is ready")
 			ui.Add(DefaultPanel(ui))
 		}
 		return
-	case currentState.IsPrinting():
+	case s.Current.State.IsPrinting():
 		if !ui.State.IsPrinting() {
 			Logger.Info("Printing a job")
 			ui.Add(StatusPanel(ui, DefaultPanel(ui)))
 		}
 		return
-	case currentState.IsError():
+	case s.Current.State.IsError():
 		fallthrough
-	case currentState.IsOffline():
-		Logger.Infof("Connection offline, connecting: %s", currentState)
+	case s.Current.State.IsOffline():
+		Logger.Infof("Connection offline, connecting: %s", s.Current.State)
 		if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
 			splash.Label.SetText(fmt.Sprintf("Error connecting to printer: %s", err))
 		}
-	case currentState.IsConnecting():
-		Logger.Infof("Waiting for connection: %s", currentState)
-		splash.Label.SetText(string(currentState))
+	case s.Current.State.IsConnecting():
+		Logger.Infof("Waiting for connection: %s", s.Current.State)
+		splash.Label.SetText(string(s.Current.State))
 	}
 
 	ui.Add(splash)

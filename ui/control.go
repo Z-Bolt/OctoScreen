@@ -36,8 +36,7 @@ func ControlPanel(ui *UI, parent Panel) Panel {
 
 func (m *controlPanel) initialize() {
 	defer m.Initialize()
-
-	m.AddButton(m.createNetworkButton())
+	m.AddButton(m.createToolchangerButton())
 
 	for _, c := range m.getControl() {
 		b := m.createControlButton(c)
@@ -49,6 +48,7 @@ func (m *controlPanel) initialize() {
 		m.AddButton(b)
 	}
 
+	m.AddButton(m.createNetworkButton())
 }
 
 func (m *controlPanel) getControl() []*octoprint.ControlDefinition {
@@ -118,6 +118,12 @@ func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.I
 func (m *controlPanel) createNetworkButton() gtk.IWidget {
 	return MustButtonImage("Network", "network.svg", func() {
 		m.UI.Add(NetworkPanel(m.UI, m))
+	})
+}
+
+func (m *controlPanel) createToolchangerButton() gtk.IWidget {
+	return MustButtonImage("ToolChanger", "extruder.svg", func() {
+		m.UI.Add(ToolchangerPanel(m.UI, m))
 	})
 }
 
