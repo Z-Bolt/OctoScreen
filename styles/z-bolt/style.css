@@ -1,4 +1,45 @@
 
+
+
+* {
+    font-size: 20px;
+}
+
+window {
+    background-color: #000;
+}
+
+scrollbar, scrollbar button {
+    border: none;
+    background-color: #000;
+}
+
+scrollbar slider {
+    /* -GtkScrollbar-has-backward-stepper: true; */
+    /* -GtkScrollbar-has-forward-stepper: true; */
+    min-width: 88px;
+    border-radius: 8px;
+    background-color: #FFF;
+}
+
+progress, trough {
+    min-height: 40px;
+}
+
+progress {
+    background-color: #0060FF;
+}
+
+GtkButton, button {
+    background-image: none;
+    background-color:#000;
+    margin:2px;
+    border-radius:0;
+    border:0;
+}
+
+
+
 .dialog { 
     border: 2px solid black; 
     font-size: 20px;
@@ -23,41 +64,6 @@
 .error {
     background-color:rgba(204, 30, 30, 0.7);
 }
-
-scrollbar, scrollbar button {
-    border: none;
-    background-color: #000;
-}
-
-window {
-    background-color: #000;
-    font-size: 20px;
-}
-
-scrollbar slider {
-    /* -GtkScrollbar-has-backward-stepper: true; */
-    /* -GtkScrollbar-has-forward-stepper: true; */
-    min-width: 80px;
-    border-radius: 8px;
-    background-color: #FFF;
-
-}
-
-progress, trough {
-    min-height: 40px;
-}
-
-progress {
-    background-color: #0060FF;
-}
-
-GtkButton, button {
-    background-image: none;
-    background-color:#000;
-    margin:2px;
-    border-radius:0;
-}
-
 
 /* GtkWindow {
     background-color: green;

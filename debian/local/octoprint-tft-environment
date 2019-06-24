@@ -14,7 +14,7 @@ OCTOPRINT_HOST=http://localhost:5000
 OCTOPRINT_APIKEY=
 
 # Location of the application theme.
-OCTOPRINT_TFT_STYLE_PATH=/opt/octoprint-tft/styles/default/
+OCTOPRINT_TFT_STYLE_PATH=/opt/octoprint-tft/styles/z-bolt/
 
 # Resolution of the application, should be configured to the resolution of your
 # screen, for example 800x480. By default 480x320.
