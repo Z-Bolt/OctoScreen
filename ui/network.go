@@ -34,9 +34,9 @@ func (m *networkPanel) initialize() {
 
 func (m *networkPanel) createNetworkList() gtk.IWidget {
 
-	if m.wpa == nil {
-		return MustLabel("Wifi management was disabled")
-	}
+	// if m.wpa == nil {
+	// 	return MustLabel("Wifi management is not available\non this hardware")
+	// }
 
 	list := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	list.SetVExpand(true)
@@ -45,14 +45,13 @@ func (m *networkPanel) createNetworkList() gtk.IWidget {
 	scroll.SetProperty("overlay-scrolling", false)
 	scroll.Add(list)
 
-	result, _ := m.wpa.ScanResults()
+	// result, _ := m.wpa.ScanResults()
 
-	fmt.Println("Getting list of networks")
+	// for _, bss := range result {
+	// 	m.addNetwork(list, bss.SSID())
+	// }
 
-	for _, bss := range result {
-		m.addNetwork(list, bss.SSID())
-	}
-
+	m.addNetwork(list, "Test net")
 	return scroll
 }
 
@@ -74,7 +73,6 @@ func (m *networkPanel) addNetwork(b *gtk.Box, n string) {
 	network.SetHExpand(true)
 
 	network.Add(MustImageFromFileWithSize("network.svg", m.Scaled(35), m.Scaled(35)))
-
 	network.Add(name)
 	network.Add(actions)
 
@@ -145,6 +143,8 @@ func (m *networkPanel) createInfoBar() gtk.IWidget {
 		if s.WPAState() == "COMPLETED" {
 			text = fmt.Sprintf("<b>Wifi Information</b>\nSSID: <b>%s</b>\nIP Address: <b>%s</b>",
 				s.SSID(), s.IPAddr())
+		} else {
+			text = fmt.Sprintf("<b>Wifi status is: %s", s.WPAState())
 		}
 
 		t2 := MustLabel(text)
@@ -188,7 +188,6 @@ func ConnectionPanel(ui *UI, parent Panel, SSID string) Panel {
 }
 
 func (m *connectionPanel) initialize() {
-
 	m.pass, _ = gtk.EntryNew()
 	m.pass.SetProperty("height-request", m.Scaled(40))
 	m.pass.SetProperty("width-request", m.Scaled(150))
@@ -235,7 +234,8 @@ func (m *connectionPanel) createActionBar() gtk.IWidget {
 
 	back.SetHAlign(gtk.ALIGN_END)
 
-	connect := MustButtonText("Connect", func() {})
+	connect := MustButtonText("Connect", m.connectToNetwork)
+
 	connect.SetProperty("width-request", m.Scaled(150))
 
 	layout := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -266,6 +266,28 @@ func (m *connectionPanel) createKeyBoard() gtk.IWidget {
 	}
 
 	return keyBoard
+}
+
+func (m *connectionPanel) connectToNetwork() {
+	splash := NewSplashPanel(m.UI)
+	m.UI.Add(splash)
+
+	// wpa, _ := wpasupplicant.Unixgram("wlan0")
+	// psk, _ := m.pass.GetText()
+
+	// splash.Label.SetText(fmt.Sprintf("Connecting to %s", wpa))
+
+	// wpa.RemoveAllNetworks()
+	// wpa.AddNetwork()
+	// wpa.SetNetwork(0, "ssid", m.SSID)
+	// wpa.SetNetwork(0, "psk", psk)
+
+	// go wpa.EnableNetwork(0)
+	// time.Sleep(time.Second * 1)
+	// go wpa.SaveConfig()
+	splash.Label.SetText("Checking status")
+	// time.Sleep(time.Second * 1)
+	// m.UI.GoHistory()
 }
 
 type keyButtonHander struct {
