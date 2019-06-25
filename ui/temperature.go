@@ -44,7 +44,8 @@ func (m *temperaturePanel) initialize() {
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
-	m.box.SetMarginStart(10)
+	m.box.SetHAlign(gtk.ALIGN_CENTER)
+
 	m.Grid().Attach(m.box, 2, 0, 2, 1)
 
 	m.Grid().Attach(m.createToolButton(), 1, 1, 1, 1)
@@ -196,7 +197,7 @@ func (m *profilesPanel) loadProfiles() {
 	}
 
 	for _, profile := range s.Temperature.Profiles {
-		m.AddButton(m.createProfileButton("filament.svg", profile))
+		m.AddButton(m.createProfileButton("heat-up.svg", profile))
 	}
 
 	m.AddButton(m.createProfileButton("cool-down.svg", &octoprint.TemperatureProfile{

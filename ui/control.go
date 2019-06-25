@@ -36,7 +36,6 @@ func ControlPanel(ui *UI, parent Panel) Panel {
 
 func (m *controlPanel) initialize() {
 	defer m.Initialize()
-	m.AddButton(m.createToolchangerButton())
 
 	for _, c := range m.getControl() {
 		b := m.createControlButton(c)
@@ -47,8 +46,6 @@ func (m *controlPanel) initialize() {
 		b := m.createCommandButton(c)
 		m.AddButton(b)
 	}
-
-	m.AddButton(m.createNetworkButton())
 }
 
 func (m *controlPanel) getControl() []*octoprint.ControlDefinition {

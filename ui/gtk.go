@@ -83,7 +83,7 @@ func MustLabelWithImage(img, label string, args ...interface{}) *LabelWithImage 
 // clicked callback. If error panics.
 
 func MustButtonImageStyle(label, img string, style string, clicked func()) *gtk.Button {
-	b := MustButtonImageFromImage(label, MustImageFromFile(img), clicked)
+	b := MustButtonImage(label, img, clicked)
 
 	ctx, _ := b.GetStyleContext()
 	ctx.AddClass(style)
@@ -91,44 +91,8 @@ func MustButtonImageStyle(label, img string, style string, clicked func()) *gtk.
 	return b
 }
 
-func MustButtonImage(label, img string, clicked func()) *gtk.Button {
-	return MustButtonImageFromImage(label, MustImageFromFile(img), clicked)
-}
-
-func MustButton(img *gtk.Image, clicked func()) *gtk.Button {
-	b, err := gtk.ButtonNew()
-	if err != nil {
-		panic(err)
-	}
-
-	b.SetImage(img)
-	b.SetImagePosition(gtk.POS_TOP)
-
-	if clicked != nil {
-		b.Connect("clicked", clicked)
-	}
-
-	return b
-}
-
-// MustButtonImageFromImage returns a new gtk.Button with the given label, image
-// and clicked callback. If error panics.
-func MustButtonText(label string, clicked func()) *gtk.Button {
-	b, err := gtk.ButtonNewWithLabel(label)
-	if err != nil {
-		panic(err)
-	}
-
-	if clicked != nil {
-		b.Connect("clicked", clicked)
-	}
-
-	return b
-}
-
-// MustButtonImageFromImage returns a new gtk.Button with the given label, image
-// and clicked callback. If error panics.
-func MustButtonImageFromImage(label string, img *gtk.Image, clicked func()) *gtk.Button {
+func MustButtonImage(label, imgName string, clicked func()) *gtk.Button {
+	img := MustImageFromFile(imgName)
 	b, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
 		panic(err)
@@ -147,8 +111,55 @@ func MustButtonImageFromImage(label string, img *gtk.Image, clicked func()) *gtk
 	return b
 }
 
-// MustImageFromFileWithSize returns a new gtk.Image based on rescaled version
-// of the given file.
+func MustToogleButton(label string, imgName string, clicked func()) *gtk.ToggleButton {
+	img := MustImageFromFile(imgName)
+	b, err := gtk.ToggleButtonNewWithLabel(label)
+	if err != nil {
+		panic(err)
+	}
+
+	b.SetImage(img)
+	b.SetAlwaysShowImage(true)
+	b.SetImagePosition(gtk.POS_TOP)
+	b.SetVExpand(true)
+	b.SetHExpand(true)
+
+	if clicked != nil {
+		b.Connect("clicked", clicked)
+	}
+
+	return b
+}
+
+func MustButton(img *gtk.Image, clicked func()) *gtk.Button {
+	b, err := gtk.ButtonNew()
+	if err != nil {
+		panic(err)
+	}
+
+	b.SetImage(img)
+	b.SetImagePosition(gtk.POS_TOP)
+
+	if clicked != nil {
+		b.Connect("clicked", clicked)
+	}
+
+	return b
+}
+
+func MustButtonText(label string, clicked func()) *gtk.Button {
+	b, err := gtk.ButtonNewWithLabel(label)
+	if err != nil {
+		panic(err)
+	}
+
+	if clicked != nil {
+		b.Connect("clicked", clicked)
+	}
+
+	return b
+}
+
 func MustImageFromFileWithSize(img string, w, h int) *gtk.Image {
 	p, err := gdk.PixbufNewFromFileAtScale(imagePath(img), w, h, true)
 	if err != nil {

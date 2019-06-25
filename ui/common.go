@@ -28,6 +28,7 @@ type CommonPanel struct {
 	g      *gtk.Grid
 	b      *BackgroundTask
 	p      Panel
+	back   *gtk.Button
 	panelW int
 	panelH int
 
@@ -53,7 +54,8 @@ func (p *CommonPanel) Initialize() {
 		p.AddButton(MustBox(gtk.ORIENTATION_HORIZONTAL, 0))
 	}
 
-	p.AddButton(MustButtonImage("Back", "back.svg", p.UI.GoHistory))
+	p.back = MustButtonImage("Back", "back.svg", p.UI.GoHistory)
+	p.AddButton(p.back)
 }
 
 func (p *CommonPanel) Parent() Panel {
@@ -163,49 +165,6 @@ type Step struct {
 	Value interface{}
 }
 
-func MustPressedButton(label, i string, pressed func(), speed time.Duration) *gtk.Button {
-	img := MustImageFromFile(i)
-	released := make(chan bool)
-	var mutex sync.Mutex
-
-	b, err := gtk.ButtonNewWithLabel(label)
-	if err != nil {
-		panic(err)
-	}
-
-	b.SetImage(img)
-	b.SetAlwaysShowImage(true)
-	b.SetImagePosition(gtk.POS_TOP)
-	b.SetVExpand(true)
-	b.SetHExpand(true)
-
-	if pressed != nil {
-		b.Connect("pressed", func() {
-			go func() {
-				for {
-					select {
-					case <-released:
-						return
-					default:
-						mutex.Lock()
-						pressed()
-						time.Sleep(speed * time.Millisecond)
-						mutex.Unlock()
-					}
-				}
-			}()
-		})
-	}
-
-	if released != nil {
-		b.Connect("released", func() {
-			released <- true
-		})
-	}
-
-	return b
-}
-
 func MustStepButton(image string, s ...Step) *StepButton {
 	var l string
 	if len(s) != 0 {
@@ -297,6 +256,49 @@ func EmptyContainer(c *gtk.Container) {
 	ch.Foreach(func(i interface{}) {
 		c.Remove(i.(gtk.IWidget))
 	})
+}
+
+func MustPressedButton(label, i string, pressed func(), speed time.Duration) *gtk.Button {
+	img := MustImageFromFile(i)
+	released := make(chan bool)
+	var mutex sync.Mutex
+
+	b, err := gtk.ButtonNewWithLabel(label)
+	if err != nil {
+		panic(err)
+	}
+
+	b.SetImage(img)
+	b.SetAlwaysShowImage(true)
+	b.SetImagePosition(gtk.POS_TOP)
+	b.SetVExpand(true)
+	b.SetHExpand(true)
+
+	if pressed != nil {
+		b.Connect("pressed", func() {
+			go func() {
+				for {
+					select {
+					case <-released:
+						return
+					default:
+						mutex.Lock()
+						pressed()
+						time.Sleep(speed * time.Millisecond)
+						mutex.Unlock()
+					}
+				}
+			}()
+		})
+	}
+
+	if released != nil {
+		b.Connect("released", func() {
+			released <- true
+		})
+	}
+
+	return b
 }
 
 var translatedTags = [][2]string{{"strong", "b"}}

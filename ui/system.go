@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"net"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -101,38 +100,22 @@ func (m *systemPanel) createInfoBox() gtk.IWidget {
 	main.SetHAlign(gtk.ALIGN_CENTER)
 	main.SetVExpand(true)
 
-	img := MustImageFromFileWithSize("logo-white.svg", 140, 112)
+	logoWidth := m.Scaled(120)
+	img := MustImageFromFileWithSize("logo-white.svg", logoWidth, int(float64(logoWidth)*0.8))
 	img.SetMarginTop(35)
 	main.Add(img)
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	info.SetVExpand(true)
+	info.SetHExpand(true)
 	info.SetVAlign(gtk.ALIGN_CENTER)
 
-	m.addNetwork(info)
 	m.addOctoPrint(info)
 	m.addSystemInfo(info)
 
 	main.Add(info)
 
 	return main
-}
-
-func (m *systemPanel) addNetwork(box *gtk.Box) {
-	title := MustLabel("<b>Network Information</b>")
-	title.SetMarginTop(40)
-	title.SetMarginBottom(5)
-
-	box.Add(title)
-	addrs, _ := net.InterfaceAddrs()
-
-	for _, address := range addrs {
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				box.Add(MustLabel("IP Address <b>%s</b>", ipnet.IP.String()))
-			}
-		}
-	}
 }
 
 func (m *systemPanel) addOctoPrint(box *gtk.Box) {

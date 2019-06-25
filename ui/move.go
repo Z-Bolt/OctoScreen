@@ -56,10 +56,6 @@ func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir 
 			cmd.Z = distance
 		}
 
-		// Logger.Warningf("Jogging print head axis %s in %dmm",
-		// 	strings.ToUpper(string(a)), distance,
-		// )
-
 		if err := cmd.Do(m.UI.Printer); err != nil {
 			Logger.Error(err)
 			return

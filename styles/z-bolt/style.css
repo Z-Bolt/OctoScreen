@@ -1,26 +1,24 @@
 
 
-
-* {
-    font-size: 20px;
-}
+/* * {
+    
+} */
 
 window {
     background-color: #13181C;
     -gtk-icon-shadow: none;
+    font-size: 20px;
 }
 
 scrollbar, scrollbar button {
     border: none;
-    background-color: #000;
+    background-color: #13181C;
 }
 
 scrollbar slider {
-    /* -GtkScrollbar-has-backward-stepper: true; */
-    /* -GtkScrollbar-has-forward-stepper: true; */
     min-width: 88px;
-    border-radius: 8px;
-    background-color: #FFF;
+    border-radius: 15px;
+    background-color: #404E57;
 }
 
 progress, trough {
@@ -28,18 +26,23 @@ progress, trough {
 }
 
 progress {
-    background-color: #0060FF;
+    background-color: #00C9B4;
 }
 
-GtkButton, button {
-    /* background-image: none; */
-    background: none;
-    margin:10px;
-    margin-bottom:20px;
+button {
+    background-image: none;
+    background-color:#13181C;
+    margin:5px;
+    margin-bottom:10px;
     border-radius:0;
     border:0;
     -gtk-icon-shadow: none;
 }
+
+button:active {
+    background-color: #1A2127;
+}
+
 
 button.color1 {
     border-bottom: 8 solid #ED6500;
@@ -57,15 +60,40 @@ button.color4 {
     border-bottom: 8 solid #A7E100;
 }
 
+button.heating {
+    background-color: #1A2127;
+}
+
+button.file-list {
+    margin: 0px;
+}
+
+entry {
+    font-size: 30px;
+    background-color: #20292F;
+    border-radius:0;
+    padding-left: 1em;
+    margin-left: 1em;
+    padding-right: 1em;
+}
+
+button.keyboard {
+    font-size: 30px;
+    margin:0px;
+    /* margin-bottom:10px; */
+
+}
 
 .dialog { 
     border: 2px solid black; 
     font-size: 20px;
-    padding: 40px;
+    padding: 50px;
+    background-color: #000;
 }
 
 .dialog button {
-    padding: 30px 20px 30px 20px;
+    padding: 30px 50px 30px 50px;
+    border-bottom: 8 solid #009384;
 }
 
 .notification {
@@ -95,7 +123,6 @@ button.color4 {
     margin:2px;
     border-radius:0;
 } */
-
 
 /* button, entry {
     color: #ff00ea;

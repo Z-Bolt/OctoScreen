@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/gotk3/gotk3/gtk"
 	"pifke.org/wpasupplicant"
@@ -51,7 +52,8 @@ func (m *networkPanel) createNetworkList() gtk.IWidget {
 	// 	m.addNetwork(list, bss.SSID())
 	// }
 
-	m.addNetwork(list, "Test net")
+	m.addNetwork(list, "test")
+
 	return scroll
 }
 
@@ -218,7 +220,6 @@ func (m *connectionPanel) initialize() {
 	layout.Add(top)
 	layout.Add(m.createKeyBoard())
 	layout.Add(m.createActionBar())
-
 	m.Grid().Add(layout)
 }
 
@@ -235,6 +236,8 @@ func (m *connectionPanel) createActionBar() gtk.IWidget {
 	back.SetHAlign(gtk.ALIGN_END)
 
 	connect := MustButtonText("Connect", m.connectToNetwork)
+	ctx, _ := connect.GetStyleContext()
+	ctx.AddClass("color3")
 
 	connect.SetProperty("width-request", m.Scaled(150))
 
@@ -260,7 +263,8 @@ func (m *connectionPanel) createKeyBoard() gtk.IWidget {
 	for i, k := range keyBoardChars {
 		buttonHander := &keyButtonHander{char: k, p: m}
 		button := MustButtonText(string(k), buttonHander.clicked)
-
+		ctx, _ := button.GetStyleContext()
+		ctx.AddClass("keyboard")
 		button.SetProperty("height-request", m.Scaled(40))
 		keys.Attach(button, i%row, i/row, 1, 1)
 	}
@@ -272,22 +276,22 @@ func (m *connectionPanel) connectToNetwork() {
 	splash := NewSplashPanel(m.UI)
 	m.UI.Add(splash)
 
-	// wpa, _ := wpasupplicant.Unixgram("wlan0")
-	// psk, _ := m.pass.GetText()
+	wpa, _ := wpasupplicant.Unixgram("wlan0")
+	psk, _ := m.pass.GetText()
 
-	// splash.Label.SetText(fmt.Sprintf("Connecting to %s", wpa))
+	splash.Label.SetText(fmt.Sprintf("Connecting to %s", wpa))
 
-	// wpa.RemoveAllNetworks()
-	// wpa.AddNetwork()
-	// wpa.SetNetwork(0, "ssid", m.SSID)
-	// wpa.SetNetwork(0, "psk", psk)
+	wpa.RemoveAllNetworks()
+	wpa.AddNetwork()
+	wpa.SetNetwork(0, "ssid", m.SSID)
+	wpa.SetNetwork(0, "psk", psk)
 
-	// go wpa.EnableNetwork(0)
-	// time.Sleep(time.Second * 1)
-	// go wpa.SaveConfig()
+	go wpa.EnableNetwork(0)
+	time.Sleep(time.Second * 1)
+	go wpa.SaveConfig()
 	splash.Label.SetText("Checking status")
-	// time.Sleep(time.Second * 1)
-	// m.UI.GoHistory()
+	time.Sleep(time.Second * 1)
+	m.UI.GoHistory()
 }
 
 type keyButtonHander struct {

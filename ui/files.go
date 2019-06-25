@@ -127,10 +127,10 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	actions.Add(m.createLoadAndPrintButton("print.svg", f, true))
 
 	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	file.SetMarginTop(5)
+	file.SetMarginTop(1)
 	file.SetMarginEnd(15)
 	file.SetMarginStart(15)
-	file.SetMarginBottom(5)
+	file.SetMarginBottom(1)
 	file.SetHExpand(true)
 
 	file.Add(MustImageFromFileWithSize("file.svg", m.Scaled(35), m.Scaled(35)))
@@ -164,13 +164,13 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 	actions.Add(m.createOpenFolderButton(f))
 
 	file := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	file.SetMarginTop(5)
+	file.SetMarginTop(1)
 	file.SetMarginEnd(15)
 	file.SetMarginStart(15)
-	file.SetMarginBottom(5)
+	file.SetMarginBottom(1)
 	file.SetHExpand(true)
 
-	file.Add(MustImageFromFileWithSize("files.svg", m.Scaled(35), m.Scaled(35)))
+	file.Add(MustImageFromFileWithSize("folder.svg", m.Scaled(35), m.Scaled(35)))
 
 	file.Add(labels)
 	file.Add(actions)
@@ -180,7 +180,7 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 }
 
 func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInformation, print bool) gtk.IWidget {
-	return MustButton(
+	b := MustButton(
 		MustImageFromFileWithSize(img, m.Scaled(40), m.Scaled(40)),
 		MustConfirmDialog(m.UI.w, "Are you sure you want to proceed?", func() {
 			r := &octoprint.SelectFileRequest{}
@@ -195,15 +195,23 @@ func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 			}
 		}),
 	)
+	ctx, _ := b.GetStyleContext()
+	ctx.AddClass("color3")
+	ctx.AddClass("file-list")
+	return b
 }
 
 func (m *filesPanel) createOpenFolderButton(f *octoprint.FileInformation) gtk.IWidget {
-	return MustButton(MustImageFromFileWithSize("open.svg", m.Scaled(40), m.Scaled(40)), func() {
+	b := MustButton(MustImageFromFileWithSize("open.svg", m.Scaled(40), m.Scaled(40)), func() {
 		m.location.goForward(f.Path)
-		// m.currentFolder = octoprint.Location(f.Origin + "/" + string())
-		// m.parentFolder = octoprint.Location(f.Origin)
 		m.doLoadFiles()
 	})
+
+	ctx, _ := b.GetStyleContext()
+	ctx.AddClass("color1")
+	ctx.AddClass("file-list")
+
+	return b
 }
 
 func (m *filesPanel) createInitReleaseSDButton() gtk.IWidget {

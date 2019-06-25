@@ -47,7 +47,7 @@ func (m *filamentPanel) initialize() {
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
-	m.box.SetMarginStart(10)
+	m.box.SetHAlign(gtk.ALIGN_CENTER)
 
 	m.Grid().Attach(m.box, 2, 0, 2, 2)
 
