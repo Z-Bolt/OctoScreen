@@ -118,18 +118,6 @@ func (m *systemPanel) createInfoBox() gtk.IWidget {
 	return main
 }
 
-// func (m *systemPanel) addOctoPrintTFT(box *gtk.Box) {
-// 	title := MustLabel("<b>OctoPrint-TFT Version</b>")
-// 	title.SetMarginTop(15)
-// 	title.SetMarginBottom(5)
-
-// 	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
-// 	box.Add(info)
-
-// 	info.Add(title)
-// 	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
-// }
-
 func (m *systemPanel) addNetwork(box *gtk.Box) {
 	title := MustLabel("<b>Network Information</b>")
 	title.SetMarginTop(40)
