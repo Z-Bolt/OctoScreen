@@ -17,15 +17,15 @@ func DefaultPanel(ui *UI) Panel {
 }
 
 func (m *defaultPanel) initialize() {
-	m.Grid().Attach(MustButtonImage("Status", "status.svg", m.showStatus), 1, 0, 1, 1)
-	m.Grid().Attach(MustButtonImage("Heat Up", "heat-up.svg", m.showTemperature), 2, 0, 1, 1)
-	m.Grid().Attach(MustButtonImage("Move", "move.svg", m.showMove), 3, 0, 1, 1)
-	m.Grid().Attach(MustButtonImage("Home", "home.svg", m.showHome), 4, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Status", "status.svg", "color1", m.showStatus), 1, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Heat Up", "heat-up.svg", "color2", m.showTemperature), 2, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Move", "move.svg", "color3", m.showMove), 3, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Home", "home.svg", "color4", m.showHome), 4, 0, 1, 1)
 
-	m.Grid().Attach(MustButtonImage("Print", "print.svg", m.showFiles), 1, 1, 1, 1)
-	m.Grid().Attach(MustButtonImage("Filament", "filament.svg", m.showFilament), 2, 1, 1, 1)
-	m.Grid().Attach(MustButtonImage("Control", "control.svg", m.showControl), 3, 1, 1, 1)
-	m.Grid().Attach(MustButtonImage("System", "settings.svg", m.showSystem), 4, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Print", "print.svg", "color2", m.showFiles), 1, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Filament", "filament.svg", "color1", m.showFilament), 2, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Control", "control.svg", "color4", m.showControl), 3, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("System", "settings.svg", "color3", m.showSystem), 4, 1, 1, 1)
 }
 
 func (m *defaultPanel) showStatus() {

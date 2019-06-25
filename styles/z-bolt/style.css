@@ -6,7 +6,8 @@
 }
 
 window {
-    background-color: #000;
+    background-color: #13181C;
+    -gtk-icon-shadow: none;
 }
 
 scrollbar, scrollbar button {
@@ -31,13 +32,30 @@ progress {
 }
 
 GtkButton, button {
-    background-image: none;
-    background-color:#000;
-    margin:2px;
+    /* background-image: none; */
+    background: none;
+    margin:10px;
+    margin-bottom:20px;
     border-radius:0;
     border:0;
+    -gtk-icon-shadow: none;
 }
 
+button.color1 {
+    border-bottom: 8 solid #ED6500;
+}
+
+button.color2 {
+    border-bottom: 8 solid #B10080;
+}
+
+button.color3 {
+    border-bottom: 8 solid #009384;
+}
+
+button.color4 {
+    border-bottom: 8 solid #A7E100;
+}
 
 
 .dialog { 
