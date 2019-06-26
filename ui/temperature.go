@@ -31,6 +31,8 @@ func TemperaturePanel(ui *UI, parent Panel) Panel {
 		m.initialize()
 
 		temperaturePanelInstance = m
+	} else {
+		temperaturePanelInstance.p = parent
 	}
 
 	return temperaturePanelInstance

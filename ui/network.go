@@ -21,6 +21,8 @@ func NetworkPanel(ui *UI, parent Panel) Panel {
 		m := &networkPanel{CommonPanel: NewCommonPanel(ui, parent)}
 		m.initialize()
 		networkPanelInstance = m
+	} else {
+		networkPanelInstance.p = parent
 	}
 
 	return networkPanelInstance
@@ -35,9 +37,9 @@ func (m *networkPanel) initialize() {
 
 func (m *networkPanel) createNetworkList() gtk.IWidget {
 
-	// if m.wpa == nil {
-	// 	return MustLabel("Wifi management is not available\non this hardware")
-	// }
+	if m.wpa == nil {
+		return MustLabel("Wifi management is not available\non this hardware")
+	}
 
 	list := MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	list.SetVExpand(true)
@@ -46,13 +48,11 @@ func (m *networkPanel) createNetworkList() gtk.IWidget {
 	scroll.SetProperty("overlay-scrolling", false)
 	scroll.Add(list)
 
-	// result, _ := m.wpa.ScanResults()
+	result, _ := m.wpa.ScanResults()
 
-	// for _, bss := range result {
-	// 	m.addNetwork(list, bss.SSID())
-	// }
-
-	m.addNetwork(list, "test")
+	for _, bss := range result {
+		m.addNetwork(list, bss.SSID())
+	}
 
 	return scroll
 }

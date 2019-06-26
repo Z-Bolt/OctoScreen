@@ -23,6 +23,8 @@ func SystemPanel(ui *UI, parent Panel) *systemPanel {
 		m := &systemPanel{CommonPanel: NewCommonPanel(ui, parent)}
 		m.initialize()
 		systemPanelInstance = m
+	} else {
+		systemPanelInstance.p = parent
 	}
 
 	return systemPanelInstance
