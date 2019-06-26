@@ -51,7 +51,7 @@ func (m *filamentPanel) initialize() {
 
 	m.Grid().Attach(m.box, 2, 0, 2, 2)
 
-	m.amount = MustStepButton("move-step.svg", Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1})
+	m.amount = MustStepButton("move-step.svg", Step{"1mm", 1}, Step{"5mm", 5}, Step{"10mm", 10})
 	m.Grid().Attach(m.amount, 2, 2, 1, 1)
 
 	m.Grid().Attach(m.createToolButton(), 1, 2, 1, 1)
@@ -122,7 +122,7 @@ func (m *filamentPanel) createToolButton() *StepButton {
 }
 
 func (m *filamentPanel) createFlowrateButton() *StepButton {
-	b := MustStepButton("speed-step.svg", Step{"Normal", 100}, Step{"High", 125}, Step{"Slow", 75})
+	b := MustStepButton("speed-step.svg", Step{"Slow", 75}, Step{"Normal", 100}, Step{"High", 125})
 	b.Callback = func() {
 		cmd := &octoprint.ToolFlowrateRequest{}
 		cmd.Factor = b.Value().(int)
