@@ -52,7 +52,7 @@ func (m *idleStatusPanel) initialize() {
 	m.Grid().Attach(m.tool1, 2, 0, 1, 1)
 	m.Grid().Attach(m.tool2, 1, 1, 1, 1)
 	m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-	m.Grid().Attach(m.bed, 1, 2, 1, 1)
+	m.Grid().Attach(m.bed, 1, 2, 2, 1)
 }
 
 func (m *idleStatusPanel) showMove() {
@@ -143,9 +143,9 @@ func ToolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
 func (t *ToolHeatup) updateStatus(heating bool) {
 	ctx, _ := t.GetStyleContext()
 	if heating {
-		ctx.AddClass("heating")
+		ctx.AddClass("active")
 	} else {
-		ctx.RemoveClass("heating")
+		ctx.RemoveClass("active")
 	}
 	t.isHeating = heating
 }

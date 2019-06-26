@@ -40,28 +40,28 @@ button {
 }
 
 button:active {
-    background-color: #1A2127;
+    background-color: #304C62;
 }
 
 
 button.color1 {
-    border-bottom: 8 solid #ED6500;
+    border-bottom: 8px solid #ED6500;
 }
 
 button.color2 {
-    border-bottom: 8 solid #B10080;
+    border-bottom: 8px solid #B10080;
 }
 
 button.color3 {
-    border-bottom: 8 solid #009384;
+    border-bottom: 8px solid #009384;
 }
 
 button.color4 {
-    border-bottom: 8 solid #A7E100;
+    border-bottom: 8px solid #A7E100;
 }
 
-button.heating {
-    background-color: #1A2127;
+button.active {
+    background-color: #20303D;
 }
 
 button.file-list {
@@ -93,7 +93,7 @@ button.keyboard {
 
 .dialog button {
     padding: 30px 50px 30px 50px;
-    border-bottom: 8 solid #009384;
+    border-bottom: 8px solid #009384;
 }
 
 .notification {
