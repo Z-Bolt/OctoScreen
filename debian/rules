@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
 export DH_VERBOSE := 1
-export DH_GOPKG := github.com/mcuadros/OctoPrint-TFT
+export DH_GOPKG := github.com/Z-Bolt/OctoScreen
 export DH_GOLANG_INSTALL_ALL := 1
 export DH_GOLANG_EXCLUDES := vendor
 
@@ -22,9 +22,9 @@ override_dh_golang:
 	# dh_golang errors out because the go compiler used was not installed via a package. Therefore the step is skipped
 
 override_dh_install:
-	mkdir -p $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
-	cp -r styles $(CURDIR)/debian/octoprint-tft/opt/octoprint-tft/
-	rm -rf $(CURDIR)/debian/octoprint-tft/usr/share/gocode
+	mkdir -p $(CURDIR)/debian/octoscreen/opt/octoscreen/
+	cp -r styles $(CURDIR)/debian/octoscreen/opt/octoscreen/
+	rm -rf $(CURDIR)/debian/octoscreen/usr/share/gocode
 	dh_install -XLICENSE
 
 override_dh_auto_test:

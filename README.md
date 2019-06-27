@@ -57,13 +57,13 @@ sudo apt-get install xserver-xorg xinit
 ### Installation on Raspbian/OctoPi (recommended)
 
 The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
-from the [Releases](https://github.com/mcuadros/OctoPrint-TFT/releases) page. The packages
+from the [Releases](https://github.com/Z-Bolt/OctoPrint-TFT/releases) page. The packages
 are available for Debian based distributions such as Raspbian and OctoPi for
 versions `jessie` and `stretch`.
 
 For example for a Raspbian Jessie:
 ```sh
-> wget https://github.com/mcuadros/OctoPrint-TFT/releases/download/v0.1.0/octoprint-tft_0.1.0-1.jessie_armhf.deb
+> wget https://github.com/Z-Bolt/OctoPrint-TFT/releases/download/v0.1.0/octoprint-tft_0.1.0-1.jessie_armhf.deb
 > dpkg -i octoprint-tft_0.1.0-1.jessie_armhf.deb
 ```
 

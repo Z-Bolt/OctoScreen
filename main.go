@@ -9,14 +9,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/OctoPrint-TFT/ui"
 	"gopkg.in/yaml.v1"
 )
 
 const (
-	EnvStylePath  = "OCTOPRINT_TFT_STYLE_PATH"
-	EnvResolution = "OCTOPRINT_TFT_RESOLUTION"
+	EnvStylePath  = "OCTOSCREEN_STYLE_PATH"
+	EnvResolution = "OCTOSCREEN_RESOLUTION"
 	EnvBaseURL    = "OCTOPRINT_HOST"
 	EnvAPIKey     = "OCTOPRINT_APIKEY"
 	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"

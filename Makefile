@@ -28,7 +28,7 @@ JESSIE_GO_TAGS := gtk_3_14
 # Build information
 #GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
 #DEV_PREFIX := 1.0
-VERSION := 1.3
+VERSION := 2.0
 BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
 #BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
@@ -37,7 +37,7 @@ BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
 #endif
 
 # Package information
-PACKAGE_NAME = octoprint-tft
+PACKAGE_NAME = octoscreen
 
 # we export the variable to allow envsubst, substitute the vars in the
 # Dockerfiles
@@ -68,7 +68,7 @@ build-internal: prepare-internal
 prepare-internal:
 	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
 	cd $(WORKDIR)/..; \
-	tar -czf octoprint-tft_$(VERSION).orig.tar.gz --exclude-vcs OctoPrint-TFT
+	tar -czf octoscreen_$(VERSION).orig.tar.gz --exclude-vcs OctoScreen
 
 clean:
 	rm -rf ${BUILD_PATH}

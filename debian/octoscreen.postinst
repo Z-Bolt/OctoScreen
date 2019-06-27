@@ -4,7 +4,7 @@ set -e
 
 . /usr/share/debconf/confmodule
 
-THIS_PACKAGE=octoprint-tft
+THIS_PACKAGE=octoscreen
 DEFAULT_DISPLAY_MANAGER_FILE=/etc/X11/default-display-manager
 
 # debconf is not a registry, so we only fiddle with the default file if

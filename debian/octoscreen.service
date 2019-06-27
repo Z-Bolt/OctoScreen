@@ -1,14 +1,14 @@
 [Unit]
-Description=OctoPrint-TFT
+Description=OctoScreen
 Conflicts=getty@tty7.service
 After=systemd-user-sessions.service getty@tty7.service plymouth-quit.service
 
 [Service]
 Type=notify
 NotifyAccess=all
-EnvironmentFile=/etc/octoprint-tft-environment
-ExecStart=/usr/bin/xinit /usr/bin/OctoPrint-TFT -- :0 -nolisten tcp -nocursor
-ExecStartPost=/etc/disablescreenblank.sh 0
+EnvironmentFile=/etc/octoscreen/config
+ExecStart=/usr/bin/xinit /usr/bin/OctoScreen -- :0 -nolisten tcp -nocursor
+ExecStartPost=/etc/octoscreen/disablescreenblank.sh 0
 StandardOutput=journal
 Restart=always
 WatchdogSec=10s
