@@ -1,4 +1,4 @@
-OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
+OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 =============
 
 _OctoScreen_, LCD touch interface for our Octoprint based on GTK+3.
@@ -129,5 +129,5 @@ License
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
 
-This project is a hard fork from [Octiprint-TFT](`https://github.com/mcuadros/OctoPrint-TFT`) created by [@mcuadros](https://github.com/mcuadros/OctoPrint-TFT)
-3.0/)
+This project is a hard fork from [Octiprint-TFT](https://github.com/mcuadros/OctoPrint-TFT) created by [@mcuadros](https://github.com/mcuadros/OctoPrint-TFT)
+
