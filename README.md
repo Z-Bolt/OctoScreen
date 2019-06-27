@@ -1,21 +1,22 @@
-OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoPrint-TFT.svg)](https://github.com/Z-Bolt/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoPrint-TFT.svg)]()
+OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 =============
 
-_OctoPrint-TFT_, a touch interface for TFT touch modules based on GTK+3.
+_OctoScreen_, LCD touch interface for our Octoprint based on GTK+3.
 
 Is a _X application_ to be executed directly in the X Server without any windows
-manager, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
-equipped with any [TFT Touch module](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)).
+manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
+equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
 
 Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
-<img width="480" src="https://user-images.githubusercontent.com/1573114/33559609-a73a969e-d90d-11e7-9cf2-cf212412aaa5.png" />
+<img width="480" src="https://user-images.githubusercontent.com/390214/60277629-9c247800-9906-11e9-9757-66ee702411d1.png" />
 
 ### These are some of the functionalities supported:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
 - Jogging operations.
+- Wifi connection management
 
 ### How this is different from TouchUI?
 
@@ -102,7 +103,7 @@ Configuration
 ### Basic Configuration
 
 The basic configuration is handled via environment variables, if you are using
-the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
+the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 - `OCTOPRINT_CONFIG_FILE` - Location of the OctoPrint's config.yaml file. If empty the file will be searched at the `pi` home folder or the current user. Only used for locally installed OctoPrint servers.
 
@@ -110,9 +111,9 @@ the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
 
 - `OCTOPRINT_APIKEY` - OctoPrint-TFT expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”. if OctoPrint is locally installed will be read from the config file.
 
-- `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
+- `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
-- `OCTOPRINT_TFT_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `800x480`. By default `480x320`.
+- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `480x320`. By default `800x480`.
 
 
 ### Custom controls and commands
