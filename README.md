@@ -39,7 +39,7 @@ Installation
 
 ### Dependencies
 
-*OctoPrint-TFT* is based on [Golang](golang.org), usually this means that is
+*OctoScreen* is based on [Golang](golang.org), usually this means that is
 dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
 is used, this means that GTK+3 libraries are required to be installed on
 the system.
@@ -57,7 +57,7 @@ sudo apt-get install xserver-xorg xinit
 ```
 
 
-### Installation on Raspbian/OctoPi (recommended)
+### Installation on Raspbian/OctoPi
 
 The recommended way to install *OctoScreen* is use the `.deb` packages
 from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page. The packages
