@@ -7,7 +7,7 @@ Is a _X application_ to be executed directly in the X Server without any windows
 manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
 equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
 
-Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
+Allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
 <img width="480" src="https://user-images.githubusercontent.com/390214/60277629-9c247800-9906-11e9-9757-66ee702411d1.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" /><img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
