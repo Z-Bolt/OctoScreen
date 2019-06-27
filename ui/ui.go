@@ -16,8 +16,8 @@ import (
 var (
 	StylePath    string
 	WindowName   = "OctoScreen"
-	WindowHeight = 320
-	WindowWidth  = 480
+	WindowHeight = 480
+	WindowWidth  = 800
 )
 
 const (
