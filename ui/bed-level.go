@@ -12,6 +12,7 @@ var bedLevelPanelInstance *bedLevelPanel
 type bedLevelPanel struct {
 	CommonPanel
 	points map[string][]float64
+	homed  bool
 }
 
 func BedLevelPanel(ui *UI, parent Panel) Panel {
@@ -21,13 +22,14 @@ func BedLevelPanel(ui *UI, parent Panel) Panel {
 		bedLevelPanelInstance = m
 	}
 
+	bedLevelPanelInstance.homed = false
 	return bedLevelPanelInstance
 }
 
 func (m *bedLevelPanel) initialize() {
 	defer m.Initialize()
 
-	m.loadLevelingPoints()
+	m.defineLevelingPoints()
 
 	m.Grid().Attach(m.createLevelButton("t-l"), 2, 0, 1, 1)
 	m.Grid().Attach(m.createLevelButton("t-r"), 3, 0, 1, 1)
@@ -35,7 +37,7 @@ func (m *bedLevelPanel) initialize() {
 	m.Grid().Attach(m.createLevelButton("b-r"), 3, 1, 1, 1)
 }
 
-func (m *bedLevelPanel) loadLevelingPoints() {
+func (m *bedLevelPanel) defineLevelingPoints() {
 	c, err := (&octoprint.ConnectionRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -66,12 +68,12 @@ func (m *bedLevelPanel) loadLevelingPoints() {
 func (m *bedLevelPanel) createLevelButton(p string) *gtk.Button {
 	img := fmt.Sprintf("bed-level-%s.svg", p)
 	b := MustButtonImage("", img, func() {
-		gcode := fmt.Sprintf("G0 X%f Y%f", m.points[p][0], m.points[p][1])
+		m.createHoveIfRequire()
 
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G0 Z30",
-			gcode,
+			fmt.Sprintf("G0 X%f Y%f", m.points[p][0], m.points[p][1]),
 			"G0 Z0",
 		}
 
@@ -81,4 +83,22 @@ func (m *bedLevelPanel) createLevelButton(p string) *gtk.Button {
 		}
 	})
 	return b
+}
+
+func (m *bedLevelPanel) createHoveIfRequire() {
+	if m.homed {
+		return
+	}
+
+	cmd := &octoprint.CommandRequest{}
+	cmd.Commands = []string{
+		"G28",
+	}
+
+	if err := cmd.Do(m.UI.Printer); err != nil {
+		Logger.Error(err)
+		return
+	}
+
+	m.homed = true
 }

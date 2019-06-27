@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="69px" height="62px" viewBox="0 0 69 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>z-offset-decrease</title>
+    <title>z-offset-increase</title>
     <desc>Created with Sketch.</desc>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-665.000000, -88.000000)">
-            <g id="z-offset-decrease" transform="translate(665.000000, 88.000000)">
+        <g id="Artboard" transform="translate(-465.000000, -87.000000)">
+            <g id="z-offset-increase" transform="translate(465.000000, 87.000000)">
                 <path d="M9.58823529,52.4117647 L12.8823529,44.7254902" id="Path" stroke="#FFFFFF" stroke-linecap="round"></path>
                 <path d="M17.2745098,52.4117647 L20.5686275,44.7254902" id="Path" stroke="#FFFFFF" stroke-linecap="round"></path>
                 <path d="M24.9607843,52.4117647 L28.254902,44.7254902" id="Path" stroke="#FFFFFF" stroke-linecap="round"></path>
@@ -50,7 +50,7 @@
                     <path d="M11.6666667,29.2690058 L12.8947368,27.6315789" id="Line-17" stroke-linecap="round"></path>
                     <path d="M7.98245614,27.6315789 L15.3508772,27.6315789" id="Line-14" stroke-linecap="round"></path>
                 </g>
-                <g id="Group-3" transform="translate(50.000000, 18.000000) rotate(180.000000) translate(-50.000000, -18.000000) translate(49.000000, 3.000000)">
+                <g id="Group-4" transform="translate(49.000000, 4.000000)">
                     <path id="Line-15" d="M0.666666667,29.5 L-6.33333333,15.5 L7.66666667,15.5 L0.666666667,29.5 Z" fill="#FFFFFF" fill-rule="nonzero"></path>
                     <path d="M0.666666667,20.5 L0.666666667,0.5" id="Line-18" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"></path>
                 </g>

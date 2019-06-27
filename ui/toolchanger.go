@@ -43,16 +43,11 @@ func (m *toolchangerPanel) initialize() {
 	m.Grid().Attach(m.createChangeToolButton(1), 2, 0, 1, 1)
 	m.Grid().Attach(m.createChangeToolButton(2), 3, 0, 1, 1)
 	m.Grid().Attach(m.createChangeToolButton(3), 4, 0, 1, 1)
-	m.Grid().Attach(m.createIncreaseOffsetButton(), 1, 1, 1, 1)
-	m.Grid().Attach(m.createDecreaseOffsetButton(), 4, 1, 1, 1)
 
-	m.labZOffsetLabel = MustLabel("Press \"Z Offset\" button to switch to Z-Offset calibration mode.")
-	m.labZOffsetLabel.SetVAlign(gtk.ALIGN_CENTER)
-	m.labZOffsetLabel.SetHAlign(gtk.ALIGN_CENTER)
-	m.labZOffsetLabel.SetVExpand(true)
-	m.labZOffsetLabel.SetHExpand(true)
-	m.labZOffsetLabel.SetLineWrap(true)
-	m.Grid().Attach(m.labZOffsetLabel, 2, 1, 2, 1)
+	m.Grid().Attach(m.createHomeButton(), 1, 1, 1, 1)
+	m.Grid().Attach(m.createIncreaseOffsetButton(), 2, 1, 1, 1)
+	m.Grid().Attach(m.createZOffsetLabel(), 3, 1, 1, 1)
+	m.Grid().Attach(m.createDecreaseOffsetButton(), 4, 1, 1, 1)
 
 	m.Grid().Attach(m.createMagnetOnButton(), 1, 2, 1, 1)
 	m.Grid().Attach(m.createMagnetOffButton(), 2, 2, 1, 1)
@@ -71,6 +66,7 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 			ctx.AddClass("active")
 			cmd := &octoprint.CommandRequest{}
 			cmd.Commands = []string{
+				"G28",
 				fmt.Sprintf("G0 X%f Y%f", m.cPoint.x, m.cPoint.y),
 				fmt.Sprintf("G0 Z%f", m.cPoint.z),
 			}
@@ -89,14 +85,33 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 	return b
 }
 
+func (m *toolchangerPanel) createHomeButton() gtk.IWidget {
+	return MustButtonImageStyle("Home XY", "home.svg", "color3", func() {
+		cmd := &octoprint.CommandRequest{}
+		cmd.Commands = []string{
+			"G28 X",
+			"G28 Y",
+		}
+		if err := cmd.Do(m.UI.Printer); err != nil {
+			Logger.Error(err)
+		}
+	})
+}
+
 func (m *toolchangerPanel) createIncreaseOffsetButton() gtk.IWidget {
-	return MustButtonImage("Increase", "z-offset-increase.svg", func() {
+	return MustButtonImage("Bed Down", "z-offset-increase.svg", func() {
+		if !m.zCalibrationMode {
+			return
+		}
 		m.updateZOffset(m.zOffset + 0.02)
 	})
 }
 
 func (m *toolchangerPanel) createDecreaseOffsetButton() gtk.IWidget {
-	return MustButtonImage("Decrease", "z-offset-decrease.svg", func() {
+	return MustButtonImage("Bed Up", "z-offset-decrease.svg", func() {
+		if !m.zCalibrationMode {
+			return
+		}
 		m.updateZOffset(m.zOffset - 0.02)
 	})
 }
@@ -104,7 +119,7 @@ func (m *toolchangerPanel) createDecreaseOffsetButton() gtk.IWidget {
 func (m *toolchangerPanel) updateZOffset(v float64) {
 	m.zOffset = v
 
-	m.labZOffsetLabel.SetText(fmt.Sprintf("Z-Offset: %f", m.zOffset))
+	m.labZOffsetLabel.SetText(fmt.Sprintf("Z-Offset: %.2f", m.zOffset))
 
 	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{
@@ -168,4 +183,14 @@ func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
 			return
 		}
 	})
+}
+
+func (m *toolchangerPanel) createZOffsetLabel() gtk.IWidget {
+	m.labZOffsetLabel = MustLabel("Press \"Z Offset\" button to switch to Z-Offset calibration mode.")
+	m.labZOffsetLabel.SetVAlign(gtk.ALIGN_CENTER)
+	m.labZOffsetLabel.SetHAlign(gtk.ALIGN_CENTER)
+	m.labZOffsetLabel.SetVExpand(true)
+	m.labZOffsetLabel.SetHExpand(true)
+	m.labZOffsetLabel.SetLineWrap(true)
+	return m.labZOffsetLabel
 }
