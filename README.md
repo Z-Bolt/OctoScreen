@@ -1,21 +1,24 @@
-OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoPrint-TFT.svg)](https://github.com/Z-Bolt/OctoPrint-TFT/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoPrint-TFT.svg)]()
+OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 =============
 
-_OctoPrint-TFT_, a touch interface for TFT touch modules based on GTK+3.
+_OctoScreen_, LCD touch interface for our Octoprint based on GTK+3.
 
 Is a _X application_ to be executed directly in the X Server without any windows
-manager, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
-equipped with any [TFT Touch module](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(A)).
+manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
+equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
 
 Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
-<img width="480" src="https://user-images.githubusercontent.com/1573114/33559609-a73a969e-d90d-11e7-9cf2-cf212412aaa5.png" />
+<img width="480" src="https://user-images.githubusercontent.com/390214/60277629-9c247800-9906-11e9-9757-66ee702411d1.png" />
+<img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" /><img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
 ### These are some of the functionalities supported:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
 - Jogging operations.
+- Wifi connection management
+- Toolchanger management tools
 
 ### How this is different from TouchUI?
 
@@ -56,8 +59,8 @@ sudo apt-get install xserver-xorg xinit
 
 ### Installation on Raspbian/OctoPi (recommended)
 
-The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
-from the [Releases](https://github.com/Z-Bolt/OctoPrint-TFT/releases) page. The packages
+The recommended way to install *OctoScreen* is use the `.deb` packages
+from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page. The packages
 are available for Debian based distributions such as Raspbian and OctoPi for
 versions `jessie` and `stretch`.
 
@@ -102,7 +105,7 @@ Configuration
 ### Basic Configuration
 
 The basic configuration is handled via environment variables, if you are using
-the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
+the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 - `OCTOPRINT_CONFIG_FILE` - Location of the OctoPrint's config.yaml file. If empty the file will be searched at the `pi` home folder or the current user. Only used for locally installed OctoPrint servers.
 
@@ -110,9 +113,9 @@ the `.deb` package you can configure it at `/etc/octoprint-tft-environment`.
 
 - `OCTOPRINT_APIKEY` - OctoPrint-TFT expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”. if OctoPrint is locally installed will be read from the config file.
 
-- `OCTOPRINT_TFT_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
+- `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
-- `OCTOPRINT_TFT_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `800x480`. By default `480x320`.
+- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `480x320`. By default `800x480`.
 
 
 ### Custom controls and commands
@@ -126,4 +129,5 @@ License
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
 
-The artwork being use in the at the [default style](`styles/default`) created by [@majurca](https://github.com/majurca) is under the lincese [Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/)
+This project is a hard fork from [Octiprint-TFT](`https://github.com/mcuadros/OctoPrint-TFT`) created by [@mcuadros](https://github.com/mcuadros/OctoPrint-TFT)
+3.0/)
