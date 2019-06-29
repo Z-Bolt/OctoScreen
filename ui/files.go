@@ -94,10 +94,15 @@ func (m *filesPanel) doLoadFiles() {
 	sort.Sort(s)
 
 	EmptyContainer(&m.list.Container)
+
 	for _, f := range s {
 		if f.IsFolder() {
 			m.addFolder(m.list, f)
-		} else {
+		}
+	}
+
+	for _, f := range s {
+		if !f.IsFolder() {
 			m.addFile(m.list, f)
 		}
 	}
