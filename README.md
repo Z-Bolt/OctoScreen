@@ -8,7 +8,7 @@ equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD
 
 Allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
-<img width="480" src="https://user-images.githubusercontent.com/390214/60277629-9c247800-9906-11e9-9757-66ee702411d1.png" />
+<img width="480" src="https://user-images.githubusercontent.com/390214/60487814-ef9d1a00-9ca8-11e9-9c48-31bf54a5488d.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" /><img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
 ### These are some of the functionalities supported:
@@ -41,34 +41,29 @@ Installation
 *OctoScreen* is based on [Golang](golang.org), usually this means that is
 dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
 is used, this means that GTK+3 libraries are required to be installed on
-the system.
+the system. Be sure that graphical environment is additionally installed.
 
-If you are using `Raspbian` or any other `Debian` based distribution, GTK+3 can
+If you are using `Raspbian` or any other `Debian` based distribution, required packages can
 be installed using:
 
 ```sh
-sudo apt-get install libgtk-3-0
+sudo apt-get install libgtk-3-0 xserver-xorg xinit
 ```
-OctoPi does not come with graphical environment, additionally install:
-
-```sh
-sudo apt-get install xserver-xorg xinit
-```
+Also you may need to install video drive, usually **no screens found** error indicates this. Please find manual here:
+[https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation](https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation)
 
 
-### Installation on Raspbian/OctoPi
+### Install from .deb package
 
 The recommended way to install *OctoScreen* is use the `.deb` packages
 from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page. The packages
-are available for Debian based distributions such as Raspbian and OctoPi for
-versions `jessie` and `stretch`.
+are available for Debian Stretch based distributions such as Raspbian and OctoPi.
 
-For example for a Raspbian Jessie:
+For example for a Raspbian Stretch:
 ```sh
-> wget https://github.com/Z-Bolt/OctoPrint-TFT/releases/download/v0.1.0/octoprint-tft_0.1.0-1.jessie_armhf.deb
-> dpkg -i octoprint-tft_0.1.0-1.jessie_armhf.deb
+> wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.0.0/octoscreen_2.0-1_armhf.deb
+> dpkg -i octoscreen_2.0-1_armhf.deb
 ```
-
 
 ### Install from source
 
@@ -114,7 +109,7 @@ the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 - `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
-- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen, for example `480x320`. By default `800x480`.
+- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen. Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533. If you are using Raspbian you can do it by changing hdmi_cvt param in /boot/config.txt file
 
 
 ### Custom controls and commands
