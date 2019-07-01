@@ -64,7 +64,7 @@ func (h NotificationsHook) Fire(entry *logrus.Entry) error {
 var Logger *logrus.Entry
 
 func init() {
-	var LogFile = os.Getenv("OCTOPRINT_TFT_LOG_FILE")
+	var LogFile = os.Getenv("OCTOSCREEN_LOG_FILE")
 
 	var log = logrus.New()
 	log.AddHook(ContextHook{})
