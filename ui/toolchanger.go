@@ -78,7 +78,7 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 			m.updateZOffset(0)
 		} else {
 			ctx.RemoveClass("active")
-			m.labZOffsetLabel.SetText("Press \"Z Offset\" button to switch to Z-Offset calibration mode.")
+			m.labZOffsetLabel.SetText("Press \"Z Offset\"\nbutton to start\nZ-Offset calibration")
 		}
 	}
 
@@ -186,7 +186,7 @@ func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
 }
 
 func (m *toolchangerPanel) createZOffsetLabel() gtk.IWidget {
-	m.labZOffsetLabel = MustLabel("Press \"Z Offset\" button to switch to Z-Offset calibration mode.")
+	m.labZOffsetLabel = MustLabel("Press \"Z Offset\"\nbutton to start\nZ-Offset calibration")
 	m.labZOffsetLabel.SetVAlign(gtk.ALIGN_CENTER)
 	m.labZOffsetLabel.SetHAlign(gtk.ALIGN_CENTER)
 	m.labZOffsetLabel.SetVExpand(true)

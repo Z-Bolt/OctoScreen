@@ -80,6 +80,7 @@ func (ui *UI) initialize() {
 
 	ui.w.SetTitle(WindowName)
 	ui.w.SetDefaultSize(ui.width, ui.height)
+	ui.w.SetResizable(false)
 
 	ui.w.Connect("show", ui.b.Start)
 	ui.w.Connect("destroy", func() {
