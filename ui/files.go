@@ -80,7 +80,6 @@ func (m *filesPanel) doLoadFiles() {
 
 	Logger.Info("Loading list of files from: ", string(m.location.current()))
 
-	// m.doRefreshSD()
 	r := &octoprint.FilesRequest{Location: m.location.current(), Recursive: false}
 	folder, err := r.Do(m.UI.Printer)
 	if err != nil {
@@ -116,8 +115,10 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	name := MustLabel(f.Name)
 	name.SetMarkup(fmt.Sprintf("<big>%s</big>", strEllipsis(f.Name)))
 	name.SetHExpand(true)
+	name.SetHAlign(gtk.ALIGN_START)
 
 	info := MustLabel("")
+	info.SetHAlign(gtk.ALIGN_START)
 	info.SetMarkup(fmt.Sprintf("<small>Uploaded: <b>%s</b> - Size: <b>%s</b></small>",
 		humanize.Time(f.Date.Time), humanize.Bytes(uint64(f.Size)),
 	))
@@ -127,6 +128,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	labels.Add(info)
 	labels.SetVExpand(true)
 	labels.SetVAlign(gtk.ALIGN_CENTER)
+	labels.SetHAlign(gtk.ALIGN_START)
 
 	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actions.Add(m.createLoadAndPrintButton("print.svg", f, true))
@@ -153,8 +155,10 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 	name := MustLabel(f.Name)
 	name.SetMarkup(fmt.Sprintf("<big>%s</big>", strEllipsis(f.Name)))
 	name.SetHExpand(true)
+	name.SetHAlign(gtk.ALIGN_START)
 
 	info := MustLabel("")
+	info.SetHAlign(gtk.ALIGN_START)
 	info.SetMarkup(fmt.Sprintf("<small>Size: <b>%s</b></small>",
 		humanize.Bytes(uint64(f.Size)),
 	))
@@ -164,6 +168,7 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 	labels.Add(info)
 	labels.SetVExpand(true)
 	labels.SetVAlign(gtk.ALIGN_CENTER)
+	labels.SetHAlign(gtk.ALIGN_START)
 
 	actions := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actions.Add(m.createOpenFolderButton(f))
