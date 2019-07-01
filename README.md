@@ -1,5 +1,4 @@
-OctoPrint-TFT [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
-=============
+OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 
 _OctoScreen_, LCD touch interface for our Octoprint based on GTK+3.
 
@@ -7,9 +6,10 @@ Is a _X application_ to be executed directly in the X Server without any windows
 manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
 equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
 
-Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
+Allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
 <img width="480" src="https://user-images.githubusercontent.com/390214/60277629-9c247800-9906-11e9-9757-66ee702411d1.png" />
+<img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" /><img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
 ### These are some of the functionalities supported:
 
@@ -17,6 +17,7 @@ Allows you to control your 3D Printer, like you can do with any [TFT/LCD panel](
 - Temperature and Filament management.
 - Jogging operations.
 - Wifi connection management
+- Toolchanger management tools
 
 ### How this is different from TouchUI?
 
@@ -37,7 +38,7 @@ Installation
 
 ### Dependencies
 
-*OctoPrint-TFT* is based on [Golang](golang.org), usually this means that is
+*OctoScreen* is based on [Golang](golang.org), usually this means that is
 dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
 is used, this means that GTK+3 libraries are required to be installed on
 the system.
@@ -55,10 +56,10 @@ sudo apt-get install xserver-xorg xinit
 ```
 
 
-### Installation on Raspbian/OctoPi (recommended)
+### Installation on Raspbian/OctoPi
 
-The recommended way to install *OctoPrint-TFT* is use the `.deb` packages
-from the [Releases](https://github.com/Z-Bolt/OctoPrint-TFT/releases) page. The packages
+The recommended way to install *OctoScreen* is use the `.deb` packages
+from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page. The packages
 are available for Debian based distributions such as Raspbian and OctoPi for
 versions `jessie` and `stretch`.
 
@@ -127,4 +128,5 @@ License
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
 
-The artwork being use in the at the [default style](`styles/default`) created by [@majurca](https://github.com/majurca) is under the lincese [Attribution 3.0 Unported (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/)
+This project is a hard fork from [Octiprint-TFT](https://github.com/mcuadros/OctoPrint-TFT) created by [@mcuadros](https://github.com/mcuadros/OctoPrint-TFT)
+
