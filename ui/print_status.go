@@ -36,6 +36,19 @@ func PrintStatusPanel(ui *UI) Panel {
 func (m *printStatusPanel) initialize() {
 	defer m.Initialize()
 
+	m.Grid().Attach(m.createInfoBox(), 3, 0, 2, 1)
+	m.Grid().Attach(m.createProgressBar(), 3, 1, 2, 1)
+	m.Grid().Attach(m.createPauseButton(), 2, 2, 1, 1)
+	m.Grid().Attach(m.createStopButton(), 3, 2, 1, 1)
+	m.Grid().Attach(m.createMenuButton(), 4, 2, 1, 1)
+	m.Grid().Attach(m.createCompleteButton(), 2, 2, 3, 1)
+
+	m.showTools()
+}
+
+func (m *printStatusPanel) showTools() {
+	toolsCount := m.defineToolsCount()
+
 	m.tool0 = m.createToolButton(0)
 	m.tool1 = m.createToolButton(1)
 	m.tool2 = m.createToolButton(2)
@@ -43,19 +56,28 @@ func (m *printStatusPanel) initialize() {
 
 	m.bed = MustButtonImage("", "bed.svg", func() {})
 
-	m.Grid().Attach(m.createInfoBox(), 3, 0, 2, 1)
-	m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-	m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-	m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-	m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-	m.Grid().Attach(m.bed, 1, 2, 1, 1)
+	switch toolsCount {
+	case 1:
+		m.Grid().Attach(m.tool0, 1, 0, 2, 1)
+		m.Grid().Attach(m.bed, 1, 1, 2, 1)
 
-	m.Grid().Attach(m.createProgressBar(), 3, 1, 2, 1)
-	m.Grid().Attach(m.createPauseButton(), 2, 2, 1, 1)
-	m.Grid().Attach(m.createStopButton(), 3, 2, 1, 1)
-	m.Grid().Attach(m.createMenuButton(), 4, 2, 1, 1)
+	case 2:
+		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+		m.Grid().Attach(m.bed, 1, 1, 2, 1)
+	case 3:
+		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
+		m.Grid().Attach(m.bed, 2, 1, 1, 1)
+	case 4:
+		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
+		m.Grid().Attach(m.tool3, 2, 1, 1, 1)
+		m.Grid().Attach(m.bed, 1, 2, 1, 1)
+	}
 
-	m.Grid().Attach(m.createCompleteButton(), 2, 2, 3, 1)
 }
 
 func (m *printStatusPanel) createCompleteButton() *gtk.Button {
@@ -141,10 +163,6 @@ func (m *printStatusPanel) updateTemperature() {
 
 	m.doUpdateState(&s.State)
 
-	m.tool1.Hide()
-	m.tool2.Hide()
-	m.tool3.Hide()
-
 	for tool, s := range s.Temperature.Current {
 		text := fmt.Sprintf("%.0f°C / %.0f°C", s.Actual, s.Target)
 		switch tool {
@@ -154,13 +172,10 @@ func (m *printStatusPanel) updateTemperature() {
 			m.tool0.SetLabel(text)
 		case "tool1":
 			m.tool1.SetLabel(text)
-			m.tool1.Show()
 		case "tool2":
 			m.tool2.SetLabel(text)
-			m.tool2.Show()
 		case "tool3":
 			m.tool3.SetLabel(text)
-			m.tool3.Show()
 		}
 	}
 }
@@ -237,6 +252,22 @@ func (m *printStatusPanel) updateJob() {
 	}
 
 	m.time.Label.SetLabel(text)
+}
+
+func (m *printStatusPanel) defineToolsCount() int {
+	c, err := (&octoprint.ConnectionRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return 0
+	}
+
+	profile, err := (&octoprint.PrinterProfilesRequest{Id: c.Current.PrinterProfile}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return 0
+	}
+
+	return profile.Extruder.Count
 }
 
 func ConfirmStopDialog(parent *gtk.Window, msg string, ma *printStatusPanel) func() {
