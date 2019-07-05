@@ -61,8 +61,8 @@ are available for Debian Stretch based distributions such as Raspbian and OctoPi
 
 For example for a Raspbian Stretch:
 ```sh
-> wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.0.0/octoscreen_2.0-1_armhf.deb
-> dpkg -i octoscreen_2.0-1_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.0.0/octoscreen_2.0-1_armhf.deb
+sudo dpkg -i octoscreen_2.0-1_armhf.deb
 ```
 
 ### Install from source
