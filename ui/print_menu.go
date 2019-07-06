@@ -20,7 +20,7 @@ func (m *printMenuPanel) initialize() {
 	defer m.Initialize()
 	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg", "color4", m.showTemperature), 1, 0, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Network", "network.svg", "color1", m.showNetwork), 2, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("System", "settings.svg", "color3", m.showSystem), 3, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("System", "info.svg", "color3", m.showSystem), 3, 0, 1, 1)
 }
 
 func (m *printMenuPanel) showTemperature() {

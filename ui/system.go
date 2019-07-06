@@ -31,10 +31,74 @@ func SystemPanel(ui *UI, parent Panel) *systemPanel {
 }
 
 func (m *systemPanel) initialize() {
-	box := MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	box.Add(m.createInfoBox())
-	box.Add(m.createActionBar())
-	m.Grid().Add(box)
+	defer m.Initialize()
+
+	m.Grid().Attach(m.createOctoPrintInfo(), 1, 0, 2, 1)
+	m.Grid().Attach(m.createOctoScreenInfo(), 3, 0, 2, 1)
+	m.Grid().Attach(m.createSystemInfo(), 1, 1, 3, 1)
+}
+
+func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
+	r, err := (&octoprint.VersionRequest{}).Do(m.UI.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return nil
+	}
+
+	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+
+	info.SetHExpand(true)
+	info.SetHAlign(gtk.ALIGN_CENTER)
+	info.SetVExpand(true)
+	info.SetVAlign(gtk.ALIGN_CENTER)
+	logoWidth := m.Scaled(69)
+	img := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, int(float64(logoWidth)*1.25))
+	info.Add(img)
+
+	info.Add(MustLabel("\nOctoPrint Version: <b>%s (%s)</b>", r.Server, r.API))
+	return info
+}
+
+func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
+	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+
+	info.SetHExpand(true)
+	info.SetHAlign(gtk.ALIGN_CENTER)
+	info.SetVExpand(true)
+	info.SetVAlign(gtk.ALIGN_CENTER)
+
+	logoWidth := m.Scaled(80)
+
+	img := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth)*0.8))
+	info.Add(img)
+	info.Add(MustLabel("UI Version: <b>%s (%s)</b>", Version, Build))
+	return info
+}
+
+func (m *systemPanel) createSystemInfo() *gtk.Box {
+	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+
+	info.SetVExpand(true)
+	info.SetVAlign(gtk.ALIGN_CENTER)
+
+	title := MustLabel("<b>System Information</b>")
+	title.SetMarginBottom(5)
+	title.SetMarginTop(15)
+	info.Add(title)
+
+	v, _ := mem.VirtualMemory()
+	info.Add(MustLabel(fmt.Sprintf(
+		"Memory Total / Free: <b>%s / %s</b>",
+		humanize.Bytes(v.Total), humanize.Bytes(v.Free),
+	)))
+
+	l, _ := load.Avg()
+	info.Add(MustLabel(fmt.Sprintf(
+		"Load Average: <b>%.2f, %.2f, %.2f</b>",
+		l.Load1, l.Load5, l.Load15,
+	)))
+
+	return info
 }
 
 func (m *systemPanel) createActionBar() gtk.IWidget {
@@ -94,67 +158,4 @@ func (m *systemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition
 	}
 
 	return MustButton(MustImageFromFileWithSize(cmd.Action+".svg", 40, 40), cb)
-}
-
-func (m *systemPanel) createInfoBox() gtk.IWidget {
-	main := MustBox(gtk.ORIENTATION_HORIZONTAL, 10)
-	main.SetHExpand(true)
-	main.SetHAlign(gtk.ALIGN_CENTER)
-	main.SetVExpand(true)
-
-	logoWidth := m.Scaled(120)
-	img := MustImageFromFileWithSize("logo-white.svg", logoWidth, int(float64(logoWidth)*0.8))
-	img.SetMarginTop(35)
-	main.Add(img)
-
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	info.SetVExpand(true)
-	info.SetHExpand(true)
-	info.SetVAlign(gtk.ALIGN_CENTER)
-
-	m.addOctoPrint(info)
-	m.addSystemInfo(info)
-
-	main.Add(info)
-
-	return main
-}
-
-func (m *systemPanel) addOctoPrint(box *gtk.Box) {
-	title := MustLabel("<b>Versions Information</b>")
-	title.SetMarginTop(15)
-	title.SetMarginBottom(5)
-	box.Add(title)
-
-	r, err := (&octoprint.VersionRequest{}).Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return
-	}
-
-	box.Add(MustLabel("UI Version: <b>%s (%s)</b>", Version, Build))
-	box.Add(MustLabel("OctoPrint Version: <b>%s (%s)</b>", r.Server, r.API))
-
-}
-
-func (m *systemPanel) addSystemInfo(box *gtk.Box) {
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	box.Add(info)
-
-	title := MustLabel("<b>System Information</b>")
-	title.SetMarginBottom(5)
-	title.SetMarginTop(15)
-	info.Add(title)
-
-	v, _ := mem.VirtualMemory()
-	info.Add(MustLabel(fmt.Sprintf(
-		"Memory Total / Free: <b>%s / %s</b>",
-		humanize.Bytes(v.Total), humanize.Bytes(v.Free),
-	)))
-
-	l, _ := load.Avg()
-	info.Add(MustLabel(fmt.Sprintf(
-		"Load Average: <b>%.2f, %.2f, %.2f</b>",
-		l.Load1, l.Load5, l.Load15,
-	)))
 }

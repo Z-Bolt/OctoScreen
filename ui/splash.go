@@ -14,7 +14,7 @@ func NewSplashPanel(ui *UI) *SplashPanel {
 }
 
 func (m *SplashPanel) initialize() {
-	logo := MustImageFromFile("logo-white.svg")
+	logo := MustImageFromFile("logo.png")
 	m.Label = MustLabel("Initializing printer...")
 	m.Label.SetLineWrap(true)
 
@@ -26,5 +26,5 @@ func (m *SplashPanel) initialize() {
 	box.Add(logo)
 	box.Add(m.Label)
 
-	m.Grid().Attach(box, 1, 0, 1, 1)
+	m.Grid().Attach(box, 1, 0, 3, 2)
 }

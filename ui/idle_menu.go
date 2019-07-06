@@ -22,7 +22,7 @@ func (m *idleMenuPanel) initialize() {
 	m.Grid().Attach(MustButtonImageStyle("Move", "move.svg", "color1", m.showMove), 1, 0, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("ToolChanger", "toolchanger.svg", "color2", m.showToolchanger), 2, 0, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Control", "control.svg", "color4", m.showControl), 3, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("System", "settings.svg", "color3", m.showSystem), 4, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("System", "info.svg", "color3", m.showSystem), 4, 0, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg", "color4", m.showTemperature), 1, 1, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Network", "network.svg", "color1", m.showNetwork), 2, 1, 1, 1)
 }
