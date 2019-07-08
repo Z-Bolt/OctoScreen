@@ -71,7 +71,7 @@ func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
 
 	img := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth)*0.8))
 	info.Add(img)
-	info.Add(MustLabel("UI Version: <b>%s (%s)</b>", Version, Build))
+	info.Add(MustLabel("OctoScreen Version: <b>%s (%s)</b>", Version, Build))
 	return info
 }
 
