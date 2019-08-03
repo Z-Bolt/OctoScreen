@@ -43,7 +43,7 @@ If you are using `Raspbian` or any other `Debian` based distribution, required p
 be installed using:
 
 ```sh
-sudo apt-get install libgtk-3-0 xserver-xorg xinit X11-xserver-utils
+sudo apt-get install libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 ```
 Also you may need to install video drive, usually **no screens found** error indicates this. Please find manual here:
 [https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation](https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation)
