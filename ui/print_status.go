@@ -143,7 +143,7 @@ func (m *printStatusPanel) createStopButton() gtk.IWidget {
 }
 
 func (m *printStatusPanel) createMenuButton() gtk.IWidget {
-	m.menu = MustButtonImageStyle("Controle", "control.svg", "color3", func() {
+	m.menu = MustButtonImageStyle("Control", "control.svg", "color3", func() {
 		m.UI.Add(PrintMenuPanel(m.UI, m))
 	})
 	return m.menu
