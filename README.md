@@ -1,12 +1,8 @@
-OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
+# OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 
-_OctoScreen_, LCD touch interface for our Octoprint based on GTK+3.
-
-Is a _X application_ to be executed directly in the X Server without any windows
+_OctoScreen_, LCD touch interface for our Octoprint based on GTK+3, that allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi. It's a _X application_ to be executed directly in the X Server without any windows
 manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
 equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
-
-Allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.
 
 <img width="480" src="https://user-images.githubusercontent.com/390214/60487814-ef9d1a00-9ca8-11e9-9c48-31bf54a5488d.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" /><img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
@@ -47,7 +43,7 @@ If you are using `Raspbian` or any other `Debian` based distribution, required p
 be installed using:
 
 ```sh
-sudo apt-get install libgtk-3-0 xserver-xorg xinit
+sudo apt-get install libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 ```
 Also you may need to install video drive, usually **no screens found** error indicates this. Please find manual here:
 [https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation](https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation)
@@ -61,8 +57,8 @@ are available for Debian Stretch based distributions such as Raspbian and OctoPi
 
 For example for a Raspbian Stretch:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.0.0/octoscreen_2.0-1_armhf.deb
-sudo dpkg -i octoscreen_2.0-1_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.1.0/octoscreen_2.1-1_armhf.deb
+sudo dpkg -i octoscreen_2.1-1_armhf.deb
 ```
 
 ### Install from source
@@ -105,7 +101,7 @@ the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 - `OCTOPRINT_HOST` - OctoPrint HTTP address, example `http://localhost:5000`, if OctoPrint is locally installed will be read from the config file.
 
-- `OCTOPRINT_APIKEY` - OctoPrint-TFT expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”. if OctoPrint is locally installed will be read from the config file.
+- `OCTOPRINT_APIKEY` - OctoScreen expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”. if OctoPrint is locally installed will be read from the config file.
 
 - `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
