@@ -15,7 +15,7 @@
    id="svg4160"
    version="1.1"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="move-z-.svg">
+   sodipodi:docname="move-z+.svg">
   <defs
      id="defs4162" />
   <sodipodi:namedview
@@ -65,7 +65,7 @@
      style="display:inline"
      transform="translate(-3.5328446,2.2636422)">
     <g
-       transform="translate(-6.3983144,-16.077827)"
+       transform="translate(-6.3983144,-13.399256)"
        id="g37">
       <path
          sodipodi:nodetypes="ccccccc"
@@ -74,8 +74,7 @@
          d="m 22.795553,16.619161 3.21242,-1.25 3.212421,1.25 v 47.687531 l -3.212421,0.892857 -3.21242,-0.892857 z"
          style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <rect
-         transform="scale(1,-1)"
-         y="-21.604885"
+         y="64.121429"
          x="14.050002"
          height="5.8285666"
          width="51.899994"
@@ -83,8 +82,8 @@
          style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          inkscape:connector-curvature="0"
-         id="path7561-4-3"
-         d="M 58.029325,54.858544 40.443746,72.628629 22.673661,55.043048 l 7.034623,-7.108037 5.693541,5.634648 -0.236549,-20.738885 9.99935,-0.114053 0.235947,20.686154 5.520713,-5.578953 z"
+         id="path7561-4"
+         d="M 58.029325,30.86777 40.443746,13.097685 22.673661,30.683266 l 7.034623,7.108037 5.693541,-5.634648 -0.236549,20.738885 9.99935,0.114053 0.235947,-20.686154 5.520713,5.578953 z"
          style="fill:#232323;fill-opacity:1;fill-rule:evenodd;stroke:#FFFFFF;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     </g>
   </g>
