@@ -86,9 +86,10 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 }
 
 func (m *toolchangerPanel) createHomeButton() gtk.IWidget {
-	return MustButtonImageStyle("Home XY", "home.svg", "color3", func() {
+	return MustButtonImageStyle("Home XYZ", "home.svg", "color3", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
+			"G28 Z",
 			"G28 X",
 			"G28 Y",
 		}

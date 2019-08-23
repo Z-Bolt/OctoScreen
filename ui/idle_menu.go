@@ -25,6 +25,7 @@ func (m *idleMenuPanel) initialize() {
 	m.Grid().Attach(MustButtonImageStyle("System", "info.svg", "color3", m.showSystem), 4, 0, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg", "color4", m.showTemperature), 1, 1, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Network", "network.svg", "color1", m.showNetwork), 2, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Fan", "fan.svg", "color2", m.showFan), 3, 1, 1, 1)
 }
 
 func (m *idleMenuPanel) showTemperature() {
@@ -49,4 +50,8 @@ func (m *idleMenuPanel) showSystem() {
 
 func (m *idleMenuPanel) showMove() {
 	m.UI.Add(MovePanel(m.UI, m))
+}
+
+func (m *idleMenuPanel) showFan() {
+	m.UI.Add(FanPanel(m.UI, m))
 }
