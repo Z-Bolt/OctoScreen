@@ -1,6 +1,8 @@
 package ui
 
-import "github.com/gotk3/gotk3/gtk"
+import (
+	"github.com/gotk3/gotk3/gtk"
+)
 
 type SplashPanel struct {
 	CommonPanel
@@ -15,26 +17,38 @@ func NewSplashPanel(ui *UI) *SplashPanel {
 
 func (m *SplashPanel) initialize() {
 	logo := MustImageFromFile("logo.png")
-	m.Label = MustLabel("Initializing printer...")
+	m.Label = MustLabel("...")
+	m.Label.SetHExpand(true)
 	m.Label.SetLineWrap(true)
+	m.Label.SetMaxWidthChars(30)
+	m.Label.SetText("Initializing printer...")
 
-	box := MustBox(gtk.ORIENTATION_VERTICAL, 15)
-	box.SetVAlign(gtk.ALIGN_CENTER)
-	box.SetVExpand(true)
-	box.SetHExpand(true)
+	main := MustBox(gtk.ORIENTATION_VERTICAL, 15)
+	main.SetVAlign(gtk.ALIGN_END)
+	main.SetVExpand(true)
+	main.SetHExpand(true)
 
-	box.Add(logo)
-	box.Add(m.Label)
+	main.Add(logo)
+	main.Add(m.Label)
 
-	m.Grid().Attach(box, 1, 0, 3, 2)
-	m.Grid().Attach(MustButtonImageStyle("System", "info.svg", "color4", m.showSystem), 4, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Network", "network.svg", "color2", m.showNetwork), 4, 1, 1, 1)
+	box := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	box.Add(main)
+	box.Add(m.createActionBar())
+
+	m.Grid().Add(box)
+}
+
+func (m *SplashPanel) createActionBar() gtk.IWidget {
+	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	bar.SetHAlign(gtk.ALIGN_END)
+
+	button := MustButtonImageStyle("Network", "network.svg", "color4", m.showNetwork)
+	button.SetProperty("width-request", m.Scaled(100))
+	bar.Add(button)
+
+	return bar
 }
 
 func (m *SplashPanel) showNetwork() {
 	m.UI.Add(NetworkPanel(m.UI, m))
-}
-
-func (m *SplashPanel) showSystem() {
-	m.UI.Add(SystemPanel(m.UI, m))
 }
