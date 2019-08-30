@@ -37,8 +37,14 @@ func ControlPanel(ui *UI, parent Panel) Panel {
 func (m *controlPanel) initialize() {
 	defer m.Initialize()
 
-	for _, c := range m.getControl() {
-		b := m.createControlButton(c)
+	for _, c := range control {
+		icon := strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
+		b := m.createControlButton(c, icon)
+		m.AddButton(b)
+	}
+
+	for _, c := range m.getCustomControl() {
+		b := m.createControlButton(c, "custom-script")
 		m.AddButton(b)
 	}
 
@@ -48,8 +54,9 @@ func (m *controlPanel) initialize() {
 	}
 }
 
-func (m *controlPanel) getControl() []*octoprint.ControlDefinition {
-	control := control
+func (m *controlPanel) getCustomControl() []*octoprint.ControlDefinition {
+
+	control := []*octoprint.ControlDefinition{}
 
 	Logger.Info("Retrieving custom controls")
 	r, err := (&octoprint.CustomCommandsRequest{}).Do(m.UI.Printer)
@@ -59,14 +66,18 @@ func (m *controlPanel) getControl() []*octoprint.ControlDefinition {
 	}
 
 	for _, c := range r.Controls {
-		control = append(control, c.Children...)
+		for _, cc := range c.Children {
+			if cc.Command != "" || cc.Script != "" {
+				control = append(control, cc)
+			}
+		}
 	}
 
 	return control
 }
 
-func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.IWidget {
-	icon := strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
+func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition, icon string) gtk.IWidget {
+
 	do := func() {
 		r := &octoprint.CommandRequest{
 			Commands: c.Commands,
@@ -88,7 +99,7 @@ func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition) gtk.I
 		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
 	}
 
-	return MustButtonImage(c.Name, icon+".svg", cb)
+	return MustButtonImage(strEllipsisLen(c.Name, 25), icon+".svg", cb)
 }
 
 func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.IWidget {
@@ -109,19 +120,7 @@ func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.I
 		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
 	}
 
-	return MustButtonImage(c.Name, c.Action+".svg", cb)
-}
-
-func (m *controlPanel) createNetworkButton() gtk.IWidget {
-	return MustButtonImage("Network", "network.svg", func() {
-		m.UI.Add(NetworkPanel(m.UI, m))
-	})
-}
-
-func (m *controlPanel) createToolchangerButton() gtk.IWidget {
-	return MustButtonImage("ToolChanger", "extruder.svg", func() {
-		m.UI.Add(ToolchangerPanel(m.UI, m))
-	})
+	return MustButtonImage(strEllipsisLen(c.Name, 25), c.Action+".svg", cb)
 }
 
 func (m *controlPanel) getCommands() []*octoprint.CommandDefinition {
