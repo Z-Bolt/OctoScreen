@@ -55,7 +55,8 @@ func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
 	img := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, int(float64(logoWidth)*1.25))
 	info.Add(img)
 
-	info.Add(MustLabel("\nOctoPrint Version: <b>%s (%s)</b>", r.Server, r.API))
+	info.Add(MustLabel("\nOctoPrint Version"))
+	info.Add(MustLabel("<b>%s (%s)</b>", r.Server, r.API))
 	return info
 }
 
@@ -71,7 +72,8 @@ func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
 
 	img := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth)*0.8))
 	info.Add(img)
-	info.Add(MustLabel("OctoScreen Version: <b>%s (%s)</b>", Version, Build))
+	info.Add(MustLabel("OctoScreen Version"))
+	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
 	return info
 }
 
