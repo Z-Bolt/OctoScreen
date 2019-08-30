@@ -72,9 +72,9 @@ func (m *bedLevelPanel) createLevelButton(p string) *gtk.Button {
 
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
-			"G0 Z30",
-			fmt.Sprintf("G0 X%f Y%f", m.points[p][0], m.points[p][1]),
-			"G0 Z0",
+			"G0 Z10 F2000",
+			fmt.Sprintf("G0 X%f Y%f F10000", m.points[p][0], m.points[p][1]),
+			"G0 Z0 F400",
 		}
 
 		if err := cmd.Do(m.UI.Printer); err != nil {

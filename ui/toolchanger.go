@@ -67,8 +67,9 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 			cmd := &octoprint.CommandRequest{}
 			cmd.Commands = []string{
 				"G28",
-				fmt.Sprintf("G0 X%f Y%f", m.cPoint.x, m.cPoint.y),
-				fmt.Sprintf("G0 Z%f", m.cPoint.z),
+				fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y),
+				fmt.Sprintf("G0 Z10 F2000", m.cPoint.z),
+				fmt.Sprintf("G0 Z%f F400", m.cPoint.z),
 			}
 
 			if err := cmd.Do(m.UI.Printer); err != nil {
@@ -125,7 +126,7 @@ func (m *toolchangerPanel) updateZOffset(v float64) {
 	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{
 		fmt.Sprintf("SET_GCODE_OFFSET Z=%f", m.zOffset),
-		"G0 Z0",
+		"G0 Z0 F100",
 	}
 	if err := cmd.Do(m.UI.Printer); err != nil {
 		Logger.Error(err)
@@ -143,7 +144,7 @@ func (m *toolchangerPanel) createChangeToolButton(num int) gtk.IWidget {
 			cmd.Commands = []string{
 				fmt.Sprintf("G0 Z%f", 5.0),
 				gcode,
-				fmt.Sprintf("G0 X%f Y%f", m.cPoint.x, m.cPoint.y),
+				fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y),
 			}
 		} else {
 			cmd.Commands = []string{gcode}

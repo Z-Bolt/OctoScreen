@@ -122,17 +122,8 @@ func (ui *UI) verifyConnection() {
 	newUiState := "splash"
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
-	if err != nil {
-		if time.Since(ui.t) > errMercyPeriod {
-			ui.s.Label.SetText(ui.errToUser(err))
-		}
-
-		newUiState = "splash"
-
-		Logger.Debugf("Unexpected error: %s", err)
-	} else {
+	if err == nil {
 		ui.State = s.Current.State
-
 		switch {
 		case s.Current.State.IsOperational():
 			newUiState = "idle"
@@ -148,6 +139,13 @@ func (ui *UI) verifyConnection() {
 		case s.Current.State.IsConnecting():
 			ui.s.Label.SetText(string(s.Current.State))
 		}
+	} else {
+		if time.Since(ui.t) > errMercyPeriod {
+			ui.s.Label.SetText(ui.errToUser(err))
+		}
+
+		newUiState = "splash"
+		Logger.Debugf("Unexpected error: %s", err)
 	}
 
 	defer func() { ui.UIState = newUiState }()
