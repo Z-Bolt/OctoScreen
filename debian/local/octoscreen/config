@@ -14,12 +14,11 @@ OCTOPRINT_HOST=http://localhost:5000
 OCTOPRINT_APIKEY=
 
 # Location of the application theme.
-
 OCTOSCREEN_STYLE_PATH=/opt/octoscreen/styles/z-bolt/
 
 # Resolution of the application, should be configured to the resolution of your
-# screen, for example 800x480. By default 480x320.
+# screen, for example 800x480.
 OCTOSCREEN_RESOLUTION=
 
-# Location of file for logging (Optional)
+# Location of file for logging (optional)
 OCTOSCREEN_LOG_FILE=
