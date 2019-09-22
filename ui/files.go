@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"sort"
-	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -220,39 +219,6 @@ func (m *filesPanel) createOpenFolderButton(f *octoprint.FileInformation) gtk.IW
 	ctx, _ := b.GetStyleContext()
 	ctx.AddClass("color1")
 	ctx.AddClass("file-list")
-
-	return b
-}
-
-func (m *filesPanel) createInitReleaseSDButton() gtk.IWidget {
-	release := MustImageFromFileWithSize("sd_eject.svg", m.Scaled(40), m.Scaled(40))
-	init := MustImageFromFileWithSize("sd.svg", m.Scaled(40), m.Scaled(40))
-	b := MustButton(release, nil)
-
-	state := func() {
-		time.Sleep(50 * time.Millisecond)
-		switch m.isReady() {
-		case true:
-			b.SetImage(release)
-		case false:
-			b.SetImage(init)
-		}
-	}
-
-	b.Connect("clicked", func() {
-		var err error
-		if !m.isReady() {
-			err = (&octoprint.SDInitRequest{}).Do(m.UI.Printer)
-		} else {
-			err = (&octoprint.SDReleaseRequest{}).Do(m.UI.Printer)
-		}
-
-		if err != nil {
-			Logger.Error(err)
-		}
-
-		state()
-	})
 
 	return b
 }
