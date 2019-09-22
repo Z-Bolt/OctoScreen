@@ -18,6 +18,7 @@ type pointCoordinates struct {
 type toolchangerPanel struct {
 	CommonPanel
 	zCalibrationMode bool
+	activeTool       int
 	cPoint           pointCoordinates
 	zOffset          float64
 	labZOffsetLabel  *gtk.Label
@@ -28,7 +29,6 @@ func ToolchangerPanel(ui *UI, parent Panel) Panel {
 		m := &toolchangerPanel{CommonPanel: NewCommonPanel(ui, parent)}
 		m.panelH = 3
 		m.cPoint = pointCoordinates{x: 20, y: 20, z: 0}
-		// m.b = NewBackgroundTask(time.Second, m.updateTemperatures)
 		m.initialize()
 
 		toolchangerPanelInstance = m
@@ -64,18 +64,14 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 		m.zCalibrationMode = b.Value().(bool)
 		if m.zCalibrationMode == true {
 			ctx.AddClass("active")
-			cmd := &octoprint.CommandRequest{}
-			cmd.Commands = []string{
-				"G28",
-				fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y),
-				fmt.Sprintf("G0 Z10 F2000", m.cPoint.z),
-				fmt.Sprintf("G0 Z%f F400", m.cPoint.z),
-			}
 
-			if err := cmd.Do(m.UI.Printer); err != nil {
-				Logger.Error(err)
-			}
+			m.command("G28")
+			m.command("T0")
+			m.command(fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y))
+			m.command(fmt.Sprintf("G0 Z10 F2000"))
+			m.command(fmt.Sprintf("G0 Z%f F400", m.cPoint.z))
 
+			m.activeTool = 0
 			m.updateZOffset(0)
 		} else {
 			ctx.RemoveClass("active")
@@ -131,6 +127,11 @@ func (m *toolchangerPanel) updateZOffset(v float64) {
 	if err := cmd.Do(m.UI.Printer); err != nil {
 		Logger.Error(err)
 	}
+
+	cmd2 := &octoprint.SetZOffsetRequest{Value: m.zOffset, Tool: m.activeTool}
+	if err := cmd2.Do(m.UI.Printer); err != nil {
+		Logger.Error(err)
+	}
 }
 
 func (m *toolchangerPanel) createChangeToolButton(num int) gtk.IWidget {
@@ -138,25 +139,24 @@ func (m *toolchangerPanel) createChangeToolButton(num int) gtk.IWidget {
 	name := fmt.Sprintf("Tool%d", num+1)
 	gcode := fmt.Sprintf("T%d", num)
 	return MustButtonImageStyle(name, "extruder.svg", style, func() {
-		cmd := &octoprint.CommandRequest{}
-
 		if m.zCalibrationMode {
-			cmd.Commands = []string{
-				fmt.Sprintf("G0 Z%f", 5.0),
-				gcode,
-				fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y),
+			m.activeTool = num
+			m.command(fmt.Sprintf("G0 Z%f", 5.0))
+			m.command(gcode)
+			m.command(fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y))
+
+			cmd := &octoprint.GetZOffsetRequest{Tool: m.activeTool}
+			response, err := cmd.Do(m.UI.Printer)
+
+			if err != nil {
+				Logger.Error(err)
+				return
 			}
+
+			m.updateZOffset(response.Offset)
+
 		} else {
-			cmd.Commands = []string{gcode}
-		}
-
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
-			return
-		}
-
-		if m.zCalibrationMode {
-			m.updateZOffset(0)
+			m.command(gcode)
 		}
 	})
 }
@@ -195,4 +195,10 @@ func (m *toolchangerPanel) createZOffsetLabel() gtk.IWidget {
 	m.labZOffsetLabel.SetHExpand(true)
 	m.labZOffsetLabel.SetLineWrap(true)
 	return m.labZOffsetLabel
+}
+
+func (m *toolchangerPanel) command(gcode string) error {
+	cmd := &octoprint.CommandRequest{}
+	cmd.Commands = []string{gcode}
+	return cmd.Do(m.UI.Printer)
 }
