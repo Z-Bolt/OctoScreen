@@ -21,6 +21,7 @@ type systemPanel struct {
 func SystemPanel(ui *UI, parent Panel) *systemPanel {
 	if systemPanelInstance == nil {
 		m := &systemPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m.panelH = 3
 		m.initialize()
 		systemPanelInstance = m
 	} else {
@@ -35,7 +36,19 @@ func (m *systemPanel) initialize() {
 
 	m.Grid().Attach(m.createOctoPrintInfo(), 1, 0, 2, 1)
 	m.Grid().Attach(m.createOctoScreenInfo(), 3, 0, 2, 1)
-	m.Grid().Attach(m.createSystemInfo(), 1, 1, 3, 1)
+	m.Grid().Attach(m.createSystemInfo(), 1, 1, 4, 1)
+
+	if b := m.createCommandButton("Reboot", "reboot", "color3"); b != nil {
+		m.Grid().Attach(b, 3, 2, 1, 1)
+	}
+
+	if b := m.createCommandButton("Restart", "restart", "color2"); b != nil {
+		m.Grid().Attach(b, 2, 2, 1, 1)
+	}
+
+	if b := m.createCommandButton("Shutdown", "shutdown", "color1"); b != nil {
+		m.Grid().Attach(b, 1, 2, 1, 1)
+	}
 }
 
 func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
@@ -51,7 +64,7 @@ func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
 	info.SetHAlign(gtk.ALIGN_CENTER)
 	info.SetVExpand(true)
 	info.SetVAlign(gtk.ALIGN_CENTER)
-	logoWidth := m.Scaled(69)
+	logoWidth := m.Scaled(52)
 	img := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, int(float64(logoWidth)*1.25))
 	info.Add(img)
 
@@ -68,7 +81,7 @@ func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
 	info.SetVExpand(true)
 	info.SetVAlign(gtk.ALIGN_CENTER)
 
-	logoWidth := m.Scaled(80)
+	logoWidth := m.Scaled(62)
 
 	img := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth)*0.8))
 	info.Add(img)
@@ -103,24 +116,7 @@ func (m *systemPanel) createSystemInfo() *gtk.Box {
 	return info
 }
 
-func (m *systemPanel) createActionBar() gtk.IWidget {
-	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	bar.SetHAlign(gtk.ALIGN_END)
-	bar.SetHExpand(true)
-	bar.SetMarginTop(5)
-	bar.SetMarginBottom(5)
-	bar.SetMarginEnd(5)
-
-	if b := m.createRestartButton(); b != nil {
-		bar.Add(b)
-	}
-
-	bar.Add(MustButton(MustImageFromFileWithSize("back.svg", m.Scaled(40), m.Scaled(40)), m.UI.GoHistory))
-
-	return bar
-}
-
-func (m *systemPanel) createRestartButton() gtk.IWidget {
+func (m *systemPanel) createCommandButton(name string, action string, style string) gtk.IWidget {
 	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -128,36 +124,39 @@ func (m *systemPanel) createRestartButton() gtk.IWidget {
 	}
 
 	var cmd *octoprint.CommandDefinition
+	var cb func()
+
 	for _, c := range r.Core {
-		if c.Action == "reboot" {
+		if c.Action == action {
 			cmd = c
 		}
 	}
 
+	if cmd != nil {
+		do := func() {
+			r := &octoprint.SystemExecuteCommandRequest{
+				Source: octoprint.Core,
+				Action: cmd.Action,
+			}
+
+			if err := r.Do(m.UI.Printer); err != nil {
+				Logger.Error(err)
+				return
+			}
+		}
+
+		cb = do
+
+		if len(cmd.Confirm) != 0 {
+			cb = MustConfirmDialog(m.UI.w, cmd.Confirm, do)
+		}
+	}
+
+	b := MustButtonImageStyle(name, action+".svg", style, cb)
+
 	if cmd == nil {
-		return nil
+		b.SetSensitive(false)
 	}
 
-	return m.doCreateButtonFromCommand(cmd)
-}
-
-func (m *systemPanel) doCreateButtonFromCommand(cmd *octoprint.CommandDefinition) gtk.IWidget {
-	do := func() {
-		r := &octoprint.SystemExecuteCommandRequest{
-			Source: octoprint.Core,
-			Action: cmd.Action,
-		}
-
-		if err := r.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
-			return
-		}
-	}
-
-	cb := do
-	if len(cmd.Confirm) != 0 {
-		cb = MustConfirmDialog(m.UI.w, cmd.Confirm, do)
-	}
-
-	return MustButton(MustImageFromFileWithSize(cmd.Action+".svg", 40, 40), cb)
+	return b
 }

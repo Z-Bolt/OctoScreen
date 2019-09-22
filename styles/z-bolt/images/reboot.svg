@@ -1,90 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="60.13768"
-   height="60.776516"
-   viewBox="0 0 60.137677 60.776516"
-   id="svg4160"
-   version="1.1"
-   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="power.svg">
-  <defs
-     id="defs4162" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="-134.66204"
-     inkscape:cy="7.2709709"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer3"
-     showgrid="true"
-     units="in"
-     showguides="false"
-     inkscape:window-width="3200"
-     inkscape:window-height="1800"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="0"
-     inkscape:snap-bbox="true"
-     inkscape:snap-global="false">
-    <inkscape:grid
-       type="xygrid"
-       id="grid4712"
-       originx="-9.9771178"
-       originy="-29.820954" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata4165">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="Home"
-     style="display:inline"
-     transform="translate(-3.5328446,2.2636422)">
-    <g
-       id="g830"
-       transform="translate(1.6759835,-6.9953999)">
-      <path
-         sodipodi:nodetypes="ccccccc"
-         inkscape:connector-curvature="0"
-         id="rect4760-8"
-         d="m 14.881968,9.1895767 3.21242,-1.25 3.212421,1.25 V 56.877107 l -3.212421,0.892857 -3.21242,-0.892857 z"
-         style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <ellipse
-         ry="22.087179"
-         rx="21.819319"
-         cy="38.713276"
-         cx="31.925701"
-         id="path4508"
-         style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path4157"
-         d="M 32.036928,11.024487 V 32.457702"
-         style="fill:none;fill-rule:evenodd;stroke:#FFFFFF;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="63px" height="63px" viewBox="0 0 63 63" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>reboot</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-266.000000, -308.000000)" fill="#FFFFFF">
+            <g id="spinner" transform="translate(270.000000, 313.000000)">
+                <path d="M54,20.25 L33.75,20.25 L41.3189648,12.6810352 C37.4941406,8.85642188 32.4089648,6.75 27,6.75 C21.5910352,6.75 16.5058594,8.85642188 12.6810352,12.6810352 C8.85642187,16.5058594 6.75,21.5910352 6.75,27 C6.75,32.4089648 8.85642187,37.4941406 12.6810352,41.3189648 C16.5058594,45.1435781 21.5910352,47.25 27,47.25 C32.4089648,47.25 37.4941406,45.1435781 41.3188594,41.3188594 C41.6382188,40.9996055 41.9442891,40.6706484 42.2393906,40.3344141 L47.3187656,44.7789727 C42.3698555,50.4303047 35.1021094,54 27,54 C12.0883008,54 0,41.9116992 0,27 C0,12.0883008 12.0883008,0 27,0 C34.4559023,0 41.2049531,3.02305078 46.0906875,7.9093125 L54,0 L54,20.25 Z" id="Path"></path>
+            </g>
+        </g>
     </g>
-  </g>
 </svg>

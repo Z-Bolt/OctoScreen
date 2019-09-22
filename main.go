@@ -42,10 +42,14 @@ func init() {
 
 	BaseURL = os.Getenv(EnvBaseURL)
 	if BaseURL == "" {
-		BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
-		ui.Logger.Infof("Using %q as server address", BaseURL)
-
+		if cfg.Server.Host != "" {
+			BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
+		} else {
+			BaseURL = "http://0.0.0.0:5000"
+		}
 	}
+
+	ui.Logger.Infof("Using %q as server address", BaseURL)
 
 	APIKey = os.Getenv(EnvAPIKey)
 	if APIKey == "" {
