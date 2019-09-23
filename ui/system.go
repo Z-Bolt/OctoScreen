@@ -38,11 +38,11 @@ func (m *systemPanel) initialize() {
 	m.Grid().Attach(m.createOctoScreenInfo(), 3, 0, 2, 1)
 	m.Grid().Attach(m.createSystemInfo(), 1, 1, 4, 1)
 
-	if b := m.createCommandButton("Reboot", "reboot", "color3"); b != nil {
+	if b := m.createCommandButton("Octo Restart", "restart", "color2"); b != nil {
 		m.Grid().Attach(b, 3, 2, 1, 1)
 	}
 
-	if b := m.createCommandButton("Restart", "restart", "color2"); b != nil {
+	if b := m.createCommandButton("Sys Restart", "reboot", "color3"); b != nil {
 		m.Grid().Attach(b, 2, 2, 1, 1)
 	}
 

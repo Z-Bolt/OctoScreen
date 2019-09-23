@@ -42,13 +42,21 @@ func (m *SplashPanel) createActionBar() gtk.IWidget {
 	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	bar.SetHAlign(gtk.ALIGN_END)
 
-	button := MustButtonImageStyle("Network", "network.svg", "color4", m.showNetwork)
-	button.SetProperty("width-request", m.Scaled(100))
-	bar.Add(button)
+	sys := MustButtonImageStyle("System", "info.svg", "color3", m.showSystem)
+	sys.SetProperty("width-request", m.Scaled(100))
+	bar.Add(sys)
+
+	net := MustButtonImageStyle("Network", "network.svg", "color4", m.showNetwork)
+	net.SetProperty("width-request", m.Scaled(100))
+	bar.Add(net)
 
 	return bar
 }
 
 func (m *SplashPanel) showNetwork() {
 	m.UI.Add(NetworkPanel(m.UI, m))
+}
+
+func (m *SplashPanel) showSystem() {
+	m.UI.Add(SystemPanel(m.UI, m))
 }

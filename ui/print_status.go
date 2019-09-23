@@ -213,7 +213,6 @@ func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 		m.menu.Hide()
 		m.back.Hide()
 		m.complete.Show()
-
 	default:
 		m.pause.SetSensitive(false)
 		m.stop.SetSensitive(false)
