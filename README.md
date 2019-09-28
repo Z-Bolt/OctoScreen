@@ -57,7 +57,7 @@ are available for Debian Stretch based distributions such as Raspbian and OctoPi
 
 For example for a Raspbian Stretch:
 ```sh
-wget wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.2.1/octoscreen_2.2-2_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.2.1/octoscreen_2.2-2_armhf.deb
 sudo dpkg -i octoscreen_2.2-2_armhf.deb
 ```
 
