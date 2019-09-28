@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
@@ -52,7 +53,6 @@ func (m *toolchangerPanel) initialize() {
 	m.Grid().Attach(m.createMagnetOnButton(), 1, 2, 1, 1)
 	m.Grid().Attach(m.createMagnetOffButton(), 2, 2, 1, 1)
 	m.Grid().Attach(m.createZCalibrationModeButton(), 3, 2, 1, 1)
-
 }
 
 func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
@@ -67,6 +67,7 @@ func (m *toolchangerPanel) createZCalibrationModeButton() gtk.IWidget {
 
 			m.command("G28")
 			m.command("T0")
+			time.Sleep(time.Second * 1)
 			m.command(fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y))
 			m.command(fmt.Sprintf("G0 Z10 F2000"))
 			m.command(fmt.Sprintf("G0 Z%f F400", m.cPoint.z))
@@ -143,6 +144,7 @@ func (m *toolchangerPanel) createChangeToolButton(num int) gtk.IWidget {
 			m.activeTool = num
 			m.command(fmt.Sprintf("G0 Z%f", 5.0))
 			m.command(gcode)
+			time.Sleep(time.Second * 1)
 			m.command(fmt.Sprintf("G0 X%f Y%f F10000", m.cPoint.x, m.cPoint.y))
 
 			cmd := &octoprint.GetZOffsetRequest{Tool: m.activeTool}

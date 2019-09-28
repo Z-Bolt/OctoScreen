@@ -346,3 +346,28 @@ func strEllipsisLen(name string, length int) string {
 
 	return name
 }
+
+func MessageDialog(parent *gtk.Window, msg string) {
+
+	win := gtk.MessageDialogNewWithMarkup(
+		parent,
+		gtk.DIALOG_MODAL,
+		gtk.MESSAGE_INFO,
+		gtk.BUTTONS_OK,
+		"",
+	)
+
+	win.SetMarkup(CleanHTML(msg))
+	defer win.Destroy()
+
+	box, _ := win.GetContentArea()
+	box.SetMarginStart(25)
+	box.SetMarginEnd(25)
+	box.SetMarginTop(50)
+	box.SetMarginBottom(10)
+
+	ctx, _ := win.GetStyleContext()
+	ctx.AddClass("message")
+
+	win.Run()
+}

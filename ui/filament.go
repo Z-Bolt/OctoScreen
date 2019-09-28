@@ -141,7 +141,7 @@ func (m *filamentPanel) createLoadButton() gtk.IWidget {
 
 	return MustButtonImage("Load", "extrude.svg", func() {
 		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{"G92 E0", "G0 E600 F5000", "G92 E0", "G0 E120 F500"}
+		cmd.Commands = []string{"G91", "G0 E600 F5000", "G0 E120 F500", "G90"}
 
 		Logger.Info("Sending filament load request")
 		if err := cmd.Do(m.UI.Printer); err != nil {
@@ -155,7 +155,7 @@ func (m *filamentPanel) createUnloadButton() gtk.IWidget {
 
 	return MustButtonImage("Unload", "retract.svg", func() {
 		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{"G92 E0", "G0 E-800 F5000"}
+		cmd.Commands = []string{"G91", "G0 E-800 F5000", "G90"}
 
 		Logger.Info("Sending filament unload request")
 		if err := cmd.Do(m.UI.Printer); err != nil {

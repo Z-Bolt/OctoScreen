@@ -96,6 +96,35 @@ button.keyboard {
     border-bottom: 8px solid #009384;
 }
 
+
+.dialog { 
+    border: 2px solid black; 
+    font-size: 20px;
+    padding: 50px;
+    background-color: #000;
+}
+
+.dialog button {
+    padding: 30px 50px 30px 50px;
+    border-bottom: 8px solid #009384;
+}
+
+
+.message { 
+    border: 2px solid #981E1F; 
+    font-size: 20px;
+    padding: 50px;
+    color: #FFF;
+    background-color: #981E1F;
+}
+
+.message button {
+    background-color: #FFF;
+    color: #000;
+    padding: 40px 50px 40px 50px;
+}
+
+
 .notification {
     background-clip: padding-box;
     padding: 5px;
