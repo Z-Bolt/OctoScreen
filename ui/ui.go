@@ -113,13 +113,14 @@ func (ui *UI) loadStyle() {
 	gtk.AddProviderForScreen(s, p, gtk.STYLE_PROVIDER_PRIORITY_USER)
 }
 
-var errMercyPeriod = time.Second * 30
+var errMercyPeriod = time.Second * 10
 
 func (ui *UI) verifyConnection() {
 
 	ui.sdNotify("WATCHDOG=1")
 
 	newUiState := "splash"
+	splashMessage := "Initializing printer..."
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
 	if err == nil {
@@ -134,14 +135,14 @@ func (ui *UI) verifyConnection() {
 		case s.Current.State.IsOffline():
 			if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
 				newUiState = "splash"
-				ui.s.Label.SetText(fmt.Sprintf("Error connecting to printer: %s", err))
+				splashMessage = fmt.Sprintf("Error connecting to printer: %s", err)
 			}
 		case s.Current.State.IsConnecting():
-			ui.s.Label.SetText(string(s.Current.State))
+			splashMessage = string(s.Current.State)
 		}
 	} else {
 		if time.Since(ui.t) > errMercyPeriod {
-			ui.s.Label.SetText(ui.errToUser(err))
+			splashMessage = ui.errToUser(err)
 		}
 
 		newUiState = "splash"
@@ -149,6 +150,8 @@ func (ui *UI) verifyConnection() {
 	}
 
 	defer func() { ui.UIState = newUiState }()
+
+	ui.s.Label.SetText(splashMessage)
 
 	if newUiState == ui.UIState {
 		return
@@ -198,10 +201,9 @@ func (ui *UI) GoHistory() {
 func (ui *UI) errToUser(err error) string {
 	text := err.Error()
 	if strings.Contains(text, "connection refused") {
-		return fmt.Sprintf(
-			"Unable to connect to %q (Key: %v), \nmaybe OctoPrint not running?",
-			ui.Printer.Endpoint, ui.Printer.APIKey != "",
-		)
+		return "Unable to connect to OctoPrint, check if it running."
+	} else if strings.Contains(text, "request canceled") {
+		return "Loading..."
 	}
 
 	return fmt.Sprintf("Unexpected error: %s", err)
