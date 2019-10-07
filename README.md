@@ -105,7 +105,7 @@ the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 - `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
-- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen. Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533. If you are using Raspbian you can do it by changing hdmi_cvt param in /boot/config.txt file
+- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen. Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533. If you are using Raspbian you can do it by changing [`hdmi_cvt`](https://www.raspberrypi.org/documentation/configuration/config-txt/video.md) param in `/boot/config.txt` file
 
 
 ### Custom controls and commands
