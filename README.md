@@ -57,8 +57,8 @@ are available for Debian Stretch based distributions such as Raspbian and OctoPi
 
 For example for a Raspbian Stretch:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.1.0/octoscreen_2.1-1_armhf.deb
-sudo dpkg -i octoscreen_2.1-1_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.2.1/octoscreen_2.2-2_armhf.deb
+sudo dpkg -i octoscreen_2.2-2_armhf.deb
 ```
 
 ### Install from source
@@ -105,7 +105,7 @@ the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 - `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS. This variable defines the location of the application theme.
 
-- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen. Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533. If you are using Raspbian you can do it by changing hdmi_cvt param in /boot/config.txt file
+- `OCTOSCREEN_RESOLUTION` -  Resolution of the application, should be configured to the resolution of your screen. Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533. If you are using Raspbian you can do it by changing [`hdmi_cvt`](https://www.raspberrypi.org/documentation/configuration/config-txt/video.md) param in `/boot/config.txt` file.
 
 
 ### Custom controls and commands
