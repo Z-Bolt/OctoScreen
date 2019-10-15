@@ -49,7 +49,7 @@ func (m *controlPanel) initialize() {
 	}
 
 	for _, c := range m.getCommands() {
-		b := m.createCommandButton(c)
+		b := m.createCommandButton(c, "custom-script")
 		m.AddButton(b)
 	}
 }
@@ -99,10 +99,10 @@ func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition, icon 
 		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
 	}
 
-	return MustButtonImage(strEllipsisLen(c.Name, 25), icon+".svg", cb)
+	return MustButtonImage(strEllipsisLen(c.Name, 16), icon+".svg", cb)
 }
 
-func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.IWidget {
+func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition, icon string) gtk.IWidget {
 	do := func() {
 		r := &octoprint.SystemExecuteCommandRequest{
 			Source: octoprint.Custom,
@@ -120,7 +120,7 @@ func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition) gtk.I
 		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
 	}
 
-	return MustButtonImage(strEllipsisLen(c.Name, 25), c.Action+".svg", cb)
+	return MustButtonImage(strEllipsisLen(c.Name, 16), icon+".svg", cb)
 }
 
 func (m *controlPanel) getCommands() []*octoprint.CommandDefinition {
