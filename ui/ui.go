@@ -204,6 +204,8 @@ func (ui *UI) errToUser(err error) string {
 		return "Unable to connect to OctoPrint, check if it running."
 	} else if strings.Contains(text, "request canceled") {
 		return "Loading..."
+	} else if strings.Contains(text, "connection broken") {
+		return "Loading..."
 	}
 
 	return fmt.Sprintf("Unexpected error: %s", err)
