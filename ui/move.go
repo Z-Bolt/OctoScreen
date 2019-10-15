@@ -35,16 +35,16 @@ func (m *movePanel) initialize() {
 	m.Grid().Attach(m.createMoveButton("Z+", "move-z+.svg", octoprint.ZAxis, 1), 3, 1, 1, 1)
 
 	m.step = MustStepButton("move-step.svg",
-		Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1},
+		Step{"5mm", 5}, Step{"10mm", 10}, Step{"1mm", 1}, Step{"0.1mm", 0.1},
 	)
 
 	m.Grid().Attach(m.step, 2, 2, 1, 1)
 }
 
-func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir int) gtk.IWidget {
+func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir float64) gtk.IWidget {
 
 	return MustPressedButton(label, image, func() {
-		distance := m.step.Value().(int) * dir
+		distance := m.step.Value().(float64) * dir
 
 		cmd := &octoprint.PrintHeadJogRequest{}
 		switch a {

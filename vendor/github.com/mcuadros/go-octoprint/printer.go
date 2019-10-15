@@ -75,13 +75,13 @@ func (cmd *StateRequest) Do(c *Client) (*FullStateResponse, error) {
 type PrintHeadJogRequest struct {
 	// X is the amount distance to travel in mm or coordinate to jog print head
 	// on x axis.
-	X int `json:"x,omitempty"`
+	X float64 `json:"x,omitempty"`
 	// Y is the amount distance to travel in mm or coordinate to jog print head
 	// on y axis.
-	Y int `json:"y,omitempty"`
+	Y float64 `json:"y,omitempty"`
 	// Z is the amount distance to travel in mm.or coordinate to jog print head
 	// on x axis.
-	Z int `json:"z,omitempty"`
+	Z float64 `json:"z,omitempty"`
 	// Absolute is whether to move relative to current position (provided axes
 	// values are relative amounts) or to absolute position (provided axes
 	// values are coordinates)

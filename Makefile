@@ -66,7 +66,7 @@ build-internal: prepare-internal
 	cp ../*.deb /build/;
 
 prepare-internal:
-	dch --create -v $(VERSION)-2 --package $(PACKAGE_NAME) empty; \
+	dch --create -v $(VERSION)-5 --package $(PACKAGE_NAME) empty; \
 	cd $(WORKDIR)/..; \
 	tar -czf octoscreen_$(VERSION).orig.tar.gz --exclude-vcs OctoScreen
 
