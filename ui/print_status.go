@@ -151,20 +151,7 @@ func (m *printStatusPanel) createMenuButton() gtk.IWidget {
 
 func (m *printStatusPanel) update() {
 	m.updateTemperature()
-	m.checkNotification()
 	m.updateJob()
-}
-
-func (m *printStatusPanel) checkNotification() {
-	n, err := (&octoprint.GetNotificationRequest{}).Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return
-	}
-
-	if n.Message != "" {
-		MessageDialog(m.UI.w, n.Message)
-	}
 }
 
 func (m *printStatusPanel) updateTemperature() {

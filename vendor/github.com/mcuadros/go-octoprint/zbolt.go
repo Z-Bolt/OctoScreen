@@ -6,6 +6,7 @@ import (
 )
 
 const URIZBoltRequest = "/api/plugin/zbolt"
+const URIZBoltOctoScreenRequest = "/api/plugin/zbolt_octoscreen"
 
 // SettingsRequest retrieves the current configuration of OctoPrint.
 type SetZOffsetRequest struct {
@@ -73,7 +74,7 @@ func (cmd *GetNotificationRequest) Do(c *Client) (*GetNotificationResponse, erro
 		return nil, err
 	}
 
-	b, err := c.doJSONRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
 	if err != nil {
 		return nil, err
 	}

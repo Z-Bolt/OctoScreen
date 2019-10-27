@@ -73,7 +73,7 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	ui.s = NewSplashPanel(ui)
-	ui.b = NewBackgroundTask(time.Second*5, ui.verifyConnection)
+	ui.b = NewBackgroundTask(time.Second*2, ui.update)
 	ui.initialize()
 	return ui
 }
@@ -167,6 +167,23 @@ func (ui *UI) verifyConnection() {
 	case "splash":
 		ui.Add(ui.s)
 	}
+}
+
+func (m *UI) checkNotification() {
+	n, err := (&octoprint.GetNotificationRequest{}).Do(m.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return
+	}
+
+	if n.Message != "" {
+		MessageDialog(m.w, n.Message)
+	}
+}
+
+func (m *UI) update() {
+	m.verifyConnection()
+	m.checkNotification()
 }
 
 func (ui *UI) sdNotify(m string) {
