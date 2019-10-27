@@ -29,6 +29,8 @@ resources.
 This is the main reason because I develop this X application to be executed
 in my 3d printer.
 
+## [Roadmap](https://github.com/Z-Bolt/OctoScreen/projects/2)
+
 Installation
 ------------
 
