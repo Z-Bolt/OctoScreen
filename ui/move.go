@@ -39,6 +39,8 @@ func (m *movePanel) initialize() {
 	)
 
 	m.Grid().Attach(m.step, 2, 2, 1, 1)
+
+	m.Grid().Attach(m.createHomeButton(), 0, 2, 1, 1)
 }
 
 func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir float64) gtk.IWidget {
@@ -62,4 +64,20 @@ func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir 
 		}
 
 	}, 200)
+}
+
+func (m *movePanel) createHomeButton() gtk.IWidget {
+	return MustButtonImage("Home All", "home.svg", func() {
+		cmd := &octoprint.CommandRequest{}
+		cmd.Commands = []string{
+			"G28",
+		}
+
+		Logger.Info("Sending filament unload request")
+		if err := cmd.Do(m.UI.Printer); err != nil {
+			Logger.Error(err)
+			return
+		}
+	})
+
 }

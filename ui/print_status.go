@@ -16,7 +16,7 @@ type printStatusPanel struct {
 	pb   *gtk.ProgressBar
 
 	bed, tool0, tool1, tool2, tool3 *gtk.Button
-	file, time                      *LabelWithImage
+	file, time, time_left           *LabelWithImage
 	complete, pause, stop, menu     *gtk.Button
 }
 
@@ -95,6 +95,9 @@ func (m *printStatusPanel) createProgressBar() *gtk.ProgressBar {
 	m.pb.SetVAlign(gtk.ALIGN_CENTER)
 	m.pb.SetVExpand(true)
 
+	ctx, _ := m.pb.GetStyleContext()
+	ctx.AddClass("printing-progress-bar")
+
 	return m.pb
 }
 
@@ -102,6 +105,9 @@ func (m *printStatusPanel) createInfoBox() *gtk.Box {
 
 	m.file = MustLabelWithImage("file.svg", "")
 	m.time = MustLabelWithImage("speed-step.svg", "")
+
+	ctx, _ := m.time.GetStyleContext()
+	ctx.AddClass("printing-status-label")
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	info.SetHAlign(gtk.ALIGN_START)
@@ -247,7 +253,8 @@ func (m *printStatusPanel) updateJob() {
 	default:
 		Logger.Info(s.Progress.PrintTime)
 		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		text = fmt.Sprintf("Time: %s", e)
+		r := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+		text = fmt.Sprintf("Time: %s\nTime Left: %s", e, r)
 	}
 
 	m.time.Label.SetLabel(text)

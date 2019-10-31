@@ -26,10 +26,12 @@ const (
 )
 
 type UI struct {
-	Current Panel
-	Printer *octoprint.Client
-	State   octoprint.ConnectionState
-	UIState string
+	Current         Panel
+	Printer         *octoprint.Client
+	State           octoprint.ConnectionState
+	Settings        *octoprint.GetSettingsResponse
+	UIState         string
+	OctoPrintPlugin bool
 
 	Notifications *Notifications
 
@@ -53,8 +55,10 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	ui := &UI{
-		Printer:       octoprint.NewClient(endpoint, key),
-		Notifications: NewNotifications(),
+		Printer:         octoprint.NewClient(endpoint, key),
+		Notifications:   NewNotifications(),
+		OctoPrintPlugin: true,
+		Settings:        nil,
 
 		w: MustWindow(gtk.WINDOW_TOPLEVEL),
 		t: time.Now(),
@@ -96,7 +100,6 @@ func (ui *UI) initialize() {
 
 	ui.g = MustGrid()
 	ui.o.Add(ui.g)
-	ui.o.AddOverlay(ui.Notifications)
 
 	ui.sdNotify("READY=1")
 }
@@ -172,7 +175,10 @@ func (ui *UI) verifyConnection() {
 func (m *UI) checkNotification() {
 	n, err := (&octoprint.GetNotificationRequest{}).Do(m.Printer)
 	if err != nil {
-		Logger.Error(err)
+		text := err.Error()
+		if strings.Contains(text, "unexpected status code: 404") {
+			m.OctoPrintPlugin = false
+		}
 		return
 	}
 
@@ -181,9 +187,23 @@ func (m *UI) checkNotification() {
 	}
 }
 
+func (m *UI) loadSettings() {
+	n, err := (&octoprint.GetSettingsRequest{}).Do(m.Printer)
+	if err != nil {
+		Logger.Error(err)
+		return
+	}
+
+	m.Settings = n
+}
+
 func (m *UI) update() {
 	m.verifyConnection()
-	m.checkNotification()
+
+	if m.OctoPrintPlugin {
+		m.checkNotification()
+		m.loadSettings()
+	}
 }
 
 func (ui *UI) sdNotify(m string) {

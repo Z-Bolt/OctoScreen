@@ -86,3 +86,36 @@ func (cmd *GetNotificationRequest) Do(c *Client) (*GetNotificationResponse, erro
 
 	return r, err
 }
+
+type GetSettingsRequest struct {
+	Command string `json:"command"`
+}
+type GetSettingsResponse struct {
+	// Job contains information regarding the target of the current print job.
+	FilamentInLength  float64 `json:"filament_in_length"`
+	FilamentOutLength float64 `json:"filament_out_length"`
+	GCodes            struct {
+		AutoBedLevel string `json:"auto_bed_level"`
+	} `json:"gcodes"`
+}
+
+func (cmd *GetSettingsRequest) Do(c *Client) (*GetSettingsResponse, error) {
+	cmd.Command = "get_settings"
+
+	params := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(params).Encode(cmd); err != nil {
+		return nil, err
+	}
+
+	b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &GetSettingsResponse{}
+	if err := json.Unmarshal(b, r); err != nil {
+		return nil, err
+	}
+
+	return r, err
+}

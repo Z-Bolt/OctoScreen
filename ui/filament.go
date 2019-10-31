@@ -138,10 +138,20 @@ func (m *filamentPanel) createFlowrateButton() *StepButton {
 }
 
 func (m *filamentPanel) createLoadButton() gtk.IWidget {
+	length := 750.0
+
+	if m.UI.Settings != nil {
+		length = m.UI.Settings.FilamentInLength
+	}
 
 	return MustButtonImage("Load", "extrude.svg", func() {
 		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{"G91", "G0 E600 F5000", "G0 E120 F500", "G90"}
+		cmd.Commands = []string{
+			"G91",
+			fmt.Sprintf("G0 E%.1f F5000", length*0.80),
+			fmt.Sprintf("G0 E%.1f F500", length*0.20),
+			"G90",
+		}
 
 		Logger.Info("Sending filament load request")
 		if err := cmd.Do(m.UI.Printer); err != nil {
@@ -153,9 +163,19 @@ func (m *filamentPanel) createLoadButton() gtk.IWidget {
 
 func (m *filamentPanel) createUnloadButton() gtk.IWidget {
 
+	length := 800.0
+
+	if m.UI.Settings != nil {
+		length = m.UI.Settings.FilamentOutLength
+	}
+
 	return MustButtonImage("Unload", "retract.svg", func() {
 		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{"G91", "G0 E-800 F5000", "G90"}
+		cmd.Commands = []string{
+			"G91",
+			fmt.Sprintf("G0 E-%.1f F5000", length),
+			"G90",
+		}
 
 		Logger.Info("Sending filament unload request")
 		if err := cmd.Do(m.UI.Printer); err != nil {
@@ -177,15 +197,4 @@ func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IW
 			return
 		}
 	}, 200)
-
-	// return MustButtonImage(label, image, func() {
-	// 	cmd := &octoprint.ToolExtrudeRequest{}
-	// 	cmd.Amount = m.amount.Value().(int) * dir
-
-	// 	Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
-	// 	if err := cmd.Do(m.UI.Printer); err != nil {
-	// 		Logger.Error(err)
-	// 		return
-	// 	}
-	// })
 }
