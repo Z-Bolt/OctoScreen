@@ -20,7 +20,7 @@ scrollbar slider {
 }
 
 progress, trough {
-	min-height: 40px;
+	min-height: 20px;
 	font-size: 50px;
 }
 
@@ -31,8 +31,12 @@ progress {
 }
 
 .printing-progress-bar{
-	font-size: 70px;
-	color: #999;
+	font-size: 60px;
+	color: #00C9B4;
+}
+
+.printing-state {
+	opacity: 0.5;
 }
 
 button {
@@ -142,25 +146,8 @@ button.keyboard {
 }
 
 .printing-status-label {
-	margin-top: 10px;
-	/* font-size: 24px; */
+	padding-top: 5px;
+	padding-bottom: 3px;
+
+	font-size: 24px;
 }
-
-/* GtkWindow {
-    background-color: green;
-    border-width: 3px;
-    border-color: blue;
-} */
-
-/* GtkButton {
-    background-image: none;
-    background-color:#1010FF;
-    margin:2px;
-    border-radius:0;
-} */
-
-/* button, entry {
-    color: #ff00ea;
-    font: 12px "Comic Sans";
-    background-color: #1010FF;
-  } */

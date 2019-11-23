@@ -37,20 +37,20 @@ func (m *idleStatusPanel) initialize() {
 	defer m.Initialize()
 
 	m.Grid().Attach(MustButtonImageStyle("Home", "home.svg", "color2", m.showHome), 3, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Bed Level", "bed-level.svg", "color4", m.showCalibrate), 4, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Actions", "actions.svg", "color4", m.showActionsMenu), 4, 0, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Filament", "filament.svg", "color3", m.showFilament), 3, 1, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Menu", "control.svg", "color1", m.showMenu), 4, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Configuration", "control.svg", "color1", m.showConfigurationMenu), 4, 1, 1, 1)
 	m.Grid().Attach(MustButtonImageStyle("Print", "print.svg", "color2", m.showFiles), 3, 2, 2, 1)
 
 	m.showTools()
 }
 
-func (m *idleStatusPanel) showCalibrate() {
-	m.UI.Add(BedLevelPanel(m.UI, m))
+func (m *idleStatusPanel) showActionsMenu() {
+	m.UI.Add(IdleActionMenuPanel(m.UI, m))
 }
 
-func (m *idleStatusPanel) showMenu() {
-	m.UI.Add(IdleMenuPanel(m.UI, m))
+func (m *idleStatusPanel) showConfigurationMenu() {
+	m.UI.Add(IdleConfigurationMenuPanel(m.UI, m))
 }
 
 func (m *idleStatusPanel) showHome() {

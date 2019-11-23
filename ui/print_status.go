@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
@@ -16,7 +17,7 @@ type printStatusPanel struct {
 	pb   *gtk.ProgressBar
 
 	bed, tool0, tool1, tool2, tool3 *gtk.Button
-	file, time, time_left           *LabelWithImage
+	file, time, timeLeft            *LabelWithImage
 	complete, pause, stop, menu     *gtk.Button
 }
 
@@ -54,7 +55,7 @@ func (m *printStatusPanel) showTools() {
 	m.tool2 = m.createToolButton(2)
 	m.tool3 = m.createToolButton(3)
 
-	m.bed = MustButtonImage("", "bed.svg", func() {})
+	m.bed = m.createBedButton()
 
 	switch toolsCount {
 	case 1:
@@ -104,9 +105,15 @@ func (m *printStatusPanel) createProgressBar() *gtk.ProgressBar {
 func (m *printStatusPanel) createInfoBox() *gtk.Box {
 
 	m.file = MustLabelWithImage("file.svg", "")
-	m.time = MustLabelWithImage("speed-step.svg", "")
+	ctx, _ := m.file.GetStyleContext()
+	ctx.AddClass("printing-status-label")
 
-	ctx, _ := m.time.GetStyleContext()
+	m.time = MustLabelWithImage("speed-step.svg", "")
+	ctx, _ = m.time.GetStyleContext()
+	ctx.AddClass("printing-status-label")
+
+	m.timeLeft = MustLabelWithImage("speed-step.svg", "")
+	ctx, _ = m.timeLeft.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
 	info := MustBox(gtk.ORIENTATION_VERTICAL, 5)
@@ -116,6 +123,7 @@ func (m *printStatusPanel) createInfoBox() *gtk.Box {
 	info.SetVAlign(gtk.ALIGN_CENTER)
 	info.Add(m.file)
 	info.Add(m.time)
+	info.Add(m.timeLeft)
 
 	return info
 }
@@ -123,6 +131,17 @@ func (m *printStatusPanel) createInfoBox() *gtk.Box {
 func (m *printStatusPanel) createToolButton(num int) *gtk.Button {
 	name := fmt.Sprintf("extruder-%d.svg", num+1)
 	b := MustButtonImage("", name, func() {})
+
+	ctx, _ := b.GetStyleContext()
+	ctx.AddClass("printing-state")
+	return b
+}
+
+func (m *printStatusPanel) createBedButton() *gtk.Button {
+	b := MustButtonImage("", "bed.svg", func() {})
+
+	ctx, _ := b.GetStyleContext()
+	ctx.AddClass("printing-state")
 	return b
 }
 
@@ -238,26 +257,32 @@ func (m *printStatusPanel) updateJob() {
 
 	file := "<i>not-set</i>"
 	if s.Job.File.Name != "" {
-		file = strEllipsis(s.Job.File.Name)
+		file = s.Job.File.Name
+		file = strings.Replace(file, ".gcode", "", -1)
+		file = strEllipsisLen(file, 35)
 	}
 
 	m.file.Label.SetLabel(file)
 	m.pb.SetFraction(s.Progress.Completion / 100)
 
-	var text string
+	var timeSpent, timeLeft string
 	switch s.Progress.Completion {
 	case 100:
-		text = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime)*1e9))
+		timeSpent = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime)*1e9))
+		timeLeft = ""
 	case 0:
-		text = "Warming up ..."
+		timeSpent = "Warming up ..."
+		timeLeft = ""
 	default:
 		Logger.Info(s.Progress.PrintTime)
 		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
 		r := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-		text = fmt.Sprintf("Time: %s\nTime Left: %s", e, r)
+		timeSpent = fmt.Sprintf("Time: %s", e)
+		timeLeft = fmt.Sprintf("Left: %s", r)
 	}
 
-	m.time.Label.SetLabel(text)
+	m.time.Label.SetLabel(timeSpent)
+	m.timeLeft.Label.SetLabel(timeLeft)
 }
 
 func (m *printStatusPanel) defineToolsCount() int {

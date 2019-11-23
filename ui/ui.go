@@ -123,7 +123,7 @@ func (ui *UI) verifyConnection() {
 	ui.sdNotify("WATCHDOG=1")
 
 	newUiState := "splash"
-	splashMessage := "Initializing printer..."
+	splashMessage := "Loading..."
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
 	if err == nil {

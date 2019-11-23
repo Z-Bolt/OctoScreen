@@ -14,9 +14,6 @@ var filamentPanelInstance *filamentPanel
 type filamentPanel struct {
 	CommonPanel
 
-	amount *StepButton
-	tool   *StepButton
-
 	box      *gtk.Box
 	labels   map[string]*LabelWithImage
 	previous *octoprint.TemperatureState
@@ -39,23 +36,22 @@ func FilamentPanel(ui *UI, parent Panel) Panel {
 func (m *filamentPanel) initialize() {
 	defer m.Initialize()
 
+	m.Grid().Attach(m.createChangeToolButton(0), 1, 0, 1, 1)
+	m.Grid().Attach(m.createChangeToolButton(1), 2, 0, 1, 1)
+	m.Grid().Attach(m.createChangeToolButton(2), 3, 0, 1, 1)
+	m.Grid().Attach(m.createChangeToolButton(3), 4, 0, 1, 1)
+
 	m.Grid().Attach(m.createLoadButton(), 1, 1, 1, 1)
 	m.Grid().Attach(m.createUnloadButton(), 4, 1, 1, 1)
 
-	m.Grid().Attach(m.createExtrudeButton("Extrude", "extrude.svg", 1), 1, 0, 1, 1)
-	m.Grid().Attach(m.createExtrudeButton("Retract", "retract.svg", -1), 4, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg", "color4", m.showTemperature), 1, 2, 1, 1)
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
 	m.box.SetHAlign(gtk.ALIGN_CENTER)
 
-	m.Grid().Attach(m.box, 2, 0, 2, 2)
+	m.Grid().Attach(m.box, 2, 1, 2, 2)
 
-	m.amount = MustStepButton("move-step.svg", Step{"1mm", 1}, Step{"5mm", 5}, Step{"10mm", 10})
-	m.Grid().Attach(m.amount, 2, 2, 1, 1)
-
-	m.Grid().Attach(m.createToolButton(), 1, 2, 1, 1)
-	m.Grid().Attach(m.createFlowrateButton(), 3, 2, 1, 1)
 }
 
 func (m *filamentPanel) updateTemperatures() {
@@ -87,7 +83,6 @@ func (m *filamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 func (m *filamentPanel) addNewTool(tool string) {
 	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
 	m.box.Add(m.labels[tool])
-	m.tool.AddStep(Step{strings.Title(tool), tool})
 
 	Logger.Infof("New tool detected %s", tool)
 }
@@ -105,38 +100,6 @@ func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 	m.labels[tool].ShowAll()
 }
 
-func (m *filamentPanel) createToolButton() *StepButton {
-	m.tool = MustStepButton("extruder.svg")
-	m.tool.Callback = func() {
-		cmd := &octoprint.ToolSelectRequest{}
-		cmd.Tool = m.tool.Value().(string)
-
-		Logger.Infof("Changing tool to %s", cmd.Tool)
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
-			return
-		}
-	}
-
-	return m.tool
-}
-
-func (m *filamentPanel) createFlowrateButton() *StepButton {
-	b := MustStepButton("speed-step.svg", Step{"Slow", 75}, Step{"Normal", 100}, Step{"High", 125})
-	b.Callback = func() {
-		cmd := &octoprint.ToolFlowrateRequest{}
-		cmd.Factor = b.Value().(int)
-
-		Logger.Infof("Changing flowrate to %d%%", cmd.Factor)
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
-			return
-		}
-	}
-
-	return b
-}
-
 func (m *filamentPanel) createLoadButton() gtk.IWidget {
 	length := 750.0
 
@@ -144,7 +107,7 @@ func (m *filamentPanel) createLoadButton() gtk.IWidget {
 		length = m.UI.Settings.FilamentInLength
 	}
 
-	return MustButtonImage("Load", "extrude.svg", func() {
+	return MustButtonImageStyle("Load", "extrude.svg", "color3", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G91",
@@ -162,14 +125,13 @@ func (m *filamentPanel) createLoadButton() gtk.IWidget {
 }
 
 func (m *filamentPanel) createUnloadButton() gtk.IWidget {
-
 	length := 800.0
 
 	if m.UI.Settings != nil {
 		length = m.UI.Settings.FilamentOutLength
 	}
 
-	return MustButtonImage("Unload", "retract.svg", func() {
+	return MustButtonImageStyle("Unload", "extrude.svg", "color2", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G91",
@@ -185,16 +147,15 @@ func (m *filamentPanel) createUnloadButton() gtk.IWidget {
 	})
 }
 
-func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
+func (m *filamentPanel) createChangeToolButton(num int) gtk.IWidget {
+	style := fmt.Sprintf("color%d", num+1)
+	name := fmt.Sprintf("Tool%d", num+1)
+	gcode := fmt.Sprintf("T%d", num)
+	return MustButtonImageStyle(name, "extruder.svg", style, func() {
+		m.command(gcode)
+	})
+}
 
-	return MustPressedButton(label, image, func() {
-		cmd := &octoprint.ToolExtrudeRequest{}
-		cmd.Amount = m.amount.Value().(int) * dir
-
-		Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
-			return
-		}
-	}, 200)
+func (m *filamentPanel) showTemperature() {
+	m.UI.Add(TemperaturePanel(m.UI, m))
 }

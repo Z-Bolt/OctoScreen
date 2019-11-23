@@ -48,13 +48,13 @@ func (m *temperaturePanel) initialize() {
 	m.box.SetVAlign(gtk.ALIGN_CENTER)
 	m.box.SetHAlign(gtk.ALIGN_CENTER)
 
-	m.Grid().Attach(m.box, 2, 0, 2, 1)
+	m.Grid().Attach(m.box, 2, 1, 2, 1)
 
 	m.Grid().Attach(m.createToolButton(), 1, 1, 1, 1)
 	m.amount = MustStepButton("move-step.svg", Step{"10°C", 10.}, Step{"5°C", 5.}, Step{"1°C", 1.})
-	m.Grid().Attach(m.amount, 2, 1, 1, 1)
+	m.Grid().Attach(m.amount, 2, 0, 1, 1)
 
-	m.Grid().Attach(MustButtonImage("More", "heat-up.svg", m.profilePanel), 3, 1, 1, 1)
+	m.Grid().Attach(MustButtonImage("More", "heat-up.svg", m.profilePanel), 3, 0, 1, 1)
 }
 
 func (m *temperaturePanel) createToolButton() *StepButton {

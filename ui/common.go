@@ -10,6 +10,7 @@ import (
 
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/mcuadros/go-octoprint"
 )
 
 // Set at compilation time.
@@ -87,6 +88,21 @@ func (p *CommonPanel) Grid() *gtk.Grid {
 
 func (p *CommonPanel) Scaled(s int) int {
 	return s * p.UI.scaleFactor
+}
+
+func (m *CommonPanel) arrangeButtons(buttons []gtk.IWidget) {
+
+	row := 4
+
+	for i, k := range buttons {
+		m.Grid().Attach(k, (i%row)+1, i/row, 1, 1)
+	}
+}
+
+func (m *CommonPanel) command(gcode string) error {
+	cmd := &octoprint.CommandRequest{}
+	cmd.Commands = []string{gcode}
+	return cmd.Do(m.UI.Printer)
 }
 
 type BackgroundTask struct {
