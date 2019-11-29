@@ -864,5 +864,6 @@ type PrinterProfile struct {
 
 	Extruder struct {
 		Count int `json:"count"`
+		SharedNozzle bool `json:"sharedNozzle"`
 	} `json:"extruder"`
 }

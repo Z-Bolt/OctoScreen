@@ -298,6 +298,10 @@ func (m *printStatusPanel) defineToolsCount() int {
 		return 0
 	}
 
+	if profile.Extruder.SharedNozzle {
+		return 1
+	}
+
 	return profile.Extruder.Count
 }
 
