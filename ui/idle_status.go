@@ -36,33 +36,29 @@ func IdleStatusPanel(ui *UI) Panel {
 func (m *idleStatusPanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(MustButtonImageStyle("Home", "home.svg", "color2", m.showHome), 3, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Actions", "actions.svg", "color4", m.showActionsMenu), 4, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Filament", "filament.svg", "color3", m.showFilament), 3, 1, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Configuration", "control.svg", "color1", m.showConfigurationMenu), 4, 1, 1, 1)
+	var menuItems []octoprint.MenuItem
+
+	if m.UI.Settings == nil {
+		menuItems = getDeafultMenu()
+	} else {
+		menuItems = m.UI.Settings.MenuStructure
+	}
+	// fmt.Print(m.UI.Settings.MenuStructure)
+
+	buttons := MustGrid()
+	buttons.SetRowHomogeneous(true)
+	buttons.SetColumnHomogeneous(true)
+	m.Grid().Attach(buttons, 3, 0, 2, 2)
+
+	m.arrangeMenuItems(buttons, menuItems, 2)
+
 	m.Grid().Attach(MustButtonImageStyle("Print", "print.svg", "color2", m.showFiles), 3, 2, 2, 1)
 
 	m.showTools()
 }
 
-func (m *idleStatusPanel) showActionsMenu() {
-	m.UI.Add(IdleActionMenuPanel(m.UI, m))
-}
-
-func (m *idleStatusPanel) showConfigurationMenu() {
-	m.UI.Add(IdleConfigurationMenuPanel(m.UI, m))
-}
-
-func (m *idleStatusPanel) showHome() {
-	m.UI.Add(HomePanel(m.UI, m))
-}
-
 func (m *idleStatusPanel) showFiles() {
 	m.UI.Add(FilesPanel(m.UI, m))
-}
-
-func (m *idleStatusPanel) showFilament() {
-	m.UI.Add(FilamentPanel(m.UI, m))
 }
 
 func (m *idleStatusPanel) update() {

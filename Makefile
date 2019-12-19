@@ -27,8 +27,7 @@ JESSIE_GO_TAGS := gtk_3_14
 
 # Build information
 #GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
-#DEV_PREFIX := 1.0
-VERSION := 2.4
+VERSION := 2.5
 BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
 #BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
@@ -66,7 +65,7 @@ build-internal: prepare-internal
 	cp ../*.deb /build/;
 
 prepare-internal:
-	dch --create -v $(VERSION)-9 --package $(PACKAGE_NAME) empty; \
+	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
 	cd $(WORKDIR)/..; \
 	tar -czf octoscreen_$(VERSION).orig.tar.gz --exclude-vcs OctoScreen
 
