@@ -1,3 +1,6 @@
+# Available panels
+
+You can define your own menu structure using [Z-Bolt-OctoScreen](https://github.com/Z-Bolt/OctoPrint-Z-Bolt-OctoScreen). Plugin uses JSON format for menu configuration. Here is a default config. Below is a list of available menu items.
 
 ### Home
 Config example:
