@@ -151,3 +151,7 @@ button.keyboard {
 
 	font-size: 24px;
 }
+
+.hidden {
+    opacity: 0;
+}

@@ -1,9 +1,12 @@
 package ui
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -90,12 +93,18 @@ func (p *CommonPanel) Scaled(s int) int {
 	return s * p.UI.scaleFactor
 }
 
-func (m *CommonPanel) arrangeButtons(buttons []gtk.IWidget) {
+func (m *CommonPanel) arrangeMenuItems(grid *gtk.Grid, items []octoprint.MenuItem, cols int) {
+	for i, item := range items {
+		panel := getPanel(m.UI, m, item)
 
-	row := 4
+		if panel != nil {
+			color := fmt.Sprintf("color%d", (i%4)+1)
+			icon := fmt.Sprintf("%s.svg", item.Icon)
 
-	for i, k := range buttons {
-		m.Grid().Attach(k, (i%row)+1, i/row, 1, 1)
+			grid.Attach(MustButtonImageStyle(item.Name, icon, color, func() {
+				m.UI.Add(panel)
+			}), (i%cols)+1, i/cols, 1, 1)
+		}
 	}
 }
 
@@ -386,4 +395,28 @@ func MessageDialog(parent *gtk.Window, msg string) {
 	ctx.AddClass("message")
 
 	win.Run()
+}
+
+func getDeafultMenu() []octoprint.MenuItem {
+
+	jsonFile, err := os.Open("default_menu.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer jsonFile.Close()
+
+	var items []octoprint.MenuItem
+
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		fmt.Println("Error in default_menu.json")
+		fmt.Println(err)
+		return items
+	}
+
+	json.Unmarshal(byteValue, &items)
+
+	return items
 }
