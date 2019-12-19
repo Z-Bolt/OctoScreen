@@ -35,7 +35,7 @@ func (m *movePanel) initialize() {
 	m.Grid().Attach(m.createMoveButton("Z+", "move-z+.svg", octoprint.ZAxis, 1), 3, 1, 1, 1)
 
 	m.step = MustStepButton("move-step.svg",
-		Step{"5mm", 5.0}, Step{"10mm", 10.0}, Step{"1mm", 1.0}, Step{"0.1mm", 0.1},
+		Step{"10mm", 10.0}, Step{"1mm", 1.0}, Step{"0.1mm", 0.1}, Step{"0.02mm", 0.02},
 	)
 
 	m.Grid().Attach(m.step, 2, 2, 1, 1)

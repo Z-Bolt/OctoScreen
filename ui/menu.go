@@ -11,10 +11,16 @@ func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 		return MenuPanel(ui, parent, item.Items)
 	case "home":
 		return HomePanel(ui, parent)
-	case "files":
-		return FilesPanel(ui, parent)
 	case "filament":
 		return FilamentPanel(ui, parent)
+	case "filament_multitool":
+		return FilamentMultitoolPanel(ui, parent)
+	case "extrude":
+		return ExtrudePanel(ui, parent)
+	case "extrude_multitool":
+		return ExtrudeMultitoolPanel(ui, parent)
+	case "files":
+		return FilesPanel(ui, parent)
 	case "temperature":
 		return TemperaturePanel(ui, parent)
 	case "control":
@@ -29,8 +35,6 @@ func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 		return SystemPanel(ui, parent)
 	case "fan":
 		return FanPanel(ui, parent)
-	case "extrude":
-		return ExtrudePanel(ui, parent)
 	case "bed-level":
 		return BedLevelPanel(ui, parent)
 	case "nozzle-calibration":
