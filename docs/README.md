@@ -53,8 +53,9 @@ Config example:
 }
 ```
 <img width="320" src="img/move.png" />
-Config example:
+
 ### Fan
+Config example:
 ```
 {
   "name": "Fan",
