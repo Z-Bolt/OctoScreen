@@ -1,3 +1,6 @@
+# Default Menu Config
+
+```
 [
     {
         "name": "Home",
@@ -74,3 +77,4 @@
         ]
     }
 ]
+```
