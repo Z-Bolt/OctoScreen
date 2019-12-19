@@ -111,6 +111,7 @@ type GetSettingsResponse struct {
 	FilamentInLength  float64    `json:"filament_in_length"`
 	FilamentOutLength float64    `json:"filament_out_length"`
 	ToolChanger       bool       `json:"toolchanger"`
+	ZAxisInverted     bool       `json:"z_axis_inverted"`
 	MenuStructure     []MenuItem `json:"menu_structure"`
 	GCodes            struct {
 		AutoBedLevel string `json:"auto_bed_level"`

@@ -191,12 +191,9 @@ func (m *UI) checkNotification() {
 func (m *UI) loadSettings() {
 	n, err := (&octoprint.GetSettingsRequest{}).Do(m.Printer)
 	if err != nil {
-		fmt.Println("Error")
 		Logger.Error(err)
 		return
 	}
-
-	fmt.Println("Settings Loaded")
 	m.Settings = n
 }
 
