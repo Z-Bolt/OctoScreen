@@ -6,7 +6,8 @@ import (
 
 type SplashPanel struct {
 	CommonPanel
-	Label *gtk.Label
+	Label       *gtk.Label
+	RetryButton *gtk.Button
 }
 
 func NewSplashPanel(ui *UI) *SplashPanel {
@@ -42,6 +43,13 @@ func (m *SplashPanel) createActionBar() gtk.IWidget {
 	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	bar.SetHAlign(gtk.ALIGN_END)
 
+	m.RetryButton = MustButtonImageStyle("Retry", "refresh.svg", "color2", m.releaseFromHold)
+	m.RetryButton.SetProperty("width-request", m.Scaled(100))
+	m.RetryButton.SetProperty("visible", true)
+	bar.Add(m.RetryButton)
+	ctx, _ := m.RetryButton.GetStyleContext()
+	ctx.AddClass("hidden")
+
 	sys := MustButtonImageStyle("System", "info.svg", "color3", m.showSystem)
 	sys.SetProperty("width-request", m.Scaled(100))
 	bar.Add(sys)
@@ -51,6 +59,22 @@ func (m *SplashPanel) createActionBar() gtk.IWidget {
 	bar.Add(net)
 
 	return bar
+}
+
+func (m *SplashPanel) putOnHold() {
+	m.RetryButton.Show()
+	ctx, _ := m.RetryButton.GetStyleContext()
+	ctx.RemoveClass("hidden")
+	m.Label.SetText("Cannot connect initialize the printer. Tap \"Retry\" to try again.")
+}
+
+func (m *SplashPanel) releaseFromHold() {
+	m.RetryButton.Hide()
+	ctx, _ := m.RetryButton.GetStyleContext()
+	ctx.AddClass("hidden")
+
+	m.Label.SetText("Loading...")
+	m.UI.connectionAttempts = 0
 }
 
 func (m *SplashPanel) showNetwork() {
