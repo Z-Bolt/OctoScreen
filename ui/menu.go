@@ -1,11 +1,12 @@
 package ui
 
 import (
+	"encoding/json"
+
 	"github.com/mcuadros/go-octoprint"
 )
 
 func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
-
 	switch item.Panel {
 	case "menu":
 		return MenuPanel(ui, parent, item.Items)
@@ -64,4 +65,107 @@ func MenuPanel(ui *UI, parent Panel, items []octoprint.MenuItem) Panel {
 func (m *menuPanel) initialize() {
 	defer m.Initialize()
 	m.arrangeMenuItems(m.g, m.items, 4)
+}
+
+func getDeafultMenu() []octoprint.MenuItem {
+
+	default_menu := `[
+		{
+			"name": "Home",
+			"icon": "home",
+			"panel": "home"
+		},
+		{
+			"name": "Actions",
+			"icon": "actions",
+			"panel": "menu",
+			"items": [
+				{
+					"name": "Move",
+					"icon": "move",
+					"panel": "move"
+				},
+				{
+					"name": "Extrude",
+					"icon": "filament",
+					"panel": "extrude_multitool"
+				},
+				{
+					"name": "Fan",
+					"icon": "fan",
+					"panel": "fan"
+				},
+				{
+					"name": "Temperature",
+					"icon": "heat-up",
+					"panel": "temperature"
+				},
+				{
+					"name": "Control",
+					"icon": "control",
+					"panel": "control"
+				},
+				{
+					"name": "ToolChanger",
+					"icon": "toolchanger",
+					"panel": "toolchanger"
+				}
+			]
+		},
+		{
+			"name": "Filament",
+			"icon": "filament",
+			"panel": "filament_multitool"
+		},
+		{
+			"name": "Configuration",
+			"icon": "control",
+			"panel": "menu",
+			"items": [
+				{
+					"name": "Bed Level",
+					"icon": "bed-level",
+					"panel": "bed-level"
+				},
+				{
+					"name": "ZOffsets",
+					"icon": "z-offset-increase",
+					"panel": "nozzle-calibration"
+				},
+				{
+					"name": "Network",
+					"icon": "network",
+					"panel": "network"
+				},
+				{
+					"name": "System",
+					"icon": "info",
+					"panel": "system"
+				}
+			]
+		}
+	]`
+
+	// filePath := filepath.Join(os.Getenv("OCTOSCREEN_STYLE_PATH"), "default_menu.json")
+	// // filePath := "/etc/octoscreen/config/default_menu.json"
+	// jsonFile, err := os.Open(filePath)
+
+	// if err != nil {
+	// 	Logger.Info(err)
+	// }
+
+	// defer jsonFile.Close()
+
+	// byteValue, err := ioutil.ReadAll(jsonFile)
+	// if err != nil {
+	// 	Logger.Info("Error in default_menu.json")
+	// 	Logger.Info(err)
+	// 	return items
+	// }
+
+	var items []octoprint.MenuItem
+
+	json.Unmarshal([]byte(default_menu), &items)
+
+	return items
 }

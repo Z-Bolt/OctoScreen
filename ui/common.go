@@ -1,12 +1,9 @@
 package ui
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -395,28 +392,4 @@ func MessageDialog(parent *gtk.Window, msg string) {
 	ctx.AddClass("message")
 
 	win.Run()
-}
-
-func getDeafultMenu() []octoprint.MenuItem {
-
-	jsonFile, err := os.Open("default_menu.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer jsonFile.Close()
-
-	var items []octoprint.MenuItem
-
-	byteValue, err := ioutil.ReadAll(jsonFile)
-	if err != nil {
-		fmt.Println("Error in default_menu.json")
-		fmt.Println(err)
-		return items
-	}
-
-	json.Unmarshal(byteValue, &items)
-
-	return items
 }

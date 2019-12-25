@@ -183,6 +183,7 @@ func (s ConnectionState) IsOperational() bool {
 
 func (s ConnectionState) IsPrinting() bool {
 	return strings.HasPrefix(string(s), "Printing") ||
+		strings.HasPrefix(string(s), "Starting") ||
 		strings.HasPrefix(string(s), "Sending") ||
 		strings.HasPrefix(string(s), "Paused") ||
 		strings.HasPrefix(string(s), "Transfering") ||
@@ -863,7 +864,7 @@ type PrinterProfile struct {
 	} `json:"volume"`
 
 	Extruder struct {
-		Count int `json:"count"`
+		Count        int  `json:"count"`
 		SharedNozzle bool `json:"sharedNozzle"`
 	} `json:"extruder"`
 }
