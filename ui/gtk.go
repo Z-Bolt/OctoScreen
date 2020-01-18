@@ -8,6 +8,17 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
+func truncateString(str string, num int) string {
+	bnoden := str
+	if len(str) > num {
+		if num > 3 {
+			num -= 3
+		}
+		bnoden = str[0:num] + "..."
+	}
+	return bnoden
+}
+
 // MustWindow returns a new gtk.Window, if error panics.
 func MustWindow(t gtk.WindowType) *gtk.Window {
 	win, err := gtk.WindowNew(t)
@@ -59,6 +70,20 @@ func MustLabel(label string, args ...interface{}) *gtk.Label {
 	return l
 }
 
+// MustLabelShort returns a new gtk.Label, if err panics.
+// Calls truncateString to limit max string size - fixes bug that causes screen elements to overflow off screen
+func MustLabelShort(label string, args ...interface{}) *gtk.Label {
+	labelshort := truncateString(label, 12)
+	l, err := gtk.LabelNew("")
+	if err != nil {
+		panic(err)
+	}
+
+	l.SetMarkup(fmt.Sprintf(labelshort, args...))
+	return l
+}
+
+
 // LabelWithImage represents a gtk.Label with a image to the right.
 type LabelWithImage struct {
 	Label *gtk.Label
@@ -71,7 +96,7 @@ const LabelImageSize = 20
 // MustLabelWithImage returns a new LabelWithImage based on a gtk.Box containing
 // a gtk.Label with a gtk.Image, the image is scaled at LabelImageSize.
 func MustLabelWithImage(img, label string, args ...interface{}) *LabelWithImage {
-	l := MustLabel(label, args...)
+	l := MustLabelShort(label, args...) // changed to MustLabelShort()
 	b := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	b.Add(MustImageFromFileWithSize(img, LabelImageSize, LabelImageSize))
 	b.Add(l)
