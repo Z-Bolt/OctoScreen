@@ -135,12 +135,10 @@ func (ui *UI) verifyConnection() {
 		case s.Current.State.IsPrinting():
 			newUiState = "printing"
 		case s.Current.State.IsError():
-			fallthrough
+			fallthrough //Sigh
 		case s.Current.State.IsOffline():
-			if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
-				newUiState = "splash"
-				splashMessage = "Loading..."
-			}
+			newUiState = "splash"
+			splashMessage = "Loading..."
 		case s.Current.State.IsConnecting():
 			splashMessage = string(s.Current.State)
 		}
@@ -199,6 +197,7 @@ func (m *UI) loadSettings() {
 
 func (m *UI) update() {
 	if m.connectionAttempts > 8 {
+		m.sdNotify("WATCHDOG=1")
 		m.s.putOnHold()
 		return
 	} else if m.UIState == "splash" {

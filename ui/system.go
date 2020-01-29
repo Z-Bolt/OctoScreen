@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -16,6 +17,7 @@ type systemPanel struct {
 	CommonPanel
 
 	list *gtk.Box
+	psuContol *PSUControl
 }
 
 func SystemPanel(ui *UI, parent Panel) *systemPanel {
@@ -36,7 +38,10 @@ func (m *systemPanel) initialize() {
 
 	m.Grid().Attach(m.createOctoPrintInfo(), 1, 0, 2, 1)
 	m.Grid().Attach(m.createOctoScreenInfo(), 3, 0, 2, 1)
-	m.Grid().Attach(m.createSystemInfo(), 1, 1, 4, 1)
+	m.Grid().Attach(m.createSystemInfo(), 1, 1, 3, 1)
+	m.psuContol = m.addPsuButton()
+	m.psuContol.update()
+	m.Grid().Attach(m.psuContol.Button, 4, 1, 1, 1)
 
 	if b := m.createCommandButton("Octo Restart", "restart", "color2"); b != nil {
 		m.Grid().Attach(b, 3, 2, 1, 1)
@@ -49,6 +54,7 @@ func (m *systemPanel) initialize() {
 	if b := m.createCommandButton("Shutdown", "shutdown", "color1"); b != nil {
 		m.Grid().Attach(b, 1, 2, 1, 1)
 	}
+	m.b = NewBackgroundTask(time.Second*10, m.psuContol.update)
 }
 
 func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
@@ -88,6 +94,10 @@ func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
 	info.Add(MustLabel("OctoScreen Version"))
 	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
 	return info
+}
+
+func (m *systemPanel) addPsuButton() *PSUControl {
+	return PSUControlNew(m.UI, m.UI.Printer)
 }
 
 func (m *systemPanel) createSystemInfo() *gtk.Box {

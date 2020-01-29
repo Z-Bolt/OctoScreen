@@ -2,12 +2,14 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"time"
 )
 
 type SplashPanel struct {
 	CommonPanel
 	Label       *gtk.Label
 	RetryButton *gtk.Button
+  PSUButton *PSUControl
 }
 
 func NewSplashPanel(ui *UI) *SplashPanel {
@@ -23,6 +25,7 @@ func (m *SplashPanel) initialize() {
 	m.Label.SetLineWrap(true)
 	m.Label.SetMaxWidthChars(30)
 	m.Label.SetText("Initializing printer...")
+	m.b = NewBackgroundTask(time.Second*10, m.update)
 
 	main := MustBox(gtk.ORIENTATION_VERTICAL, 15)
 	main.SetVAlign(gtk.ALIGN_END)
@@ -42,11 +45,14 @@ func (m *SplashPanel) initialize() {
 func (m *SplashPanel) createActionBar() gtk.IWidget {
 	bar := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	bar.SetHAlign(gtk.ALIGN_END)
-
+	m.PSUButton = PSUControlNew(m.UI, m.UI.Printer)
+	m.PSUButton.SetProperty("width-request", m.Scaled(100))
+	m.PSUButton.SetProperty("visible", true)
 	m.RetryButton = MustButtonImageStyle("Retry", "refresh.svg", "color2", m.releaseFromHold)
 	m.RetryButton.SetProperty("width-request", m.Scaled(100))
 	m.RetryButton.SetProperty("visible", true)
 	bar.Add(m.RetryButton)
+	bar.Add(m.PSUButton)
 	ctx, _ := m.RetryButton.GetStyleContext()
 	ctx.AddClass("hidden")
 
@@ -83,4 +89,8 @@ func (m *SplashPanel) showNetwork() {
 
 func (m *SplashPanel) showSystem() {
 	m.UI.Add(SystemPanel(m.UI, m))
+}
+
+func (m *SplashPanel) update() {
+  m.PSUButton.update()
 }

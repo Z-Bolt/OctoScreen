@@ -42,7 +42,7 @@ func (m *idleStatusPanel) initialize() {
 
 	if m.UI.Settings == nil || len(m.UI.Settings.MenuStructure) == 0 {
 		Logger.Info("Loading default menu")
-		menuItems = getDeafultMenu()
+		menuItems = getDefaultMenu()
 	} else {
 		Logger.Info("Loading octo menu")
 		menuItems = m.UI.Settings.MenuStructure

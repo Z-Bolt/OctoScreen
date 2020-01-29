@@ -63,6 +63,8 @@ build-internal: prepare-internal
 	cd $(WORKDIR); \
 	debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc; \
 	cp ../*.deb /build/;
+	cp ./debian/octoscreen/usr/bin/OctoScreen /build/;
+
 
 prepare-internal:
 	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
