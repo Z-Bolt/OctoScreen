@@ -259,7 +259,7 @@ func (m *printStatusPanel) updateJob() {
 	if s.Job.File.Name != "" {
 		file = s.Job.File.Name
 		file = strings.Replace(file, ".gcode", "", -1)
-		file = strEllipsisLen(file, 35)
+		file = strEllipsisLen(file, 20)
 	}
 
 	m.file.Label.SetLabel(file)
