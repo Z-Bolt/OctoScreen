@@ -67,8 +67,7 @@ func (m *menuPanel) initialize() {
 	m.arrangeMenuItems(m.g, m.items, 4)
 }
 
-func getDeafultMenu() []octoprint.MenuItem {
-
+func getDefaultMenu() []octoprint.MenuItem {
 	default_menu := `[
 		{
 			"name": "Home",
