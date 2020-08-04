@@ -82,29 +82,28 @@ func (m *idleStatusPanel) showTools() {
 		g := MustGrid()
 		g.SetRowHomogeneous(true)
 		g.SetColumnHomogeneous(true)
-
 		m.Grid().Attach(g, 1, 0, 2, 3)
-
-		g.Attach(m.tool0, 1, 0, 2, 1)
-		g.Attach(m.bed, 1, 1, 2, 1)
+		g.Attach(m.tool0,  1, 0, 2, 1)
+		g.Attach(m.bed,    1, 1, 2, 1)
 
 	case 2:
 		m.Grid().Attach(m.tool0, 1, 0, 2, 1)
 		m.Grid().Attach(m.tool1, 1, 1, 2, 1)
-		m.Grid().Attach(m.bed, 1, 2, 2, 1)
+		m.Grid().Attach(m.bed,   1, 2, 2, 1)
+
 	case 3:
 		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
 		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
 		m.Grid().Attach(m.tool2, 1, 1, 2, 1)
-		m.Grid().Attach(m.bed, 1, 2, 2, 1)
+		m.Grid().Attach(m.bed,   1, 2, 2, 1)
+
 	case 4:
 		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
 		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
 		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
 		m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-		m.Grid().Attach(m.bed, 1, 2, 2, 1)
+		m.Grid().Attach(m.bed,   1, 2, 2, 1)
 	}
-
 }
 
 func (m *idleStatusPanel) updateTemperature() {
@@ -159,7 +158,6 @@ type ToolHeatup struct {
 }
 
 func ToolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
-
 	var (
 		image string
 		tool  string

@@ -68,7 +68,7 @@ func (m *menuPanel) initialize() {
 }
 
 func getDefaultMenu() []octoprint.MenuItem {
-
+master
 	default_menu := `[
 		{
 			"name": "Home",
