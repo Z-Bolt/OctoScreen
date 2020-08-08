@@ -128,11 +128,13 @@ func (m *networkPanel) createActionBar() gtk.IWidget {
 	layout.SetHAlign(gtk.ALIGN_END)
 	layout.SetHExpand(true)
 
-	back := MustButton(MustImageFromFileWithSize("back.svg", m.Scaled(40), m.Scaled(40)), func() {
+	// NOTE: If a message is logged that the image (SVG) can't be loaded, try installing librsvg.
+	backImage := MustImageFromFileWithSize("back.svg", m.Scaled(40), m.Scaled(40))
+	backButton := MustButton(backImage, func() {
 		m.UI.GoHistory()
 	})
 
-	layout.Add(back)
+	layout.Add(backButton)
 
 	return layout
 }
@@ -197,7 +199,6 @@ func ConnectionPanel(ui *UI, parent Panel, SSID string) Panel {
 }
 
 func (m *connectionPanel) initialize() {
-
 	layout := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	layout.SetHExpand(true)
 
@@ -232,7 +233,7 @@ func (m *connectionPanel) createTopBar() gtk.IWidget {
 		}
 
 		m.pass.DeleteText(m.cursorPosition-1, m.cursorPosition)
-		m.cursorPosition -= 1
+		m.cursorPosition--
 	})
 
 	top.Add(backspace)
@@ -316,5 +317,5 @@ type keyButtonHander struct {
 
 func (m *keyButtonHander) clicked() {
 	m.p.pass.InsertText(string(m.char), m.p.cursorPosition)
-	m.p.cursorPosition += 1
+	m.p.cursorPosition++
 }
