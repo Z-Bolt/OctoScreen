@@ -120,7 +120,6 @@ func (ui *UI) loadStyle() {
 var errMercyPeriod = time.Second * 10
 
 func (ui *UI) verifyConnection() {
-
 	ui.sdNotify("WATCHDOG=1")
 
 	newUiState := "splash"
@@ -150,7 +149,8 @@ func (ui *UI) verifyConnection() {
 		}
 
 		newUiState = "splash"
-		Logger.Debugf("Unexpected error: %s", err)
+
+		Logger.Debugf("verifyConnection() - Unexpected error: %s", err)
 	}
 
 	defer func() { ui.UIState = newUiState }()
