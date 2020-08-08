@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -10,18 +11,16 @@ import (
 	"strings"
 
 	"github.com/Z-Bolt/OctoScreen/ui"
+	"github.com/Z-Bolt/OctoScreen/utils"
 	"github.com/gotk3/gotk3/gtk"
 	"gopkg.in/yaml.v1"
 )
 
-const (
-	EnvStylePath  = "OCTOSCREEN_STYLE_PATH"
-	EnvResolution = "OCTOSCREEN_RESOLUTION"
-	EnvBaseURL    = "OCTOPRINT_HOST"
-	EnvAPIKey     = "OCTOPRINT_APIKEY"
-	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
-)
+func iReallyHateHowUnusedImportsAreErrorsInGo() {
+	log.Print("this is unnecessary")
+}
 
+// bogus comment
 var (
 	BaseURL    string
 	APIKey     string
@@ -30,17 +29,21 @@ var (
 )
 
 func init() {
-	ui.StylePath = os.Getenv(EnvStylePath)
-	Resolution = os.Getenv(EnvResolution)
+	if !utils.RequiredEnvironmentVariablesAreSet() {
+		return
+	}
 
-	ConfigFile = os.Getenv(EnvConfigFile)
+	ui.StylePath = os.Getenv(utils.EnvStylePath)
+	Resolution = os.Getenv(utils.EnvResolution)
+
+	ConfigFile = os.Getenv(utils.EnvConfigFile)
 	if ConfigFile == "" {
 		ConfigFile = findConfigFile()
 	}
 
 	cfg := readConfig(ConfigFile)
 
-	BaseURL = os.Getenv(EnvBaseURL)
+	BaseURL = os.Getenv(utils.EnvBaseURL)
 	if BaseURL == "" {
 		if cfg.Server.Host != "" {
 			BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
@@ -51,7 +54,7 @@ func init() {
 
 	ui.Logger.Infof("Using %q as server address", BaseURL)
 
-	APIKey = os.Getenv(EnvAPIKey)
+	APIKey = os.Getenv(utils.EnvAPIKey)
 	if APIKey == "" {
 		APIKey = cfg.API.Key
 		if cfg.API.Key != "" {
@@ -67,8 +70,15 @@ func main() {
 
 	settings.SetProperty("gtk-application-prefer-dark-theme", true)
 
-	width, height := getSize()
-	_ = ui.New(BaseURL, APIKey, width, height)
+	utils.DumpEnvironmentVariables()
+
+	if utils.RequiredEnvironmentVariablesAreSet() {
+		width, height := getSize()
+		_ = ui.New(BaseURL, APIKey, width, height)
+	} else {
+		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable())
+		fatalErrorWindow.ShowAll()
+	}
 
 	gtk.Main()
 }
@@ -153,7 +163,7 @@ func getSize() (width, height int) {
 
 	parts := strings.SplitN(Resolution, "x", 2)
 	if len(parts) != 2 {
-		ui.Logger.Fatalf("Malformed %s variable: %q", EnvResolution, Resolution)
+		ui.Logger.Fatalf("Malformed %s variable: %q", utils.EnvResolution, Resolution)
 		return
 	}
 
@@ -161,14 +171,14 @@ func getSize() (width, height int) {
 	width, err = strconv.Atoi(parts[0])
 	if err != nil {
 		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
-			EnvResolution, Resolution, err)
+			utils.EnvResolution, Resolution, err)
 		return
 	}
 
 	height, err = strconv.Atoi(parts[1])
 	if err != nil {
 		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
-			EnvResolution, Resolution, err)
+			utils.EnvResolution, Resolution, err)
 		return
 	}
 
