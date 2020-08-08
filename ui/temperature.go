@@ -58,21 +58,22 @@ func (m *temperaturePanel) initialize() {
 }
 
 func (m *temperaturePanel) createToolButton() *StepButton {
-	m.tool = MustStepButton("")
+	// m.tool = MustStepButton("")
+	m.tool = MustStepButton("bed.svg")
+
 	m.tool.Callback = func() {
-		img := "extruder.svg"
+		imageFileName := "extruder.svg"
 		if m.tool.Value().(string) == "bed" {
-			img = "bed.svg"
+			imageFileName = "bed.svg"
 		}
 
-		m.tool.SetImage(MustImageFromFile(img))
+		m.tool.SetImage(MustImageFromFile(imageFileName))
 	}
 
 	return m.tool
 }
 
 func (m *temperaturePanel) createChangeButton(label, image string, value float64) gtk.IWidget {
-
 	return MustPressedButton(label, image, func() {
 		target := value * m.amount.Value().(float64)
 		if err := m.increaseTarget(m.tool.Value().(string), target); err != nil {
