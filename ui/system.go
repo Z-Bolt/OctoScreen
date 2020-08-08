@@ -83,8 +83,10 @@ func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
 
 	logoWidth := m.Scaled(62)
 
-	img := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth)*0.8))
-	info.Add(img)
+	// NOTE: If a message is logged that the image (SVG) can't be loaded, try installing librsvg.
+	logoImage := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth) * 0.8))
+
+	info.Add(logoImage)
 	info.Add(MustLabel("OctoScreen Version"))
 	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
 	return info
