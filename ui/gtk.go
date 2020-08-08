@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/Z-Bolt/OctoScreen/utils"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 )
 
 // MustWindow returns a new gtk.Window, if error panics.
-func MustWindow(t gtk.WindowType) *gtk.Window {
-	win, err := gtk.WindowNew(t)
+func MustWindow(windowType gtk.WindowType) *gtk.Window {
+	win, err := gtk.WindowNew(windowType)
 	if err != nil {
 		panic(err)
 	}
@@ -29,8 +30,8 @@ func MustGrid() *gtk.Grid {
 }
 
 // MustBox returns a new gtk.Box, with the given configuration, if err panics.
-func MustBox(o gtk.Orientation, spacing int) *gtk.Box {
-	box, err := gtk.BoxNew(o, spacing)
+func MustBox(orientation gtk.Orientation, spacing int) *gtk.Box {
+	box, err := gtk.BoxNew(orientation, spacing)
 	if err != nil {
 		panic(err)
 	}
@@ -40,23 +41,24 @@ func MustBox(o gtk.Orientation, spacing int) *gtk.Box {
 
 // MustProgressBar returns a new gtk.ProgressBar, if err panics.
 func MustProgressBar() *gtk.ProgressBar {
-	p, err := gtk.ProgressBarNew()
+	progressBar, err := gtk.ProgressBarNew()
 	if err != nil {
 		panic(err)
 	}
 
-	return p
+	return progressBar
 }
 
 // MustLabel returns a new gtk.Label, if err panics.
-func MustLabel(label string, args ...interface{}) *gtk.Label {
-	l, err := gtk.LabelNew("")
+func MustLabel(format string, args ...interface{}) *gtk.Label {
+	label, err := gtk.LabelNew("")
 	if err != nil {
 		panic(err)
 	}
 
-	l.SetMarkup(fmt.Sprintf(label, args...))
-	return l
+	label.SetMarkup(fmt.Sprintf(format, args...))
+
+	return label
 }
 
 // LabelWithImage represents a gtk.Label with a image to the right.
@@ -70,123 +72,140 @@ const LabelImageSize = 20
 
 // MustLabelWithImage returns a new LabelWithImage based on a gtk.Box containing
 // a gtk.Label with a gtk.Image, the image is scaled at LabelImageSize.
-func MustLabelWithImage(img, label string, args ...interface{}) *LabelWithImage {
-	l := MustLabel(label, args...)
-	b := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	b.Add(MustImageFromFileWithSize(img, LabelImageSize, LabelImageSize))
-	b.Add(l)
+func MustLabelWithImage(imageFileName, format string, args ...interface{}) *LabelWithImage {
+	label := MustLabel(format, args...)
+	box := MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	box.Add(MustImageFromFileWithSize(imageFileName, LabelImageSize, LabelImageSize))
+	box.Add(label)
 
-	return &LabelWithImage{Label: l, Box: b}
+	return &LabelWithImage{Label: label, Box: box}
 }
 
-// MustButtonImage returns a new gtk.Button with the given label, image and
-// clicked callback. If error panics.
-
-func MustButtonImageStyle(label, img string, style string, clicked func()) *gtk.Button {
-	b := MustButtonImage(label, img, clicked)
-
-	ctx, _ := b.GetStyleContext()
+// MustButtonImageStyle returns a new gtk.Button with the given label, image and clicked callback, if error panics.
+func MustButtonImageStyle(label, imageFileName string, style string, clicked func()) *gtk.Button {
+	button := MustButtonImage(label, imageFileName, clicked)
+	ctx, _ := button.GetStyleContext()
 	ctx.AddClass(style)
 
-	return b
+	return button
 }
 
-func MustButtonImage(label, imgName string, clicked func()) *gtk.Button {
-	img := MustImageFromFile(imgName)
-	b, err := gtk.ButtonNewWithLabel(label)
+func MustButtonImage(label, imageFileName string, clicked func()) *gtk.Button {
+	image := MustImageFromFile(imageFileName)
+	button, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
 		panic(err)
 	}
 
-	b.SetImage(img)
-	b.SetAlwaysShowImage(true)
-	b.SetImagePosition(gtk.POS_TOP)
-	b.SetVExpand(true)
-	b.SetHExpand(true)
+	button.SetImage(image)
+	button.SetAlwaysShowImage(true)
+	button.SetImagePosition(gtk.POS_TOP)
+	button.SetVExpand(true)
+	button.SetHExpand(true)
 
 	if clicked != nil {
-		b.Connect("clicked", clicked)
+		button.Connect("clicked", clicked)
 	}
 
-	return b
+	return button
 }
 
-func MustToogleButton(label string, imgName string, clicked func()) *gtk.ToggleButton {
-	img := MustImageFromFile(imgName)
-	b, err := gtk.ToggleButtonNewWithLabel(label)
+func MustToogleButton(label string, imageFileName string, clicked func()) *gtk.ToggleButton {
+	image := MustImageFromFile(imageFileName)
+	button, err := gtk.ToggleButtonNewWithLabel(label)
 	if err != nil {
 		panic(err)
 	}
 
-	b.SetImage(img)
-	b.SetAlwaysShowImage(true)
-	b.SetImagePosition(gtk.POS_TOP)
-	b.SetVExpand(true)
-	b.SetHExpand(true)
+	button.SetImage(image)
+	button.SetAlwaysShowImage(true)
+	button.SetImagePosition(gtk.POS_TOP)
+	button.SetVExpand(true)
+	button.SetHExpand(true)
 
 	if clicked != nil {
-		b.Connect("clicked", clicked)
+		button.Connect("clicked", clicked)
 	}
 
-	return b
+	return button
 }
 
-func MustButton(img *gtk.Image, clicked func()) *gtk.Button {
-	b, err := gtk.ButtonNew()
+func MustButton(image *gtk.Image, clicked func()) *gtk.Button {
+	button, err := gtk.ButtonNew()
 	if err != nil {
 		panic(err)
 	}
 
-	b.SetImage(img)
-	b.SetImagePosition(gtk.POS_TOP)
+	button.SetImage(image)
+	button.SetImagePosition(gtk.POS_TOP)
 
 	if clicked != nil {
-		b.Connect("clicked", clicked)
+		button.Connect("clicked", clicked)
 	}
 
-	return b
+	return button
 }
 
 func MustButtonText(label string, clicked func()) *gtk.Button {
-	b, err := gtk.ButtonNewWithLabel(label)
+	button, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
 		panic(err)
 	}
 
 	if clicked != nil {
-		b.Connect("clicked", clicked)
+		button.Connect("clicked", clicked)
 	}
 
-	return b
+	return button
 }
 
-func MustImageFromFileWithSize(img string, w, h int) *gtk.Image {
-	p, err := gdk.PixbufNewFromFileAtScale(imagePath(img), w, h, true)
+func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Image {
+	if imageFileName == "" {
+		Logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
+		//debug.PrintStack()			need to import "runtime/debug"
+	}
+
+	imageFilePath := imagePath(imageFileName)
+	if !utils.FileExists(imageFilePath) {
+		Logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+		//debug.PrintStack()			need to import "runtime/debug"
+	}
+
+	p, err := gdk.PixbufNewFromFileAtScale(imageFilePath, width, height, true)
 	if err != nil {
 		Logger.Error(err)
 	}
 
-	i, err := gtk.ImageNewFromPixbuf(p)
+	image, err := gtk.ImageNewFromPixbuf(p)
 	if err != nil {
 		panic(err)
 	}
 
-	return i
+	return image
 }
 
-// MustImageFromFile returns a new gtk.Image based on the given file, If error
-// panics.
-func MustImageFromFile(img string) *gtk.Image {
-	i, err := gtk.ImageNewFromFile(imagePath(img))
+// MustImageFromFile returns a new gtk.Image based on the given file, if error panics.
+func MustImageFromFile(imageFileName string) *gtk.Image {
+	if imageFileName == "" {
+		Logger.Error("MustImageFromFile() - imageFileName is empty")
+		//debug.PrintStack()			need to import "runtime/debug"
+	}
+
+	imageFilePath := imagePath(imageFileName)
+	if !utils.FileExists(imageFilePath) {
+		Logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+		//debug.PrintStack()			need to import "runtime/debug"
+	}
+
+	image, err := gtk.ImageNewFromFile(imageFilePath)
 	if err != nil {
 		panic(err)
 	}
 
-	return i
+	return image
 }
 
-// MustCSSProviderFromFile returns a new gtk.CssProvider for a given css file,
-// If error panics.
+// MustCSSProviderFromFile returns a new gtk.CssProvider for a given css file, if error panics.
 func MustCSSProviderFromFile(css string) *gtk.CssProvider {
 	p, err := gtk.CssProviderNew()
 	if err != nil {
@@ -200,8 +219,8 @@ func MustCSSProviderFromFile(css string) *gtk.CssProvider {
 	return p
 }
 
-func imagePath(img string) string {
-	return filepath.Join(StylePath, ImageFolder, img)
+func imagePath(imageFileName string) string {
+	return filepath.Join(StylePath, ImageFolder, imageFileName)
 }
 
 // MustOverlay returns a new gtk.Overlay, if error panics.
