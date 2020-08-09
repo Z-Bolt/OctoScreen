@@ -376,7 +376,7 @@ func MessageDialog(parent *gtk.Window, msg string) {
 		gtk.DIALOG_MODAL,
 		gtk.MESSAGE_INFO,
 		gtk.BUTTONS_OK,
-		""
+		"",
 	)
 
 	win.SetMarkup(CleanHTML(msg))

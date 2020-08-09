@@ -42,7 +42,7 @@ func (m *movePanel) initialize() {
 		Step{"10mm", 10.0},
 		Step{"1mm", 1.0},
 		Step{"0.1mm", 0.1},
-		Step{"0.02mm", 0.02}
+		Step{"0.02mm", 0.02},
 	)
 
 	m.Grid().Attach(m.step, 3, 2, 1, 1)
