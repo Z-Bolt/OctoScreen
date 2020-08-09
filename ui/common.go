@@ -13,9 +13,8 @@ import (
 	"github.com/mcuadros/go-octoprint"
 )
 
-// Set at compilation time.
-var Version = "2.2"
-var Build = "no-set"
+// OctoScreenVersion - set at compilation time.
+var OctoScreenVersion = "2.6.0 (development/experimental)"
 
 type Panel interface {
 	Grid() *gtk.Grid
@@ -66,7 +65,7 @@ func (p *CommonPanel) Parent() Panel {
 func (p *CommonPanel) AddButton(b gtk.IWidget) {
 	x := len(p.buttons) % p.panelW
 	y := len(p.buttons) / p.panelW
-	p.g.Attach(b, x+1, y, 1, 1)
+	p.g.Attach(b, x + 1, y, 1, 1)
 	p.buttons = append(p.buttons, b)
 }
 
@@ -93,14 +92,13 @@ func (p *CommonPanel) Scaled(s int) int {
 func (m *CommonPanel) arrangeMenuItems(grid *gtk.Grid, items []octoprint.MenuItem, cols int) {
 	for i, item := range items {
 		panel := getPanel(m.UI, m, item)
-
 		if panel != nil {
-			color := fmt.Sprintf("color%d", (i%4)+1)
+			color := fmt.Sprintf("color%d", (i % 4) + 1)
 			icon := fmt.Sprintf("%s.svg", item.Icon)
 
 			grid.Attach(MustButtonImageStyle(item.Name, icon, color, func() {
 				m.UI.Add(panel)
-			}), (i%cols)+1, i/cols, 1, 1)
+			}), (i % cols) + 1, i / cols, 1, 1)
 		}
 	}
 }
@@ -157,11 +155,12 @@ func (t *BackgroundTask) loop() {
 	defer ticker.Stop()
 	for {
 		select {
-		case <-ticker.C:
-			t.execute()
-		case <-t.close:
-			Logger.Debug("Background task closed")
-			return
+			case <-ticker.C:
+				t.execute()
+
+			case <-t.close:
+				Logger.Debug("Background task closed")
+				return
 		}
 	}
 }
@@ -301,13 +300,14 @@ func MustPressedButton(label, i string, pressed func(), speed time.Duration) *gt
 			go func() {
 				for {
 					select {
-					case <-released:
-						return
-					default:
-						mutex.Lock()
-						pressed()
-						time.Sleep(speed * time.Millisecond)
-						mutex.Unlock()
+						case <-released:
+							return
+
+						default:
+							mutex.Lock()
+							pressed()
+							time.Sleep(speed * time.Millisecond)
+							mutex.Unlock()
 					}
 				}
 			}()
@@ -363,7 +363,7 @@ func strEllipsis(name string) string {
 func strEllipsisLen(name string, length int) string {
 	l := len(name)
 	if l > length {
-		return name[:(length/3)] + "..." + name[l-(length/3):l]
+		return name[:(length/3)] + "..." + name[l - (length / 3):l]
 	}
 
 	return name
@@ -376,7 +376,7 @@ func MessageDialog(parent *gtk.Window, msg string) {
 		gtk.DIALOG_MODAL,
 		gtk.MESSAGE_INFO,
 		gtk.BUTTONS_OK,
-		"",
+		""
 	)
 
 	win.SetMarkup(CleanHTML(msg))

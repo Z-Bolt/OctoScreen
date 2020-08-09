@@ -34,10 +34,15 @@ func SystemPanel(ui *UI, parent Panel) *systemPanel {
 func (m *systemPanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createOctoPrintInfo(), 1, 0, 2, 1)
-	m.Grid().Attach(m.createOctoScreenInfo(), 3, 0, 2, 1)
-	m.Grid().Attach(m.createSystemInfo(), 1, 1, 4, 1)
+	// First row
+	m.Grid().Attach(m.createOctoPrintInfo(),        1, 0, 1, 1)
+	m.Grid().Attach(m.createOctoScreenInfo(),       2, 0, 2, 1)
+	m.Grid().Attach(m.createOctoScreenPluginInfo(), 4, 0, 1, 1)
 
+	// Second row
+	m.Grid().Attach(m.createSystemInfo(),           1, 1, 4, 1)
+
+	// Third row
 	if b := m.createCommandButton("Octo Restart", "restart", "color2"); b != nil {
 		m.Grid().Attach(b, 3, 2, 1, 1)
 	}
@@ -58,68 +63,114 @@ func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
 		return nil
 	}
 
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	infoBox := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	infoBox.SetHExpand(true)
+	infoBox.SetHAlign(gtk.ALIGN_CENTER)
+	infoBox.SetVExpand(true)
+	infoBox.SetVAlign(gtk.ALIGN_CENTER)
 
-	info.SetHExpand(true)
-	info.SetHAlign(gtk.ALIGN_CENTER)
-	info.SetVExpand(true)
-	info.SetVAlign(gtk.ALIGN_CENTER)
 	logoWidth := m.Scaled(52)
-	img := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, int(float64(logoWidth)*1.25))
-	info.Add(img)
+	logoImage := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, int(float64(logoWidth)*1.25))
+	infoBox.Add(logoImage)
 
-	info.Add(MustLabel("\nOctoPrint Version"))
-	info.Add(MustLabel("<b>%s (%s)</b>", r.Server, r.API))
-	return info
+	infoBox.Add(MustLabel(""))
+	infoBox.Add(MustLabel("OctoPrint"))
+
+	// Can't display on two lines - it's too tall and causes a window resize.
+	// infoBox.Add(MustLabel("<b>%s</b>", r.Server))
+	// infoBox.Add(MustLabel("<b>(API %s)</b>", r.API))
+
+	// Just display on one line and hope that the version string back from
+	// OctoPrint isn't too large.
+	infoBox.Add(MustLabel("<b>%s (API %s)</b>", r.Server, r.API))
+
+	return infoBox
 }
 
 func (m *systemPanel) createOctoScreenInfo() *gtk.Box {
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	infoBox := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	infoBox.SetHExpand(true)
+	infoBox.SetHAlign(gtk.ALIGN_CENTER)
+	infoBox.SetVExpand(true)
+	infoBox.SetVAlign(gtk.ALIGN_CENTER)
 
-	info.SetHExpand(true)
-	info.SetHAlign(gtk.ALIGN_CENTER)
-	info.SetVExpand(true)
-	info.SetVAlign(gtk.ALIGN_CENTER)
+	logoImage := MustImageFromFile("octoScreen-isometric.png")
 
-	logoWidth := m.Scaled(62)
+	infoBox.Add(logoImage)
+	infoBox.Add(MustLabel("OctoScreen"))
+	infoBox.Add(MustLabel("<b>%s</b>", OctoScreenVersion))
 
-	// NOTE: If a message is logged that the image (SVG) can't be loaded, try installing librsvg.
-	logoImage := MustImageFromFileWithSize("logo-z-bolt.svg", logoWidth, int(float64(logoWidth) * 0.8))
+	return infoBox
+}
 
-	info.Add(logoImage)
-	info.Add(MustLabel("OctoScreen Version"))
-	info.Add(MustLabel("<b>%s (%s)</b>", Version, Build))
-	return info
+func (m *systemPanel) createOctoScreenPluginInfo() *gtk.Box {
+	infoBox := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	infoBox.SetHExpand(true)
+	infoBox.SetHAlign(gtk.ALIGN_CENTER)
+	infoBox.SetVExpand(true)
+	infoBox.SetVAlign(gtk.ALIGN_CENTER)
+
+	logoImage := MustImageFromFile("puzzle-piece.png")
+	infoBox.Add(logoImage)
+
+	infoBox.Add(MustLabel(""))
+	infoBox.Add(MustLabel("OctoScreen plugin"))
+
+	if m.UI.OctoPrintPlugin {
+		getPluginManagerInfoResponse, err := (&octoprint.GetPluginManagerInfoRequest{}).Do(m.UI.Printer)
+		if err != nil {
+			Logger.Error(err)
+			return infoBox
+		}
+
+		found := false
+		for i := 0; i < len(getPluginManagerInfoResponse.Plugins) && !found; i++ {
+			plugin := getPluginManagerInfoResponse.Plugins[i]
+			if plugin.Key == "zbolt_octoscreen" {
+				found = true
+				infoBox.Add(MustLabel("<b>%s</b>", plugin.Version))
+			}
+		}
+
+		if !found {
+			// OK, the plugin is there, we just can't get the info from a GET request.
+			// Default to displaying, "Present"
+			infoBox.Add(MustLabel("<b>%s</b>", "Present"))
+		}
+	} else {
+		infoBox.Add(MustLabel("<b>%s</b>", "Not installed"))
+	}
+
+	return infoBox
 }
 
 func (m *systemPanel) createSystemInfo() *gtk.Box {
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 0)
-
-	info.SetVExpand(true)
-	info.SetVAlign(gtk.ALIGN_CENTER)
+	infoBox := MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	infoBox.SetVExpand(true)
+	infoBox.SetVAlign(gtk.ALIGN_CENTER)
 
 	title := MustLabel("<b>System Information</b>")
 	title.SetMarginBottom(5)
 	title.SetMarginTop(15)
-	info.Add(title)
+	infoBox.Add(title)
 
 	v, _ := mem.VirtualMemory()
-	info.Add(MustLabel(fmt.Sprintf(
+	infoBox.Add(MustLabel(fmt.Sprintf(
 		"Memory Total / Free: <b>%s / %s</b>",
 		humanize.Bytes(v.Total), humanize.Bytes(v.Free),
 	)))
 
 	l, _ := load.Avg()
-	info.Add(MustLabel(fmt.Sprintf(
+	infoBox.Add(MustLabel(fmt.Sprintf(
 		"Load Average: <b>%.2f, %.2f, %.2f</b>",
 		l.Load1, l.Load5, l.Load15,
 	)))
 
-	return info
+	return infoBox
 }
 
 func (m *systemPanel) createCommandButton(name string, action string, style string) gtk.IWidget {
-	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
+	systemCommandsResponse, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
 		return nil
@@ -128,37 +179,36 @@ func (m *systemPanel) createCommandButton(name string, action string, style stri
 	var cmd *octoprint.CommandDefinition
 	var cb func()
 
-	for _, c := range r.Core {
-		if c.Action == action {
-			cmd = c
+	for _, commandDefinition := range systemCommandsResponse.Core {
+		if commandDefinition.Action == action {
+			cmd = commandDefinition
 		}
 	}
 
 	if cmd != nil {
 		do := func() {
-			r := &octoprint.SystemExecuteCommandRequest{
+			systemExecuteCommandRequest := &octoprint.SystemExecuteCommandRequest{
 				Source: octoprint.Core,
 				Action: cmd.Action,
 			}
 
-			if err := r.Do(m.UI.Printer); err != nil {
+			if err := systemExecuteCommandRequest.Do(m.UI.Printer); err != nil {
 				Logger.Error(err)
 				return
 			}
 		}
 
 		cb = do
-
 		if len(cmd.Confirm) != 0 {
 			cb = MustConfirmDialog(m.UI.w, cmd.Confirm, do)
 		}
 	}
 
-	b := MustButtonImageStyle(name, action+".svg", style, cb)
+	button := MustButtonImageStyle(name, action + ".svg", style, cb)
 
 	if cmd == nil {
-		b.SetSensitive(false)
+		button.SetSensitive(false)
 	}
 
-	return b
+	return button
 }
