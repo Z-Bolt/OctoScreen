@@ -77,7 +77,6 @@ func (m *controlPanel) getCustomControl() []*octoprint.ControlDefinition {
 }
 
 func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition, icon string) gtk.IWidget {
-
 	do := func() {
 		r := &octoprint.CommandRequest{
 			Commands: c.Commands,

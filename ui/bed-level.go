@@ -86,6 +86,7 @@ func (m *bedLevelPanel) createLevelButton(p string) *gtk.Button {
 			return
 		}
 	})
+
 	return b
 }
 
@@ -119,5 +120,6 @@ func (m *bedLevelPanel) createAutoLevelButton(gcode string) *gtk.Button {
 			return
 		}
 	})
+
 	return b
 }

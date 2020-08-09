@@ -159,7 +159,7 @@ func (m *filesPanel) addFolder(b *gtk.Box, f *octoprint.FileInformation) {
 	info := MustLabel("")
 	info.SetHAlign(gtk.ALIGN_START)
 	info.SetMarkup(fmt.Sprintf("<small>Size: <b>%s</b></small>",
-		humanize.Bytes(uint64(f.Size)),
+		humanize.Bytes(uint64(f.Size))
 	))
 
 	labels := MustBox(gtk.ORIENTATION_VERTICAL, 5)
@@ -204,9 +204,11 @@ func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 			}
 		}),
 	)
+
 	ctx, _ := b.GetStyleContext()
 	ctx.AddClass("color3")
 	ctx.AddClass("file-list")
+
 	return b
 }
 
@@ -244,7 +246,7 @@ type locationHistory struct {
 }
 
 func (l *locationHistory) current() octoprint.Location {
-	return l.locations[len(l.locations)-1]
+	return l.locations[len(l.locations) - 1]
 }
 
 func (l *locationHistory) goForward(folder string) {
@@ -253,7 +255,7 @@ func (l *locationHistory) goForward(folder string) {
 }
 
 func (l *locationHistory) goBack() {
-	l.locations = l.locations[0 : len(l.locations)-1]
+	l.locations = l.locations[0 : len(l.locations) - 1]
 }
 
 func (l *locationHistory) isRoot() bool {

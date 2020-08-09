@@ -24,7 +24,7 @@ func IdleStatusPanel(ui *UI) Panel {
 	if idleStatusPanelInstance == nil {
 		m := &idleStatusPanel{CommonPanel: NewCommonPanel(ui, nil)}
 		m.panelH = 3
-		m.b = NewBackgroundTask(time.Second*2, m.update)
+		m.b = NewBackgroundTask(time.Second * 2, m.update)
 		m.initialize()
 
 		idleStatusPanelInstance = m
@@ -70,40 +70,30 @@ func (m *idleStatusPanel) update() {
 
 func (m *idleStatusPanel) showTools() {
 	toolsCount := m.defineToolsCount()
-
-	m.tool0 = ToolHeatupNew(0, m.UI.Printer)
-	m.tool1 = ToolHeatupNew(1, m.UI.Printer)
-	m.tool2 = ToolHeatupNew(2, m.UI.Printer)
-	m.tool3 = ToolHeatupNew(3, m.UI.Printer)
-	m.bed = ToolHeatupNew(-1, m.UI.Printer)
-
-	switch toolsCount {
-	case 1:
-		g := MustGrid()
-		g.SetRowHomogeneous(true)
-		g.SetColumnHomogeneous(true)
-		m.Grid().Attach(g, 1, 0, 2, 3)
-		g.Attach(m.tool0,  1, 0, 2, 1)
-		g.Attach(m.bed,    1, 1, 2, 1)
-
-	case 2:
-		m.Grid().Attach(m.tool0, 1, 0, 2, 1)
-		m.Grid().Attach(m.tool1, 1, 1, 2, 1)
-		m.Grid().Attach(m.bed,   1, 2, 2, 1)
-
-	case 3:
-		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-		m.Grid().Attach(m.tool2, 1, 1, 2, 1)
-		m.Grid().Attach(m.bed,   1, 2, 2, 1)
-
-	case 4:
-		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-		m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-		m.Grid().Attach(m.bed,   1, 2, 2, 1)
+	if toolsCount == 1 {
+		m.tool0 = toolHeatupNew(0, m.UI.Printer)
+	} else {
+		m.tool0 = toolHeatupNew(1, m.UI.Printer)
 	}
+	m.tool1 = toolHeatupNew(2, m.UI.Printer)
+	m.tool2 = toolHeatupNew(3, m.UI.Printer)
+	m.tool3 = toolHeatupNew(4, m.UI.Printer)
+	m.bed   = toolHeatupNew(-1, m.UI.Printer)
+
+	m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+	if toolsCount >= 2 {
+		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+	}
+
+	if toolsCount >= 3 {
+		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
+	}
+
+	if toolsCount >= 4 {
+		m.Grid().Attach(m.tool3, 2, 1, 1, 1)
+	}
+
+	m.Grid().Attach(m.bed, 1, 2, 1, 1)
 }
 
 func (m *idleStatusPanel) updateTemperature() {
@@ -115,16 +105,20 @@ func (m *idleStatusPanel) updateTemperature() {
 
 	for tool, s := range s.Temperature.Current {
 		switch tool {
-		case "bed":
-			m.bed.SetTemperatures(s.Actual, s.Target)
-		case "tool0":
-			m.tool0.SetTemperatures(s.Actual, s.Target)
-		case "tool1":
-			m.tool1.SetTemperatures(s.Actual, s.Target)
-		case "tool2":
-			m.tool2.SetTemperatures(s.Actual, s.Target)
-		case "tool3":
-			m.tool3.SetTemperatures(s.Actual, s.Target)
+			case "bed":
+				m.bed.setTemperatures(s.Actual, s.Target)
+
+			case "tool0":
+				m.tool0.setTemperatures(s.Actual, s.Target)
+
+			case "tool1":
+				m.tool1.setTemperatures(s.Actual, s.Target)
+
+			case "tool2":
+				m.tool2.setTemperatures(s.Actual, s.Target)
+
+			case "tool3":
+				m.tool3.setTemperatures(s.Actual, s.Target)
 		}
 	}
 }
@@ -157,7 +151,7 @@ type ToolHeatup struct {
 	printer *octoprint.Client
 }
 
-func ToolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
+func toolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
 	var (
 		image string
 		tool  string
@@ -166,9 +160,12 @@ func ToolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
 	if num < 0 {
 		image = "bed.svg"
 		tool = "bed"
+	} else if num == 0 {
+		image = "extruders/extruder.svg"
+		tool = "tool0"
 	} else {
-		image = fmt.Sprintf("extruder-%d.svg", num+1)
-		tool = fmt.Sprintf("tool%d", num)
+		image = fmt.Sprintf("extruders/extruder-%d.svg", num)
+		tool = fmt.Sprintf("tool%d", num - 1)
 	}
 
 	t := &ToolHeatup{
@@ -192,7 +189,7 @@ func (t *ToolHeatup) updateStatus(heating bool) {
 	t.isHeating = heating
 }
 
-func (t *ToolHeatup) SetTemperatures(actual float64, target float64) {
+func (t *ToolHeatup) setTemperatures(actual float64, target float64) {
 	text := fmt.Sprintf("%.0f°C / %.0f°C", actual, target)
 	t.SetLabel(text)
 	t.updateStatus(target > 0)

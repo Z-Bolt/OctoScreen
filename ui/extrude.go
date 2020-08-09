@@ -81,7 +81,7 @@ func (m *extrudePanel) loadTemperatureState(s *octoprint.TemperatureState) {
 }
 
 func (m *extrudePanel) addNewTool(tool string) {
-	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
+	m.labels[tool] = MustLabelWithImage("extruders/extruder.svg", "")
 	m.box.Add(m.labels[tool])
 	m.tool.AddStep(Step{strings.Title(tool), tool})
 
@@ -93,7 +93,7 @@ func (m *extrudePanel) loadTemperatureData(tool string, d *octoprint.Temperature
 
 	if m.previous != nil && d.Target > 0 {
 		if p, ok := m.previous.Current[tool]; ok {
-			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual-p.Actual)
+			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual - p.Actual)
 		}
 	}
 
@@ -102,7 +102,7 @@ func (m *extrudePanel) loadTemperatureData(tool string, d *octoprint.Temperature
 }
 
 func (m *extrudePanel) createToolButton() *StepButton {
-	m.tool = MustStepButton("extruder.svg")
+	m.tool = MustStepButton("extruders/extruder.svg")
 	m.tool.Callback = func() {
 		cmd := &octoprint.ToolSelectRequest{}
 		cmd.Tool = m.tool.Value().(string)
@@ -144,8 +144,8 @@ func (m *extrudePanel) createLoadButton() gtk.IWidget {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G91",
-			fmt.Sprintf("G0 E%.1f F5000", length*0.80),
-			fmt.Sprintf("G0 E%.1f F500", length*0.20),
+			fmt.Sprintf("G0 E%.1f F5000", length * 0.80),
+			fmt.Sprintf("G0 E%.1f F500", length * 0.20),
 			"G90",
 		}
 
@@ -158,9 +158,7 @@ func (m *extrudePanel) createLoadButton() gtk.IWidget {
 }
 
 func (m *extrudePanel) createUnloadButton() gtk.IWidget {
-
 	length := 800.0
-
 	if m.UI.Settings != nil {
 		length = m.UI.Settings.FilamentOutLength
 	}
@@ -182,7 +180,6 @@ func (m *extrudePanel) createUnloadButton() gtk.IWidget {
 }
 
 func (m *extrudePanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
-
 	return MustPressedButton(label, image, func() {
 		cmd := &octoprint.ToolExtrudeRequest{}
 		cmd.Amount = m.amount.Value().(int) * dir

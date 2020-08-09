@@ -85,7 +85,7 @@ func (m *filamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 }
 
 func (m *filamentPanel) addNewTool(tool string) {
-	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
+	m.labels[tool] = MustLabelWithImage("extruders/extruder.svg", "")
 	m.box.Add(m.labels[tool])
 	m.tool.AddStep(Step{strings.Title(tool), tool})
 
@@ -97,7 +97,7 @@ func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 
 	if m.previous != nil && d.Target > 0 {
 		if p, ok := m.previous.Current[tool]; ok {
-			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual-p.Actual)
+			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual - p.Actual)
 		}
 	}
 
@@ -106,7 +106,7 @@ func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 }
 
 func (m *filamentPanel) createToolButton() *StepButton {
-	m.tool = MustStepButton("extruder.svg")
+	m.tool = MustStepButton("extruders/extruder.svg")
 	m.tool.Callback = func() {
 		cmd := &octoprint.ToolSelectRequest{}
 		cmd.Tool = m.tool.Value().(string)
@@ -152,7 +152,6 @@ func (m *filamentPanel) createLoadButton() gtk.IWidget {
 }
 
 func (m *filamentPanel) createUnloadButton() gtk.IWidget {
-
 	return MustButtonImage("Unload", "retract.svg", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"G91", "G0 E-800 F5000", "G90"}

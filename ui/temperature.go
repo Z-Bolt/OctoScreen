@@ -41,7 +41,7 @@ func TemperaturePanel(ui *UI, parent Panel) Panel {
 func (m *temperaturePanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createChangeButton("Increase", "increase.svg", 1), 1, 0, 1, 1)
+	m.Grid().Attach(m.createChangeButton("Increase", "increase.svg",  1), 1, 0, 1, 1)
 	m.Grid().Attach(m.createChangeButton("Decrease", "decrease.svg", -1), 4, 0, 1, 1)
 
 	m.box = MustBox(gtk.ORIENTATION_VERTICAL, 5)
@@ -62,7 +62,7 @@ func (m *temperaturePanel) createToolButton() *StepButton {
 	m.tool = MustStepButton("bed.svg")
 
 	m.tool.Callback = func() {
-		imageFileName := "extruder.svg"
+		imageFileName := "extruders/extruder.svg"
 		if m.tool.Value().(string) == "bed" {
 			imageFileName = "bed.svg"
 		}
@@ -148,7 +148,7 @@ func (m *temperaturePanel) loadTemperatureState(s *octoprint.TemperatureState) {
 }
 
 func (m *temperaturePanel) addNewTool(tool string) {
-	img := "extruder.svg"
+	img := "extruders/extruder.svg"
 	if tool == "bed" {
 		img = "bed.svg"
 	}

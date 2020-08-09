@@ -25,7 +25,7 @@ func PrintStatusPanel(ui *UI) Panel {
 	if printStatusPanelInstance == nil {
 		m := &printStatusPanel{CommonPanel: NewCommonPanel(ui, nil)}
 		m.panelH = 3
-		m.b = NewBackgroundTask(time.Second*2, m.update)
+		m.b = NewBackgroundTask(time.Second * 2, m.update)
 		m.initialize()
 
 		printStatusPanelInstance = m
@@ -37,11 +37,11 @@ func PrintStatusPanel(ui *UI) Panel {
 func (m *printStatusPanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createInfoBox(), 3, 0, 2, 1)
-	m.Grid().Attach(m.createProgressBar(), 3, 1, 2, 1)
-	m.Grid().Attach(m.createPauseButton(), 2, 2, 1, 1)
-	m.Grid().Attach(m.createStopButton(), 3, 2, 1, 1)
-	m.Grid().Attach(m.createMenuButton(), 4, 2, 1, 1)
+	m.Grid().Attach(m.createInfoBox(),        3, 0, 2, 1)
+	m.Grid().Attach(m.createProgressBar(),    3, 1, 2, 1)
+	m.Grid().Attach(m.createPauseButton(),    2, 2, 1, 1)
+	m.Grid().Attach(m.createStopButton(),     3, 2, 1, 1)
+	m.Grid().Attach(m.createMenuButton(),     4, 2, 1, 1)
 	m.Grid().Attach(m.createCompleteButton(), 2, 2, 3, 1)
 
 	m.showTools()
@@ -58,25 +58,27 @@ func (m *printStatusPanel) showTools() {
 	m.bed = m.createBedButton()
 
 	switch toolsCount {
-	case 1:
-		m.Grid().Attach(m.tool0, 1, 0, 2, 1)
-		m.Grid().Attach(m.bed, 1, 1, 2, 1)
+		case 1:
+			m.Grid().Attach(m.tool0, 1, 0, 2, 1)
+			m.Grid().Attach(m.bed,   1, 1, 2, 1)
 
-	case 2:
-		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-		m.Grid().Attach(m.bed, 1, 1, 2, 1)
-	case 3:
-		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-		m.Grid().Attach(m.bed, 2, 1, 1, 1)
-	case 4:
-		m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-		m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-		m.Grid().Attach(m.bed, 1, 2, 1, 1)
+		case 2:
+			m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+			m.Grid().Attach(m.bed,   1, 1, 2, 1)
+
+		case 3:
+			m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+			m.Grid().Attach(m.tool2, 1, 1, 1, 1)
+			m.Grid().Attach(m.bed,   2, 1, 1, 1)
+
+		case 4:
+			m.Grid().Attach(m.tool0, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+			m.Grid().Attach(m.tool2, 1, 1, 1, 1)
+			m.Grid().Attach(m.tool3, 2, 1, 1, 1)
+			m.Grid().Attach(m.bed,   1, 2, 1, 1)
 	}
 
 }
@@ -85,6 +87,7 @@ func (m *printStatusPanel) createCompleteButton() *gtk.Button {
 	m.complete = MustButtonImageStyle("Complete", "complete.svg", "color3", func() {
 		m.UI.Add(IdleStatusPanel(m.UI))
 	})
+
 	return m.complete
 }
 
@@ -129,7 +132,7 @@ func (m *printStatusPanel) createInfoBox() *gtk.Box {
 }
 
 func (m *printStatusPanel) createToolButton(num int) *gtk.Button {
-	name := fmt.Sprintf("extruder-%d.svg", num+1)
+	name := fmt.Sprintf("extruders/extruder-%d.svg", num + 1)
 	b := MustButtonImage("", name, func() {})
 
 	ctx, _ := b.GetStyleContext()
@@ -191,56 +194,62 @@ func (m *printStatusPanel) updateTemperature() {
 	for tool, s := range s.Temperature.Current {
 		text := fmt.Sprintf("%.0f°C / %.0f°C", s.Actual, s.Target)
 		switch tool {
-		case "bed":
-			m.bed.SetLabel(text)
-		case "tool0":
-			m.tool0.SetLabel(text)
-		case "tool1":
-			m.tool1.SetLabel(text)
-		case "tool2":
-			m.tool2.SetLabel(text)
-		case "tool3":
-			m.tool3.SetLabel(text)
+			case "bed":
+				m.bed.SetLabel(text)
+
+			case "tool0":
+				m.tool0.SetLabel(text)
+
+			case "tool1":
+				m.tool1.SetLabel(text)
+
+			case "tool2":
+				m.tool2.SetLabel(text)
+
+			case "tool3":
+				m.tool3.SetLabel(text)
 		}
 	}
 }
 
 func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 	switch {
-	case s.Flags.Printing:
-		m.pause.SetSensitive(true)
-		m.stop.SetSensitive(true)
+		case s.Flags.Printing:
+			m.pause.SetSensitive(true)
+			m.stop.SetSensitive(true)
 
-		m.pause.Show()
-		m.stop.Show()
-		m.menu.Show()
-		m.back.Show()
-		m.complete.Hide()
+			m.pause.Show()
+			m.stop.Show()
+			m.menu.Show()
+			m.back.Show()
+			m.complete.Hide()
 
-	case s.Flags.Paused:
-		m.pause.SetLabel("Resume")
-		m.pause.SetImage(MustImageFromFile("resume.svg"))
-		m.pause.SetSensitive(true)
-		m.stop.SetSensitive(true)
+		case s.Flags.Paused:
+			m.pause.SetLabel("Resume")
+			m.pause.SetImage(MustImageFromFile("resume.svg"))
+			m.pause.SetSensitive(true)
+			m.stop.SetSensitive(true)
 
-		m.pause.Show()
-		m.stop.Show()
-		m.menu.Show()
-		m.back.Show()
-		m.complete.Hide()
-		return
-	case s.Flags.Ready:
-		m.pause.SetSensitive(false)
-		m.stop.SetSensitive(false)
+			m.pause.Show()
+			m.stop.Show()
+			m.menu.Show()
+			m.back.Show()
+			m.complete.Hide()
+			return
 
-		m.pause.Hide()
-		m.stop.Hide()
-		m.menu.Hide()
-		m.back.Hide()
-		m.complete.Show()
-	default:
-		m.pause.SetSensitive(false)
-		m.stop.SetSensitive(false)
+		case s.Flags.Ready:
+			m.pause.SetSensitive(false)
+			m.stop.SetSensitive(false)
+
+			m.pause.Hide()
+			m.stop.Hide()
+			m.menu.Hide()
+			m.back.Hide()
+			m.complete.Show()
+
+		default:
+			m.pause.SetSensitive(false)
+			m.stop.SetSensitive(false)
 	}
 
 	m.pause.SetLabel("Pause")
@@ -248,7 +257,6 @@ func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 }
 
 func (m *printStatusPanel) updateJob() {
-
 	s, err := (&octoprint.JobRequest{}).Do(m.UI.Printer)
 	if err != nil {
 		Logger.Error(err)
@@ -267,18 +275,20 @@ func (m *printStatusPanel) updateJob() {
 
 	var timeSpent, timeLeft string
 	switch s.Progress.Completion {
-	case 100:
-		timeSpent = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime)*1e9))
-		timeLeft = ""
-	case 0:
-		timeSpent = "Warming up ..."
-		timeLeft = ""
-	default:
-		Logger.Info(s.Progress.PrintTime)
-		e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-		r := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-		timeSpent = fmt.Sprintf("Time: %s", e)
-		timeLeft = fmt.Sprintf("Left: %s", r)
+		case 100:
+			timeSpent = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime) * 1e9))
+			timeLeft = ""
+
+		case 0:
+			timeSpent = "Warming up ..."
+			timeLeft = ""
+
+		default:
+			Logger.Info(s.Progress.PrintTime)
+			e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
+			r := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
+			timeSpent = fmt.Sprintf("Time: %s", e)
+			timeLeft = fmt.Sprintf("Left: %s", r)
 	}
 
 	m.time.Label.SetLabel(timeSpent)

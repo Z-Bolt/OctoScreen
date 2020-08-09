@@ -30,15 +30,14 @@ func (m *fanPanel) initialize() {
 	defer m.Initialize()
 
 	m.Grid().Attach(m.createFanButton(100), 0, 0, 1, 1)
-	m.Grid().Attach(m.createFanButton(75), 1, 0, 1, 1)
-	m.Grid().Attach(m.createFanButton(50), 2, 0, 1, 1)
-	m.Grid().Attach(m.createFanButton(25), 3, 0, 1, 1)
+	m.Grid().Attach(m.createFanButton(75),  1, 0, 1, 1)
+	m.Grid().Attach(m.createFanButton(50),  2, 0, 1, 1)
+	m.Grid().Attach(m.createFanButton(25),  3, 0, 1, 1)
 
-	m.Grid().Attach(m.createFanButton(0), 0, 1, 1, 1)
+	m.Grid().Attach(m.createFanButton(0),   0, 1, 1, 1)
 }
 
 func (m *fanPanel) createFanButton(speed int) gtk.IWidget {
-
 	var (
 		label string
 		image string
@@ -60,6 +59,7 @@ func (m *fanPanel) createFanButton(speed int) gtk.IWidget {
 		cmd.Commands = []string{
 			fmt.Sprintf("M106 S%d", (255 * speed / 100)),
 		}
+
 		if err := cmd.Do(m.UI.Printer); err != nil {
 			Logger.Error(err)
 		}

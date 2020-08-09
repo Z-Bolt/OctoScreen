@@ -18,11 +18,11 @@ func PrintMenuPanel(ui *UI, parent Panel) Panel {
 
 func (m *printMenuPanel) initialize() {
 	defer m.Initialize()
-	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg", "color4", m.showTemperature), 1, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Fan", "fan.svg", "color2", m.showFan), 2, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Network", "network.svg", "color1", m.showNetwork), 3, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("System", "info.svg", "color3", m.showSystem), 4, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Filament", "filament.svg", "color3", m.showFilament), 1, 1, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg",  "color4", m.showTemperature), 1, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Fan",         "fan.svg",      "color2", m.showFan),         2, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Network",     "network.svg",  "color1", m.showNetwork),     3, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("System",      "info.svg",     "color3", m.showSystem),      4, 0, 1, 1)
+	m.Grid().Attach(MustButtonImageStyle("Filament",    "filament.svg", "color3", m.showFilament),    1, 1, 1, 1)
 }
 
 func (m *printMenuPanel) showTemperature() {

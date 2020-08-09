@@ -25,7 +25,7 @@ func FilamentMultitoolPanel(ui *UI, parent Panel) Panel {
 			labels: map[string]*LabelWithImage{},
 		}
 		m.panelH = 3
-		m.b = NewBackgroundTask(time.Second*5, m.updateTemperatures)
+		m.b = NewBackgroundTask(time.Second * 5, m.updateTemperatures)
 		m.initialize()
 		filamentMultitoolPanelInstance = m
 	}
@@ -81,9 +81,8 @@ func (m *filamentMultitoolPanel) loadTemperatureState(s *octoprint.TemperatureSt
 }
 
 func (m *filamentMultitoolPanel) addNewTool(tool string) {
-	m.labels[tool] = MustLabelWithImage("extruder.svg", "")
+	m.labels[tool] = MustLabelWithImage("extruders/extruder.svg", "")
 	m.box.Add(m.labels[tool])
-
 	Logger.Infof("New tool detected %s", tool)
 }
 
@@ -92,7 +91,7 @@ func (m *filamentMultitoolPanel) loadTemperatureData(tool string, d *octoprint.T
 
 	if m.previous != nil && d.Target > 0 {
 		if p, ok := m.previous.Current[tool]; ok {
-			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual-p.Actual)
+			text = fmt.Sprintf("%s (%.1f°C)", text, d.Actual - p.Actual)
 		}
 	}
 
@@ -111,8 +110,8 @@ func (m *filamentMultitoolPanel) createLoadButton() gtk.IWidget {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G91",
-			fmt.Sprintf("G0 E%.1f F5000", length*0.80),
-			fmt.Sprintf("G0 E%.1f F500", length*0.20),
+			fmt.Sprintf("G0 E%.1f F5000", length * 0.80),
+			fmt.Sprintf("G0 E%.1f F500", length * 0.20),
 			"G90",
 		}
 
@@ -148,10 +147,11 @@ func (m *filamentMultitoolPanel) createUnloadButton() gtk.IWidget {
 }
 
 func (m *filamentMultitoolPanel) createChangeToolButton(num int) gtk.IWidget {
-	style := fmt.Sprintf("color%d", num+1)
-	name := fmt.Sprintf("Tool%d", num+1)
+	style := fmt.Sprintf("color%d", num + 1)
+	name := fmt.Sprintf("Tool%d", num + 1)
 	gcode := fmt.Sprintf("T%d", num)
-	return MustButtonImageStyle(name, "extruder.svg", style, func() {
+
+	return MustButtonImageStyle(name, "extruders/extruder.svg", style, func() {
 		m.command(gcode)
 	})
 }

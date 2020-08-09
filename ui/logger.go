@@ -47,7 +47,7 @@ func (h NotificationsHook) Levels() []logrus.Level {
 		logrus.PanicLevel,
 		logrus.FatalLevel,
 		logrus.ErrorLevel,
-		logrus.WarnLevel,
+		logrus.WarnLevel
 	}
 }
 
