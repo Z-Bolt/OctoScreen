@@ -7,13 +7,14 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var printStatusPanelInstance *printStatusPanel
 
 type printStatusPanel struct {
 	CommonPanel
-	step *StepButton
+	//step *StepButton
 	pb   *gtk.ProgressBar
 
 	bed, tool0, tool1, tool2, tool3 *gtk.Button
@@ -23,8 +24,7 @@ type printStatusPanel struct {
 
 func PrintStatusPanel(ui *UI) Panel {
 	if printStatusPanelInstance == nil {
-		m := &printStatusPanel{CommonPanel: NewCommonPanel(ui, nil)}
-		m.panelH = 3
+		m := &printStatusPanel{CommonPanel: NewTopLevelCommonPanel(ui, nil)}
 		m.b = NewBackgroundTask(time.Second * 2, m.update)
 		m.initialize()
 
@@ -37,18 +37,22 @@ func PrintStatusPanel(ui *UI) Panel {
 func (m *printStatusPanel) initialize() {
 	defer m.Initialize()
 
-	m.Grid().Attach(m.createInfoBox(),        3, 0, 2, 1)
-	m.Grid().Attach(m.createProgressBar(),    3, 1, 2, 1)
-	m.Grid().Attach(m.createPauseButton(),    2, 2, 1, 1)
-	m.Grid().Attach(m.createStopButton(),     3, 2, 1, 1)
-	m.Grid().Attach(m.createMenuButton(),     4, 2, 1, 1)
-	m.Grid().Attach(m.createCompleteButton(), 2, 2, 3, 1)
+	m.Grid().Attach(m.createInfoBox(),        2, 0, 2, 1)
+
+	m.Grid().Attach(m.createProgressBar(),    2, 1, 2, 1)
+
+	m.Grid().Attach(m.createPauseButton(),    1, 2, 1, 1)
+	m.Grid().Attach(m.createStopButton(),     2, 2, 1, 1)
+	m.Grid().Attach(m.createControlButton(),  3, 2, 1, 1)
+
+	m.Grid().Attach(m.createCompleteButton(), 1, 2, 3, 1)
 
 	m.showTools()
 }
 
 func (m *printStatusPanel) showTools() {
-	toolsCount := m.defineToolsCount()
+	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+
 
 	m.tool0 = m.createToolButton(0)
 	m.tool1 = m.createToolButton(1)
@@ -57,7 +61,7 @@ func (m *printStatusPanel) showTools() {
 
 	m.bed = m.createBedButton()
 
-	switch toolsCount {
+	switch toolheadCount {
 		case 1:
 			m.Grid().Attach(m.tool0, 1, 0, 2, 1)
 			m.Grid().Attach(m.bed,   1, 1, 2, 1)
@@ -81,6 +85,27 @@ func (m *printStatusPanel) showTools() {
 			m.Grid().Attach(m.bed,   1, 2, 1, 1)
 	}
 
+
+	// m.tool0 = m.createToolButton(0, toolheadCount)
+	// m.tool1 = m.createToolButton(1, toolheadCount)
+	// m.tool2 = m.createToolButton(2, toolheadCount)
+	// m.tool3 = m.createToolButton(3, toolheadCount)
+	// m.bed   = m.createBedButton()
+
+	// m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+	// if toolheadCount >= 2 {
+	// 	m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+	// }
+
+	// if toolheadCount >= 3 {
+	// 	m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+	// }
+
+	// if toolheadCount >= 4 {
+	// 	m.Grid().Attach(m.tool3, 1, 1, 1, 1)
+	// }
+
+	// m.Grid().Attach(m.bed, 0, 2, 1, 1)
 }
 
 func (m *printStatusPanel) createCompleteButton() *gtk.Button {
@@ -106,16 +131,15 @@ func (m *printStatusPanel) createProgressBar() *gtk.ProgressBar {
 }
 
 func (m *printStatusPanel) createInfoBox() *gtk.Box {
-
-	m.file = MustLabelWithImage("file.svg", "")
+	m.file = MustLabelWithImage("file-stl.svg", "")
 	ctx, _ := m.file.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
-	m.time = MustLabelWithImage("speed-step.svg", "")
+	m.time = MustLabelWithImage("time.svg", "")
 	ctx, _ = m.time.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
-	m.timeLeft = MustLabelWithImage("speed-step.svg", "")
+	m.timeLeft = MustLabelWithImage("time.svg", "")
 	ctx, _ = m.timeLeft.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
@@ -131,9 +155,15 @@ func (m *printStatusPanel) createInfoBox() *gtk.Box {
 	return info
 }
 
-func (m *printStatusPanel) createToolButton(num int) *gtk.Button {
-	name := fmt.Sprintf("extruders/extruder-%d.svg", num + 1)
-	b := MustButtonImage("", name, func() {})
+func (m *printStatusPanel) createToolButton(num, toolheadCount int) *gtk.Button {
+	imageFileName := ""
+	if num == 0 && toolheadCount == 0 {
+		imageFileName = "toolhead.svg"
+	} else {
+		imageFileName = fmt.Sprintf("toolhead-%d.svg", num + 1)
+	}
+
+	b := MustButtonImage("", imageFileName, func() {})
 
 	ctx, _ := b.GetStyleContext()
 	ctx.AddClass("printing-state")
@@ -149,7 +179,7 @@ func (m *printStatusPanel) createBedButton() *gtk.Button {
 }
 
 func (m *printStatusPanel) createPauseButton() gtk.IWidget {
-	m.pause = MustButtonImageStyle("Pause", "pause.svg", "color1", func() {
+	m.pause = MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
 		defer m.updateTemperature()
 
 		Logger.Warning("Pausing/Resuming job")
@@ -164,13 +194,13 @@ func (m *printStatusPanel) createPauseButton() gtk.IWidget {
 }
 
 func (m *printStatusPanel) createStopButton() gtk.IWidget {
-	m.stop = MustButtonImageStyle("Stop", "stop.svg", "color2",
-		ConfirmStopDialog(m.UI.w, "Are you sure you want to stop current print?", m),
+	m.stop = MustButtonImageStyle("Stop", "stop.svg", "color-warning-sign-yellow",
+		confirmStopDialog(m.UI.w, "Are you sure you want to stop current print?", m),
 	)
 	return m.stop
 }
 
-func (m *printStatusPanel) createMenuButton() gtk.IWidget {
+func (m *printStatusPanel) createControlButton() gtk.IWidget {
 	m.menu = MustButtonImageStyle("Control", "control.svg", "color3", func() {
 		m.UI.Add(PrintMenuPanel(m.UI, m))
 	})
@@ -220,7 +250,9 @@ func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 
 			m.pause.Show()
 			m.stop.Show()
-			m.menu.Show()
+			if m.menu != nil {
+				m.menu.Show()
+			}
 			m.back.Show()
 			m.complete.Hide()
 
@@ -232,7 +264,9 @@ func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 
 			m.pause.Show()
 			m.stop.Show()
-			m.menu.Show()
+			if m.menu != nil {
+				m.menu.Show()
+			}
 			m.back.Show()
 			m.complete.Hide()
 			return
@@ -243,7 +277,9 @@ func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 
 			m.pause.Hide()
 			m.stop.Hide()
-			m.menu.Hide()
+			if m.menu != nil {
+				m.menu.Hide()
+			}
 			m.back.Hide()
 			m.complete.Show()
 
@@ -295,6 +331,7 @@ func (m *printStatusPanel) updateJob() {
 	m.timeLeft.Label.SetLabel(timeLeft)
 }
 
+/*
 func (m *printStatusPanel) defineToolsCount() int {
 	c, err := (&octoprint.ConnectionRequest{}).Do(m.UI.Printer)
 	if err != nil {
@@ -314,8 +351,9 @@ func (m *printStatusPanel) defineToolsCount() int {
 
 	return profile.Extruder.Count
 }
+*/
 
-func ConfirmStopDialog(parent *gtk.Window, msg string, ma *printStatusPanel) func() {
+func confirmStopDialog(parent *gtk.Window, msg string, ma *printStatusPanel) func() {
 	return func() {
 		win := gtk.MessageDialogNewWithMarkup(
 			parent,
@@ -337,9 +375,8 @@ func ConfirmStopDialog(parent *gtk.Window, msg string, ma *printStatusPanel) fun
 		ctx, _ := win.GetStyleContext()
 		ctx.AddClass("dialog")
 
-		ergebnis := win.Run()
-
-		if ergebnis == int(gtk.RESPONSE_YES) {
+		userResponse := win.Run()
+		if userResponse == int(gtk.RESPONSE_YES) {
 			Logger.Warning("Stopping job")
 			if err := (&octoprint.CancelRequest{}).Do(ma.UI.Printer); err != nil {
 				Logger.Error(err)

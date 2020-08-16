@@ -21,7 +21,7 @@ func NetworkPanel(ui *UI, parent Panel) Panel {
 	if networkPanelInstance == nil {
 		m := &networkPanel{CommonPanel: NewCommonPanel(ui, parent)}
 		m.initialize()
-		m.b = NewBackgroundTask(time.Second*3, m.update)
+		m.b = NewBackgroundTask(time.Second * 3, m.update)
 		networkPanelInstance = m
 	} else {
 		networkPanelInstance.p = parent
@@ -37,9 +37,9 @@ func (m *networkPanel) update() {
 	addrs, _ := net.InterfaceAddrs()
 
 	for _, address := range addrs {
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				netStatus += fmt.Sprintf("IP Address: %s\n", ipnet.IP.String())
+		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+			if ipNet.IP.To4() != nil {
+				netStatus += fmt.Sprintf("IP Address: %s\n", ipNet.IP.String())
 			}
 		}
 	}
@@ -50,7 +50,7 @@ func (m *networkPanel) update() {
 
 	if wpa != nil {
 		s, _ := wpa.Status()
-		wifiStatus := "No Wifi Connection"
+		wifiStatus := ""
 
 		if s.WPAState() == "COMPLETED" {
 			wifiStatus = fmt.Sprintf("Wifi Information\nSSID: %s\nIP Address: %s\n",
@@ -67,7 +67,6 @@ func (m *networkPanel) update() {
 		}
 
 		wpa.Scan()
-
 	} else {
 		m.list.Add(MustLabel("\n\nWifi management is not available\non this hardware"))
 	}

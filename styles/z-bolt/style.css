@@ -69,6 +69,14 @@ button.color4 {
 	border-bottom: 8px solid #A7E100;
 }
 
+button.color-warning-sign-yellow {
+	border-bottom: 8px solid #FFE700;
+}
+
+button.color-warning-sign-yellow-dark {
+	border-bottom: 8px solid #E6D300;
+}
+
 button.active {
 	background-color: #20303D;
 }
@@ -99,11 +107,6 @@ button.keyboard {
 	background-color: #000;
 }
 
-.dialog button {
-	padding: 30px 50px 30px 50px;
-	border-bottom: 8px solid #009384;
-}
-
 .dialog {
 	border: 2px solid black;
 	font-size: 20px;
@@ -114,6 +117,16 @@ button.keyboard {
 .dialog button {
 	padding: 30px 50px 30px 50px;
 	border-bottom: 8px solid #009384;
+}
+
+/* For the Cancel/No button */
+.dialog button:nth-child(1) {
+	border-bottom-color: #D22E40;
+}
+
+/* For the OK/Yes button */
+.dialog button:nth-child(2) {
+	border-bottom-color: #3BB22C;
 }
 
 .message {
@@ -154,4 +167,61 @@ button.keyboard {
 
 .hidden {
     opacity: 0;
+}
+
+.no-margin {
+	margin: 0;
+}
+
+.margin-left-20 {
+	margin-left: 20px;
+}
+
+.margin-right-20 {
+	margin-right: 20px;
+}
+
+.no-border {
+	border: 0;
+}
+
+.no-padding {
+	padding: 0;
+}
+
+.padding-left-20 {
+	padding-left: 20px;
+}
+
+.padding-right-20 {
+	padding-right: 20px;
+}
+
+
+/*
+These solid background colors are only meant to aid in testing.
+Do not use any of these in production.
+*/
+.red-background {
+	background-color: red;
+}
+
+.green-background {
+	background-color: green;
+}
+
+.blue-background {
+	background-color: blue;
+}
+
+.yellow-background {
+	background-color: yellow;
+}
+
+.orange-background {
+	background-color: orange;
+}
+
+.red-foreground {
+	color: red
 }

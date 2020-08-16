@@ -16,8 +16,8 @@ import (
 var (
 	StylePath    string
 	WindowName   = "OctoScreen"
-	WindowHeight = 480
 	WindowWidth  = 800
+	WindowHeight = 480
 )
 
 const (
@@ -68,18 +68,39 @@ func New(endpoint, key string, width, height int) *UI {
 		height: height,
 	}
 
+	ui.w.Connect("configure-event", func(win *gtk.Window) {
+		allocatedWidth:= win.GetAllocatedWidth()
+		allocatedHeight:= win.GetAllocatedHeight()
+		sizeWidth, sizeHeight := win.GetSize()
+
+		if (allocatedWidth > width || allocatedHeight > height) ||
+			(sizeWidth > width || sizeHeight > height) {
+			Logger.Errorf("Widow resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
+				allocatedWidth,
+				allocatedHeight,
+				sizeWidth,
+				sizeHeight)
+			Logger.Errorf("Widow resize went past max size.  Target width and height: %dx%d",
+				width,
+				height)
+		}
+	})
+
 	switch {
-	case width > 480:
-		ui.scaleFactor = 2
-	case width > 1000:
-		ui.scaleFactor = 3
-	default:
-		ui.scaleFactor = 1
+		case width > 480:
+			ui.scaleFactor = 2
+
+		case width > 1000:
+			ui.scaleFactor = 3
+
+		default:
+			ui.scaleFactor = 1
 	}
 
 	ui.s = NewSplashPanel(ui)
 	ui.b = NewBackgroundTask(time.Second*2, ui.update)
 	ui.initialize()
+
 	return ui
 }
 
@@ -122,54 +143,60 @@ var errMercyPeriod = time.Second * 10
 func (ui *UI) verifyConnection() {
 	ui.sdNotify("WATCHDOG=1")
 
-	newUiState := "splash"
+	newUIState := "splash"
 	splashMessage := "Initializing..."
 
 	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
 	if err == nil {
 		ui.State = s.Current.State
 		switch {
-		case s.Current.State.IsOperational():
-			newUiState = "idle"
-		case s.Current.State.IsPrinting():
-			newUiState = "printing"
-		case s.Current.State.IsError():
-			fallthrough
-		case s.Current.State.IsOffline():
-			if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
-				newUiState = "splash"
-				splashMessage = "Loading..."
-			}
-		case s.Current.State.IsConnecting():
-			splashMessage = string(s.Current.State)
+			case s.Current.State.IsOperational():
+				newUIState = "idle"
+
+			case s.Current.State.IsPrinting():
+				newUIState = "printing"
+
+			case s.Current.State.IsError():
+				fallthrough
+
+			case s.Current.State.IsOffline():
+				if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
+					newUIState = "splash"
+					splashMessage = "Loading..."
+				}
+
+			case s.Current.State.IsConnecting():
+				splashMessage = string(s.Current.State)
 		}
 	} else {
 		if time.Since(ui.t) > errMercyPeriod {
 			splashMessage = ui.errToUser(err)
 		}
 
-		newUiState = "splash"
+		newUIState = "splash"
 
 		Logger.Debugf("verifyConnection() - Unexpected error: %s", err)
 	}
 
-	defer func() { ui.UIState = newUiState }()
+	defer func() { ui.UIState = newUIState }()
 
 	ui.s.Label.SetText(splashMessage)
 
-	if newUiState == ui.UIState {
+	if newUIState == ui.UIState {
 		return
 	}
 
-	switch newUiState {
-	case "idle":
-		Logger.Info("Printer is ready")
-		ui.Add(IdleStatusPanel(ui))
-	case "printing":
-		Logger.Info("Printing a job")
-		ui.Add(PrintStatusPanel(ui))
-	case "splash":
-		ui.Add(ui.s)
+	switch newUIState {
+		case "idle":
+			Logger.Info("Printer is ready")
+			ui.Add(IdleStatusPanel(ui))
+
+		case "printing":
+			Logger.Info("Printing a job")
+			ui.Add(PrintStatusPanel(ui))
+
+		case "splash":
+			ui.Add(ui.s)
 	}
 }
 
@@ -201,8 +228,10 @@ func (m *UI) update() {
 	if m.connectionAttempts > 8 {
 		m.s.putOnHold()
 		return
-	} else if m.UIState == "splash" {
-		m.connectionAttempts += 1
+	}
+	
+	if m.UIState == "splash" {
+		m.connectionAttempts++
 	} else {
 		m.connectionAttempts = 0
 	}
@@ -231,7 +260,7 @@ func (ui *UI) Add(p Panel) {
 
 	ui.Current = p
 	ui.Current.Show()
-	ui.g.Attach(ui.Current.Grid(), 1, 0, 1, 1)
+	ui.g.Attach(ui.Current.Grid(), 0, 0, 1, 1)
 	ui.g.ShowAll()
 }
 

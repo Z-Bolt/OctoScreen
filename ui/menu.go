@@ -8,23 +8,29 @@ import (
 
 func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 	switch item.Panel {
-		case "menu":
-			return MenuPanel(ui, parent, item.Items)
-
+		// The standard "top four" panels that are in the idleStatus panel
 		case "home":
 			return HomePanel(ui, parent)
 
+		case "menu":
+			fallthrough
+		case "custom_items":
+			return CustomItemsPanel(ui, parent, item.Items)
+
+		case "filament_multitool":
+			fallthrough
 		case "filament":
 			return FilamentPanel(ui, parent)
 
-		case "filament_multitool":
-			return FilamentMultitoolPanel(ui, parent)
+		case "configuration":
+			return ConfigurationPanel(ui, parent)
 
-		case "extrude":
-			return ExtrudePanel(ui, parent)
 
-		case "extrude_multitool":
-			return ExtrudeMultitoolPanel(ui, parent)
+
+		case "extruder-multitool":
+			fallthrough
+		case "extruder":
+			return ExtruderPanel(ui, parent)
 
 		case "files":
 			return FilesPanel(ui, parent)
@@ -54,88 +60,46 @@ func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 			return BedLevelPanel(ui, parent)
 
 		case "nozzle-calibration":
-			return NozzleCalibrationPanel(ui, parent)
+			fallthrough
+		case "z-offset-calibration":
+			return ZOffsetCalibrationPanel(ui, parent)
+
+		case "print-menu":
+			return PrintMenuPanel(ui, parent)
 
 		default:
 			return nil
 	}
 }
 
-type menuPanel struct {
-	CommonPanel
-	items []octoprint.MenuItem
-}
-
-func MenuPanel(ui *UI, parent Panel, items []octoprint.MenuItem) Panel {
-	m := &menuPanel{
-		CommonPanel: NewCommonPanel(ui, parent),
-		items:       items,
-	}
-
-	m.panelH = 1 + len(items)/4
-
-	m.initialize()
-	return m
-}
-
-func (m *menuPanel) initialize() {
-	defer m.Initialize()
-	m.arrangeMenuItems(m.g, m.items, 4)
-}
-
 func getDefaultMenu() []octoprint.MenuItem {
-	default_menu := `[
-		{
-			"name": "Home",
-			"icon": "home",
-			"panel": "home"
-		},
-		{
-			"name": "Actions",
-			"icon": "actions",
-			"panel": "menu",
-			"items": [
-				{
-					"name": "Move",
-					"icon": "move",
-					"panel": "move"
-				},
-				{
-					"name": "Extrude",
-					"icon": "filament",
-					"panel": "extrude_multitool"
-				},
-				{
-					"name": "Fan",
-					"icon": "fan",
-					"panel": "fan"
-				},
-				{
-					"name": "Temperature",
-					"icon": "heat-up",
-					"panel": "temperature"
-				},
-				{
-					"name": "Control",
-					"icon": "control",
-					"panel": "control"
-				},
-				{
-					"name": "ToolChanger",
-					"icon": "toolchanger",
-					"panel": "toolchanger"
-				}
-			]
-		},
-		{
-			"name": "Filament",
-			"icon": "filament",
+
+	/*
+		// do we need a home_multtool panel?
+		// do we need a move_multtool panel?
+		// do we need a temperature_multtool panel?
+
+
+		"name": "Extruder",
+					"icon": "extruder-multi",
+					"panel": "extruder_multitool"
+
+					"icon": "extruder",
+					"panel": "extruder"
+
+		"name": "Filament",
+			"icon": "filament-spool",
 			"panel": "filament_multitool"
-		},
+
+			"icon": "filament-spool",
+			"panel": "filament"
+
+
+
 		{
 			"name": "Configuration",
 			"icon": "control",
-			"panel": "menu",
+			"panel": "custom_items",
 			"items": [
 				{
 					"name": "Bed Level",
@@ -159,6 +123,73 @@ func getDefaultMenu() []octoprint.MenuItem {
 				}
 			]
 		}
+
+
+	*/
+
+
+
+	defaultMenu := `[
+		{
+			"name": "Home",
+			"icon": "home",
+			"panel": "home"
+		},
+		{
+			"name": "Actions",
+			"icon": "actions",
+			"panel": "custom_items",
+			"items": [
+				{
+					"name": "Move",
+					"icon": "move",
+					"panel": "move"
+				},
+				{
+					"name": "Extruder",
+					"icon": "extruder",
+					"panel": "extruder"
+				},
+				{
+					"name": "Fan",
+					"icon": "fan",
+					"panel": "fan"
+				},
+				{
+					"name": "Temperature",
+					"icon": "heat-up",
+					"panel": "temperature"
+				},
+				{
+					"name": "Control",
+					"icon": "control",
+					"panel": "control"
+				},
+				{
+					"name": "ToolChanger",
+					"icon": "tool-changer",
+					"panel": "tool-changer"
+				}
+
+
+
+				,{
+					"name": "PrintMenu",
+					"icon": "tool-changer",
+					"panel": "print-menu"
+				}
+			]
+		},
+		{
+			"name": "Filament",
+			"icon": "filament-spool",
+			"panel": "filament"
+		},
+		{
+			"name": "Configuration",
+			"icon": "control",
+			"panel": "configuration"
+		}
 	]`
 
 	// filePath := filepath.Join(os.Getenv("OCTOSCREEN_STYLE_PATH"), "default_menu.json")
@@ -180,7 +211,7 @@ func getDefaultMenu() []octoprint.MenuItem {
 
 	var items []octoprint.MenuItem
 
-	json.Unmarshal([]byte(default_menu), &items)
+	json.Unmarshal([]byte(defaultMenu), &items)
 
 	return items
 }

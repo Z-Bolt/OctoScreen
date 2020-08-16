@@ -7,9 +7,10 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-var nozzleCalibrationPanelInstance *nozzleCalibrationPanel
+var zOffsetCalibrationPanelInstance *zOffsetCalibrationPanel
 
 type pointCoordinates struct {
 	x float64
@@ -17,7 +18,7 @@ type pointCoordinates struct {
 	z float64
 }
 
-type nozzleCalibrationPanel struct {
+type zOffsetCalibrationPanel struct {
 	CommonPanel
 	zCalibrationMode bool
 	activeTool       int
@@ -26,43 +27,44 @@ type nozzleCalibrationPanel struct {
 	labZOffsetLabel  *gtk.Label
 }
 
-func NozzleCalibrationPanel(ui *UI, parent Panel) Panel {
-	if nozzleCalibrationPanelInstance == nil {
-		m := &nozzleCalibrationPanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.panelH = 3
+func ZOffsetCalibrationPanel(ui *UI, parent Panel) Panel {
+	if zOffsetCalibrationPanelInstance == nil {
+		m := &zOffsetCalibrationPanel{CommonPanel: NewCommonPanel(ui, parent)}
 		m.cPoint = pointCoordinates{x: 20, y: 20, z: 0}
 		m.initialize()
 
-		nozzleCalibrationPanelInstance = m
+		zOffsetCalibrationPanelInstance = m
 	}
 
-	return nozzleCalibrationPanelInstance
+	return zOffsetCalibrationPanelInstance
 }
 
-func (m *nozzleCalibrationPanel) initialize() {
+func (m *zOffsetCalibrationPanel) initialize() {
 	defer m.Initialize()
-	m.Grid().Attach(m.createChangeToolButton(0), 1, 0, 1, 1)
-	m.Grid().Attach(m.createChangeToolButton(1), 2, 0, 1, 1)
-	m.Grid().Attach(m.createChangeToolButton(2), 3, 0, 1, 1)
-	m.Grid().Attach(m.createChangeToolButton(3), 4, 0, 1, 1)
 
-	m.Grid().Attach(m.createIncreaseOffsetButton(), 1, 1, 1, 1)
-	m.Grid().Attach(m.createZOffsetLabel(),         2, 1, 2, 1)
-	m.Grid().Attach(m.createDecreaseOffsetButton(), 4, 1, 1, 1)
+	currentRow := 0
+	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+	if toolheadCount > 1 {
+		m.createToolheadButtons()
+		currentRow++
+	}
 
-	m.Grid().Attach(m.createZCalibrationModeButton(), 1, 2, 1, 1)
-	m.Grid().Attach(m.createAutoZCalibrationButton(), 2, 2, 2, 1)
+	m.Grid().Attach(m.createIncreaseOffsetButton(), 0, currentRow, 1, 1)
+	m.Grid().Attach(m.createZOffsetLabel(),         1, currentRow, 2, 1)
+	m.Grid().Attach(m.createDecreaseOffsetButton(), 3, currentRow, 1, 1)
+	currentRow++
 
+	m.Grid().Attach(m.createZCalibrationModeButton(), 0, currentRow, 1, 1)
+	m.Grid().Attach(m.createAutoZCalibrationButton(), 1, currentRow, 2, 1)
 }
 
-func (m *nozzleCalibrationPanel) createZCalibrationModeButton() gtk.IWidget {
+func (m *zOffsetCalibrationPanel) createZCalibrationModeButton() gtk.IWidget {
 	b := MustStepButton("z-calibration.svg", Step{"Start Manual\nCalibration", false}, Step{"Stop Manual\nCalibration", true})
 	ctx, _ := b.GetStyleContext()
-	ctx.AddClass("color2")
 
 	b.Callback = func() {
 		m.zCalibrationMode = b.Value().(bool)
-		if m.zCalibrationMode == true {
+		if m.zCalibrationMode {
 			ctx.AddClass("active")
 
 			m.command("G28")
@@ -83,7 +85,7 @@ func (m *nozzleCalibrationPanel) createZCalibrationModeButton() gtk.IWidget {
 	return b
 }
 
-func (m *nozzleCalibrationPanel) createAutoZCalibrationButton() gtk.IWidget {
+func (m *zOffsetCalibrationPanel) createAutoZCalibrationButton() gtk.IWidget {
 	return MustButtonImageStyle("Auto Z Calibration", "z-calibration.svg", "color3", func() {
 		if m.zCalibrationMode {
 			return
@@ -96,7 +98,7 @@ func (m *nozzleCalibrationPanel) createAutoZCalibrationButton() gtk.IWidget {
 	})
 }
 
-func (m *nozzleCalibrationPanel) createIncreaseOffsetButton() gtk.IWidget {
+func (m *zOffsetCalibrationPanel) createIncreaseOffsetButton() gtk.IWidget {
 	return MustButtonImage("Bed Down", "z-offset-increase.svg", func() {
 		if !m.zCalibrationMode {
 			return
@@ -105,7 +107,7 @@ func (m *nozzleCalibrationPanel) createIncreaseOffsetButton() gtk.IWidget {
 	})
 }
 
-func (m *nozzleCalibrationPanel) createDecreaseOffsetButton() gtk.IWidget {
+func (m *zOffsetCalibrationPanel) createDecreaseOffsetButton() gtk.IWidget {
 	return MustButtonImage("Bed Up", "z-offset-decrease.svg", func() {
 		if !m.zCalibrationMode {
 			return
@@ -114,7 +116,7 @@ func (m *nozzleCalibrationPanel) createDecreaseOffsetButton() gtk.IWidget {
 	})
 }
 
-func (m *nozzleCalibrationPanel) updateZOffset(v float64) {
+func (m *zOffsetCalibrationPanel) updateZOffset(v float64) {
 	m.zOffset = toFixed(v, 4)
 
 	m.labZOffsetLabel.SetText(fmt.Sprintf("Z-Offset: %.2f", m.zOffset))
@@ -134,13 +136,43 @@ func (m *nozzleCalibrationPanel) updateZOffset(v float64) {
 	}
 }
 
-func (m *nozzleCalibrationPanel) createChangeToolButton(num int) gtk.IWidget {
-	style := fmt.Sprintf("color%d", num + 1)
-	name := fmt.Sprintf("Tool%d", num + 1)
-	gcode := fmt.Sprintf("T%d", num)
-	return MustButtonImageStyle(name, "extruders/extruder.svg", style, func() {
+func (m *zOffsetCalibrationPanel) createZOffsetLabel() gtk.IWidget {
+	m.labZOffsetLabel = MustLabel("---")
+	m.labZOffsetLabel.SetVAlign(gtk.ALIGN_CENTER)
+	m.labZOffsetLabel.SetHAlign(gtk.ALIGN_CENTER)
+	m.labZOffsetLabel.SetVExpand(true)
+	m.labZOffsetLabel.SetHExpand(true)
+	m.labZOffsetLabel.SetLineWrap(true)
+	return m.labZOffsetLabel
+}
+
+func (m *zOffsetCalibrationPanel) command(gcode string) error {
+	cmd := &octoprint.CommandRequest{}
+	cmd.Commands = []string{gcode}
+	return cmd.Do(m.UI.Printer)
+}
+
+
+func (m *zOffsetCalibrationPanel) createToolheadButtons() {
+	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+	toolheadButtons := CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, m.Grid())
+	m.setToolheadButtonClickHandlers(toolheadButtons)
+}
+
+func (m *zOffsetCalibrationPanel) setToolheadButtonClickHandlers(toolheadButtons []*gtk.Button) {
+	for index, toolheadButton := range toolheadButtons {
+		m.setToolheadButtonClickHandler(toolheadButton, index)
+	}
+}
+
+func (m *zOffsetCalibrationPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
+	toolheadButton.Connect("clicked", func() {
+		Logger.Infof("Changing tool to tool%d", toolheadIndex)
+
+		gcode := fmt.Sprintf("T%d", toolheadIndex)
+
 		if m.zCalibrationMode {
-			m.activeTool = num
+			m.activeTool = toolheadIndex
 			m.command(fmt.Sprintf("G0 Z%f", 5.0))
 			m.command(gcode)
 			time.Sleep(time.Second * 1)
@@ -161,22 +193,9 @@ func (m *nozzleCalibrationPanel) createChangeToolButton(num int) gtk.IWidget {
 	})
 }
 
-func (m *nozzleCalibrationPanel) createZOffsetLabel() gtk.IWidget {
-	m.labZOffsetLabel = MustLabel("---")
-	m.labZOffsetLabel.SetVAlign(gtk.ALIGN_CENTER)
-	m.labZOffsetLabel.SetHAlign(gtk.ALIGN_CENTER)
-	m.labZOffsetLabel.SetVExpand(true)
-	m.labZOffsetLabel.SetHExpand(true)
-	m.labZOffsetLabel.SetLineWrap(true)
-	return m.labZOffsetLabel
-}
 
-func (m *nozzleCalibrationPanel) command(gcode string) error {
-	cmd := &octoprint.CommandRequest{}
-	cmd.Commands = []string{gcode}
-	return cmd.Do(m.UI.Printer)
-}
 
+// TODO: place these function in a util file
 func round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
 }

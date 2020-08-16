@@ -7,23 +7,24 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var idleStatusPanelInstance *idleStatusPanel
 
 type idleStatusPanel struct {
 	CommonPanel
-	step       *StepButton
-	pb         *gtk.ProgressBar
-	toolsCount int
+	//step           *StepButton
+	//pb             *gtk.ProgressBar
 
 	tool0, tool1, tool2, tool3, bed *ToolHeatup
 }
 
 func IdleStatusPanel(ui *UI) Panel {
 	if idleStatusPanelInstance == nil {
-		m := &idleStatusPanel{CommonPanel: NewCommonPanel(ui, nil)}
-		m.panelH = 3
+		m := &idleStatusPanel{
+			CommonPanel: NewTopLevelCommonPanel(ui, nil),
+		}
 		m.b = NewBackgroundTask(time.Second * 2, m.update)
 		m.initialize()
 
@@ -36,26 +37,27 @@ func IdleStatusPanel(ui *UI) Panel {
 func (m *idleStatusPanel) initialize() {
 	defer m.Initialize()
 
-	var menuItems []octoprint.MenuItem
-
 	Logger.Info(m.UI.Settings)
 
+	var menuItems []octoprint.MenuItem
 	if m.UI.Settings == nil || len(m.UI.Settings.MenuStructure) == 0 {
 		Logger.Info("Loading default menu")
-		menuItems = getDefaultMenu()
+		m.UI.Settings.MenuStructure = getDefaultMenu()
 	} else {
 		Logger.Info("Loading octo menu")
-		menuItems = m.UI.Settings.MenuStructure
 	}
 
-	buttons := MustGrid()
-	buttons.SetRowHomogeneous(true)
-	buttons.SetColumnHomogeneous(true)
-	m.Grid().Attach(buttons, 3, 0, 2, 2)
+	menuItems = m.UI.Settings.MenuStructure
 
-	m.arrangeMenuItems(buttons, menuItems, 2)
 
-	m.Grid().Attach(MustButtonImageStyle("Print", "print.svg", "color2", m.showFiles), 3, 2, 2, 1)
+	menuGrid := MustGrid()
+	menuGrid.SetRowHomogeneous(true)
+	menuGrid.SetColumnHomogeneous(true)
+	m.Grid().Attach(menuGrid, 2, 0, 2, 2)
+	m.arrangeMenuItems(menuGrid, menuItems, 2)
+
+	printButton := MustButtonImageStyle("Print", "print.svg", "color2", m.showFiles)
+	m.Grid().Attach(printButton, 2, 2, 2, 1)
 
 	m.showTools()
 }
@@ -94,6 +96,39 @@ func (m *idleStatusPanel) showTools() {
 	}
 
 	m.Grid().Attach(m.bed, 1, 2, 1, 1)
+
+
+
+
+
+
+	// toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+
+	// if toolheadCount == 1 {
+	// 	m.tool0 = creteToolHeatupButton(0, m.UI.Printer)
+	// } else {
+	// 	m.tool0 = creteToolHeatupButton(1, m.UI.Printer)
+	// }
+
+	// m.tool1 = creteToolHeatupButton(2, m.UI.Printer)
+	// m.tool2 = creteToolHeatupButton(3, m.UI.Printer)
+	// m.tool3 = creteToolHeatupButton(4, m.UI.Printer)
+	// m.bed   = creteToolHeatupButton(-1, m.UI.Printer)
+
+	// m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+	// if toolheadCount >= 2 {
+	// 	m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+	// }
+
+	// if toolheadCount >= 3 {
+	// 	m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+	// }
+
+	// if toolheadCount >= 4 {
+	// 	m.Grid().Attach(m.tool3, 1, 1, 1, 1)
+	// }
+
+	// m.Grid().Attach(m.bed, 0, 2, 1, 1)
 }
 
 func (m *idleStatusPanel) updateTemperature() {
@@ -123,26 +158,6 @@ func (m *idleStatusPanel) updateTemperature() {
 	}
 }
 
-func (m *idleStatusPanel) defineToolsCount() int {
-	c, err := (&octoprint.ConnectionRequest{}).Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return 0
-	}
-
-	profile, err := (&octoprint.PrinterProfilesRequest{Id: c.Current.PrinterProfile}).Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return 0
-	}
-
-	if profile.Extruder.SharedNozzle {
-		return 1
-	}
-
-	return profile.Extruder.Count
-}
-
 type ToolHeatup struct {
 	isHeating bool
 	tool      string
@@ -151,7 +166,7 @@ type ToolHeatup struct {
 	printer *octoprint.Client
 }
 
-func toolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
+func creteToolHeatupButton(num int, printer *octoprint.Client) *ToolHeatup {
 	var (
 		image string
 		tool  string
@@ -161,10 +176,10 @@ func toolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
 		image = "bed.svg"
 		tool = "bed"
 	} else if num == 0 {
-		image = "extruders/extruder.svg"
+		image = "toolhead.svg"
 		tool = "tool0"
 	} else {
-		image = fmt.Sprintf("extruders/extruder-%d.svg", num)
+		image = fmt.Sprintf("toolhead-%d.svg", num)
 		tool = fmt.Sprintf("tool%d", num - 1)
 	}
 
@@ -174,7 +189,10 @@ func toolHeatupNew(num int, printer *octoprint.Client) *ToolHeatup {
 		printer: printer,
 	}
 
-	t.Connect("clicked", t.clicked)
+	_, err := t.Connect("clicked", t.clicked)
+	if err != nil {
+		Logger.Error(err)
+	}
 
 	return t
 }

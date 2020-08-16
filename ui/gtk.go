@@ -1,6 +1,7 @@
 package ui
 
 import (
+	//"log"
 	"fmt"
 	"path/filepath"
 
@@ -15,6 +16,8 @@ func MustWindow(windowType gtk.WindowType) *gtk.Window {
 	if err != nil {
 		panic(err)
 	}
+
+	win.SetResizable(false)
 
 	return win
 }
@@ -110,7 +113,7 @@ func MustButtonImage(label, imageFileName string, clicked func()) *gtk.Button {
 	return button
 }
 
-func MustToogleButton(label string, imageFileName string, clicked func()) *gtk.ToggleButton {
+func MustToggleButton(label string, imageFileName string, clicked func()) *gtk.ToggleButton {
 	image := MustImageFromFile(imageFileName)
 	button, err := gtk.ToggleButtonNewWithLabel(label)
 	if err != nil {

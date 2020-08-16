@@ -20,7 +20,6 @@ const (
 	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
 )
 
-// RequiredEnvironmentVariablesAreSet - (Captain Obvious says...) verifies that all required environment variables are set.
 func RequiredEnvironmentVariablesAreSet() bool {
 	if( !environmentVariableIsSet(EnvStylePath) ) {
 		return false
@@ -41,7 +40,6 @@ func environmentVariableIsSet(environmentVariable string) bool {
 	return os.Getenv(environmentVariable) != ""
 }
 
-// NameOfMissingRequiredEnvironmentVariable - (Captain Obvious says...) returns the name of the missing required environment variable.
 func NameOfMissingRequiredEnvironmentVariable() string {
 	if( !environmentVariableIsSet(EnvStylePath) ) {
 		return EnvStylePath
@@ -59,7 +57,6 @@ func NameOfMissingRequiredEnvironmentVariable() string {
 	return "UNKNOWN"
 }
 
-// DumpEnvironmentVariables - (Captain Obvious says...) dumps (logs) all environment variables.
 func DumpEnvironmentVariables() {
 	dumpEnvironmentVariable(EnvStylePath)
 	dumpEnvironmentVariable(EnvResolution)

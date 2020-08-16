@@ -15,13 +15,12 @@ var systemPanelInstance *systemPanel
 type systemPanel struct {
 	CommonPanel
 
-	list *gtk.Box
+	//list *gtk.Box
 }
 
 func SystemPanel(ui *UI, parent Panel) *systemPanel {
 	if systemPanelInstance == nil {
 		m := &systemPanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.panelH = 3
 		m.initialize()
 		systemPanelInstance = m
 	} else {
@@ -35,24 +34,24 @@ func (m *systemPanel) initialize() {
 	defer m.Initialize()
 
 	// First row
-	m.Grid().Attach(m.createOctoPrintInfo(),        1, 0, 1, 1)
-	m.Grid().Attach(m.createOctoScreenInfo(),       2, 0, 2, 1)
-	m.Grid().Attach(m.createOctoScreenPluginInfo(), 4, 0, 1, 1)
+	m.Grid().Attach(m.createOctoPrintInfo(),        0, 0, 1, 1)
+	m.Grid().Attach(m.createOctoScreenInfo(),       1, 0, 2, 1)
+	m.Grid().Attach(m.createOctoScreenPluginInfo(), 3, 0, 1, 1)
 
 	// Second row
-	m.Grid().Attach(m.createSystemInfo(),           1, 1, 4, 1)
+	m.Grid().Attach(m.createSystemInfo(),           0, 1, 4, 1)
 
 	// Third row
-	if b := m.createCommandButton("Octo Restart", "restart", "color2"); b != nil {
-		m.Grid().Attach(b, 3, 2, 1, 1)
-	}
-
-	if b := m.createCommandButton("Sys Restart", "reboot", "color3"); b != nil {
+	if b := m.createCommandButton("Octo Restart", "restart", "color-warning-sign-yellow"); b != nil {
 		m.Grid().Attach(b, 2, 2, 1, 1)
 	}
 
-	if b := m.createCommandButton("Shutdown", "shutdown", "color1"); b != nil {
+	if b := m.createCommandButton("Sys Restart", "reboot", "color-warning-sign-yellow"); b != nil {
 		m.Grid().Attach(b, 1, 2, 1, 1)
+	}
+
+	if b := m.createCommandButton("Shutdown", "shutdown", "color-warning-sign-yellow"); b != nil {
+		m.Grid().Attach(b, 0, 2, 1, 1)
 	}
 }
 
@@ -70,7 +69,9 @@ func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
 	infoBox.SetVAlign(gtk.ALIGN_CENTER)
 
 	logoWidth := m.Scaled(52)
-	logoImage := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, int(float64(logoWidth)*1.25))
+	logoHeight := int(float64(logoWidth) * 1.25)
+	logoImage := MustImageFromFileWithSize("logo-octoprint.png", logoWidth, logoHeight)
+
 	infoBox.Add(logoImage)
 
 	infoBox.Add(MustLabel(""))

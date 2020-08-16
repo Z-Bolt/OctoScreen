@@ -4,7 +4,6 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 )
 
-// CreateFatalErrorWindow - (Captain obvious says) Creates a window to display fatal errors.
 func CreateFatalErrorWindow(message string, description string) *gtk.Window {
 	window, error := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if error != nil {

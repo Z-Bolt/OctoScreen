@@ -31,14 +31,59 @@ func (m *bedLevelPanel) initialize() {
 
 	m.defineLevelingPoints()
 
-	m.Grid().Attach(m.createLevelButton("t-l"), 2, 0, 1, 1)
-	m.Grid().Attach(m.createLevelButton("t-r"), 3, 0, 1, 1)
-	m.Grid().Attach(m.createLevelButton("b-l"), 2, 1, 1, 1)
-	m.Grid().Attach(m.createLevelButton("b-r"), 3, 1, 1, 1)
+	m.addBedLevelCornerButton(true, true)
+	m.addBedLevelCornerButton(false, true)
+	m.addBedLevelCornerButton(true, false)
+	m.addBedLevelCornerButton(false, false)
 
 	if m.UI.Settings != nil && m.UI.Settings.GCodes.AutoBedLevel != "" {
-		m.Grid().Attach(m.createAutoLevelButton(m.UI.Settings.GCodes.AutoBedLevel), 4, 0, 1, 1)
+		m.Grid().Attach(m.createAutoLevelButton(m.UI.Settings.GCodes.AutoBedLevel), 3, 0, 1, 1)
 	}
+}
+
+func (m *bedLevelPanel) addBedLevelCornerButton(isLeft, isTop bool) {
+	x := 1
+	y := 1
+	placement := "b-"
+	if isTop {
+		placement = "t-"
+		y = 0
+	}
+
+	if isLeft {
+		placement += "l"
+	} else {
+		placement += "r"
+		x = 2
+	}
+
+	button := m.createLevelButton(placement)
+	if isLeft {
+		button.SetHAlign(gtk.ALIGN_END)
+	} else {
+		button.SetHAlign(gtk.ALIGN_START)
+	}
+
+	if isTop {
+		button.SetVAlign(gtk.ALIGN_END)
+		button.SetImagePosition(gtk.POS_BOTTOM)
+	} else {
+		button.SetVAlign(gtk.ALIGN_START)
+		button.SetImagePosition(gtk.POS_TOP)
+	}
+
+	styleContext, _ := button.GetStyleContext()
+	styleContext.AddClass("no-margin")
+	styleContext.AddClass("no-border")
+	styleContext.AddClass("no-padding")
+	
+	if isLeft {
+		styleContext.AddClass("padding-left-20")
+	} else {
+		styleContext.AddClass("padding-right-20")
+	}
+	
+	m.Grid().Attach(button, x, y, 1, 1)
 }
 
 func (m *bedLevelPanel) defineLevelingPoints() {
@@ -69,15 +114,16 @@ func (m *bedLevelPanel) defineLevelingPoints() {
 	}
 }
 
-func (m *bedLevelPanel) createLevelButton(p string) *gtk.Button {
-	img := fmt.Sprintf("bed-level-%s.svg", p)
-	b := MustButtonImage("", img, func() {
+func (m *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
+	imageFileName := fmt.Sprintf("bed-level-%s-65%%.svg", placement)
+	noLabel := ""
+	b := MustButtonImage(noLabel, imageFileName, func() {
 		m.goHomeIfRequire()
 
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G0 Z10 F2000",
-			fmt.Sprintf("G0 X%f Y%f F10000", m.points[p][0], m.points[p][1]),
+			fmt.Sprintf("G0 X%f Y%f F10000", m.points[placement][0], m.points[placement][1]),
 			"G0 Z0 F400",
 		}
 

@@ -139,7 +139,7 @@ func (m *filesPanel) addFile(b *gtk.Box, f *octoprint.FileInformation) {
 	file.SetMarginBottom(1)
 	file.SetHExpand(true)
 
-	file.Add(MustImageFromFileWithSize("file.svg", m.Scaled(35), m.Scaled(35)))
+	file.Add(MustImageFromFileWithSize("file-stl.svg", m.Scaled(35), m.Scaled(35)))
 
 	file.Add(labels)
 	file.Add(actions)
@@ -206,7 +206,7 @@ func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 	)
 
 	ctx, _ := b.GetStyleContext()
-	ctx.AddClass("color3")
+	ctx.AddClass("color-warning-sign-yellow")
 	ctx.AddClass("file-list")
 
 	return b
@@ -225,6 +225,7 @@ func (m *filesPanel) createOpenFolderButton(f *octoprint.FileInformation) gtk.IW
 	return b
 }
 
+/*
 func (m *filesPanel) isReady() bool {
 	state, err := (&octoprint.SDStateRequest{}).Do(m.UI.Printer)
 	if err != nil {
@@ -234,6 +235,7 @@ func (m *filesPanel) isReady() bool {
 
 	return state.Ready
 }
+*/
 
 type byDate []*octoprint.FileInformation
 

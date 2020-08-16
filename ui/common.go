@@ -24,15 +24,15 @@ type Panel interface {
 }
 
 type CommonPanel struct {
-	UI     *UI
-	g      *gtk.Grid
-	b      *BackgroundTask
-	p      Panel
-	back   *gtk.Button
-	panelW int
-	panelH int
-
-	buttons []gtk.IWidget
+	UI                *UI
+	g                 *gtk.Grid
+	b                 *BackgroundTask
+	p                 Panel
+	back              *gtk.Button
+	panelW            int
+	panelH            int
+	includeBackButton bool
+	buttons           []gtk.IWidget
 }
 
 func NewCommonPanel(ui *UI, parent Panel) CommonPanel {
@@ -40,7 +40,29 @@ func NewCommonPanel(ui *UI, parent Panel) CommonPanel {
 	g.SetRowHomogeneous(true)
 	g.SetColumnHomogeneous(true)
 
-	return CommonPanel{UI: ui, g: g, p: parent, panelW: 4, panelH: 2}
+	return CommonPanel {
+		UI: ui,
+		g: g,
+		p: parent,
+		panelW: 4,
+		panelH: 3,
+		includeBackButton: true,
+	}
+}
+
+func NewTopLevelCommonPanel(ui *UI, parent Panel) CommonPanel {
+	g := MustGrid()
+	g.SetRowHomogeneous(true)
+	g.SetColumnHomogeneous(true)
+
+	return CommonPanel {
+		UI: ui,
+		g: g,
+		p: parent,
+		panelW: 4,
+		panelH: 3,
+		includeBackButton: false,
+	}
 }
 
 func (p *CommonPanel) Initialize() {
@@ -55,7 +77,9 @@ func (p *CommonPanel) Initialize() {
 	}
 
 	p.back = MustButtonImage("Back", "back.svg", p.UI.GoHistory)
-	p.AddButton(p.back)
+	if p.includeBackButton {
+		p.AddButton(p.back)
+	}
 }
 
 func (p *CommonPanel) Parent() Panel {
@@ -65,7 +89,7 @@ func (p *CommonPanel) Parent() Panel {
 func (p *CommonPanel) AddButton(b gtk.IWidget) {
 	x := len(p.buttons) % p.panelW
 	y := len(p.buttons) / p.panelW
-	p.g.Attach(b, x + 1, y, 1, 1)
+	p.g.Attach(b, x, y, 1, 1)
 	p.buttons = append(p.buttons, b)
 }
 
@@ -98,7 +122,7 @@ func (m *CommonPanel) arrangeMenuItems(grid *gtk.Grid, items []octoprint.MenuIte
 
 			grid.Attach(MustButtonImageStyle(item.Name, icon, color, func() {
 				m.UI.Add(panel)
-			}), (i % cols) + 1, i / cols, 1, 1)
+			}), (i % cols), i / cols, 1, 1)
 		}
 	}
 }
@@ -248,7 +272,7 @@ func MustConfirmDialog(parent *gtk.Window, msg string, cb func()) func() {
 			parent,
 			gtk.DIALOG_MODAL,
 			gtk.MESSAGE_INFO,
-			gtk.BUTTONS_OK_CANCEL,
+			gtk.BUTTONS_YES_NO,
 			"",
 		)
 
@@ -264,7 +288,7 @@ func MustConfirmDialog(parent *gtk.Window, msg string, cb func()) func() {
 		ctx, _ := win.GetStyleContext()
 		ctx.AddClass("dialog")
 
-		if win.Run() == int(gtk.RESPONSE_OK) {
+		if win.Run() == int(gtk.RESPONSE_YES) {
 			cb()
 		}
 	}
@@ -323,6 +347,35 @@ func MustPressedButton(label, i string, pressed func(), speed time.Duration) *gt
 	return b
 }
 
+func MessageDialog(parent *gtk.Window, msg string) {
+	win := gtk.MessageDialogNewWithMarkup(
+		parent,
+		gtk.DIALOG_MODAL,
+		gtk.MESSAGE_INFO,
+		gtk.BUTTONS_OK,
+		"",
+	)
+
+	win.SetMarkup(CleanHTML(msg))
+	defer win.Destroy()
+
+	box, _ := win.GetContentArea()
+	box.SetMarginStart(25)
+	box.SetMarginEnd(25)
+	box.SetMarginTop(50)
+	box.SetMarginBottom(10)
+
+	ctx, _ := win.GetStyleContext()
+	ctx.AddClass("message")
+
+	win.Run()
+}
+
+
+
+
+
+// TODO: probably move the following to utils
 var translatedTags = [][2]string{{"strong", "b"}}
 var disallowedTags = []string{"p"}
 
@@ -369,27 +422,3 @@ func strEllipsisLen(name string, length int) string {
 	return name
 }
 
-func MessageDialog(parent *gtk.Window, msg string) {
-
-	win := gtk.MessageDialogNewWithMarkup(
-		parent,
-		gtk.DIALOG_MODAL,
-		gtk.MESSAGE_INFO,
-		gtk.BUTTONS_OK,
-		"",
-	)
-
-	win.SetMarkup(CleanHTML(msg))
-	defer win.Destroy()
-
-	box, _ := win.GetContentArea()
-	box.SetMarginStart(25)
-	box.SetMarginEnd(25)
-	box.SetMarginTop(50)
-	box.SetMarginBottom(10)
-
-	ctx, _ := win.GetStyleContext()
-	ctx.AddClass("message")
-
-	win.Run()
-}

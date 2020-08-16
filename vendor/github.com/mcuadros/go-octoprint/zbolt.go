@@ -3,6 +3,7 @@ package octoprint
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 )
 
 const URIZBoltRequest = "/api/plugin/zbolt"
@@ -17,6 +18,7 @@ func (cmd *RunZOffsetCalibrationRequest) Do(c *Client) error {
 
 	b := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(b).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 1 - NewEncoder() failed")
 		return err
 	}
 
@@ -24,7 +26,7 @@ func (cmd *RunZOffsetCalibrationRequest) Do(c *Client) error {
 	return err
 }
 
-// SettingsRequest retrieves the current configuration of OctoPrint.
+// SetZOffsetRequest - retrieves the current configuration of OctoPrint.
 type SetZOffsetRequest struct {
 	Command string  `json:"command"`
 	Tool    int     `json:"tool"`
@@ -36,6 +38,7 @@ func (cmd *SetZOffsetRequest) Do(c *Client) error {
 
 	b := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(b).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 2 - Encode() failed")
 		return err
 	}
 
@@ -58,16 +61,20 @@ func (cmd *GetZOffsetRequest) Do(c *Client) (*GetZOffsetResponse, error) {
 
 	params := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(params).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 3 - Encode() failed")
 		return nil, err
 	}
 
-	b, err := c.doJSONRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	// b, err := c.doJSONRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	b, err := c.doJSONRequest("GET", URIZBoltRequest, params, ConnectionErrors)
 	if err != nil {
+		log.Println("zbolt.Do() 3 - doJSONRequest() failed")
 		return nil, err
 	}
 
 	r := &GetZOffsetResponse{}
 	if err := json.Unmarshal(b, r); err != nil {
+		log.Println("zbolt.Do() 3 - Unmarshal() failed")
 		return nil, err
 	}
 
@@ -77,6 +84,7 @@ func (cmd *GetZOffsetRequest) Do(c *Client) (*GetZOffsetResponse, error) {
 type GetNotificationRequest struct {
 	Command string `json:"command"`
 }
+
 type GetNotificationResponse struct {
 	// Job contains information regarding the target of the current print job.
 	Message string `json:"message"`
@@ -87,25 +95,38 @@ func (cmd *GetNotificationRequest) Do(c *Client) (*GetNotificationResponse, erro
 
 	params := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(params).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 4 - Encode() failed")
 		return nil, err
 	}
 
-	b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	// b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	b, err := c.doJSONRequest("GET", URIZBoltOctoScreenRequest, params, ConnectionErrors)
 	if err != nil {
+		log.Println("zbolt.Do() 4 - doJSONRequest() failed")
 		return nil, err
 	}
 
 	r := &GetNotificationResponse{}
 	if err := json.Unmarshal(b, r); err != nil {
+		log.Println("zbolt.Do() 4 - Unmarshal() failed")
 		return nil, err
 	}
 
 	return r, err
 }
 
+
 type GetSettingsRequest struct {
 	Command string `json:"command"`
 }
+
+type MenuItem struct {
+	Name  string     `json:"name"`
+	Icon  string     `json:"icon"`
+	Panel string     `json:"panel"`
+	Items []MenuItem `json:"items"`
+}
+
 type GetSettingsResponse struct {
 	// Job contains information regarding the target of the current print job.
 	FilamentInLength  float64    `json:"filament_in_length"`
@@ -123,25 +144,22 @@ func (cmd *GetSettingsRequest) Do(c *Client) (*GetSettingsResponse, error) {
 
 	params := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(params).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 5 - Encode() failed")
 		return nil, err
 	}
 
-	b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	// b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	b, err := c.doJSONRequest("GET", URIZBoltOctoScreenRequest, params, ConnectionErrors)
 	if err != nil {
+		log.Println("zbolt.Do() 5 - doJSONRequest() failed")
 		return nil, err
 	}
 
 	r := &GetSettingsResponse{}
 	if err := json.Unmarshal(b, r); err != nil {
+		log.Println("zbolt.Do() 5 - Unmarshal() failed")
 		return nil, err
 	}
 
 	return r, err
-}
-
-type MenuItem struct {
-	Name  string     `json:"name"`
-	Icon  string     `json:"icon"`
-	Panel string     `json:"panel"`
-	Items []MenuItem `json:"items"`
 }
