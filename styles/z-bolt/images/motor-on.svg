@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="svg4160" xmlns:cc="http://creativecommons.org/ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" sodipodi:docname="motor-off.svg" inkscape:version="0.92.2 5c3e80d, 2017-08-06" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="60.137px"
+	 height="60.777px" viewBox="0 0 60.137 60.777" enable-background="new 0 0 60.137 60.777" xml:space="preserve">
+<g id="layer2" transform="translate(-3.5328446,2.2636422)" inkscape:groupmode="layer" inkscape:label="Move">
+	
+		<ellipse id="circle" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" cx="32.24" cy="31.975" rx="19.009" ry="19.242"/>
+	<g id="needle_1_">
+		
+			<path id="path4535_1_" inkscape:connector-curvature="0" sodipodi:nodetypes="cccccc" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" d="
+			M40.897,21.077l-0.244,7.727L24.492,53.016l-7.209-4.893l16.162-24.213L40.897,21.077z"/>
+		<ellipse id="path4149_1_" fill="#FFFFFF" cx="21.079" cy="50.366" rx="5.691" ry="5.77"/>
+		
+			<path id="path4153_1_" inkscape:connector-curvature="0" fill="none" stroke="#232323" stroke-width="3" stroke-linecap="round" d="
+			M20.395,51.37L38.88,23.824"/>
+	</g>
+	<text transform="matrix(1 0 0 1 9.9232 11.4295)" fill="#FFFFFF" font-family="'Calibri-Bold'" font-size="15.2454">0</text>
+	<text transform="matrix(1 0 0 1 46.9921 11.6931)" fill="#FFFFFF" font-family="'Calibri-Bold'" font-size="15.2454">1</text>
+</g>
+</svg>
