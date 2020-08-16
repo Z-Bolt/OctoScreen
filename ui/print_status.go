@@ -54,35 +54,35 @@ func (m *printStatusPanel) showTools() {
 	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
 
 
-	m.tool0 = m.createToolButton(0)
-	m.tool1 = m.createToolButton(1)
-	m.tool2 = m.createToolButton(2)
-	m.tool3 = m.createToolButton(3)
+	m.tool0 = m.createToolButton(0, toolheadCount)
+	m.tool1 = m.createToolButton(1, toolheadCount)
+	m.tool2 = m.createToolButton(2, toolheadCount)
+	m.tool3 = m.createToolButton(3, toolheadCount)
 
 	m.bed = m.createBedButton()
 
 	switch toolheadCount {
 		case 1:
-			m.Grid().Attach(m.tool0, 1, 0, 2, 1)
-			m.Grid().Attach(m.bed,   1, 1, 2, 1)
+			m.Grid().Attach(m.tool0, 0, 0, 2, 1)
+			m.Grid().Attach(m.bed,   0, 1, 2, 1)
 
 		case 2:
-			m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-			m.Grid().Attach(m.bed,   1, 1, 2, 1)
+			m.Grid().Attach(m.tool0, 0, 0, 2, 1)
+			m.Grid().Attach(m.tool1, 0, 1, 2, 1)
+			m.Grid().Attach(m.bed,   0, 2, 1, 1)
 
 		case 3:
-			m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-			m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-			m.Grid().Attach(m.bed,   2, 1, 1, 1)
+			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+			m.Grid().Attach(m.bed,   0, 2, 1, 1)
 
 		case 4:
-			m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 2, 0, 1, 1)
-			m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-			m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-			m.Grid().Attach(m.bed,   1, 2, 1, 1)
+			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+			m.Grid().Attach(m.tool3, 1, 1, 1, 1)
+			m.Grid().Attach(m.bed,   0, 2, 1, 1)
 	}
 
 
@@ -201,7 +201,7 @@ func (m *printStatusPanel) createStopButton() gtk.IWidget {
 }
 
 func (m *printStatusPanel) createControlButton() gtk.IWidget {
-	m.menu = MustButtonImageStyle("Control", "control.svg", "color3", func() {
+	m.menu = MustButtonImageStyle("Control", "printing-control.svg", "color3", func() {
 		m.UI.Add(PrintMenuPanel(m.UI, m))
 	})
 	return m.menu

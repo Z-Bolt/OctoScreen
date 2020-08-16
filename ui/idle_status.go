@@ -71,38 +71,48 @@ func (m *idleStatusPanel) update() {
 }
 
 func (m *idleStatusPanel) showTools() {
-	toolsCount := m.defineToolsCount()
-	if toolsCount == 1 {
-		m.tool0 = toolHeatupNew(0, m.UI.Printer)
+	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+
+	if toolheadCount == 1 {
+		m.tool0 = creteToolHeatupButton(0, m.UI.Printer)
 	} else {
-		m.tool0 = toolHeatupNew(1, m.UI.Printer)
+		m.tool0 = creteToolHeatupButton(1, m.UI.Printer)
 	}
-	m.tool1 = toolHeatupNew(2, m.UI.Printer)
-	m.tool2 = toolHeatupNew(3, m.UI.Printer)
-	m.tool3 = toolHeatupNew(4, m.UI.Printer)
-	m.bed   = toolHeatupNew(-1, m.UI.Printer)
+	m.tool1 = creteToolHeatupButton(2, m.UI.Printer)
+	m.tool2 = creteToolHeatupButton(3, m.UI.Printer)
+	m.tool3 = creteToolHeatupButton(4, m.UI.Printer)
+	m.bed = creteToolHeatupButton(-1, m.UI.Printer)
 
-	m.Grid().Attach(m.tool0, 1, 0, 1, 1)
-	if toolsCount >= 2 {
-		m.Grid().Attach(m.tool1, 2, 0, 1, 1)
+	switch toolheadCount {
+		case 1:
+			g := MustGrid()
+			g.SetRowHomogeneous(true)
+			g.SetColumnHomogeneous(true)
+			m.Grid().Attach(g, 0, 0, 2, 3)
+			g.Attach(m.tool0,  0, 0, 2, 1)
+			g.Attach(m.bed,    0, 1, 2, 1)
+
+		case 2:
+			m.Grid().Attach(m.tool0, 0, 0, 2, 1)
+			m.Grid().Attach(m.tool1, 0, 1, 2, 1)
+			m.Grid().Attach(m.bed,   0, 2, 2, 1)
+
+		case 3:
+			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool2, 0, 1, 2, 1)
+			m.Grid().Attach(m.bed,   0, 2, 2, 1)
+
+		case 4:
+			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+			m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+			m.Grid().Attach(m.tool3, 1, 1, 1, 1)
+			m.Grid().Attach(m.bed,   0, 2, 2, 1)
 	}
 
-	if toolsCount >= 3 {
-		m.Grid().Attach(m.tool2, 1, 1, 1, 1)
-	}
-
-	if toolsCount >= 4 {
-		m.Grid().Attach(m.tool3, 2, 1, 1, 1)
-	}
-
-	m.Grid().Attach(m.bed, 1, 2, 1, 1)
 
 
-
-
-
-
-	// toolheadCount := utils.GetToolheadCount(m.UI.Printer)
 
 	// if toolheadCount == 1 {
 	// 	m.tool0 = creteToolHeatupButton(0, m.UI.Printer)

@@ -1,8 +1,3 @@
-/*
-filament.go and filament_multitool.go were consolidated into this single file, and handles whether
-the user has a single extruder or multiple extruders.
-*/
-
 package ui
 
 import (
@@ -63,7 +58,7 @@ func (m *filamentPanel) initialize() {
 		flowRateButton := m.createFlowRateButton()
 		m.Grid().Attach(flowRateButton, 2, 0, 1, 1)
 
-		retractButton := m.createExtrudeButton("Retract", "extruder-retract.svg", -1)
+		retractButton := m.createExtrudeButton("Retract", "extruder-retract.svg", -1) 
 		m.Grid().Attach(retractButton, 3, 0, 1, 1)
 	}
 
@@ -132,24 +127,25 @@ func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 }
 
 func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
-	m.tool = MustStepButton("extruders/extruder.svg")
-	m.tool.Callback = func() {
-		cmd := &octoprint.ToolSelectRequest{}
-		cmd.Tool = m.tool.Value().(string)
 
-		Logger.Infof("Changing tool to %s", cmd.Tool)
+	// JAB diff this (with what's in filament.go) b/f checking in and make sire it matches the previous version
+	// alo add a comment at the top, about how these files were merged and _multi was removed
+
+	return MustPressedButton(label, image, func() {
+		cmd := &octoprint.ToolExtrudeRequest{}
+		cmd.Amount = m.amountStepButton.Value().(int) * dir
+
+		Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
 		if err := cmd.Do(m.UI.Printer); err != nil {
 			Logger.Error(err)
 			return
 		}
-	}
-
-	return m.tool
+	}, 200)
 }
 
 func (m *filamentPanel) createFlowRateButton() *StepButton {
 	b := MustStepButton(
-		"speed-fast.svg",
+		"speed-normal.svg",
 		Step{"Normal (100%)", 100},
 		Step{"Fast (125%)", 125},
 		Step{"Slow (75%)", 75},
