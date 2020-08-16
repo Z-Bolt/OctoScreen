@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="93.988px" height="93.99px" viewBox="0 0 93.988 93.99" enable-background="new 0 0 93.988 93.99" xml:space="preserve">
+<g id="Row_1">
+	<g id="hotend_block_and_nozzle_1">
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="21.056" y1="38.364" x2="22.967" y2="38.364"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M22.969,38.364c0.149,0,0.29-0.074,0.376-0.197"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M20.699,38.166c0.086,0.122,0.226,0.196,0.375,0.196"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="20.697" y1="38.17" x2="17.43" y2="33.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="23.35" y1="38.17" x2="26.616" y2="33.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="16" y1="26.23" x2="16" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="28.043" y1="26.23" x2="28.043" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="30.492" y1="25.107" x2="13.55" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="30.492" y1="23.882" x2="30.492" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="13.55" y1="23.882" x2="13.55" y2="25.107"/>
+		
+			<rect x="12.325" y="26.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="19.499" height="7.241"/>
+		
+			<rect x="17.123" y="26.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="9.789" height="7.241"/>
+		
+			<rect x="2.731" y="8.786" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="38.579" height="15.083"/>
+	</g>
+	<g id="hotend_block_and_nozzle_2">
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="70.838" y1="38.364" x2="72.748" y2="38.364"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M72.75,38.364c0.15,0,0.291-0.074,0.377-0.197"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M70.48,38.166c0.088,0.122,0.227,0.196,0.377,0.196"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="70.478" y1="38.17" x2="67.211" y2="33.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="73.133" y1="38.17" x2="76.398" y2="33.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="65.781" y1="26.23" x2="65.781" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="77.826" y1="26.23" x2="77.826" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="80.273" y1="25.107" x2="63.332" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="80.273" y1="23.882" x2="80.273" y2="25.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="63.332" y1="23.882" x2="63.332" y2="25.107"/>
+		
+			<rect x="62.107" y="26.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="19.498" height="7.241"/>
+		
+			<rect x="66.904" y="26.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="9.789" height="7.241"/>
+		
+			<rect x="52.511" y="8.786" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="38.58" height="15.083"/>
+	</g>
+</g>
+<g id="Row_2">
+	<g id="hotend_block_and_nozzle_3">
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="21.056" y1="86.364" x2="22.967" y2="86.364"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M22.969,86.364c0.149,0,0.29-0.074,0.376-0.197"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M20.699,86.166c0.086,0.122,0.226,0.196,0.375,0.196"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="20.697" y1="86.17" x2="17.43" y2="81.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="23.35" y1="86.17" x2="26.616" y2="81.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="16" y1="74.23" x2="16" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="28.043" y1="74.23" x2="28.043" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="30.492" y1="73.107" x2="13.55" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="30.492" y1="71.882" x2="30.492" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="13.55" y1="71.882" x2="13.55" y2="73.107"/>
+		
+			<rect x="12.325" y="74.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="19.499" height="7.241"/>
+		
+			<rect x="17.123" y="74.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="9.789" height="7.241"/>
+		
+			<rect x="2.731" y="56.786" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="38.58" height="15.083"/>
+	</g>
+	<g id="hotend_block_and_nozzle_4">
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="70.838" y1="86.364" x2="72.748" y2="86.364"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M72.75,86.364c0.15,0,0.291-0.074,0.377-0.197"/>
+		
+			<path fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="
+			M70.48,86.166c0.088,0.122,0.227,0.196,0.377,0.196"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="70.478" y1="86.17" x2="67.211" y2="81.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="73.133" y1="86.17" x2="76.398" y2="81.476"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="65.781" y1="74.23" x2="65.781" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="77.826" y1="74.23" x2="77.826" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="80.273" y1="73.107" x2="63.332" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="80.273" y1="71.882" x2="80.273" y2="73.107"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="63.332" y1="71.882" x2="63.332" y2="73.107"/>
+		
+			<rect x="62.107" y="74.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="19.498" height="7.241"/>
+		
+			<rect x="66.904" y="74.226" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="9.789" height="7.241"/>
+		
+			<rect x="52.511" y="56.786" fill="none" stroke="#FFFFFF" stroke-width="2.2536" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" width="38.58" height="15.083"/>
+	</g>
+</g>
+</svg>
