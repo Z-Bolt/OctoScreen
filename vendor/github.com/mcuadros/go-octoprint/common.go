@@ -186,8 +186,8 @@ func (s ConnectionState) IsPrinting() bool {
 		strings.HasPrefix(string(s), "Starting") ||
 		strings.HasPrefix(string(s), "Sending") ||
 		strings.HasPrefix(string(s), "Paused") ||
-		strings.HasPrefix(string(s), "Transfering") ||
-		strings.HasPrefix(string(s), "Paused")
+		strings.HasPrefix(string(s), "Pausing") ||
+		strings.HasPrefix(string(s), "Transfering")
 }
 
 func (s ConnectionState) IsOffline() bool {
