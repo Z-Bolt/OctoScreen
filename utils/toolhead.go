@@ -3,7 +3,6 @@ package utils
 import (
 	"strings"
 	"strconv"
-	"log"
 
 	"github.com/mcuadros/go-octoprint"
 )
@@ -17,13 +16,13 @@ func GetToolheadCount(client *octoprint.Client) int {
 
 	c, err := (&octoprint.ConnectionRequest{}).Do(client)
 	if err != nil {
-		log.Println(err)
+		LogError("toolhaad.GetToolheadCount()", "Do(ConnectionRequest)", err)
 		return 0
 	}
 
 	profile, err := (&octoprint.PrinterProfilesRequest{Id: c.Current.PrinterProfile}).Do(client)
 	if err != nil {
-		log.Println(err)
+		LogError("toolhaad.GetToolheadCount()", "Do(PrinterProfilesRequest)", err)
 		return 0
 	}
 
@@ -45,18 +44,18 @@ func GetToolheadCount(client *octoprint.Client) int {
 func GetDisplayNameForTool(toolName string) string {
 	// Since this is such a hack, lets add some bounds checking
 	if toolName == "" {
-		log.Println("ERROR: GetDisplayNameForTool() - toolName is empty")
+		Logger.Error("toolhaad.GetDisplayNameForTool() - toolName is empty")
 		return ""
 	}
 
 	lowerCaseName := strings.ToLower(toolName)
 	if strings.LastIndex(lowerCaseName, "tool") != 0 {
-		log.Println("ERROR: GetDisplayNameForTool() - toolName is invalid, value passed in was: " + toolName)
+		Logger.Errorf("toolhaad.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
 		return ""
 	}
 
 	if len(toolName) != 5 {
-		log.Println("ERROR: GetDisplayNameForTool() - toolName is invalid, value passed in was: " + toolName)
+		Logger.Errorf("toolhaad.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
 		return ""
 	}
 

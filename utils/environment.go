@@ -1,26 +1,24 @@
 package utils
 
 import (
-	"log"
 	"os"
 )
 
 // Required environment variables
 const (
-	EnvStylePath  = "OCTOSCREEN_STYLE_PATH"
-	// EnvResolution = "OCTOSCREEN_RESOLUTION"
-	EnvBaseURL    = "OCTOPRINT_HOST"
-	EnvAPIKey     = "OCTOPRINT_APIKEY"
-	// EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
+	EnvStylePath   = "OCTOSCREEN_STYLE_PATH"
+	EnvBaseURL     = "OCTOPRINT_HOST"
+	EnvAPIKey      = "OCTOPRINT_APIKEY"
 )
 
 // Optional (but good to have) environment variables
 const (
-	EnvResolution = "OCTOSCREEN_RESOLUTION"
-	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
+	EnvLogLevel    = "OCTOSCREEN_LOG_LEVEL"
+	EnvLogFilePath = "OCTOSCREEN_LOG_FILE_PATH"
+	EnvResolution  = "OCTOSCREEN_RESOLUTION"
+	EnvConfigFile  = "OCTOPRINT_CONFIG_FILE"
 )
 
-// RequiredEnvironmentVariablesAreSet - (Captain Obvious says...) verifies that all required environment variables are set.
 func RequiredEnvironmentVariablesAreSet() bool {
 	if( !environmentVariableIsSet(EnvStylePath) ) {
 		return false
@@ -41,7 +39,7 @@ func environmentVariableIsSet(environmentVariable string) bool {
 	return os.Getenv(environmentVariable) != ""
 }
 
-// NameOfMissingRequiredEnvironmentVariable - (Captain Obvious says...) returns the name of the missing required environment variable.
+
 func NameOfMissingRequiredEnvironmentVariable() string {
 	if( !environmentVariableIsSet(EnvStylePath) ) {
 		return EnvStylePath
@@ -59,14 +57,20 @@ func NameOfMissingRequiredEnvironmentVariable() string {
 	return "UNKNOWN"
 }
 
-// DumpEnvironmentVariables - (Captain Obvious says...) dumps (logs) all environment variables.
+
 func DumpEnvironmentVariables() {
+	// Required environment variables
 	dumpEnvironmentVariable(EnvStylePath)
-	dumpEnvironmentVariable(EnvResolution)
 	dumpEnvironmentVariable(EnvBaseURL)
 	dumpEnvironmentVariable(EnvAPIKey)
+
+	// Optional environment variables
+	dumpEnvironmentVariable(EnvLogLevel)
+	dumpEnvironmentVariable(EnvLogFilePath)
+	dumpEnvironmentVariable(EnvResolution)
 	dumpEnvironmentVariable(EnvConfigFile)
 }
+
 
 func dumpEnvironmentVariable(key string) {
 	value := os.Getenv(key)
@@ -74,5 +78,5 @@ func dumpEnvironmentVariable(key string) {
 		value = ">>MISSING<<"
 	}
 
-	log.Println("key: " + key + ", value: " + value)
+	Logger.Infof("key: %q, value: %q", key, value)
 }

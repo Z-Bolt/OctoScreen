@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"strings"
 	"sync"
@@ -11,6 +10,7 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 // OctoScreenVersion - set at compilation time.
@@ -155,7 +155,7 @@ func (t *BackgroundTask) Start() {
 	t.Lock()
 	defer t.Unlock()
 
-	Logger.Debug("New background task started")
+	utils.Logger.Info("New background task started")
 	go t.loop()
 
 	t.running = true
@@ -183,7 +183,7 @@ func (t *BackgroundTask) loop() {
 				t.execute()
 
 			case <-t.close:
-				Logger.Debug("Background task closed")
+				utils.Logger.Info("Background task closed")
 				return
 		}
 	}
@@ -192,7 +192,7 @@ func (t *BackgroundTask) loop() {
 func (t *BackgroundTask) execute() {
 	_, err := glib.IdleAdd(t.task)
 	if err != nil {
-		log.Fatal("IdleAdd() failed:", err)
+		utils.LogFatalError("common.execute()", "IdleAdd()", err)
 	}
 }
 
@@ -370,10 +370,6 @@ func MessageDialog(parent *gtk.Window, msg string) {
 
 	win.Run()
 }
-
-
-
-
 
 // TODO: probably move the following to utils
 var translatedTags = [][2]string{{"strong", "b"}}

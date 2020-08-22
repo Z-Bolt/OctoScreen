@@ -8,9 +8,10 @@ import (
 	"github.com/mcuadros/go-octoprint"
 	"github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-var systemPanelInstance *systemPanel
+var systemPanelInstance *systemPanel = nil
 
 type systemPanel struct {
 	CommonPanel
@@ -58,7 +59,7 @@ func (m *systemPanel) initialize() {
 func (m *systemPanel) createOctoPrintInfo() *gtk.Box {
 	r, err := (&octoprint.VersionRequest{}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("system.createOctoPrintInfo()", "Do(VersionRequest)", err)
 		return nil
 	}
 
@@ -120,7 +121,7 @@ func (m *systemPanel) createOctoScreenPluginInfo() *gtk.Box {
 	if m.UI.OctoPrintPlugin {
 		getPluginManagerInfoResponse, err := (&octoprint.GetPluginManagerInfoRequest{}).Do(m.UI.Printer)
 		if err != nil {
-			Logger.Error(err)
+			utils.LogError("system.createOctoScreenPluginInfo()", "Do(GetPluginManagerInfoRequest)", err)
 			return infoBox
 		}
 
@@ -173,7 +174,7 @@ func (m *systemPanel) createSystemInfo() *gtk.Box {
 func (m *systemPanel) createCommandButton(name string, action string, style string) gtk.IWidget {
 	systemCommandsResponse, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("system.createCommandButton()", "Do(SystemCommandsRequest)", err)
 		return nil
 	}
 
@@ -194,7 +195,7 @@ func (m *systemPanel) createCommandButton(name string, action string, style stri
 			}
 
 			if err := systemExecuteCommandRequest.Do(m.UI.Printer); err != nil {
-				Logger.Error(err)
+				utils.LogError("system.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
 				return
 			}
 		}

@@ -8,7 +8,43 @@ import (
 	"github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
+
+
+type NotificationsHook struct {
+	n *Notifications
+}
+
+func NewNotificationsHook(n *Notifications) *NotificationsHook {
+	return &NotificationsHook{n: n}
+}
+
+func (h NotificationsHook) Levels() []logrus.Level {
+	return []logrus.Level{
+		logrus.PanicLevel,
+		logrus.FatalLevel,
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+	}
+}
+
+func (h NotificationsHook) Fire(entry *logrus.Entry) error {
+	d := 10 * time.Second
+	if entry.Level == logrus.WarnLevel {
+		d = time.Second
+	}
+
+	h.n.Show(entry.Level.String(), entry.Message, d)
+	return nil
+}
+
+
+
+
+
+
+
 
 type Notifications struct {
 	*gtk.Box

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/mcuadros/go-octoprint"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
@@ -47,7 +48,7 @@ func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 		case "move":
 			return MovePanel(ui, parent)
 
-		case "toolchanger":
+		case "tool-changer":
 			return ToolchangerPanel(ui, parent)
 
 		case "system":
@@ -175,7 +176,7 @@ func getDefaultMenu() []octoprint.MenuItem {
 
 				,{
 					"name": "PrintMenu",
-					"icon": "tool-changer",
+					"icon": "printing-control",
 					"panel": "print-menu"
 				}
 			]

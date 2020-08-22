@@ -5,6 +5,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var control = []*octoprint.ControlDefinition{{
@@ -55,13 +56,12 @@ func (m *controlPanel) initialize() {
 }
 
 func (m *controlPanel) getCustomControl() []*octoprint.ControlDefinition {
-
 	control := []*octoprint.ControlDefinition{}
 
-	Logger.Info("Retrieving custom controls")
+	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
 	r, err := (&octoprint.CustomCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
 		return control
 	}
 
@@ -86,9 +86,9 @@ func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition, icon 
 			r.Commands = []string{c.Command}
 		}
 
-		Logger.Infof("Executing command %q", c.Name)
+		utils.Logger.Infof("Executing command %q", c.Name)
 		if err := r.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("control.createControlButton()", "Do(CommandRequest)", err)
 			return
 		}
 	}
@@ -109,7 +109,7 @@ func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition, icon 
 		}
 
 		if err := r.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("control.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
 			return
 		}
 	}
@@ -119,14 +119,14 @@ func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition, icon 
 		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
 	}
 
-	return MustButtonImage(strEllipsisLen(c.Name, 16), icon+".svg", cb)
+	return MustButtonImage(strEllipsisLen(c.Name, 16), icon + ".svg", cb)
 }
 
 func (m *controlPanel) getCommands() []*octoprint.CommandDefinition {
-	Logger.Info("Retrieving custom commands")
+	utils.Logger.Info("Retrieving custom commands")
 	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
 		return nil
 	}
 

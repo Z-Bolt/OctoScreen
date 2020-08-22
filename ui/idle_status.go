@@ -37,18 +37,17 @@ func IdleStatusPanel(ui *UI) Panel {
 func (m *idleStatusPanel) initialize() {
 	defer m.Initialize()
 
-	Logger.Info(m.UI.Settings)
+	utils.Logger.Info(m.UI.Settings)
 
 	var menuItems []octoprint.MenuItem
 	if m.UI.Settings == nil || len(m.UI.Settings.MenuStructure) == 0 {
-		Logger.Info("Loading default menu")
+		utils.Logger.Info("Loading default menu")
 		m.UI.Settings.MenuStructure = getDefaultMenu()
 	} else {
-		Logger.Info("Loading octo menu")
+		utils.Logger.Info("Loading octo menu")
 	}
 
 	menuItems = m.UI.Settings.MenuStructure
-
 
 	menuGrid := MustGrid()
 	menuGrid.SetRowHomogeneous(true)
@@ -144,7 +143,7 @@ func (m *idleStatusPanel) showTools() {
 func (m *idleStatusPanel) updateTemperature() {
 	s, err := (&octoprint.StateRequest{Exclude: []string{"sd"}}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("idle_status.updateTemperature()", "Do(StateRequest)", err)
 		return
 	}
 
@@ -201,7 +200,7 @@ func creteToolHeatupButton(num int, printer *octoprint.Client) *ToolHeatup {
 
 	_, err := t.Connect("clicked", t.clicked)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("idle_status.creteToolHeatupButton()", "t.Connect('clicked', t.clicked)", err)
 	}
 
 	return t
@@ -228,7 +227,7 @@ func (t *ToolHeatup) getProfileTemperature() float64 {
 
 	s, err := (&octoprint.SettingsRequest{}).Do(t.printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("idle_status.getProfileTemperature()", "Do(SettingsRequest)", err)
 		return 0
 	}
 
@@ -266,12 +265,14 @@ func (t *ToolHeatup) clicked() {
 	if t.tool == "bed" {
 		cmd := &octoprint.BedTargetRequest{Target: target}
 		err = cmd.Do(t.printer)
+		if err != nil {
+			utils.LogError("idle_status.clicked()", "Do(BedTargetRequest)", err)
+		}
 	} else {
 		cmd := &octoprint.ToolTargetRequest{Targets: map[string]float64{t.tool: target}}
 		err = cmd.Do(t.printer)
-	}
-
-	if err != nil {
-		Logger.Error(err)
+		if err != nil {
+			utils.LogError("idle_status.clicked()", "Do(ToolTargetRequest)", err)
+		}
 	}
 }

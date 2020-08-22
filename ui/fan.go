@@ -5,6 +5,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var fanPanelInstance *fanPanel
@@ -56,7 +57,7 @@ func (m *fanPanel) createFanButton(speed int) gtk.IWidget {
 		}
 
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("fan.MustButtonImageStyle()", "Do(CommandRequest)", err)
 		}
 	})
 }

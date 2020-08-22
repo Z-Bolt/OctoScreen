@@ -93,7 +93,7 @@ func (m *zOffsetCalibrationPanel) createAutoZCalibrationButton() gtk.IWidget {
 
 		cmd := &octoprint.RunZOffsetCalibrationRequest{}
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("z_offset_calibration.createAutoZCalibrationButton()", "Do(RunZOffsetCalibrationRequest)", err)
 		}
 	})
 }
@@ -127,12 +127,12 @@ func (m *zOffsetCalibrationPanel) updateZOffset(v float64) {
 		"G0 Z0 F100",
 	}
 	if err := cmd.Do(m.UI.Printer); err != nil {
-		Logger.Error(err)
+		utils.LogError("z_offset_calibration.updateZOffset()", "Do(CommandRequest)", err)
 	}
 
 	cmd2 := &octoprint.SetZOffsetRequest{Value: m.zOffset, Tool: m.activeTool}
 	if err := cmd2.Do(m.UI.Printer); err != nil {
-		Logger.Error(err)
+		utils.LogError("z_offset_calibration.updateZOffset()", "Do(SetZOffsetRequest)", err)
 	}
 }
 
@@ -143,12 +143,14 @@ func (m *zOffsetCalibrationPanel) createZOffsetLabel() gtk.IWidget {
 	m.labZOffsetLabel.SetVExpand(true)
 	m.labZOffsetLabel.SetHExpand(true)
 	m.labZOffsetLabel.SetLineWrap(true)
+
 	return m.labZOffsetLabel
 }
 
 func (m *zOffsetCalibrationPanel) command(gcode string) error {
 	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{gcode}
+
 	return cmd.Do(m.UI.Printer)
 }
 
@@ -167,7 +169,7 @@ func (m *zOffsetCalibrationPanel) setToolheadButtonClickHandlers(toolheadButtons
 
 func (m *zOffsetCalibrationPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
 	toolheadButton.Connect("clicked", func() {
-		Logger.Infof("Changing tool to tool%d", toolheadIndex)
+		utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 		gcode := fmt.Sprintf("T%d", toolheadIndex)
 
@@ -182,7 +184,7 @@ func (m *zOffsetCalibrationPanel) setToolheadButtonClickHandler(toolheadButton *
 			response, err := cmd.Do(m.UI.Printer)
 
 			if err != nil {
-				Logger.Error(err)
+				utils.LogError("z_offset_calibration.setToolheadButtonClickHandler()", "Do(GetZOffsetRequest)", err)
 				return
 			}
 

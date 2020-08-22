@@ -7,6 +7,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"pifke.org/wpasupplicant"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var networkPanelInstance *networkPanel
@@ -80,7 +81,6 @@ func (m *networkPanel) initialize() {
 }
 
 func (m *networkPanel) createNetworkList() gtk.IWidget {
-
 	m.list = MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	m.list.SetVExpand(true)
 
@@ -112,7 +112,6 @@ func (m *networkPanel) addNetwork(b *gtk.Box, n string) {
 }
 
 func (m *networkPanel) createLeftBar() gtk.IWidget {
-
 	bar := MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	bar.SetHExpand(true)
 

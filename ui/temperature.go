@@ -7,6 +7,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var temperaturePanelInstance *temperaturePanel
@@ -89,7 +90,7 @@ func (m *temperaturePanel) createChangeButton(label, image string, value float64
 	return MustPressedButton(label, image, func() {
 		target := value * m.amount.Value().(float64)
 		if err := m.increaseTarget(m.tool.Value().(string), target); err != nil {
-			Logger.Error(err)
+			utils.LogError("temperature.createChangeButton()", "increaseTarget()", err)
 			return
 		}
 	}, 100)
@@ -98,6 +99,7 @@ func (m *temperaturePanel) createChangeButton(label, image string, value float64
 func (m *temperaturePanel) increaseTarget(tool string, value float64) error {
 	target, err := m.getToolTarget(tool)
 	if err != nil {
+		utils.LogError("temperature.increaseTarget()", "getToolTarget()", err)
 		return err
 	}
 
@@ -106,7 +108,7 @@ func (m *temperaturePanel) increaseTarget(tool string, value float64) error {
 		target = 0
 	}
 
-	Logger.Infof("Setting target temperature for %s to %1.f°C.", tool, target)
+	utils.Logger.Infof("Setting target temperature for %s to %1.f°C.", tool, target)
 	return m.setTarget(tool, target)
 }
 
@@ -123,6 +125,7 @@ func (m *temperaturePanel) setTarget(tool string, target float64) error {
 func (m *temperaturePanel) getToolTarget(tool string) (float64, error) {
 	s, err := (&octoprint.StateRequest{Exclude: []string{"sd", "state"}}).Do(m.UI.Printer)
 	if err != nil {
+		utils.LogError("temperature.getToolTarget()", "Do(StateRequest)", err)
 		return -1, err
 	}
 
@@ -142,7 +145,7 @@ func (m *temperaturePanel) updateTemperatures() {
 	}).Do(m.UI.Printer)
 
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("temperature.updateTemperatures()", "Do(StateRequest)", err)
 		return
 	}
 
@@ -170,7 +173,7 @@ func (m *temperaturePanel) addNewTool(tool string) {
 	m.tool.AddStep(Step{strings.Title(tool), tool})
 	m.tool.Callback()
 
-	Logger.Infof("Tool detected %s", tool)
+	utils.Logger.Infof("Tool detected %s", tool)
 }
 
 func (m *temperaturePanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
@@ -207,7 +210,7 @@ func (m *profilesPanel) initialize() {
 func (m *profilesPanel) loadProfiles() {
 	s, err := (&octoprint.SettingsRequest{}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("temperature.loadProfiles()", "Do(SettingsRequest)", err)
 		return
 	}
 
@@ -224,9 +227,9 @@ func (m *profilesPanel) loadProfiles() {
 
 func (m *profilesPanel) createProfileButton(img string, p *octoprint.TemperatureProfile) gtk.IWidget {
 	return MustButtonImage(p.Name, img, func() {
-		Logger.Warningf("Setting temperature profile %s.", p.Name)
+		utils.Logger.Warningf("Setting temperature profile %s.", p.Name)
 		if err := m.setProfile(p); err != nil {
-			Logger.Error(err)
+			utils.LogError("temperature.createProfileButton()", "setProfile()", err)
 		}
 		m.UI.GoHistory()
 	})
@@ -240,6 +243,7 @@ func (m *profilesPanel) setProfile(p *octoprint.TemperatureProfile) error {
 		}
 
 		if err := temperaturePanelInstance.setTarget(tool, temp); err != nil {
+			utils.LogError("temperature.setProfile()", "setTarget()", err)
 			return err
 		}
 	}

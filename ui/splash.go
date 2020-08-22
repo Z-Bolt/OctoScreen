@@ -2,6 +2,7 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type SplashPanel struct {
@@ -26,8 +27,11 @@ func (m *SplashPanel) initialize() {
 
 	main := MustBox(gtk.ORIENTATION_VERTICAL, 15)
 	main.SetVAlign(gtk.ALIGN_END)
-	main.SetVExpand(true)
-	main.SetHExpand(true)
+
+	// main.SetVExpand(true)
+	// main.SetHExpand(true)
+	main.SetVExpand(false)
+	main.SetHExpand(false)
 
 	main.Add(logo)
 	main.Add(m.Label)
@@ -65,7 +69,7 @@ func (m *SplashPanel) putOnHold() {
 	m.RetryButton.Show()
 	ctx, _ := m.RetryButton.GetStyleContext()
 	ctx.RemoveClass("hidden")
-	m.Label.SetText("Cannot connect initialize the printer. Tap \"Retry\" to try again.")
+	m.Label.SetText("Cannot connect to the printer.  Tap \"Retry\" to try again.")
 }
 
 func (m *SplashPanel) releaseFromHold() {

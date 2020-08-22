@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var homePanelInstance *homePanel
@@ -36,9 +37,9 @@ func (m *homePanel) initialize() {
 func (m *homePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
 	return MustButtonImageStyle(label, image, "", func() {
 		cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
-		Logger.Warningf("Homing the print head in %s axes", axes)
+		utils.Logger.Warningf("Homing the print head in %s axes", axes)
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("home.createMoveButton()", "Do(PrintHeadHomeRequest)", err)
 			return
 		}
 	})

@@ -83,7 +83,7 @@ func (m *filamentPanel) updateTemperatures() {
 	}).Do(m.UI.Printer)
 
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("filament.updateTemperatures()", "Do(ToolStateRequest)", err)
 		return
 	}
 
@@ -105,7 +105,7 @@ func (m *filamentPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 func (m *filamentPanel) addNewTool(tool string) {
 	m.labels[tool] = MustLabelWithImage("toolhead.svg", "")
 	m.box.Add(m.labels[tool])
-	Logger.Infof("New tool detected %s", tool)
+	utils.Logger.Infof("New tool detected %s", tool)
 }
 
 func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.TemperatureData) {
@@ -127,17 +127,13 @@ func (m *filamentPanel) loadTemperatureData(tool string, d *octoprint.Temperatur
 }
 
 func (m *filamentPanel) createExtrudeButton(label, image string, dir int) gtk.IWidget {
-
-	// JAB diff this (with what's in filament.go) b/f checking in and make sire it matches the previous version
-	// alo add a comment at the top, about how these files were merged and _multi was removed
-
 	return MustPressedButton(label, image, func() {
 		cmd := &octoprint.ToolExtrudeRequest{}
 		cmd.Amount = m.amountStepButton.Value().(int) * dir
 
-		Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
+		utils.Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("filament.createExtrudeButton()", "Do(ToolExtrudeRequest)", err)
 			return
 		}
 	}, 200)
@@ -155,9 +151,9 @@ func (m *filamentPanel) createFlowRateButton() *StepButton {
 		cmd := &octoprint.ToolFlowrateRequest{}
 		cmd.Factor = b.Value().(int)
 
-		Logger.Infof("Changing flowrate to %d%%", cmd.Factor)
+		utils.Logger.Infof("Changing flowrate to %d%%", cmd.Factor)
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("filament.createFlowRateButton()", "Do(ToolFlowrateRequest)", err)
 			return
 		}
 	}
@@ -180,9 +176,9 @@ func (m *filamentPanel) createLoadButton() gtk.IWidget {
 			"G90",
 		}
 
-		Logger.Info("Sending filament load request")
+		utils.Logger.Info("Sending filament load request")
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("filament.createLoadButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
@@ -202,9 +198,9 @@ func (m *filamentPanel) createUnloadButton() gtk.IWidget {
 			"G90",
 		}
 
-		Logger.Info("Sending filament unload request")
+		utils.Logger.Info("Sending filament unload request")
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("filament.createUnloadButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
@@ -228,7 +224,7 @@ func (m *filamentPanel) setToolheadButtonClickHandlers(toolheadButtons []*gtk.Bu
 
 func (m *filamentPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
 	toolheadButton.Connect("clicked", func() {
-		Logger.Infof("Changing tool to tool%d", toolheadIndex)
+		utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 		gcode := fmt.Sprintf("T%d", toolheadIndex)
 		m.command(gcode)

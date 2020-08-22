@@ -1,13 +1,12 @@
 package ui
 
 import (
-	//"log"
 	"fmt"
 	"path/filepath"
 
-	"github.com/Z-Bolt/OctoScreen/utils"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 // MustWindow returns a new gtk.Window, if error panics.
@@ -164,19 +163,19 @@ func MustButtonText(label string, clicked func()) *gtk.Button {
 
 func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Image {
 	if imageFileName == "" {
-		Logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
+		utils.Logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	imageFilePath := imagePath(imageFileName)
 	if !utils.FileExists(imageFilePath) {
-		Logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+		utils.Logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	p, err := gdk.PixbufNewFromFileAtScale(imageFilePath, width, height, true)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("gtk.MustImageFromFileWithSize()", "PixbufNewFromFileAtScale()", err)
 	}
 
 	image, err := gtk.ImageNewFromPixbuf(p)
@@ -190,13 +189,13 @@ func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Ima
 // MustImageFromFile returns a new gtk.Image based on the given file, if error panics.
 func MustImageFromFile(imageFileName string) *gtk.Image {
 	if imageFileName == "" {
-		Logger.Error("MustImageFromFile() - imageFileName is empty")
+		utils.Logger.Error("MustImageFromFile() - imageFileName is empty")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	imageFilePath := imagePath(imageFileName)
 	if !utils.FileExists(imageFilePath) {
-		Logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+		utils.Logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 

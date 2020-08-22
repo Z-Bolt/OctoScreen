@@ -3,6 +3,7 @@ package ui
 import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var movePanelInstance *movePanel
@@ -68,10 +69,9 @@ func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir 
 		}
 
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("move.createMoveButton()", "Do(PrintHeadJogRequest)", err)
 			return
 		}
-
 	}, 200)
 }
 
@@ -82,9 +82,9 @@ func (m *movePanel) createHomeButton() gtk.IWidget {
 			"G28",
 		}
 
-		Logger.Info("Sending filament unload request")
+		utils.Logger.Info("Sending filament unload request")
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("move.createHomeButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})

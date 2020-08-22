@@ -53,8 +53,9 @@ func (m *toolchangerPanel) createHomeButton() gtk.IWidget {
 			"G28 X",
 			"G28 Y",
 		}
+
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("tool-changer.createHomeButton()", "Do(CommandRequest)", err)
 		}
 	})
 }
@@ -64,9 +65,9 @@ func (m *toolchangerPanel) createMagnetOnButton() gtk.IWidget {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=1"}
 
-		Logger.Info("Turn on magnet")
+		utils.Logger.Info("Turn on magnet")
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("tool-changer.createMagnetOnButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
@@ -77,14 +78,13 @@ func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=0"}
 
-		Logger.Info("Turn off magnet")
+		utils.Logger.Info("Turn off magnet")
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("tool-changer.createMagnetOffButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
 }
-
 
 func (m *toolchangerPanel) createToolheadButtons() {
 	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
@@ -100,7 +100,7 @@ func (m *toolchangerPanel) setToolheadButtonClickHandlers(toolheadButtons []*gtk
 
 func (m *toolchangerPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
 	toolheadButton.Connect("clicked", func() {
-		Logger.Infof("Changing tool to tool%d", toolheadIndex)
+		utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 		gcode := fmt.Sprintf("T%d", toolheadIndex)
 		m.command(gcode)

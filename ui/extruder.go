@@ -82,7 +82,7 @@ func (m *extruderPanel) updateTemperatures() {
 	}).Do(m.UI.Printer)
 
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("extruder.updateTemperatures()", "Do(ToolStateRequest)", err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (m *extruderPanel) loadTemperatureState(s *octoprint.TemperatureState) {
 }
 
 func (m *extruderPanel) addNewTool(tool string) {
-	Logger.Infof("ExtruderPanel.addNewTool() - New tool detected: %s", tool)
+	utils.Logger.Infof("ExtruderPanel.addNewTool() - new tool detected: %s", tool)
 
 	m.labels[tool] = MustLabelWithImage("toolhead.svg", "")
 	m.box.Add(m.labels[tool])
@@ -139,9 +139,9 @@ func (m *extruderPanel) createFlowRateButton() *StepButton {
 		cmd := &octoprint.ToolFlowrateRequest{}
 		cmd.Factor = b.Value().(int)
 
-		Logger.Infof("Changing flowrate to %d%%", cmd.Factor)
+		utils.Logger.Infof("extruder.createFlowRateButton() - changing flowrate to %d%%", cmd.Factor)
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("extruder.createFlowRateButton()", "Do(ToolFlowrateRequest)", err)
 			return
 		}
 	}
@@ -154,9 +154,9 @@ func (m *extruderPanel) createExtrudeButton(label, image string, dir int) gtk.IW
 		cmd := &octoprint.ToolExtrudeRequest{}
 		cmd.Amount = m.amount.Value().(int) * dir
 
-		Logger.Infof("Sending extrude request, with amount %d", cmd.Amount)
+		utils.Logger.Infof("extruder.createExtrudeButton() - Sending extrude request with amount %d", cmd.Amount)
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("extruder.createFlowRateButton()", "Do(ToolExtrudeRequest)", err)
 			return
 		}
 	}, 200)
@@ -191,18 +191,18 @@ func (m *extruderPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button
 
 		...and extruder_multitool.go used m.command() (aka Commonpanel.command())
 		octoprint.CommandRequest{}  (`json:"commands"`)
-		
+
 		I don't own a printer with multiple toolheads, so erring on the side of caution, both commands
 		are being sent.
 		*/
 
 		toolCommand := fmt.Sprintf("tool%d", toolheadIndex)
-		Logger.Infof("Changing tool to %s", toolCommand)
+		utils.Logger.Infof("extruder.setToolheadButtonClickHandler() - Changing tool to %s", toolCommand)
 
 		cmd := &octoprint.ToolSelectRequest{}
 		cmd.Tool = toolCommand
 		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+			utils.LogError("extruder.setToolheadButtonClickHandler()", "Do(ToolSelectRequest)", err)
 		}
 
 		gcode := fmt.Sprintf("T%d", toolheadIndex)

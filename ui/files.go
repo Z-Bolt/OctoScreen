@@ -7,6 +7,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var filesPanelInstance *filesPanel
@@ -77,12 +78,12 @@ func (m *filesPanel) createBackButton() gtk.IWidget {
 func (m *filesPanel) doLoadFiles() {
 	var files []*octoprint.FileInformation
 
-	Logger.Info("Loading list of files from: ", string(m.location.current()))
+	utils.Logger.Info("Loading list of files from: ", string(m.location.current()))
 
 	r := &octoprint.FilesRequest{Location: m.location.current(), Recursive: false}
 	folder, err := r.Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("files.doLoadFiles()", "Do(FilesRequest)", err)
 		files = []*octoprint.FileInformation{}
 	} else {
 		files = folder.Files
@@ -197,9 +198,9 @@ func (m *filesPanel) createLoadAndPrintButton(img string, f *octoprint.FileInfor
 			r.Path = f.Path
 			r.Print = print
 
-			Logger.Infof("Loading file %q, printing: %v", f.Name, print)
+			utils.Logger.Infof("Loading file %q, printing: %v", f.Name, print)
 			if err := r.Do(m.UI.Printer); err != nil {
-				Logger.Error(err)
+				utils.LogError("files.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return
 			}
 		}),

@@ -53,7 +53,6 @@ func (m *printStatusPanel) initialize() {
 func (m *printStatusPanel) showTools() {
 	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
 
-
 	m.tool0 = m.createToolButton(0, toolheadCount)
 	m.tool1 = m.createToolButton(1, toolheadCount)
 	m.tool2 = m.createToolButton(2, toolheadCount)
@@ -182,12 +181,17 @@ func (m *printStatusPanel) createPauseButton() gtk.IWidget {
 	m.pause = MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
 		defer m.updateTemperature()
 
-		Logger.Warning("Pausing/Resuming job")
+		utils.Logger.Info("Pausing/Resuming job")
 		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			Logger.Error(err)
+		err := cmd.Do(m.UI.Printer)
+		utils.Logger.Info("Pausing/Resuming job 2, Do() was just called")
+
+		if err != nil {
+			utils.LogError("print_status.createPauseButton()", "Do(PauseRequest)", err)
 			return
 		}
+
+		utils.Logger.Info("Pausing/Resuming job 2c")
 	})
 
 	return m.pause
@@ -195,7 +199,7 @@ func (m *printStatusPanel) createPauseButton() gtk.IWidget {
 
 func (m *printStatusPanel) createStopButton() gtk.IWidget {
 	m.stop = MustButtonImageStyle("Stop", "stop.svg", "color-warning-sign-yellow",
-		confirmStopDialog(m.UI.w, "Are you sure you want to stop current print?", m),
+		confirmStopDialog(m.UI.w, "Are you sure you want to stop the current print?", m),
 	)
 	return m.stop
 }
@@ -208,14 +212,20 @@ func (m *printStatusPanel) createControlButton() gtk.IWidget {
 }
 
 func (m *printStatusPanel) update() {
+	//Logger.Printf("Now in print_status.update()")
+
 	m.updateTemperature()
 	m.updateJob()
+
+	//Logger.Printf("Now leaving print_status.update()")
 }
 
 func (m *printStatusPanel) updateTemperature() {
+	//Logger.Printf("Now in print_status.updateTemperature()")
+
 	s, err := (&octoprint.StateRequest{Exclude: []string{"sd"}}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("print_status.updateTemperature()", "Do(StateRequest)", err)
 		return
 	}
 
@@ -240,6 +250,8 @@ func (m *printStatusPanel) updateTemperature() {
 				m.tool3.SetLabel(text)
 		}
 	}
+
+	//Logger.Printf("Now leaving print_status.updateTemperature()")
 }
 
 func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
@@ -293,9 +305,11 @@ func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
 }
 
 func (m *printStatusPanel) updateJob() {
+	//Logger.Printf("Now in print_status.updateJob()")
+
 	s, err := (&octoprint.JobRequest{}).Do(m.UI.Printer)
 	if err != nil {
-		Logger.Error(err)
+		utils.LogError("print_status.updateJob()", "Do(JobRequest)", err)
 		return
 	}
 
@@ -320,7 +334,7 @@ func (m *printStatusPanel) updateJob() {
 			timeLeft = ""
 
 		default:
-			Logger.Info(s.Progress.PrintTime)
+			utils.Logger.Info(s.Progress.PrintTime)
 			e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
 			r := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
 			timeSpent = fmt.Sprintf("Time: %s", e)
@@ -329,9 +343,14 @@ func (m *printStatusPanel) updateJob() {
 
 	m.time.Label.SetLabel(timeSpent)
 	m.timeLeft.Label.SetLabel(timeLeft)
+
+	//Logger.Printf("Now leaving print_status.updateJob()")
 }
 
 /*
+
+not used
+
 func (m *printStatusPanel) defineToolsCount() int {
 	c, err := (&octoprint.ConnectionRequest{}).Do(m.UI.Printer)
 	if err != nil {
@@ -377,9 +396,9 @@ func confirmStopDialog(parent *gtk.Window, msg string, ma *printStatusPanel) fun
 
 		userResponse := win.Run()
 		if userResponse == int(gtk.RESPONSE_YES) {
-			Logger.Warning("Stopping job")
+			utils.Logger.Warning("Stopping job")
 			if err := (&octoprint.CancelRequest{}).Do(ma.UI.Printer); err != nil {
-				Logger.Error(err)
+				utils.LogError("print_status.confirmStopDialog()", "Do(CancelRequest)", err)
 				return
 			}
 		}
