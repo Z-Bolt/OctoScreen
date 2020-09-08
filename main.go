@@ -59,7 +59,7 @@ func init() {
 
 	setLogLevel()
 
-	ui.StylePath = os.Getenv(utils.EnvStylePath)
+	utils.StylePath = os.Getenv(utils.EnvStylePath)
 	Resolution = os.Getenv(utils.EnvResolution)
 	ConfigFile = os.Getenv(utils.EnvConfigFile)
 	if ConfigFile == "" {
