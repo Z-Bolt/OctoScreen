@@ -1,210 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+<svg version="1.1" id="Layer_2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="52px" height="60px" viewBox="0 0 52 60" enable-background="new 0 0 52 60" xml:space="preserve">
-<g id="Row_1">
-	<g id="toolhead_1" transform="translate(69.000000, 313.000000)">
-		<g id="Group" transform="translate(3.000000, 1.000000)">
-			<path id="Line" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-68.811-310.657l1.683-0.918"/>
-			<path id="Line-2" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-67.128-311.575h2.602"/>
-			<path id="Line-3" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" d="
-				M-64.526-311.575l0.918,1.225"/>
-			<path id="Line-5" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-68.811-310.657v3.673"/>
-			<path id="Line-4" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-63.608-310.351h3.674"/>
-			<path id="Line-6" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-68.811-306.983l1.071,1.836"
-				/>
-			<path id="Line-8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-67.74-297.188l-1.071,1.53"/>
-			<path id="Line-9" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-68.811-295.658v4.286"/>
-			<path id="Line-7" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-67.74-305.147v7.959"/>
-			<path id="Line-10" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-68.811-291.371l3.979,0.766"
-				/>
-			<path id="Line-11" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-64.832-290.606l1.224-1.377"
-				/>
-			<path id="Line-12" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-63.608-291.983h3.674"/>
+<g id="Upper_row">
+	<g id="toolhead_1_1_">
+		<g id="Layer_right">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M14.99,18.002
+				h3.201c0.465,0,0.873,0.406,0.873,0.872c0,0.465-0.408,0.873-0.873,0.873h-7.274"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				10.626,21.494 14.7,21.494 12.082,24.693 10.422,24.693 9.168,23.165 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M17.318,18.002
+				V9.128c0-0.553-0.466-1.018-1.019-1.018h-7.71"/>
+			<g>
+				<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M11.186,7.237
+					c0,0,0-0.408,0-0.874s0.524-0.872,1.164-0.872h2.037c0.64,0,1.164-0.524,1.164-1.165V2"/>
+			</g>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="17.318" y1="18.002" x2="14.117" y2="18.002"/>
 		</g>
-		
-			<g id="Group_1_" transform="translate(36.564815, 28.925926) scale(-1, 1) translate(-36.564815, -28.925926) translate(24.212963, 1.000000)">
-			<path id="Line_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M97.586-310.657l1.683-0.918"/>
-			<path id="Line-2_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M99.269-311.575h2.602"/>
-			<path id="Line-3_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" d="
-				M101.87-311.575l0.919,1.225"/>
-			<path id="Line-5_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M97.586-310.657v3.673"/>
-			<path id="Line-4_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M102.789-310.351h3.673"/>
-			<path id="Line-6_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M97.586-306.983l1.071,1.836"/>
-			<path id="Line-8_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M98.656-297.188l-1.071,1.53"/>
-			<path id="Line-9_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M97.586-295.658v4.286"/>
-			<path id="Line-7_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M98.656-305.147v7.959"/>
-			<path id="Line-10_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M97.586-291.371l3.98,0.766"/>
-			<path id="Line-11_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M101.566-290.606l1.225-1.377"
-				/>
-			<path id="Line-12_1_" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M102.789-291.983h3.673"/>
+		<g id="Layer_left">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M11.58,19.747
+				H4.306c-0.465,0-0.873-0.407-0.873-0.873c0-0.466,0.407-0.872,0.873-0.872h3.201"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				13.301,23.196 12.074,24.693 10.415,24.693 7.797,21.494 11.871,21.494 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M13.907,8.109
+				h-7.71c-0.553,0-1.019,0.465-1.019,1.019v8.874"/>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="8.378" y1="18.002" x2="5.178" y2="18.002"/>
 		</g>
-		<circle id="Oval" fill="none" stroke="#FFFFFF" stroke-width="0.9" cx="-57.241" cy="-301.698" r="5.969"/>
-		<path id="Line-16" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-58.158-290.065l0.917,1.225"/>
-		<path id="Line-17" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-57.241-288.841l0.917-1.225"/>
-		<path id="Line-14" fill="none" stroke="#FFFFFF" stroke-width="0.9" stroke-linecap="round" d="M-59.996-290.065h5.511"/>
 	</g>
-	<g id="toolhead_2" transform="translate(69.000000, 313.000000)">
-		<g id="Group_3_" transform="translate(3.000000, 1.000000)">
-			<path id="Line_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-310.657
-				l1.683-0.918"/>
-			<path id="Line-2_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-39.093-311.575h2.602"
-				/>
-			<path id="Line-3_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" stroke-linejoin="round" d="
-				M-36.491-311.575l0.919,1.225"/>
-			<path id="Line-5_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-310.657v3.673"
-				/>
-			<path id="Line-4_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-35.572-310.351h3.674"
-				/>
-			<path id="Line-6_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-306.983
-				l1.07,1.836"/>
-			<path id="Line-8_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-39.705-297.188
-				l-1.07,1.53"/>
-			<path id="Line-9_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-295.658v4.286"
-				/>
-			<path id="Line-7_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-39.705-305.147v7.959"
-				/>
-			<path id="Line-10_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-291.371
-				l3.979,0.766"/>
-			<path id="Line-11_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-36.796-290.606
-				l1.224-1.377"/>
-			<path id="Line-12_3_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-35.572-291.983h3.674"
-				/>
+	<g id="toolhead_2_1_">
+		<g id="Layer_right_1_">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M44.99,18.002h3.2
+				c0.466,0,0.873,0.406,0.873,0.872c0,0.465-0.407,0.873-0.873,0.873h-7.274"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				40.627,21.494 44.699,21.494 42.082,24.693 40.422,24.693 39.168,23.165 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M47.318,18.002
+				V9.128c0-0.553-0.467-1.018-1.02-1.018H38.59"/>
+			<g>
+				<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M41.186,7.237
+					c0,0,0-0.408,0-0.874s0.523-0.872,1.164-0.872h2.037c0.639,0,1.163-0.524,1.163-1.165V2"/>
+			</g>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="47.318" y1="18.002" x2="44.117" y2="18.002"/>
 		</g>
-		
-			<g id="Group_2_" transform="translate(36.564815, 28.925926) scale(-1, 1) translate(-36.564815, -28.925926) translate(24.212963, 1.000000)">
-			<path id="Line_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-310.657l1.684-0.918"
-				/>
-			<path id="Line-2_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M71.233-311.575h2.603"/>
-			<path id="Line-3_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" stroke-linejoin="round" d="
-				M73.836-311.575l0.919,1.225"/>
-			<path id="Line-5_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-310.657v3.673"/>
-			<path id="Line-4_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M74.755-310.351h3.674"/>
-			<path id="Line-6_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-306.983l1.072,1.836
-				"/>
-			<path id="Line-8_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M70.622-297.188l-1.072,1.53
-				"/>
-			<path id="Line-9_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-295.658v4.286"/>
-			<path id="Line-7_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M70.622-305.147v7.959"/>
-			<path id="Line-10_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-291.371l3.98,0.766
-				"/>
-			<path id="Line-11_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M73.53-290.606l1.225-1.377
-				"/>
-			<path id="Line-12_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M74.755-291.983h3.674"/>
+		<g id="Layer_left_1_">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M41.58,19.747
+				h-7.274c-0.466,0-0.872-0.407-0.872-0.873c0-0.466,0.406-0.872,0.872-0.872h3.2"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				43.301,23.196 42.074,24.693 40.415,24.693 37.797,21.494 41.871,21.494 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M43.907,8.109
+				h-7.71c-0.553,0-1.02,0.465-1.02,1.019v8.874"/>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="38.379" y1="18.002" x2="35.178" y2="18.002"/>
 		</g>
-		<circle id="Oval_1_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" cx="-29.205" cy="-301.698" r="5.969"/>
-		<path id="Line-16_1_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-30.123-290.065
-			l0.918,1.225"/>
-		<path id="Line-17_1_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-29.205-288.841
-			l0.917-1.225"/>
-		<path id="Line-14_1_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-31.96-290.065h5.511"/>
 	</g>
 </g>
-<g id="Row_2">
-	<g id="toolhead_3" transform="translate(69.000000, 313.000000)">
-		<g id="Group_7_" transform="translate(3.000000, 1.000000)">
-			<path id="Line_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-68.811-277.24
-				l1.683-0.918"/>
-			<path id="Line-2_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-67.128-278.159h2.602"
-				/>
-			<path id="Line-3_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" stroke-linejoin="round" d="
-				M-64.526-278.159l0.918,1.224"/>
-			<path id="Line-5_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-68.811-277.24v3.672"/>
-			<path id="Line-4_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-63.608-276.936h3.674"
-				/>
-			<path id="Line-6_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-68.811-273.568
-				l1.071,1.838"/>
-			<path id="Line-8_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-67.74-263.772
-				l-1.071,1.531"/>
-			<path id="Line-9_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-68.811-262.241v4.286"
-				/>
-			<path id="Line-7_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-67.74-271.73v7.958"/>
-			<path id="Line-10_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-68.811-257.955
-				l3.979,0.766"/>
-			<path id="Line-11_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-64.832-257.189
-				l1.224-1.379"/>
-			<path id="Line-12_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-63.608-258.568h3.674"
-				/>
+<g id="Lower_row">
+	<g id="toolhead_3_1_">
+		<g id="Layer_right_3_">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M14.99,50.502
+				h3.201c0.465,0,0.873,0.406,0.873,0.873c0,0.465-0.408,0.872-0.873,0.872h-7.274"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				10.626,53.994 14.7,53.994 12.082,57.193 10.422,57.193 9.168,55.665 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M17.318,50.502
+				v-8.874c0-0.553-0.466-1.019-1.019-1.019h-7.71"/>
+			<g>
+				<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M11.186,39.737
+					c0,0,0-0.408,0-0.874c0-0.465,0.524-0.871,1.164-0.871h2.037c0.64,0,1.164-0.525,1.164-1.165V34.5"/>
+			</g>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="17.318" y1="50.502" x2="14.117" y2="50.502"/>
 		</g>
-		
-			<g id="Group_6_" transform="translate(36.564815, 28.925926) scale(-1, 1) translate(-36.564815, -28.925926) translate(24.212963, 1.000000)">
-			<path id="Line_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M97.586-277.24l1.683-0.918"/>
-			<path id="Line-2_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M99.269-278.159h2.602"/>
-			<path id="Line-3_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" stroke-linejoin="round" d="
-				M101.87-278.159l0.919,1.224"/>
-			<path id="Line-5_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M97.586-277.24v3.672"/>
-			<path id="Line-4_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M102.789-276.936h3.673"/>
-			<path id="Line-6_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M97.586-273.568l1.071,1.838
-				"/>
-			<path id="Line-8_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M98.656-263.772
-				l-1.071,1.531"/>
-			<path id="Line-9_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M97.586-262.241v4.286"/>
-			<path id="Line-7_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M98.656-271.73v7.958"/>
-			<path id="Line-10_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M97.586-257.955l3.98,0.766
-				"/>
-			<path id="Line-11_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M101.566-257.189
-				l1.225-1.379"/>
-			<path id="Line-12_6_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M102.789-258.568h3.673"/>
+		<g id="Layer_left_3_">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M11.58,52.247
+				H4.306c-0.465,0-0.873-0.407-0.873-0.872c0-0.467,0.407-0.873,0.873-0.873h3.201"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				13.301,55.695 12.074,57.193 10.415,57.193 7.797,53.994 11.871,53.994 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M13.907,40.609
+				h-7.71c-0.553,0-1.019,0.465-1.019,1.019v8.874"/>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="8.378" y1="50.502" x2="5.178" y2="50.502"/>
 		</g>
-		<circle id="Oval_3_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" cx="-57.241" cy="-268.282" r="5.97"/>
-		<path id="Line-16_3_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-58.158-256.648
-			l0.917,1.224"/>
-		<path id="Line-17_3_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-57.241-255.425
-			l0.917-1.224"/>
-		<path id="Line-14_3_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-59.996-256.648h5.511"/>
 	</g>
-	<g id="toolhead_4" transform="translate(69.000000, 313.000000)">
-		<g id="Group_5_" transform="translate(3.000000, 1.000000)">
-			<path id="Line_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-277.24
-				l1.683-0.918"/>
-			<path id="Line-2_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-39.093-278.159h2.602"
-				/>
-			<path id="Line-3_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" stroke-linejoin="round" d="
-				M-36.491-278.159l0.919,1.224"/>
-			<path id="Line-5_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-277.24v3.672"/>
-			<path id="Line-4_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-35.572-276.936h3.674"
-				/>
-			<path id="Line-6_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-273.568
-				l1.07,1.838"/>
-			<path id="Line-8_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-39.705-263.772
-				l-1.07,1.531"/>
-			<path id="Line-9_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-262.241v4.286"
-				/>
-			<path id="Line-7_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-39.705-271.73v7.958"/>
-			<path id="Line-10_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-40.775-257.955
-				l3.979,0.766"/>
-			<path id="Line-11_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-36.796-257.189
-				l1.224-1.379"/>
-			<path id="Line-12_5_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-35.572-258.568h3.674"
-				/>
+	<g id="toolhead_4_1_">
+		<g id="Layer_right_2_">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M44.99,50.502h3.2
+				c0.466,0,0.873,0.406,0.873,0.873c0,0.465-0.407,0.872-0.873,0.872h-7.274"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				40.627,53.994 44.699,53.994 42.082,57.193 40.422,57.193 39.168,55.665 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M47.318,50.502
+				v-8.874c0-0.553-0.467-1.019-1.02-1.019H38.59"/>
+			<g>
+				<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M41.186,39.737
+					c0,0,0-0.408,0-0.874c0-0.465,0.523-0.871,1.164-0.871h2.037c0.639,0,1.163-0.525,1.163-1.165V34.5"/>
+			</g>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="47.318" y1="50.502" x2="44.117" y2="50.502"/>
 		</g>
-		
-			<g id="Group_4_" transform="translate(36.564815, 28.925926) scale(-1, 1) translate(-36.564815, -28.925926) translate(24.212963, 1.000000)">
-			<path id="Line_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-277.24l1.684-0.918"/>
-			<path id="Line-2_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M71.233-278.159h2.603"/>
-			<path id="Line-3_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" stroke-linejoin="round" d="
-				M73.836-278.159l0.919,1.224"/>
-			<path id="Line-5_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-277.24v3.672"/>
-			<path id="Line-4_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M74.755-276.936h3.674"/>
-			<path id="Line-6_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-273.568l1.072,1.838
-				"/>
-			<path id="Line-8_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M70.622-263.772
-				l-1.072,1.531"/>
-			<path id="Line-9_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-262.241v4.286"/>
-			<path id="Line-7_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M70.622-271.73v7.958"/>
-			<path id="Line-10_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M69.549-257.955l3.98,0.766
-				"/>
-			<path id="Line-11_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M73.53-257.189l1.225-1.379
-				"/>
-			<path id="Line-12_4_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M74.755-258.568h3.674"/>
+		<g id="Layer_left_2_">
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M41.58,52.247
+				h-7.274c-0.466,0-0.872-0.407-0.872-0.872c0-0.467,0.406-0.873,0.872-0.873h3.2"/>
+			
+				<polyline fill="none" stroke="#FFFFFF" stroke-width="1.3154" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+				43.301,55.695 42.074,57.193 40.415,57.193 37.797,53.994 41.871,53.994 			"/>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linejoin="round" stroke-miterlimit="10" d="M43.907,40.609
+				h-7.71c-0.553,0-1.02,0.465-1.02,1.019v8.874"/>
+			
+				<line fill="none" stroke="#FFFFFF" stroke-width="1.3144" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="38.379" y1="50.502" x2="35.178" y2="50.502"/>
 		</g>
-		<circle id="Oval_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" cx="-29.205" cy="-268.282" r="5.97"/>
-		<path id="Line-16_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-30.123-256.648
-			l0.918,1.224"/>
-		<path id="Line-17_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-29.205-255.425
-			l0.917-1.224"/>
-		<path id="Line-14_2_" fill="none" stroke="#FFFFFF" stroke-width="0.8986" stroke-linecap="round" d="M-31.96-256.648h5.511"/>
 	</g>
 </g>
 </svg>
