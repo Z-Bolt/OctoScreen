@@ -285,3 +285,7 @@ func (entry *Entry) sprintlnn(args ...interface{}) string {
 	msg := fmt.Sprintln(args...)
 	return msg[:len(msg)-1]
 }
+
+func (entry *Entry) GetLogLevel() Level {
+	return entry.Logger.level()
+}
