@@ -1,4 +1,4 @@
-package ui
+package utils
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 // MustWindow returns a new gtk.Window, if error panics.
@@ -84,17 +83,17 @@ func MustLabelWithImage(imageFileName, format string, args ...interface{}) *Labe
 }
 
 // MustButtonImageStyle returns a new gtk.Button with the given label, image and clicked callback, if error panics.
-func MustButtonImageStyle(label, imageFileName string, style string, clicked func()) *gtk.Button {
-	button := MustButtonImage(label, imageFileName, clicked)
+func MustButtonImageStyle(buttonlabel, imageFileName string, style string, clicked func()) *gtk.Button {
+	button := MustButtonImage(buttonlabel, imageFileName, clicked)
 	ctx, _ := button.GetStyleContext()
 	ctx.AddClass(style)
 
 	return button
 }
 
-func MustButtonImage(label, imageFileName string, clicked func()) *gtk.Button {
+func MustButtonImage(buttonlabel, imageFileName string, clicked func()) *gtk.Button {
 	image := MustImageFromFile(imageFileName)
-	button, err := gtk.ButtonNewWithLabel(label)
+	button, err := gtk.ButtonNewWithLabel(buttonlabel)
 	if err != nil {
 		panic(err)
 	}
@@ -163,19 +162,19 @@ func MustButtonText(label string, clicked func()) *gtk.Button {
 
 func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Image {
 	if imageFileName == "" {
-		utils.Logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
+		Logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	imageFilePath := imagePath(imageFileName)
-	if !utils.FileExists(imageFilePath) {
-		utils.Logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+	if !FileExists(imageFilePath) {
+		Logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	p, err := gdk.PixbufNewFromFileAtScale(imageFilePath, width, height, true)
 	if err != nil {
-		utils.LogError("gtk.MustImageFromFileWithSize()", "PixbufNewFromFileAtScale()", err)
+		LogError("gtk.MustImageFromFileWithSize()", "PixbufNewFromFileAtScale()", err)
 	}
 
 	image, err := gtk.ImageNewFromPixbuf(p)
@@ -189,13 +188,13 @@ func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Ima
 // MustImageFromFile returns a new gtk.Image based on the given file, if error panics.
 func MustImageFromFile(imageFileName string) *gtk.Image {
 	if imageFileName == "" {
-		utils.Logger.Error("MustImageFromFile() - imageFileName is empty")
+		Logger.Error("MustImageFromFile() - imageFileName is empty")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	imageFilePath := imagePath(imageFileName)
-	if !utils.FileExists(imageFilePath) {
-		utils.Logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+	if !FileExists(imageFilePath) {
+		Logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
