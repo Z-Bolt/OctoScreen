@@ -22,7 +22,9 @@ func TestStateRequest_Do(t *testing.T) {
 func TestStateRequest_DoWithHistory(t *testing.T) {
 	cli := NewClient("http://localhost:5000", "")
 
-	r := &StateRequest{History: true}
+	r := &StateRequest{
+		IncludeHistory: true,
+	}
 	state, err := r.Do(cli)
 	assert.NoError(t, err)
 
