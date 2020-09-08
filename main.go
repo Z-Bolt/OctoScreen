@@ -42,6 +42,8 @@ func main() {
 		fatalErrorWindow.ShowAll()
 	}
 
+	utils.SanityCheckRequiredEnvironmentVariables()
+	
 	gtk.Main()
 
 	utils.Logger.Info("leaving main.main()")

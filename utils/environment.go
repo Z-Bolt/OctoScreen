@@ -2,6 +2,7 @@ package utils
 
 import (
 	"os"
+	"strings"
 )
 
 // Required environment variables
@@ -79,4 +80,13 @@ func dumpEnvironmentVariable(key string) {
 	}
 
 	Logger.Infof("key: %q, value: %q", key, value)
+}
+
+
+func SanityCheckRequiredEnvironmentVariables() {
+	envBaseURL := strings.ToLower(os.Getenv(EnvBaseURL))
+	if !strings.HasPrefix(envBaseURL, "http://") && !strings.HasPrefix(envBaseURL, "https://") {
+		Logger.Error("Error: OCTOPRINT_HOST needs to start with a protocol (eg http:// is missing)")
+		os.Setenv(EnvBaseURL, "http://" + envBaseURL)
+	}
 }
