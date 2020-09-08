@@ -1,9 +1,11 @@
 package ui
 
 import (
-	"github.com/gotk3/gotk3/gtk"
+	// "github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var homePanelInstance *homePanel
@@ -12,35 +14,35 @@ type homePanel struct {
 	CommonPanel
 }
 
-func HomePanel(ui *UI, parent Panel) Panel {
+func HomePanel(
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+) *homePanel {
 	if homePanelInstance == nil {
-		m := &homePanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.initialize()
-		homePanelInstance = m
+		instance := &homePanel {
+			CommonPanel: NewCommonPanel(ui, parentPanel),
+		}
+		instance.initialize()
+		homePanelInstance = instance
 	}
 
 	return homePanelInstance
 }
 
-func (m *homePanel) initialize() {
-	defer m.Initialize()
+func (this *homePanel) initialize() {
+	defer this.Initialize()
 
-	m.AddButton(m.createMoveButton("Home All", "home.svg",
+	homeXButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home X", "home-x.svg", octoprint.XAxis)
+	this.AddButton(homeXButton)
+
+	homeYButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home Y", "home-y.svg", octoprint.YAxis)
+	this.AddButton(homeYButton)
+
+	homeZButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home Z", "home-z.svg", octoprint.ZAxis)
+	this.AddButton(homeZButton)
+
+	homeAllButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home All", "home.svg",
 		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
-	))
-
-	m.AddButton(m.createMoveButton("Home X", "home-x.svg", octoprint.XAxis))
-	m.AddButton(m.createMoveButton("Home Y", "home-y.svg", octoprint.YAxis))
-	m.AddButton(m.createMoveButton("Home Z", "home-z.svg", octoprint.ZAxis))
-}
-
-func (m *homePanel) createMoveButton(label, image string, axes ...octoprint.Axis) gtk.IWidget {
-	return MustButtonImageStyle(label, image, "", func() {
-		cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
-		utils.Logger.Warningf("Homing the print head in %s axes", axes)
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			utils.LogError("home.createMoveButton()", "Do(PrintHeadHomeRequest)", err)
-			return
-		}
-	})
+	)
+	this.AddButton(homeAllButton)
 }

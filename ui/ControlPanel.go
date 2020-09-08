@@ -3,21 +3,12 @@ package ui
 import (
 	"strings"
 
-	"github.com/gotk3/gotk3/gtk"
+	// "github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
-
-var control = []*octoprint.ControlDefinition{{
-	Name:    "Motor Off",
-	Command: "M18",
-}, {
-	Name:    "Fan On",
-	Command: "M106",
-}, {
-	Name:    "Fan Off",
-	Command: "M106 S0",
-}}
 
 var controlPanelInstance *controlPanel
 
@@ -25,41 +16,64 @@ type controlPanel struct {
 	CommonPanel
 }
 
-func ControlPanel(ui *UI, parent Panel) Panel {
+func ControlPanel(
+	ui 				*UI,
+	parentPanel		interfaces.IPanel,
+) *controlPanel {
 	if controlPanelInstance == nil {
-		m := &controlPanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.initialize()
-		controlPanelInstance = m
+		instance := &controlPanel {
+			CommonPanel: NewCommonPanel(ui, parentPanel),
+		}
+		instance.initialize()
+		controlPanelInstance = instance
 	}
 
 	return controlPanelInstance
 }
 
-func (m *controlPanel) initialize() {
-	defer m.Initialize()
+func (this *controlPanel) initialize() {
+	defer this.Initialize()
 
-	for _, c := range control {
-		icon := strings.ToLower(strings.Replace(c.Name, " ", "-", -1))
-		b := m.createControlButton(c, icon)
-		m.AddButton(b)
+	for _, controlDefinition := range this.getDefaultControls() {
+		icon := strings.ToLower(strings.Replace(controlDefinition.Name, " ", "-", -1))
+		button := uiWidgets.CreateControlButton(this.UI.Printer, this.UI.window, controlDefinition, icon)
+		this.AddButton(button)
 	}
 
-	for _, c := range m.getCustomControl() {
-		b := m.createControlButton(c, "custom-script")
-		m.AddButton(b)
+	for _, controlDefinition := range this.getCustomControls() {
+		button := uiWidgets.CreateControlButton(this.UI.Printer, this.UI.window, controlDefinition, "custom-script")
+		this.AddButton(button)
 	}
 
-	for _, c := range m.getCommands() {
-		b := m.createCommandButton(c, "custom-script")
-		m.AddButton(b)
+	for _, commandDefinition := range this.getCommands() {
+		button := uiWidgets.CreateCommandButton(this.UI.Printer, this.UI.window, commandDefinition, "custom-script")
+		this.AddButton(button)
 	}
 }
 
-func (m *controlPanel) getCustomControl() []*octoprint.ControlDefinition {
+func (this *controlPanel) getDefaultControls() []*octoprint.ControlDefinition {
+	var controlDefinitions = []*octoprint.ControlDefinition{{
+		Name:    "Motor Off",
+		Command: "M18",			// Disable all stepper motors immediately
+	}, {
+		Name:    "Motor On",
+		Command: "M17",			// Enable all stepper motors
+	}, {
+		Name:    "Fan Off",
+		Command: "M106 S0",		// Sets the fan speed to off
+	}, {
+		Name:    "Fan On",
+		Command: "M106",		// Sets the fan speed to full
+	}}
+
+	return controlDefinitions
+}
+
+func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
 	control := []*octoprint.ControlDefinition{}
 
 	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
-	r, err := (&octoprint.CustomCommandsRequest{}).Do(m.UI.Printer)
+	r, err := (&octoprint.CustomCommandsRequest{}).Do(this.UI.Printer)
 	if err != nil {
 		utils.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
 		return control
@@ -74,52 +88,6 @@ func (m *controlPanel) getCustomControl() []*octoprint.ControlDefinition {
 	}
 
 	return control
-}
-
-func (m *controlPanel) createControlButton(c *octoprint.ControlDefinition, icon string) gtk.IWidget {
-	do := func() {
-		r := &octoprint.CommandRequest{
-			Commands: c.Commands,
-		}
-
-		if len(c.Command) != 0 {
-			r.Commands = []string{c.Command}
-		}
-
-		utils.Logger.Infof("Executing command %q", c.Name)
-		if err := r.Do(m.UI.Printer); err != nil {
-			utils.LogError("control.createControlButton()", "Do(CommandRequest)", err)
-			return
-		}
-	}
-
-	cb := do
-	if len(c.Confirm) != 0 {
-		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
-	}
-
-	return MustButtonImage(strEllipsisLen(c.Name, 16), icon+".svg", cb)
-}
-
-func (m *controlPanel) createCommandButton(c *octoprint.CommandDefinition, icon string) gtk.IWidget {
-	do := func() {
-		r := &octoprint.SystemExecuteCommandRequest{
-			Source: octoprint.Custom,
-			Action: c.Action,
-		}
-
-		if err := r.Do(m.UI.Printer); err != nil {
-			utils.LogError("control.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
-			return
-		}
-	}
-
-	cb := do
-	if len(c.Confirm) != 0 {
-		cb = MustConfirmDialog(m.UI.w, c.Confirm, do)
-	}
-
-	return MustButtonImage(strEllipsisLen(c.Name, 16), icon + ".svg", cb)
 }
 
 func (m *controlPanel) getCommands() []*octoprint.CommandDefinition {

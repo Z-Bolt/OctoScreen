@@ -10,67 +10,59 @@ import (
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-var (
-	StylePath    string
-	WindowName   = "OctoScreen"
-	WindowWidth  = 800
-	WindowHeight = 480
-)
-
-const (
-	ImageFolder = "images"
-	CSSFilename = "style.css"
-)
-
 type UI struct {
-	Current  Panel
-	Printer  *octoprint.Client
-	State    octoprint.ConnectionState
-	Settings *octoprint.GetSettingsResponse
-	UIState  string
-
-	OctoPrintPlugin bool
-
-	Notifications *Notifications
-
-	s *SplashPanel
-	b *BackgroundTask
-	g *gtk.Grid
-	w *gtk.Window
-	t time.Time
-
-	width, height      int
-	scaleFactor        int
-	connectionAttempts int
-
 	sync.Mutex
+
+	CurrentPanel			interfaces.IPanel
+	Printer					*octoprint.Client
+	State					octoprint.ConnectionState
+	Settings				*octoprint.GetSettingsResponse
+	UIState					string
+
+	OctoPrintPlugin			bool
+
+	NotificationsBox		*uiWidgets.NotificationsBox
+
+	splashPanel				*SplashPanel
+	backgroundTask			*utils.BackgroundTask
+	grid					*gtk.Grid
+	window					*gtk.Window
+	time					time.Time
+
+	width					int
+	height					int
+	scaleFactor				int
+	connectionAttempts		int
 }
 
 func New(endpoint, key string, width, height int) *UI {
 	utils.Logger.Info("entering ui.New()")
-	
+
 	if width == 0 || height == 0 {
-		width = WindowWidth
-		height = WindowHeight
+		width = utils.WindowWidth
+		height = utils.WindowHeight
 	}
 
 	ui := &UI{
-		Printer:         octoprint.NewClient(endpoint, key),
-		Notifications:   NewNotifications(),
-		OctoPrintPlugin: true,
-		Settings:        nil,
+		Printer:				octoprint.NewClient(endpoint, key),
+		NotificationsBox:		uiWidgets.NewNotificationsBox(),
+		OctoPrintPlugin:		true,
+		Settings:				nil,
 
-		w: MustWindow(gtk.WINDOW_TOPLEVEL),
-		t: time.Now(),
+		window:					utils.MustWindow(gtk.WINDOW_TOPLEVEL),
+		time:					time.Now(),
 
-		width:  width,
-		height: height,
+		width:					width,
+		height:					height,
 	}
 
-	ui.w.Connect("configure-event", func(win *gtk.Window) {
+	ui.window.Connect("configure-event", func(win *gtk.Window) {
 		allocatedWidth:= win.GetAllocatedWidth()
 		allocatedHeight:= win.GetAllocatedHeight()
 		sizeWidth, sizeHeight := win.GetSize()
@@ -99,8 +91,8 @@ func New(endpoint, key string, width, height int) *UI {
 			ui.scaleFactor = 1
 	}
 
-	ui.s = NewSplashPanel(ui)
-	ui.b = NewBackgroundTask(time.Second * 2, ui.update)
+	ui.splashPanel = NewSplashPanel(ui)
+	ui.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, ui.update)
 	ui.initialize()
 
 	utils.Logger.Info("leaving ui.New()")
@@ -110,23 +102,23 @@ func New(endpoint, key string, width, height int) *UI {
 func (ui *UI) initialize() {
 	utils.Logger.Info("entering ui.initialize()")
 
-	defer ui.w.ShowAll()
+	defer ui.window.ShowAll()
 	ui.loadStyle()
 
-	ui.w.SetTitle(WindowName)
-	ui.w.SetDefaultSize(ui.width, ui.height)
-	ui.w.SetResizable(false)
+	ui.window.SetTitle(utils.WindowName)
+	ui.window.SetDefaultSize(ui.width, ui.height)
+	ui.window.SetResizable(false)
 
-	ui.w.Connect("show", ui.b.Start)
-	ui.w.Connect("destroy", func() {
+	ui.window.Connect("show", ui.backgroundTask.Start)
+	ui.window.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
-	o := MustOverlay()
-	ui.w.Add(o)
+	o := utils.MustOverlay()
+	ui.window.Add(o)
 
-	ui.g = MustGrid()
-	o.Add(ui.g)
+	ui.grid = utils.MustGrid()
+	o.Add(ui.grid)
 
 	ui.sdNotify("READY=1")
 
@@ -136,7 +128,7 @@ func (ui *UI) initialize() {
 func (ui *UI) loadStyle() {
 	utils.Logger.Info("entering ui.loadStyle()")
 
-	p := MustCSSProviderFromFile(CSSFilename)
+	p := utils.MustCSSProviderFromFile(utils.CSSFilename)
 
 	s, err := gdk.ScreenGetDefault()
 	if err != nil {
@@ -199,7 +191,7 @@ func (ui *UI) verifyConnection() {
 		utils.Logger.Info("ui.verifyConnection() - now setting newUIState to 'splash'")
 		newUIState = "splash"
 
-		if time.Since(ui.t) > errMercyPeriod {
+		if time.Since(ui.time) > errMercyPeriod {
 			errMessage := ui.errToUser(err)
 
 			utils.Logger.Info("ui.verifyConnection() - printer is offline")
@@ -220,7 +212,7 @@ func (ui *UI) verifyConnection() {
 
 	defer func() { ui.UIState = newUIState }()
 
-	ui.s.Label.SetText(splashMessage)
+	ui.splashPanel.Label.SetText(splashMessage)
 
 	if newUIState == ui.UIState {
 		utils.Logger.Infof("ui.verifyConnection() - newUIState equals ui.UIState and is: %q", ui.UIState)
@@ -242,7 +234,7 @@ func (ui *UI) verifyConnection() {
 			ui.Add(PrintStatusPanel(ui))
 
 		case "splash":
-			ui.Add(ui.s)
+			ui.Add(ui.splashPanel)
 
 		default:
 			utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of newUIState: %q", newUIState)
@@ -267,7 +259,7 @@ func (m *UI) checkNotification() {
 	}
 
 	if n.Message != "" {
-		MessageDialog(m.w, n.Message)
+		utils.InfoMessageDialogBox(m.window, n.Message)
 	}
 
 	utils.Logger.Info("leaving ui.checkNotification()")
@@ -279,7 +271,7 @@ func (m *UI) loadSettings() {
 	n, err := (&octoprint.GetSettingsRequest{}).Do(m.Printer)
 	if err != nil {
 		utils.LogError("ui.loadSettings()", "Do(GetSettingsRequest)", err)
-		utils.Logger.Error("leaving ui.loadSettings()")
+		utils.Logger.Error("leaving ui.loadSettings() - Do(GetSettingsRequest) returned an error")
 		return
 	}
 
@@ -292,7 +284,7 @@ func (m *UI) update() {
 	utils.Logger.Info("entering ui.update()")
 
 	if m.connectionAttempts > 8 {
-		m.s.putOnHold()
+		m.splashPanel.putOnHold()
 		utils.Logger.Info("leaving ui.update() - connectionAttempts > 8")
 		return
 	}
@@ -328,26 +320,26 @@ func (ui *UI) sdNotify(m string) {
 	utils.Logger.Info("leaving ui.sdNotify()")
 }
 
-func (ui *UI) Add(p Panel) {
+func (ui *UI) Add(panel interfaces.IPanel) {
 	utils.Logger.Info("entering ui.Add()")
 
-	if ui.Current != nil {
-		ui.Remove(ui.Current)
+	if ui.CurrentPanel != nil {
+		ui.Remove(ui.CurrentPanel)
 	}
 
-	ui.Current = p
-	ui.Current.Show()
-	ui.g.Attach(ui.Current.Grid(), 0, 0, 1, 1)
-	ui.g.ShowAll()
+	ui.CurrentPanel = panel
+	ui.CurrentPanel.Show()
+	ui.grid.Attach(ui.CurrentPanel.Grid(), 0, 0, 1, 1)
+	ui.grid.ShowAll()
 
 	utils.Logger.Info("leaving ui.Add()")
 }
 
-func (ui *UI) Remove(p Panel) {
+func (ui *UI) Remove(panel interfaces.IPanel) {
 	utils.Logger.Info("entering ui.Remove()")
 
-	defer p.Hide()
-	ui.g.Remove(p.Grid())
+	defer panel.Hide()
+	ui.grid.Remove(panel.Grid())
 
 	utils.Logger.Info("leaving ui.Remove()")
 }
@@ -355,7 +347,7 @@ func (ui *UI) Remove(p Panel) {
 func (ui *UI) GoHistory() {
 	utils.Logger.Info("entering ui.GoHistory()")
 
-	ui.Add(ui.Current.Parent())
+	ui.Add(ui.CurrentPanel.ParentPanel())
 
 	utils.Logger.Info("entering ui.GoHistory()")
 }

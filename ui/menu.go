@@ -4,10 +4,16 @@ import (
 	"encoding/json"
 
 	"github.com/mcuadros/go-octoprint"
-	// "github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
+func getPanel(
+	ui			*UI,
+	parent		interfaces.IPanel,
+	item		octoprint.MenuItem,
+) interfaces.IPanel {
 	switch item.Panel {
 		// The standard "top four" panels that are in the idleStatus panel
 		case "home":
@@ -28,10 +34,12 @@ func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 
 
 
-		case "extruder-multitool":
-			fallthrough
-		case "extruder":
-			return ExtruderPanel(ui, parent)
+		// obsolete and removed, since everything in ExtruderPanel
+		// is already in FilamentPanel
+		// case "extruder-multitool":
+		// 	fallthrough
+		// case "extruder":
+		// 	return ExtruderPanel(ui, parent)
 
 		case "files":
 			return FilesPanel(ui, parent)
@@ -73,7 +81,115 @@ func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
 	}
 }
 
-func getDefaultMenu() []octoprint.MenuItem {
+func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
+	defaultMenuItemsForSingleToolhead := `[
+		{
+			"name": "Home",
+			"icon": "home",
+			"panel": "home"
+		},
+		{
+			"name": "Actions",
+			"icon": "actions",
+			"panel": "custom_items",
+			"items": [
+				{
+					"name": "Move",
+					"icon": "move",
+					"panel": "move"
+				},
+				{
+					"name": "Filament",
+					"icon": "filament-spool",
+					"panel": "filament"
+				},
+				{
+					"name": "Fan",
+					"icon": "fan",
+					"panel": "fan"
+				},
+				{
+					"name": "Temperature",
+					"icon": "heat-up",
+					"panel": "temperature"
+				},
+				{
+					"name": "Control",
+					"icon": "control",
+					"panel": "control"
+				}
+			]
+		},
+		{
+			"name": "Filament",
+			"icon": "filament-spool",
+			"panel": "filament"
+		},
+		{
+			"name": "Configuration",
+			"icon": "control",
+			"panel": "configuration"
+		}
+	]`
+
+	defaultMenuItemsForMultipleToolheads := `[
+		{
+			"name": "Home",
+			"icon": "home",
+			"panel": "home"
+		},
+		{
+			"name": "Actions",
+			"icon": "actions",
+			"panel": "custom_items",
+			"items": [
+				{
+					"name": "Move",
+					"icon": "move",
+					"panel": "move"
+				},
+				{
+					"name": "Extruder",
+					"icon": "extruder",
+					"panel": "extruder"
+				},
+				{
+					"name": "Fan",
+					"icon": "fan",
+					"panel": "fan"
+				},
+				{
+					"name": "Temperature",
+					"icon": "heat-up",
+					"panel": "temperature"
+				},
+				{
+					"name": "Control",
+					"icon": "control",
+					"panel": "control"
+				},
+				{
+					"name": "ToolChanger",
+					"icon": "tool-changer",
+					"panel": "tool-changer"
+				}
+			]
+		},
+		{
+			"name": "Filament",
+			"icon": "filament-spool",
+			"panel": "filament"
+		},
+		{
+			"name": "Configuration",
+			"icon": "control",
+			"panel": "configuration"
+		}
+	]`
+
+
+
+
 
 	/*
 		// do we need a home_multtool panel?
@@ -124,74 +240,11 @@ func getDefaultMenu() []octoprint.MenuItem {
 				}
 			]
 		}
-
-
 	*/
 
 
 
-	defaultMenu := `[
-		{
-			"name": "Home",
-			"icon": "home",
-			"panel": "home"
-		},
-		{
-			"name": "Actions",
-			"icon": "actions",
-			"panel": "custom_items",
-			"items": [
-				{
-					"name": "Move",
-					"icon": "move",
-					"panel": "move"
-				},
-				{
-					"name": "Extruder",
-					"icon": "extruder",
-					"panel": "extruder"
-				},
-				{
-					"name": "Fan",
-					"icon": "fan",
-					"panel": "fan"
-				},
-				{
-					"name": "Temperature",
-					"icon": "heat-up",
-					"panel": "temperature"
-				},
-				{
-					"name": "Control",
-					"icon": "control",
-					"panel": "control"
-				},
-				{
-					"name": "ToolChanger",
-					"icon": "tool-changer",
-					"panel": "tool-changer"
-				}
 
-
-
-				,{
-					"name": "PrintMenu",
-					"icon": "printing-control",
-					"panel": "print-menu"
-				}
-			]
-		},
-		{
-			"name": "Filament",
-			"icon": "filament-spool",
-			"panel": "filament"
-		},
-		{
-			"name": "Configuration",
-			"icon": "control",
-			"panel": "configuration"
-		}
-	]`
 
 	// filePath := filepath.Join(os.Getenv("OCTOSCREEN_STYLE_PATH"), "default_menu.json")
 	// // filePath := "/etc/octoscreen/config/default_menu.json"
@@ -210,9 +263,29 @@ func getDefaultMenu() []octoprint.MenuItem {
 	// 	return items
 	// }
 
-	var items []octoprint.MenuItem
 
-	json.Unmarshal([]byte(defaultMenu), &items)
+	// utils.Logger.Error("FUCK1")
+	// standardLog.Print("FUCK3")
+	// standardLog.Printf("Logger.Level: %q", utils.Logger.GetLogLevel())
+	// utils.Logger.Error("FUCK4")
 
-	return items
+
+	var menuItems []octoprint.MenuItem
+	var err error
+
+	toolheadCount := utils.GetToolheadCount(client)
+	if toolheadCount > 1 {
+		err = json.Unmarshal([]byte(defaultMenuItemsForMultipleToolheads), &menuItems)
+	} else {
+		err = json.Unmarshal([]byte(defaultMenuItemsForSingleToolhead), &menuItems)
+	}
+
+	if err != nil {
+		utils.LogError("menu.getDefaultMenuItems()", "json.Unmarshal()", err)
+	}
+	// utils.LogError("menu.getDefaultMenuItems()", "now leaving", err)
+	// utils.Logger.Error("FUCK2")
+
+
+	return menuItems
 }

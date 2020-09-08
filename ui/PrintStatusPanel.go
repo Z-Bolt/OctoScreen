@@ -7,6 +7,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -14,147 +15,159 @@ var printStatusPanelInstance *printStatusPanel
 
 type printStatusPanel struct {
 	CommonPanel
-	//step *StepButton
-	pb   *gtk.ProgressBar
 
-	bed, tool0, tool1, tool2, tool3 *gtk.Button
-	file, time, timeLeft            *LabelWithImage
-	complete, pause, stop, menu     *gtk.Button
+	progressBar			*gtk.ProgressBar
+	bedButton  			*gtk.Button
+	tool0Button			*gtk.Button
+	tool1Button			*gtk.Button
+	tool2Button			*gtk.Button
+	tool3Button			*gtk.Button
+	fileLabel			*utils.LabelWithImage
+	timeLabel			*utils.LabelWithImage
+	timeLeftLabel		*utils.LabelWithImage
+	completeButton		*gtk.Button
+	pauseButton			*gtk.Button
+	stopButton			*gtk.Button
+	menuButton			*gtk.Button
 }
 
-func PrintStatusPanel(ui *UI) Panel {
+func PrintStatusPanel(ui *UI) *printStatusPanel {
 	if printStatusPanelInstance == nil {
-		m := &printStatusPanel{CommonPanel: NewTopLevelCommonPanel(ui, nil)}
-		m.b = NewBackgroundTask(time.Second * 2, m.update)
-		m.initialize()
+		instance := &printStatusPanel{
+			CommonPanel: NewTopLevelCommonPanel(ui, nil),
+		}
 
-		printStatusPanelInstance = m
+		// TODO: revisit... some set the background task and the initialize
+		// and others initialize and then set the background task
+		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, instance.update)
+		instance.initialize()
+		printStatusPanelInstance = instance
 	}
 
 	return printStatusPanelInstance
 }
 
-func (m *printStatusPanel) initialize() {
-	defer m.Initialize()
+func (this *printStatusPanel) initialize() {
+	defer this.Initialize()
 
-	m.Grid().Attach(m.createInfoBox(),        2, 0, 2, 1)
+	this.Grid().Attach(this.createInfoBox(),        2, 0, 2, 1)
 
-	m.Grid().Attach(m.createProgressBar(),    2, 1, 2, 1)
+	this.Grid().Attach(this.createProgressBar(),    2, 1, 2, 1)
 
-	m.Grid().Attach(m.createPauseButton(),    1, 2, 1, 1)
-	m.Grid().Attach(m.createStopButton(),     2, 2, 1, 1)
-	m.Grid().Attach(m.createControlButton(),  3, 2, 1, 1)
+	this.Grid().Attach(this.createPauseButton(),    1, 2, 1, 1)
+	this.Grid().Attach(this.createStopButton(),     2, 2, 1, 1)
+	this.Grid().Attach(this.createControlButton(),  3, 2, 1, 1)
 
-	m.Grid().Attach(m.createCompleteButton(), 1, 2, 3, 1)
+	this.Grid().Attach(this.createCompleteButton(), 1, 2, 3, 1)
 
-	m.showTools()
+	this.showTools()
 }
 
-func (m *printStatusPanel) showTools() {
-	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+func (this *printStatusPanel) showTools() {
+	toolheadCount := utils.GetToolheadCount(this.UI.Printer)
 
-	m.tool0 = m.createToolButton(0, toolheadCount)
-	m.tool1 = m.createToolButton(1, toolheadCount)
-	m.tool2 = m.createToolButton(2, toolheadCount)
-	m.tool3 = m.createToolButton(3, toolheadCount)
+	this.tool0Button = this.createToolButton(0, toolheadCount)
+	this.tool1Button = this.createToolButton(1, toolheadCount)
+	this.tool2Button = this.createToolButton(2, toolheadCount)
+	this.tool3Button = this.createToolButton(3, toolheadCount)
 
-	m.bed = m.createBedButton()
+	this.bedButton = this.createBedButton()
 
 	switch toolheadCount {
 		case 1:
-			m.Grid().Attach(m.tool0, 0, 0, 2, 1)
-			m.Grid().Attach(m.bed,   0, 1, 2, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 2, 1)
+			this.Grid().Attach(this.bedButton,   0, 1, 2, 1)
 
 		case 2:
-			m.Grid().Attach(m.tool0, 0, 0, 2, 1)
-			m.Grid().Attach(m.tool1, 0, 1, 2, 1)
-			m.Grid().Attach(m.bed,   0, 2, 1, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 2, 1)
+			this.Grid().Attach(this.tool1Button, 0, 1, 2, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 
 		case 3:
-			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool2, 0, 1, 1, 1)
-			m.Grid().Attach(m.bed,   0, 2, 1, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 
 		case 4:
-			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool2, 0, 1, 1, 1)
-			m.Grid().Attach(m.tool3, 1, 1, 1, 1)
-			m.Grid().Attach(m.bed,   0, 2, 1, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
+			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 	}
 
 
-	// m.tool0 = m.createToolButton(0, toolheadCount)
-	// m.tool1 = m.createToolButton(1, toolheadCount)
-	// m.tool2 = m.createToolButton(2, toolheadCount)
-	// m.tool3 = m.createToolButton(3, toolheadCount)
-	// m.bed   = m.createBedButton()
+	// this.tool0Button = this.createToolButton(0, toolheadCount)
+	// this.tool1Button = this.createToolButton(1, toolheadCount)
+	// this.tool2Button = this.createToolButton(2, toolheadCount)
+	// this.tool3Button = this.createToolButton(3, toolheadCount)
+	// this.bedButton   = this.createBedButton()
 
-	// m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+	// this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
 	// if toolheadCount >= 2 {
-	// 	m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+	//	this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
 	// }
 
 	// if toolheadCount >= 3 {
-	// 	m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+	// 	this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
 	// }
 
 	// if toolheadCount >= 4 {
-	// 	m.Grid().Attach(m.tool3, 1, 1, 1, 1)
+	// 	this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 	// }
 
-	// m.Grid().Attach(m.bed, 0, 2, 1, 1)
+	// this.Grid().Attach(this.bedButton, 0, 2, 1, 1)
 }
 
-func (m *printStatusPanel) createCompleteButton() *gtk.Button {
-	m.complete = MustButtonImageStyle("Complete", "complete.svg", "color3", func() {
-		m.UI.Add(IdleStatusPanel(m.UI))
+func (this *printStatusPanel) createCompleteButton() *gtk.Button {
+	this.completeButton = utils.MustButtonImageStyle("Complete", "complete.svg", "color3", func() {
+		this.UI.Add(IdleStatusPanel(this.UI))
 	})
 
-	return m.complete
+	return this.completeButton
 }
 
-func (m *printStatusPanel) createProgressBar() *gtk.ProgressBar {
-	m.pb = MustProgressBar()
-	m.pb.SetShowText(true)
-	m.pb.SetMarginTop(10)
-	m.pb.SetMarginEnd(m.Scaled(20))
-	m.pb.SetVAlign(gtk.ALIGN_CENTER)
-	m.pb.SetVExpand(true)
+func (this *printStatusPanel) createProgressBar() *gtk.ProgressBar {
+	this.progressBar = utils.MustProgressBar()
+	this.progressBar.SetShowText(true)
+	this.progressBar.SetMarginTop(10)
+	this.progressBar.SetMarginEnd(this.Scaled(20))
+	this.progressBar.SetVAlign(gtk.ALIGN_CENTER)
+	this.progressBar.SetVExpand(true)
 
-	ctx, _ := m.pb.GetStyleContext()
+	ctx, _ := this.progressBar.GetStyleContext()
 	ctx.AddClass("printing-progress-bar")
 
-	return m.pb
+	return this.progressBar
 }
 
-func (m *printStatusPanel) createInfoBox() *gtk.Box {
-	m.file = MustLabelWithImage("file-stl.svg", "")
-	ctx, _ := m.file.GetStyleContext()
+func (this *printStatusPanel) createInfoBox() *gtk.Box {
+	this.fileLabel = utils.MustLabelWithImage("file-stl.svg", "")
+	ctx, _ := this.fileLabel.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
-	m.time = MustLabelWithImage("time.svg", "")
-	ctx, _ = m.time.GetStyleContext()
+	this.timeLabel = utils.MustLabelWithImage("time.svg", "")
+	ctx, _ = this.timeLabel.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
-	m.timeLeft = MustLabelWithImage("time.svg", "")
-	ctx, _ = m.timeLeft.GetStyleContext()
+	this.timeLeftLabel = utils.MustLabelWithImage("time.svg", "")
+	ctx, _ = this.timeLeftLabel.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
-	info := MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	info.SetHAlign(gtk.ALIGN_START)
-	info.SetHExpand(true)
-	info.SetVExpand(true)
-	info.SetVAlign(gtk.ALIGN_CENTER)
-	info.Add(m.file)
-	info.Add(m.time)
-	info.Add(m.timeLeft)
+	infoBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	infoBox.SetHAlign(gtk.ALIGN_START)
+	infoBox.SetHExpand(true)
+	infoBox.SetVExpand(true)
+	infoBox.SetVAlign(gtk.ALIGN_CENTER)
+	infoBox.Add(this.fileLabel)
+	infoBox.Add(this.timeLabel)
+	infoBox.Add(this.timeLeftLabel)
 
-	return info
+	return infoBox
 }
 
-func (m *printStatusPanel) createToolButton(num, toolheadCount int) *gtk.Button {
+func (this *printStatusPanel) createToolButton(num, toolheadCount int) *gtk.Button {
 	imageFileName := ""
 	if num == 0 && toolheadCount == 0 {
 		imageFileName = "toolhead.svg"
@@ -162,28 +175,30 @@ func (m *printStatusPanel) createToolButton(num, toolheadCount int) *gtk.Button 
 		imageFileName = fmt.Sprintf("toolhead-%d.svg", num + 1)
 	}
 
-	b := MustButtonImage("", imageFileName, func() {})
+	toolButton := utils.MustButtonImage("", imageFileName, func() {})
 
-	ctx, _ := b.GetStyleContext()
+	ctx, _ := toolButton.GetStyleContext()
 	ctx.AddClass("printing-state")
-	return b
+
+	return toolButton
 }
 
-func (m *printStatusPanel) createBedButton() *gtk.Button {
-	b := MustButtonImage("", "bed.svg", func() {})
+func (this *printStatusPanel) createBedButton() *gtk.Button {
+	bedButton := utils.MustButtonImage("", "bed.svg", func() {})
 
-	ctx, _ := b.GetStyleContext()
+	ctx, _ := bedButton.GetStyleContext()
 	ctx.AddClass("printing-state")
-	return b
+
+	return bedButton
 }
 
-func (m *printStatusPanel) createPauseButton() gtk.IWidget {
-	m.pause = MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
-		defer m.updateTemperature()
+func (this *printStatusPanel) createPauseButton() gtk.IWidget {
+	this.pauseButton = utils.MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
+		defer this.updateTemperature()
 
 		utils.Logger.Info("Pausing/Resuming job")
 		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
-		err := cmd.Do(m.UI.Printer)
+		err := cmd.Do(this.UI.Printer)
 		utils.Logger.Info("Pausing/Resuming job 2, Do() was just called")
 
 		if err != nil {
@@ -194,139 +209,150 @@ func (m *printStatusPanel) createPauseButton() gtk.IWidget {
 		utils.Logger.Info("Pausing/Resuming job 2c")
 	})
 
-	return m.pause
+	return this.pauseButton
 }
 
-func (m *printStatusPanel) createStopButton() gtk.IWidget {
-	m.stop = MustButtonImageStyle("Stop", "stop.svg", "color-warning-sign-yellow",
-		confirmStopDialog(m.UI.w, "Are you sure you want to stop the current print?", m),
+func (this *printStatusPanel) createStopButton() gtk.IWidget {
+	this.stopButton = utils.MustButtonImageStyle(
+		"Stop",
+		"stop.svg",
+		"color-warning-sign-yellow",
+		confirmStopDialogBox(this.UI.window, "Are you sure you want to stop the current print?", this),
 	)
-	return m.stop
+
+	return this.stopButton
 }
 
-func (m *printStatusPanel) createControlButton() gtk.IWidget {
-	m.menu = MustButtonImageStyle("Control", "printing-control.svg", "color3", func() {
-		m.UI.Add(PrintMenuPanel(m.UI, m))
-	})
-	return m.menu
+func (this *printStatusPanel) createControlButton() gtk.IWidget {
+	this.menuButton = utils.MustButtonImageStyle(
+		"Control",
+		"printing-control.svg",
+		"color3",
+		func() {
+			this.UI.Add(PrintMenuPanel(this.UI, this))
+		},
+	)
+	return this.menuButton
 }
 
-func (m *printStatusPanel) update() {
+func (this *printStatusPanel) update() {
 	//Logger.Printf("Now in print_status.update()")
 
-	m.updateTemperature()
-	m.updateJob()
+	this.updateTemperature()
+	this.updateJob()
 
 	//Logger.Printf("Now leaving print_status.update()")
 }
 
-func (m *printStatusPanel) updateTemperature() {
+func (this *printStatusPanel) updateTemperature() {
 	//Logger.Printf("Now in print_status.updateTemperature()")
 
-	s, err := (&octoprint.StateRequest{Exclude: []string{"sd"}}).Do(m.UI.Printer)
+	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Printer)
 	if err != nil {
 		utils.LogError("print_status.updateTemperature()", "Do(StateRequest)", err)
 		return
 	}
 
-	m.doUpdateState(&s.State)
+	this.doUpdateState(&fullStateResponse.State)
 
-	for tool, s := range s.Temperature.Current {
-		text := fmt.Sprintf("%.0f°C / %.0f°C", s.Actual, s.Target)
+	for tool, currentTemperatureData := range fullStateResponse.Temperature.CurrentTemperatureData {
+		text := utils.GetTemperatureDataString(currentTemperatureData)
 		switch tool {
 			case "bed":
-				m.bed.SetLabel(text)
+				this.bedButton.SetLabel(text)
 
 			case "tool0":
-				m.tool0.SetLabel(text)
+				this.tool0Button.SetLabel(text)
 
 			case "tool1":
-				m.tool1.SetLabel(text)
+				this.tool1Button.SetLabel(text)
 
 			case "tool2":
-				m.tool2.SetLabel(text)
+				this.tool2Button.SetLabel(text)
 
 			case "tool3":
-				m.tool3.SetLabel(text)
+				this.tool3Button.SetLabel(text)
 		}
 	}
 
 	//Logger.Printf("Now leaving print_status.updateTemperature()")
 }
 
-func (m *printStatusPanel) doUpdateState(s *octoprint.PrinterState) {
+func (this *printStatusPanel) doUpdateState(printerState *octoprint.PrinterState) {
 	switch {
-		case s.Flags.Printing:
-			m.pause.SetSensitive(true)
-			m.stop.SetSensitive(true)
+		case printerState.Flags.Printing:
+			this.pauseButton.SetSensitive(true)
+			this.stopButton.SetSensitive(true)
 
-			m.pause.Show()
-			m.stop.Show()
-			if m.menu != nil {
-				m.menu.Show()
+			this.pauseButton.Show()
+			this.stopButton.Show()
+			if this.menuButton != nil {
+				this.menuButton.Show()
 			}
-			m.back.Show()
-			m.complete.Hide()
+			this.backButton.Show()
+			this.completeButton.Hide()
 
-		case s.Flags.Paused:
-			m.pause.SetLabel("Resume")
-			m.pause.SetImage(MustImageFromFile("resume.svg"))
-			m.pause.SetSensitive(true)
-			m.stop.SetSensitive(true)
+		case printerState.Flags.Paused:
+			this.pauseButton.SetLabel("Resume")
+			resumeImage := utils.MustImageFromFile("resume.svg")
+			this.pauseButton.SetImage(resumeImage)
+			this.pauseButton.SetSensitive(true)
+			this.stopButton.SetSensitive(true)
 
-			m.pause.Show()
-			m.stop.Show()
-			if m.menu != nil {
-				m.menu.Show()
+			this.pauseButton.Show()
+			this.stopButton.Show()
+			if this.menuButton != nil {
+				this.menuButton.Show()
 			}
-			m.back.Show()
-			m.complete.Hide()
+			this.backButton.Show()
+			this.completeButton.Hide()
 			return
 
-		case s.Flags.Ready:
-			m.pause.SetSensitive(false)
-			m.stop.SetSensitive(false)
+		case printerState.Flags.Ready:
+			this.pauseButton.SetSensitive(false)
+			this.stopButton.SetSensitive(false)
 
-			m.pause.Hide()
-			m.stop.Hide()
-			if m.menu != nil {
-				m.menu.Hide()
+			this.pauseButton.Hide()
+			this.stopButton.Hide()
+			if this.menuButton != nil {
+				this.menuButton.Hide()
 			}
-			m.back.Hide()
-			m.complete.Show()
+			this.backButton.Hide()
+			this.completeButton.Show()
 
 		default:
-			m.pause.SetSensitive(false)
-			m.stop.SetSensitive(false)
+			this.pauseButton.SetSensitive(false)
+			this.stopButton.SetSensitive(false)
 	}
 
-	m.pause.SetLabel("Pause")
-	m.pause.SetImage(MustImageFromFile("pause.svg"))
+	this.pauseButton.SetLabel("Pause")
+	pauseImage := utils.MustImageFromFile("pause.svg")
+	this.pauseButton.SetImage(pauseImage)
 }
 
-func (m *printStatusPanel) updateJob() {
+func (this *printStatusPanel) updateJob() {
 	//Logger.Printf("Now in print_status.updateJob()")
 
-	s, err := (&octoprint.JobRequest{}).Do(m.UI.Printer)
+	jobResponse, err := (&octoprint.JobRequest{}).Do(this.UI.Printer)
 	if err != nil {
 		utils.LogError("print_status.updateJob()", "Do(JobRequest)", err)
 		return
 	}
 
-	file := "<i>not-set</i>"
-	if s.Job.File.Name != "" {
-		file = s.Job.File.Name
-		file = strings.Replace(file, ".gcode", "", -1)
-		file = strEllipsisLen(file, 20)
+	jobFileName := "<i>not-set</i>"
+	if jobResponse.Job.File.Name != "" {
+		jobFileName = jobResponse.Job.File.Name
+		jobFileName = strings.Replace(jobFileName, ".gcode", "", -1)
+		jobFileName = utils.StrEllipsisLen(jobFileName, 20)
 	}
 
-	m.file.Label.SetLabel(file)
-	m.pb.SetFraction(s.Progress.Completion / 100)
+	this.fileLabel.Label.SetLabel(jobFileName)
+	this.progressBar.SetFraction(jobResponse.Progress.Completion / 100)
 
 	var timeSpent, timeLeft string
-	switch s.Progress.Completion {
+	switch jobResponse.Progress.Completion {
 		case 100:
-			timeSpent = fmt.Sprintf("Completed in %s", time.Duration(int64(s.Job.LastPrintTime) * 1e9))
+			timeSpent = fmt.Sprintf("Completed in %s", time.Duration(int64(jobResponse.Job.LastPrintTime) * 1e9))
 			timeLeft = ""
 
 		case 0:
@@ -334,71 +360,50 @@ func (m *printStatusPanel) updateJob() {
 			timeLeft = ""
 
 		default:
-			utils.Logger.Info(s.Progress.PrintTime)
-			e := time.Duration(int64(s.Progress.PrintTime) * 1e9)
-			r := time.Duration(int64(s.Progress.PrintTimeLeft) * 1e9)
-			timeSpent = fmt.Sprintf("Time: %s", e)
-			timeLeft = fmt.Sprintf("Left: %s", r)
+			utils.Logger.Info(jobResponse.Progress.PrintTime)
+			printTime := time.Duration(int64(jobResponse.Progress.PrintTime) * 1e9)
+			printTimeLeft := time.Duration(int64(jobResponse.Progress.PrintTimeLeft) * 1e9)
+			timeSpent = fmt.Sprintf("Time: %s", printTime)
+			timeLeft = fmt.Sprintf("Left: %s", printTimeLeft)
 	}
 
-	m.time.Label.SetLabel(timeSpent)
-	m.timeLeft.Label.SetLabel(timeLeft)
+	this.timeLabel.Label.SetLabel(timeSpent)
+	this.timeLeftLabel.Label.SetLabel(timeLeft)
 
 	//Logger.Printf("Now leaving print_status.updateJob()")
 }
 
-/*
-
-not used
-
-func (m *printStatusPanel) defineToolsCount() int {
-	c, err := (&octoprint.ConnectionRequest{}).Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return 0
-	}
-
-	profile, err := (&octoprint.PrinterProfilesRequest{Id: c.Current.PrinterProfile}).Do(m.UI.Printer)
-	if err != nil {
-		Logger.Error(err)
-		return 0
-	}
-
-	if profile.Extruder.SharedNozzle {
-		return 1
-	}
-
-	return profile.Extruder.Count
-}
-*/
-
-func confirmStopDialog(parent *gtk.Window, msg string, ma *printStatusPanel) func() {
+func confirmStopDialogBox(
+	parentWindow		*gtk.Window,
+	message				string,
+	printStatusPanel	*printStatusPanel,
+) func() {
 	return func() {
-		win := gtk.MessageDialogNewWithMarkup(
-			parent,
+		dialogBox := gtk.MessageDialogNewWithMarkup(
+			parentWindow,
 			gtk.DIALOG_MODAL,
 			gtk.MESSAGE_INFO,
 			gtk.BUTTONS_YES_NO,
 			"",
 		)
 
-		win.SetMarkup(CleanHTML(msg))
-		defer win.Destroy()
+		dialogBox.SetMarkup(utils.CleanHTML(message))
+		defer dialogBox.Destroy()
 
-		box, _ := win.GetContentArea()
+		box, _ := dialogBox.GetContentArea()
 		box.SetMarginStart(15)
 		box.SetMarginEnd(15)
 		box.SetMarginTop(15)
 		box.SetMarginBottom(15)
 
-		ctx, _ := win.GetStyleContext()
+		ctx, _ := dialogBox.GetStyleContext()
 		ctx.AddClass("dialog")
 
-		userResponse := win.Run()
+		userResponse := dialogBox.Run()
 		if userResponse == int(gtk.RESPONSE_YES) {
 			utils.Logger.Warning("Stopping job")
-			if err := (&octoprint.CancelRequest{}).Do(ma.UI.Printer); err != nil {
-				utils.LogError("print_status.confirmStopDialog()", "Do(CancelRequest)", err)
+			if err := (&octoprint.CancelRequest{}).Do(printStatusPanel.UI.Printer); err != nil {
+				utils.LogError("print_status.confirmStopDialogBox()", "Do(CancelRequest)", err)
 				return
 			}
 		}

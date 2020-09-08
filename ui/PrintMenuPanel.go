@@ -1,57 +1,73 @@
 package ui
 
+import (
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/utils"
+)
+
 var printMenuPanelInstance *printMenuPanel
 
 type printMenuPanel struct {
 	CommonPanel
 }
 
-func PrintMenuPanel(ui *UI, parent Panel) Panel {
+func PrintMenuPanel(
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+) *printMenuPanel {
 	if printMenuPanelInstance == nil {
-		m := &printMenuPanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.initialize()
-		printMenuPanelInstance = m
+		instance := &printMenuPanel {
+			CommonPanel: NewCommonPanel(ui, parentPanel),
+		}
+		instance.initialize()
+		printMenuPanelInstance = instance
 	}
 
 	return printMenuPanelInstance
 }
 
-func (m *printMenuPanel) initialize() {
-	defer m.Initialize()
-	m.Grid().Attach(MustButtonImageStyle("Move",        "move.svg",           "color1", m.showMove),        0, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Filament",    "filament-spool.svg", "color2", m.showFilament),    1, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Extruder",    "extruder.svg",       "color3", m.showExtruder),    2, 0, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Temperature", "heat-up.svg",        "color4", m.showTemperature), 3, 0, 1, 1)
+func (this *printMenuPanel) initialize() {
+	defer this.Initialize()
 
-	m.Grid().Attach(MustButtonImageStyle("Fan",         "fan.svg",            "color1", m.showFan),         0, 1, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("Network",     "network.svg",        "color2", m.showNetwork),     1, 1, 1, 1)
-	m.Grid().Attach(MustButtonImageStyle("System",      "info.svg",           "color3", m.showSystem),      2, 1, 1, 1)
+	moveButton := utils.MustButtonImageStyle("Move",               "move.svg",           "color1", this.showMove)
+	this.Grid().Attach(moveButton,        0, 0, 1, 1)
+
+	filamentButton := utils.MustButtonImageStyle("Filament",       "filament-spool.svg", "color2", this.showFilament)
+	this.Grid().Attach(filamentButton,    1, 0, 1, 1)
+
+	temperatureButton := utils.MustButtonImageStyle("Temperature", "heat-up.svg",        "color3", this.showTemperature)
+	this.Grid().Attach(temperatureButton, 2, 0, 1, 1)
+
+	fanButton := utils.MustButtonImageStyle("Fan",                 "fan.svg",            "color4", this.showFan)
+	this.Grid().Attach(fanButton,         0, 1, 1, 1)
+
+	networkButton := utils.MustButtonImageStyle("Network",         "network.svg",        "color1", this.showNetwork)
+	this.Grid().Attach(networkButton,     1, 1, 1, 1)
+
+	systemButton := utils.MustButtonImageStyle("System",           "info.svg",           "color3", this.showSystem)
+	this.Grid().Attach(systemButton,      2, 1, 1, 1)
 }
 
-func (m *printMenuPanel) showMove() {
-	m.UI.Add(MovePanel(m.UI, m))
+func (this *printMenuPanel) showMove() {
+	this.UI.Add(MovePanel(this.UI, this))
 }
 
-func (m *printMenuPanel) showFilament() {
-	m.UI.Add(FilamentPanel(m.UI, m))
+func (this *printMenuPanel) showFilament() {
+	this.UI.Add(FilamentPanel(this.UI, this))
 }
 
-func (m *printMenuPanel) showExtruder() {
-	m.UI.Add(ExtruderPanel(m.UI, m))
+func (this *printMenuPanel) showTemperature() {
+	this.UI.Add(TemperaturePanel(this.UI, this))
 }
 
-func (m *printMenuPanel) showTemperature() {
-	m.UI.Add(TemperaturePanel(m.UI, m))
+func (this *printMenuPanel) showFan() {
+	this.UI.Add(FanPanel(this.UI, this))
 }
 
-func (m *printMenuPanel) showFan() {
-	m.UI.Add(FanPanel(m.UI, m))
+func (this *printMenuPanel) showNetwork() {
+	this.UI.Add(NetworkPanel(this.UI, this))
 }
 
-func (m *printMenuPanel) showNetwork() {
-	m.UI.Add(NetworkPanel(m.UI, m))
-}
-
-func (m *printMenuPanel) showSystem() {
-	m.UI.Add(SystemPanel(m.UI, m))
+func (this *printMenuPanel) showSystem() {
+	this.UI.Add(SystemPanel(this.UI, this))
 }

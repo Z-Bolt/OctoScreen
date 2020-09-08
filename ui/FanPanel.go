@@ -1,63 +1,45 @@
 package ui
 
 import (
-	"fmt"
+	// "fmt"
 
-	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	// "github.com/gotk3/gotk3/gtk"
+	// "github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var fanPanelInstance *fanPanel
 
 type fanPanel struct {
 	CommonPanel
-	//step *StepButton
 }
 
-func FanPanel(ui *UI, parent Panel) Panel {
+func FanPanel(
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+) *fanPanel {
 	if fanPanelInstance == nil {
-		m := &fanPanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.initialize()
-		fanPanelInstance = m
+		instance := &fanPanel {
+			CommonPanel: NewCommonPanel(ui, parentPanel),
+		}
+		instance.initialize()
+		fanPanelInstance = instance
 	}
 
 	return fanPanelInstance
 }
 
-func (m *fanPanel) initialize() {
-	defer m.Initialize()
+func (this *fanPanel) initialize() {
+	defer this.Initialize()
 
-	m.Grid().Attach(m.createFanButton(25),  0, 0, 1, 1)
-	m.Grid().Attach(m.createFanButton(50),  1, 0, 1, 1)
-	m.Grid().Attach(m.createFanButton(75),  2, 0, 1, 1)
-	m.Grid().Attach(m.createFanButton(100), 3, 0, 1, 1)
+	// First row
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 25),  0, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 50),  1, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 75),  2, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 100), 3, 0, 1, 1)
 
-	m.Grid().Attach(m.createFanButton(0),   0, 1, 1, 1)
-}
-
-func (m *fanPanel) createFanButton(speed int) gtk.IWidget {
-	var (
-		label string
-		image string
-	)
-
-	if speed == 0 {
-		label = "Fan Off"
-		image = "fan-off.svg"
-	} else {
-		label = fmt.Sprintf("%d %%", speed)
-		image = "fan.svg"
-	}
-
-	return MustButtonImageStyle(label, image, "", func() {
-		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{
-			fmt.Sprintf("M106 S%d", (255 * speed / 100)),
-		}
-
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			utils.LogError("fan.MustButtonImageStyle()", "Do(CommandRequest)", err)
-		}
-	})
+	// Second row
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 0),   0, 1, 1, 1)
 }

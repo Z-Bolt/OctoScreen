@@ -1,420 +1,123 @@
 package ui
+// package panels
 
 import (
 	"fmt"
 	"math"
-	"strings"
-	"sync"
-	"time"
+	// "strings"
+	// "sync"
+	// "time"
 
-	"github.com/gotk3/gotk3/glib"
+	// "github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 // OctoScreenVersion - set at compilation time.
 var OctoScreenVersion = "2.6.0 (development/experimental)"
 
-type Panel interface {
-	Grid() *gtk.Grid
-	Show()
-	Hide()
-	Parent() Panel
-}
-
 type CommonPanel struct {
-	UI                *UI
-	g                 *gtk.Grid
-	b                 *BackgroundTask
-	p                 Panel
-	back              *gtk.Button
-	panelW            int
-	panelH            int
-	includeBackButton bool
-	buttons           []gtk.IWidget
+	UI					*UI
+	grid				*gtk.Grid
+	backgroundTask		*utils.BackgroundTask
+	parentPanel			interfaces.IPanel
+	panelWidth			int
+	panelHeight			int
+	includeBackButton	bool
+	backButton			*gtk.Button
+	buttons				[]gtk.IWidget
 }
 
-func NewCommonPanel(ui *UI, parent Panel) CommonPanel {
-	g := MustGrid()
-	g.SetRowHomogeneous(true)
-	g.SetColumnHomogeneous(true)
+func NewCommonPanel(ui *UI, parentPanel interfaces.IPanel) CommonPanel {
+	return newPanel(ui, parentPanel, true)
+}
+
+func NewTopLevelCommonPanel(ui *UI, parentPanel interfaces.IPanel) CommonPanel {
+	return newPanel(ui, parentPanel, false)
+}
+
+func newPanel(ui *UI, parentPanel interfaces.IPanel, includeBackButton bool) CommonPanel {
+	grid := utils.MustGrid()
+	grid.SetRowHomogeneous(true)
+	grid.SetColumnHomogeneous(true)
 
 	return CommonPanel {
-		UI: ui,
-		g: g,
-		p: parent,
-		panelW: 4,
-		panelH: 3,
-		includeBackButton: true,
+		UI:					ui,
+		grid:				grid,
+		parentPanel:		parentPanel,
+		panelWidth:			4,
+		panelHeight:		3,
+		includeBackButton:	includeBackButton,
 	}
 }
 
-func NewTopLevelCommonPanel(ui *UI, parent Panel) CommonPanel {
-	g := MustGrid()
-	g.SetRowHomogeneous(true)
-	g.SetColumnHomogeneous(true)
+func (this *CommonPanel) Initialize() {
+	last := this.panelWidth * this.panelHeight
+	if last < len(this.buttons) {
+		cols := math.Ceil(float64(len(this.buttons)) / float64(this.panelWidth))
+		last = int(cols) * this.panelWidth
+	}
 
-	return CommonPanel {
-		UI: ui,
-		g: g,
-		p: parent,
-		panelW: 4,
-		panelH: 3,
-		includeBackButton: false,
+	for i := len(this.buttons) + 1; i < last; i++ {
+		box := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
+		this.AddButton(box)
+	}
+
+	this.backButton = utils.MustButtonImageStyle("Back", "back.svg", "color-none", this.UI.GoHistory)
+	if this.includeBackButton {
+		this.AddButton(this.backButton)
 	}
 }
 
-func (p *CommonPanel) Initialize() {
-	last := p.panelW * p.panelH
-	if last < len(p.buttons) {
-		cols := math.Ceil(float64(len(p.buttons)) / float64(p.panelW))
-		last = int(cols) * p.panelW
-	}
-
-	for i := len(p.buttons) + 1; i < last; i++ {
-		p.AddButton(MustBox(gtk.ORIENTATION_HORIZONTAL, 0))
-	}
-
-	p.back = MustButtonImage("Back", "back.svg", p.UI.GoHistory)
-	if p.includeBackButton {
-		p.AddButton(p.back)
-	}
+func (this *CommonPanel) ParentPanel() interfaces.IPanel {
+	return this.parentPanel
 }
 
-func (p *CommonPanel) Parent() Panel {
-	return p.p
+func (this *CommonPanel) AddButton(button gtk.IWidget) {
+	x := len(this.buttons) % this.panelWidth
+	y := len(this.buttons) / this.panelWidth
+	this.grid.Attach(button, x, y, 1, 1)
+	this.buttons = append(this.buttons, button)
 }
 
-func (p *CommonPanel) AddButton(b gtk.IWidget) {
-	x := len(p.buttons) % p.panelW
-	y := len(p.buttons) / p.panelW
-	p.g.Attach(b, x, y, 1, 1)
-	p.buttons = append(p.buttons, b)
-}
-
-func (p *CommonPanel) Show() {
-	if p.b != nil {
-		p.b.Start()
+func (this *CommonPanel) Show() {
+	if this.backgroundTask != nil {
+		this.backgroundTask.Start()
 	}
 }
 
-func (p *CommonPanel) Hide() {
-	if p.b != nil {
-		p.b.Close()
+func (this *CommonPanel) Hide() {
+	if this.backgroundTask != nil {
+		this.backgroundTask.Close()
 	}
 }
 
-func (p *CommonPanel) Grid() *gtk.Grid {
-	return p.g
+func (this *CommonPanel) Grid() *gtk.Grid {
+	return this.grid
 }
 
-func (p *CommonPanel) Scaled(s int) int {
-	return s * p.UI.scaleFactor
+func (this *CommonPanel) Scaled(s int) int {
+	return s * this.UI.scaleFactor
 }
 
-func (m *CommonPanel) arrangeMenuItems(grid *gtk.Grid, items []octoprint.MenuItem, cols int) {
+func (this *CommonPanel) arrangeMenuItems(grid *gtk.Grid, items []octoprint.MenuItem, cols int) {
 	for i, item := range items {
-		panel := getPanel(m.UI, m, item)
+		panel := getPanel(this.UI, this, item)
 		if panel != nil {
 			color := fmt.Sprintf("color%d", (i % 4) + 1)
 			icon := fmt.Sprintf("%s.svg", item.Icon)
-
-			grid.Attach(MustButtonImageStyle(item.Name, icon, color, func() {
-				m.UI.Add(panel)
-			}), (i % cols), i / cols, 1, 1)
+			button := utils.MustButtonImageStyle(item.Name, icon, color, func() {
+				this.UI.Add(panel)
+			})
+			grid.Attach(button, (i % cols), i / cols, 1, 1)
 		}
 	}
 }
 
-func (m *CommonPanel) command(gcode string) error {
+func (this *CommonPanel) command(gcode string) error {
 	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{gcode}
-	return cmd.Do(m.UI.Printer)
+	return cmd.Do(this.UI.Printer)
 }
-
-type BackgroundTask struct {
-	close chan bool
-
-	d       time.Duration
-	task    func()
-	running bool
-	sync.Mutex
-}
-
-func NewBackgroundTask(d time.Duration, task func()) *BackgroundTask {
-	return &BackgroundTask{
-		task: task,
-		d:    d,
-
-		close: make(chan bool, 1),
-	}
-}
-
-func (t *BackgroundTask) Start() {
-	t.Lock()
-	defer t.Unlock()
-
-	utils.Logger.Info("New background task started")
-	go t.loop()
-
-	t.running = true
-}
-
-func (t *BackgroundTask) Close() {
-	t.Lock()
-	defer t.Unlock()
-	if !t.running {
-		return
-	}
-
-	t.close <- true
-	t.running = false
-}
-
-func (t *BackgroundTask) loop() {
-	t.execute()
-
-	ticker := time.NewTicker(t.d)
-	defer ticker.Stop()
-	for {
-		select {
-			case <-ticker.C:
-				t.execute()
-
-			case <-t.close:
-				utils.Logger.Info("Background task closed")
-				return
-		}
-	}
-}
-
-func (t *BackgroundTask) execute() {
-	_, err := glib.IdleAdd(t.task)
-	if err != nil {
-		utils.LogFatalError("common.execute()", "IdleAdd()", err)
-	}
-}
-
-type StepButton struct {
-	Current  int
-	Steps    []Step
-	Callback func()
-
-	*gtk.Button
-	sync.RWMutex
-}
-
-type Step struct {
-	Label string
-	Value interface{}
-}
-
-func MustStepButton(image string, s ...Step) *StepButton {
-	var l string
-	if len(s) != 0 {
-		l = s[0].Label
-	}
-
-	b := &StepButton{
-		Button: MustButtonImage(l, image, nil),
-		Steps:  s,
-	}
-
-	b.Connect("clicked", b.clicked)
-	return b
-}
-
-func (b *StepButton) Label() string {
-	b.RLock()
-	defer b.RUnlock()
-
-	return b.Steps[b.Current].Label
-}
-
-func (b *StepButton) Value() interface{} {
-	b.RLock()
-	defer b.RUnlock()
-
-	return b.Steps[b.Current].Value
-}
-
-func (b *StepButton) AddStep(s Step) {
-	b.Lock()
-	defer b.Unlock()
-
-	if len(b.Steps) == 0 {
-		b.SetLabel(s.Label)
-	}
-
-	b.Steps = append(b.Steps, s)
-}
-
-func (b *StepButton) clicked() {
-	b.RLock()
-	defer b.RUnlock()
-
-	b.Current++
-	if b.Current >= len(b.Steps) {
-		b.Current = 0
-	}
-
-	b.SetLabel(b.Steps[b.Current].Label)
-
-	if b.Callback != nil {
-		b.Callback()
-	}
-}
-
-func MustConfirmDialog(parent *gtk.Window, msg string, cb func()) func() {
-	return func() {
-		win := gtk.MessageDialogNewWithMarkup(
-			parent,
-			gtk.DIALOG_MODAL,
-			gtk.MESSAGE_INFO,
-			gtk.BUTTONS_YES_NO,
-			"",
-		)
-
-		win.SetMarkup(CleanHTML(msg))
-		defer win.Destroy()
-
-		box, _ := win.GetContentArea()
-		box.SetMarginStart(15)
-		box.SetMarginEnd(15)
-		box.SetMarginTop(15)
-		box.SetMarginBottom(15)
-
-		ctx, _ := win.GetStyleContext()
-		ctx.AddClass("dialog")
-
-		if win.Run() == int(gtk.RESPONSE_YES) {
-			cb()
-		}
-	}
-}
-
-func EmptyContainer(c *gtk.Container) {
-	ch := c.GetChildren()
-	defer ch.Free()
-
-	ch.Foreach(func(i interface{}) {
-		c.Remove(i.(gtk.IWidget))
-	})
-}
-
-func MustPressedButton(label, i string, pressed func(), speed time.Duration) *gtk.Button {
-	img := MustImageFromFile(i)
-	released := make(chan bool)
-	var mutex sync.Mutex
-
-	b, err := gtk.ButtonNewWithLabel(label)
-	if err != nil {
-		panic(err)
-	}
-
-	b.SetImage(img)
-	b.SetAlwaysShowImage(true)
-	b.SetImagePosition(gtk.POS_TOP)
-	b.SetVExpand(true)
-	b.SetHExpand(true)
-
-	if pressed != nil {
-		b.Connect("pressed", func() {
-			go func() {
-				for {
-					select {
-						case <-released:
-							return
-
-						default:
-							mutex.Lock()
-							pressed()
-							time.Sleep(speed * time.Millisecond)
-							mutex.Unlock()
-					}
-				}
-			}()
-		})
-	}
-
-	if released != nil {
-		b.Connect("released", func() {
-			released <- true
-		})
-	}
-
-	return b
-}
-
-func MessageDialog(parent *gtk.Window, msg string) {
-	win := gtk.MessageDialogNewWithMarkup(
-		parent,
-		gtk.DIALOG_MODAL,
-		gtk.MESSAGE_INFO,
-		gtk.BUTTONS_OK,
-		"",
-	)
-
-	win.SetMarkup(CleanHTML(msg))
-	defer win.Destroy()
-
-	box, _ := win.GetContentArea()
-	box.SetMarginStart(25)
-	box.SetMarginEnd(25)
-	box.SetMarginTop(50)
-	box.SetMarginBottom(10)
-
-	ctx, _ := win.GetStyleContext()
-	ctx.AddClass("message")
-
-	win.Run()
-}
-
-// TODO: probably move the following to utils
-var translatedTags = [][2]string{{"strong", "b"}}
-var disallowedTags = []string{"p"}
-
-func CleanHTML(html string) string {
-	for _, tag := range translatedTags {
-		html = replaceHTMLTag(html, tag[0], tag[1])
-	}
-
-	for _, tag := range disallowedTags {
-		html = replaceHTMLTag(html, tag, " ")
-	}
-
-	return html
-}
-
-func replaceHTMLTag(html, from, to string) string {
-	for _, pattern := range []string{"<%s>", "</%s>", "<%s/>"} {
-		to := to
-		if to != "" && to != " " {
-			to = fmt.Sprintf(pattern, to)
-		}
-
-		html = strings.Replace(html, fmt.Sprintf(pattern, from), to, -1)
-	}
-
-	return html
-}
-
-func strEllipsis(name string) string {
-	l := len(name)
-	if l > 32 {
-		return name[:12] + "..." + name[l-17:l]
-	}
-
-	return name
-}
-
-func strEllipsisLen(name string, length int) string {
-	l := len(name)
-	if l > length {
-		return name[:(length/3)] + "..." + name[l - (length / 3):l]
-	}
-
-	return name
-}
-

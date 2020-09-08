@@ -1,91 +1,59 @@
 package ui
 
 import (
-	"github.com/gotk3/gotk3/gtk"
+	// "github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var movePanelInstance *movePanel
 
 type movePanel struct {
 	CommonPanel
-	step *StepButton
+	amountToMoveStepButton    *uiWidgets.AmountToMoveStepButton
 }
 
-func MovePanel(ui *UI, parent Panel) Panel {
+func MovePanel(
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+) *movePanel {
 	if movePanelInstance == nil {
-		m := &movePanel{CommonPanel: NewCommonPanel(ui, parent)}
-		m.initialize()
-		movePanelInstance = m
+		instance := &movePanel {
+			CommonPanel: NewCommonPanel(ui, parentPanel),
+		}
+		instance.initialize()
+		movePanelInstance = instance
 	}
 
 	return movePanelInstance
 }
 
-func (m *movePanel) initialize() {
-	defer m.Initialize()
-	m.Grid().Attach(m.createMoveButton("X-", "move-x-.svg", octoprint.XAxis, -1), 0, 1, 1, 1)
-	m.Grid().Attach(m.createMoveButton("X+", "move-x+.svg", octoprint.XAxis,  1), 2, 1, 1, 1)
-	m.Grid().Attach(m.createMoveButton("Y+", "move-y+.svg", octoprint.YAxis,  1), 1, 0, 1, 1)
-	m.Grid().Attach(m.createMoveButton("Y-", "move-y-.svg", octoprint.YAxis, -1), 1, 2, 1, 1)
+func (this *movePanel) initialize() {
+	defer this.Initialize()
 
-	if m.UI.Settings != nil && m.UI.Settings.ZAxisInverted {
-		m.Grid().Attach(m.createMoveButton("Z-", "move-z-.svg", octoprint.ZAxis, -1), 3, 0, 1, 1)
-		m.Grid().Attach(m.createMoveButton("Z+", "move-z+.svg", octoprint.ZAxis,  1), 3, 1, 1, 1)
+	// Create the step button first, since it is needed by some of the other controls.
+	this.amountToMoveStepButton = uiWidgets.CreateAmountToMoveStepButton()
+
+	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprint.XAxis, -1), 0, 1, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprint.XAxis,  1), 2, 1, 1, 1)
+
+	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprint.YAxis,  1), 1, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprint.YAxis, -1), 1, 2, 1, 1)
+
+	if this.UI.Settings != nil && this.UI.Settings.ZAxisInverted {
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z-", "move-z-.svg", octoprint.ZAxis, -1), 3, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z+", "move-z+.svg", octoprint.ZAxis,  1), 3, 1, 1, 1)
 	} else {
-		m.Grid().Attach(m.createMoveButton("Z+", "move-z-.svg", octoprint.ZAxis,  1), 3, 0, 1, 1)
-		m.Grid().Attach(m.createMoveButton("Z-", "move-z+.svg", octoprint.ZAxis, -1), 3, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z+", "move-z-.svg", octoprint.ZAxis,  1), 3, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z-", "move-z+.svg", octoprint.ZAxis, -1), 3, 1, 1, 1)
 	}
 
-	m.step = MustStepButton("move-step.svg",
-		Step{"10mm", 10.0},
-		Step{"20mm", 20.0},
-		Step{"50mm", 50.0},
-		Step{"0.02mm", 0.02},
-		Step{"0.1mm", 0.1},
-		Step{" 1mm",  1.0},
+	homeAllButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home All", "home.svg",
+		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
 	)
+	this.Grid().Attach(homeAllButton, 0, 2, 1, 1)
 
-	m.Grid().Attach(m.step, 2, 2, 1, 1)
-
-	m.Grid().Attach(m.createHomeButton(), 0, 2, 1, 1)
-}
-
-func (m *movePanel) createMoveButton(label, image string, a octoprint.Axis, dir float64) gtk.IWidget {
-	return MustPressedButton(label, image, func() {
-		distance := m.step.Value().(float64) * dir
-
-		cmd := &octoprint.PrintHeadJogRequest{}
-		switch a {
-			case octoprint.XAxis:
-				cmd.X = distance
-
-			case octoprint.YAxis:
-				cmd.Y = distance
-
-			case octoprint.ZAxis:
-				cmd.Z = distance
-		}
-
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			utils.LogError("move.createMoveButton()", "Do(PrintHeadJogRequest)", err)
-			return
-		}
-	}, 200)
-}
-
-func (m *movePanel) createHomeButton() gtk.IWidget {
-	return MustButtonImage("Home All", "home.svg", func() {
-		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{
-			"G28",
-		}
-
-		utils.Logger.Info("Sending filament unload request")
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			utils.LogError("move.createHomeButton()", "Do(CommandRequest)", err)
-			return
-		}
-	})
+	this.Grid().Attach(this.amountToMoveStepButton, 2, 2, 1, 1)
 }

@@ -1,12 +1,12 @@
 package ui
 
 import (
-	"fmt"
-	"sync"
+	// "fmt"
+	// "sync"
 	"time"
 
-	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -14,265 +14,155 @@ var idleStatusPanelInstance *idleStatusPanel
 
 type idleStatusPanel struct {
 	CommonPanel
-	//step           *StepButton
-	//pb             *gtk.ProgressBar
 
-	tool0, tool1, tool2, tool3, bed *ToolHeatup
+	tool0				*uiWidgets.ToolHeatup
+	tool1				*uiWidgets.ToolHeatup
+	tool2				*uiWidgets.ToolHeatup
+	tool3				*uiWidgets.ToolHeatup
+	bed					*uiWidgets.ToolHeatup
 }
 
-func IdleStatusPanel(ui *UI) Panel {
+func IdleStatusPanel(ui *UI) *idleStatusPanel {
 	if idleStatusPanelInstance == nil {
-		m := &idleStatusPanel{
+		instance := &idleStatusPanel{
 			CommonPanel: NewTopLevelCommonPanel(ui, nil),
 		}
-		m.b = NewBackgroundTask(time.Second * 2, m.update)
-		m.initialize()
+		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, instance.update)
+		instance.initialize()
 
-		idleStatusPanelInstance = m
+		idleStatusPanelInstance = instance
 	}
 
 	return idleStatusPanelInstance
 }
 
-func (m *idleStatusPanel) initialize() {
-	defer m.Initialize()
+func (this *idleStatusPanel) initialize() {
+	defer this.Initialize()
 
-	utils.Logger.Info(m.UI.Settings)
+	utils.Logger.Info(this.UI.Settings)
 
 	var menuItems []octoprint.MenuItem
-	if m.UI.Settings == nil || len(m.UI.Settings.MenuStructure) == 0 {
+	if this.UI.Settings == nil || len(this.UI.Settings.MenuStructure) == 0 {
 		utils.Logger.Info("Loading default menu")
-		m.UI.Settings.MenuStructure = getDefaultMenu()
+		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Printer)
 	} else {
 		utils.Logger.Info("Loading octo menu")
 	}
 
-	menuItems = m.UI.Settings.MenuStructure
+	menuItems = this.UI.Settings.MenuStructure
 
-	menuGrid := MustGrid()
+	menuGrid := utils.MustGrid()
 	menuGrid.SetRowHomogeneous(true)
 	menuGrid.SetColumnHomogeneous(true)
-	m.Grid().Attach(menuGrid, 2, 0, 2, 2)
-	m.arrangeMenuItems(menuGrid, menuItems, 2)
+	this.Grid().Attach(menuGrid, 2, 0, 2, 2)
+	this.arrangeMenuItems(menuGrid, menuItems, 2)
 
-	printButton := MustButtonImageStyle("Print", "print.svg", "color2", m.showFiles)
-	m.Grid().Attach(printButton, 2, 2, 2, 1)
+	printButton := utils.MustButtonImageStyle("Print", "print.svg", "color2", this.showFiles)
+	this.Grid().Attach(printButton, 2, 2, 2, 1)
 
-	m.showTools()
+	this.showTools()
 }
 
-func (m *idleStatusPanel) showFiles() {
-	m.UI.Add(FilesPanel(m.UI, m))
+func (this *idleStatusPanel) showFiles() {
+	this.UI.Add(FilesPanel(this.UI, this))
 }
 
-func (m *idleStatusPanel) update() {
-	m.updateTemperature()
+func (this *idleStatusPanel) update() {
+	this.updateTemperature()
 }
 
-func (m *idleStatusPanel) showTools() {
-	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+func (this *idleStatusPanel) showTools() {
+	toolheadCount := utils.GetToolheadCount(this.UI.Printer)
 
 	if toolheadCount == 1 {
-		m.tool0 = creteToolHeatupButton(0, m.UI.Printer)
+		this.tool0 = uiWidgets.CreteToolHeatupButton(0, this.UI.Printer)
 	} else {
-		m.tool0 = creteToolHeatupButton(1, m.UI.Printer)
+		this.tool0 = uiWidgets.CreteToolHeatupButton(1, this.UI.Printer)
 	}
-	m.tool1 = creteToolHeatupButton(2, m.UI.Printer)
-	m.tool2 = creteToolHeatupButton(3, m.UI.Printer)
-	m.tool3 = creteToolHeatupButton(4, m.UI.Printer)
-	m.bed = creteToolHeatupButton(-1, m.UI.Printer)
+	this.tool1 = uiWidgets.CreteToolHeatupButton(2, this.UI.Printer)
+	this.tool2 = uiWidgets.CreteToolHeatupButton(3, this.UI.Printer)
+	this.tool3 = uiWidgets.CreteToolHeatupButton(4, this.UI.Printer)
+	this.bed = uiWidgets.CreteToolHeatupButton( -1, this.UI.Printer)
 
 	switch toolheadCount {
 		case 1:
-			g := MustGrid()
-			g.SetRowHomogeneous(true)
-			g.SetColumnHomogeneous(true)
-			m.Grid().Attach(g, 0, 0, 2, 3)
-			g.Attach(m.tool0,  0, 0, 2, 1)
-			g.Attach(m.bed,    0, 1, 2, 1)
+			grid := utils.MustGrid()
+			grid.SetRowHomogeneous(true)
+			grid.SetColumnHomogeneous(true)
+			this.Grid().Attach(grid, 0, 0, 2, 3)
+			grid.Attach(this.tool0,  0, 0, 2, 1)
+			grid.Attach(this.bed,    0, 1, 2, 1)
 
 		case 2:
-			m.Grid().Attach(m.tool0, 0, 0, 2, 1)
-			m.Grid().Attach(m.tool1, 0, 1, 2, 1)
-			m.Grid().Attach(m.bed,   0, 2, 2, 1)
+			this.Grid().Attach(this.tool0, 0, 0, 2, 1)
+			this.Grid().Attach(this.tool1, 0, 1, 2, 1)
+			this.Grid().Attach(this.bed,   0, 2, 2, 1)
 
 		case 3:
-			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool2, 0, 1, 2, 1)
-			m.Grid().Attach(m.bed,   0, 2, 2, 1)
+			this.Grid().Attach(this.tool0, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2, 0, 1, 2, 1)
+			this.Grid().Attach(this.bed,   0, 2, 2, 1)
 
 		case 4:
-			m.Grid().Attach(m.tool0, 0, 0, 1, 1)
-			m.Grid().Attach(m.tool1, 1, 0, 1, 1)
-			m.Grid().Attach(m.tool2, 0, 1, 1, 1)
-			m.Grid().Attach(m.tool3, 1, 1, 1, 1)
-			m.Grid().Attach(m.bed,   0, 2, 2, 1)
+			this.Grid().Attach(this.tool0, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2, 0, 1, 1, 1)
+			this.Grid().Attach(this.tool3, 1, 1, 1, 1)
+			this.Grid().Attach(this.bed,   0, 2, 2, 1)
 	}
 
 
-
-
 	// if toolheadCount == 1 {
-	// 	m.tool0 = creteToolHeatupButton(0, m.UI.Printer)
+	// 	this.tool0 = creteToolHeatupButton(0, this.UI.Printer)
 	// } else {
-	// 	m.tool0 = creteToolHeatupButton(1, m.UI.Printer)
+	// 	this.tool0 = creteToolHeatupButton(1, this.UI.Printer)
 	// }
 
-	// m.tool1 = creteToolHeatupButton(2, m.UI.Printer)
-	// m.tool2 = creteToolHeatupButton(3, m.UI.Printer)
-	// m.tool3 = creteToolHeatupButton(4, m.UI.Printer)
-	// m.bed   = creteToolHeatupButton(-1, m.UI.Printer)
+	// this.tool1 = creteToolHeatupButton(2, this.UI.Printer)
+	// this.tool2 = creteToolHeatupButton(3, this.UI.Printer)
+	// this.tool3 = creteToolHeatupButton(4, this.UI.Printer)
+	// this.bed   = creteToolHeatupButton(-1, this.UI.Printer)
 
-	// m.Grid().Attach(m.tool0, 0, 0, 1, 1)
+	// this.Grid().Attach(this.tool0, 0, 0, 1, 1)
 	// if toolheadCount >= 2 {
-	// 	m.Grid().Attach(m.tool1, 1, 0, 1, 1)
+	// 	this.Grid().Attach(this.tool1, 1, 0, 1, 1)
 	// }
 
 	// if toolheadCount >= 3 {
-	// 	m.Grid().Attach(m.tool2, 0, 1, 1, 1)
+	// 	this.Grid().Attach(this.tool2, 0, 1, 1, 1)
 	// }
 
 	// if toolheadCount >= 4 {
-	// 	m.Grid().Attach(m.tool3, 1, 1, 1, 1)
+	// 	this.Grid().Attach(this.tool3, 1, 1, 1, 1)
 	// }
 
-	// m.Grid().Attach(m.bed, 0, 2, 1, 1)
+	// this.Grid().Attach(this.bed, 0, 2, 1, 1)
 }
 
-func (m *idleStatusPanel) updateTemperature() {
-	s, err := (&octoprint.StateRequest{Exclude: []string{"sd"}}).Do(m.UI.Printer)
+func (this *idleStatusPanel) updateTemperature() {
+	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Printer)
 	if err != nil {
 		utils.LogError("idle_status.updateTemperature()", "Do(StateRequest)", err)
 		return
 	}
 
-	for tool, s := range s.Temperature.Current {
+	for tool, currentTemperatureData := range fullStateResponse.Temperature.CurrentTemperatureData {
 		switch tool {
 			case "bed":
-				m.bed.setTemperatures(s.Actual, s.Target)
+				this.bed.SetTemperatures(currentTemperatureData)
 
 			case "tool0":
-				m.tool0.setTemperatures(s.Actual, s.Target)
+				this.tool0.SetTemperatures(currentTemperatureData)
 
 			case "tool1":
-				m.tool1.setTemperatures(s.Actual, s.Target)
+				this.tool1.SetTemperatures(currentTemperatureData)
 
 			case "tool2":
-				m.tool2.setTemperatures(s.Actual, s.Target)
+				this.tool2.SetTemperatures(currentTemperatureData)
 
 			case "tool3":
-				m.tool3.setTemperatures(s.Actual, s.Target)
-		}
-	}
-}
-
-type ToolHeatup struct {
-	isHeating bool
-	tool      string
-	*gtk.Button
-	sync.RWMutex
-	printer *octoprint.Client
-}
-
-func creteToolHeatupButton(num int, printer *octoprint.Client) *ToolHeatup {
-	var (
-		image string
-		tool  string
-	)
-
-	if num < 0 {
-		image = "bed.svg"
-		tool = "bed"
-	} else if num == 0 {
-		image = "toolhead.svg"
-		tool = "tool0"
-	} else {
-		image = fmt.Sprintf("toolhead-%d.svg", num)
-		tool = fmt.Sprintf("tool%d", num - 1)
-	}
-
-	t := &ToolHeatup{
-		Button:  MustButtonImage("", image, nil),
-		tool:    tool,
-		printer: printer,
-	}
-
-	_, err := t.Connect("clicked", t.clicked)
-	if err != nil {
-		utils.LogError("idle_status.creteToolHeatupButton()", "t.Connect('clicked', t.clicked)", err)
-	}
-
-	return t
-}
-
-func (t *ToolHeatup) updateStatus(heating bool) {
-	ctx, _ := t.GetStyleContext()
-	if heating {
-		ctx.AddClass("active")
-	} else {
-		ctx.RemoveClass("active")
-	}
-	t.isHeating = heating
-}
-
-func (t *ToolHeatup) setTemperatures(actual float64, target float64) {
-	text := fmt.Sprintf("%.0f°C / %.0f°C", actual, target)
-	t.SetLabel(text)
-	t.updateStatus(target > 0)
-}
-
-func (t *ToolHeatup) getProfileTemperature() float64 {
-	temperature := 0.0
-
-	s, err := (&octoprint.SettingsRequest{}).Do(t.printer)
-	if err != nil {
-		utils.LogError("idle_status.getProfileTemperature()", "Do(SettingsRequest)", err)
-		return 0
-	}
-
-	if len(s.Temperature.Profiles) > 0 {
-		if t.tool == "bed" {
-			temperature = s.Temperature.Profiles[0].Bed
-		} else {
-			temperature = s.Temperature.Profiles[0].Extruder
-		}
-	} else {
-		if t.tool == "bed" {
-			temperature = 75
-		} else {
-			temperature = 220
-		}
-	}
-
-	return temperature
-}
-
-func (t *ToolHeatup) clicked() {
-	defer func() { t.updateStatus(!t.isHeating) }()
-
-	var (
-		target float64
-		err    error
-	)
-
-	if t.isHeating {
-		target = 0.0
-	} else {
-		target = t.getProfileTemperature()
-	}
-
-	if t.tool == "bed" {
-		cmd := &octoprint.BedTargetRequest{Target: target}
-		err = cmd.Do(t.printer)
-		if err != nil {
-			utils.LogError("idle_status.clicked()", "Do(BedTargetRequest)", err)
-		}
-	} else {
-		cmd := &octoprint.ToolTargetRequest{Targets: map[string]float64{t.tool: target}}
-		err = cmd.Do(t.printer)
-		if err != nil {
-			utils.LogError("idle_status.clicked()", "Do(ToolTargetRequest)", err)
+				this.tool3.SetTemperatures(currentTemperatureData)
 		}
 	}
 }

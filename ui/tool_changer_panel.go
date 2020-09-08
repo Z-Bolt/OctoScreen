@@ -5,6 +5,8 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -15,9 +17,14 @@ type toolchangerPanel struct {
 	//activeTool int
 }
 
-func ToolchangerPanel(ui *UI, parent Panel) Panel {
+func ToolchangerPanel(
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+) *toolchangerPanel {
 	if toolchangerPanelInstance == nil {
-		m := &toolchangerPanel{CommonPanel: NewCommonPanel(ui, parent)}
+		m := &toolchangerPanel {
+			CommonPanel: NewCommonPanel(ui, parentPanel),
+		}
 		m.initialize()
 		toolchangerPanelInstance = m
 	}
@@ -38,7 +45,7 @@ func (m *toolchangerPanel) initialize() {
 }
 
 func (m *toolchangerPanel) createZCalibrationButton() gtk.IWidget {
-	b := MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
+	b := utils.MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
 		m.UI.Add(ZOffsetCalibrationPanel(m.UI, m))
 	})
 
@@ -46,7 +53,7 @@ func (m *toolchangerPanel) createZCalibrationButton() gtk.IWidget {
 }
 
 func (m *toolchangerPanel) createHomeButton() gtk.IWidget {
-	return MustButtonImageStyle("Home XYZ", "home.svg", "", func() {
+	return utils.MustButtonImageStyle("Home XYZ", "home.svg", "", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{
 			"G28 Z",
@@ -61,7 +68,7 @@ func (m *toolchangerPanel) createHomeButton() gtk.IWidget {
 }
 
 func (m *toolchangerPanel) createMagnetOnButton() gtk.IWidget {
-	return MustButtonImageStyle("Magnet On", "magnet-on.svg", "", func() {
+	return utils.MustButtonImageStyle("Magnet On", "magnet-on.svg", "", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=1"}
 
@@ -74,7 +81,7 @@ func (m *toolchangerPanel) createMagnetOnButton() gtk.IWidget {
 }
 
 func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
-	return MustButtonImageStyle("Magnet Off", "magnet-off.svg", "", func() {
+	return utils.MustButtonImageStyle("Magnet Off", "magnet-off.svg", "", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=0"}
 
@@ -88,7 +95,7 @@ func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
 
 func (m *toolchangerPanel) createToolheadButtons() {
 	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
-	toolheadButtons := CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, m.Grid())
+	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, m.Grid())
 	m.setToolheadButtonClickHandlers(toolheadButtons)
 }
 
