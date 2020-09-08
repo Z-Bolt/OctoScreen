@@ -131,7 +131,7 @@ func (this *bedLevelPanel) defineLevelingPoints() {
 }
 
 func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
-	imageFileName := fmt.Sprintf("bed-level-parts/bed-level-%s.svg", placement)
+	imageFileName := fmt.Sprintf("bed-level-parts/bed-corner-%s.svg", placement)
 	noLabel := ""
 	button := utils.MustButtonImage(noLabel, imageFileName, func() {
 		this.goHomeIfRequired()
