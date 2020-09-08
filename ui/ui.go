@@ -92,7 +92,7 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	ui.splashPanel = NewSplashPanel(ui)
-	ui.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, ui.update)
+	ui.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, ui.update)
 	ui.initialize()
 
 	utils.Logger.Info("leaving ui.New()")
