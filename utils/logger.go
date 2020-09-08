@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"io"
 	standardLog "log"
 	"os"
 	"path"
@@ -62,6 +63,9 @@ func init() {
 		if err == nil {
 			log.Infof("logger.init() - OpenFile() succeeded and now setting log.Out to %s", logFilePath)
 			log.Out = file
+
+			log.Out = io.MultiWriter(os.Stdout, file)
+			logrus.SetOutput(log.Out)
 		} else {
 			log.Errorf("logger.init() - OpenFile() FAILED!  err is: %q", err)
 			log.Error("Failed to log to file, using default stderr")
