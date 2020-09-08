@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 )
 
 const JobTool = "/api/job"
@@ -111,6 +112,48 @@ func (cmd *PauseRequest) Do(c *Client) error {
 	_, err := c.doJSONRequest("POST", JobTool, b, JobToolErrors)
 	return err
 }
+
+
+
+
+
+
+// Do sends an API request and returns an error if any.
+func (cmd *PauseRequest) DoWithLogging(c *Client) error {
+	log.Println("job.Do() - starting call")
+
+	buffer := bytes.NewBuffer(nil)
+	err := cmd.encode(buffer)
+	if err != nil {
+		log.Println("job.Do() - encode() failed")
+		return err
+	}
+
+	// str := string([]byte(buffer.Bytes))
+	str := string(buffer.Bytes())
+	log.Printf("job.Do() - bytes are: '%s' abc", str)
+
+
+	log.Println("job.Do() - about to call POST")
+	body, err2 := c.doJSONRequestWithLogging("POST", JobTool, buffer, JobToolErrors)
+
+	log.Println("job.Do() - finished calling POST")
+	if err2 != nil {
+		log.Println("job.Do() - call to doJSONRequest() failed")
+		log.Printf("job.Do() - err2 is: %s", err2.Error())
+	}
+
+	if err2 == nil {
+		log.Println("job.Do() - call to doJSONRequest() passed")
+		str = string(body)
+		log.Printf("job.Do() - body is: %s",  str)
+	}
+
+	return err
+}
+
+
+
 
 func (cmd *PauseRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
