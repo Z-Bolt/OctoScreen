@@ -17,20 +17,12 @@ const (
 	ZAxis Axis = "z"
 )
 
-// FullStateResponse contains informantion about the current state of the printer.
-type FullStateResponse struct {
-	//Temperature is the printer’s temperature state data.
-	Temperature TemperatureState `json:"temperature"`
-	// SD is the printer’s sd state data.
-	SD SDState `json:"sd"`
-	// State is the printer’s general state.
-	State PrinterState `json:"state"`
-}
 
 // JobResponse is the response from a job command.
 type JobResponse struct {
 	// Job contains information regarding the target of the current print job.
 	Job JobInformation `json:"job"`
+
 	// Progress contains information regarding the progress of the current job.
 	Progress ProgressInformation `json:"progress"`
 }
@@ -69,15 +61,17 @@ type ProgressInformation struct {
 }
 
 // TemperatureState is the printer’s temperature state data.
-type TemperatureState temperatureState
-type temperatureState struct {
+type TemperatureStateResponse temperatureStateResponse
+
+type temperatureStateResponse struct {
 	// Current temperature stats.
-	Current map[string]TemperatureData `json:"current"`
+	CurrentTemperatureData map[string]TemperatureData `json:"current"`
+
 	// Temperature history.
 	History []*HistoricTemperatureData `json:"history"`
 }
 
-func (r *TemperatureState) UnmarshalJSON(b []byte) error {
+func (r *TemperatureStateResponse) UnmarshalJSON(b []byte) error {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(b, &raw); err != nil {
 		return err
@@ -90,12 +84,12 @@ func (r *TemperatureState) UnmarshalJSON(b []byte) error {
 		"history": history,
 	})
 
-	i := &temperatureState{}
+	i := &temperatureStateResponse{}
 	if err := json.Unmarshal(b, i); err != nil {
 		return err
 	}
 
-	*r = TemperatureState(*i)
+	*r = TemperatureStateResponse(*i)
 	return nil
 }
 
@@ -103,8 +97,10 @@ func (r *TemperatureState) UnmarshalJSON(b []byte) error {
 type TemperatureData struct {
 	// Actual current temperature.
 	Actual float64 `json:"actual"`
+
 	// Target temperature, may be nil if no target temperature is set.
 	Target float64 `json:"target"`
+
 	// Offset currently configured temperature offset to apply, will be left
 	// out for historic temperature information.
 	Offset float64 `json:"offset"`
@@ -134,6 +130,7 @@ type HistoricTemperatureData historicTemperatureData
 type historicTemperatureData struct {
 	// Time of this data point.
 	Time JSONTime `json:"time"`
+
 	// Tools is temperature stats a set of tools.
 	Tools map[string]TemperatureData `json:"tools"`
 }
@@ -174,7 +171,7 @@ const (
 	Operational ConnectionState = "Operational"
 )
 
-// The states are  based on:
+// The states are based on:
 // https://github.com/foosel/OctoPrint/blob/77753ca02602d3a798d6b0a22535e6fd69ff448a/src/octoprint/util/comm.py#L549
 
 func (s ConnectionState) IsOperational() bool {
@@ -540,22 +537,29 @@ type ControlInput struct {
 }
 
 // Settings are the current configuration of OctoPrint.
-type Settings struct {
+type SettingsResponse struct {
 	// API REST API settings.
 	API *APIConfig `json:"api"`
+
 	// Features settings to enable or disable OctoPrint features.
 	Feature *FeaturesConfig `json:"feature"`
+
 	//Folder settings to set custom paths for folders used by OctoPrint.
 	Folder *FolderConfig `json:"folder"`
+
 	// Serial settings to configure the serial connection to the printer.
 	Serial *SerialConfig `json:"serial"`
+
 	// Server settings to configure the server.
 	Server *ServerConfig `json:"server"`
+
 	// Temperature profiles which will be displayed in the temperature tab.
 	Temperature *TemperatureConfig `json:"temperature"`
+
 	// TerminalFilters to display in the terminal tab for filtering certain
 	// lines from the display terminal log.
 	TerminalFilters []*TerminalFilter `json:"terminalFilters"`
+
 	// Webcam settings to configure webcam support.
 	Webcam *WebcamConfig `json:"json"`
 
@@ -790,11 +794,14 @@ type ServerConfig struct {
 type TemperatureConfig struct {
 	// Graph cutoff in minutes.
 	Cutoff int `json:"cutoff"`
+
 	// Profiles  which will be displayed in the temperature tab.
-	Profiles []*TemperatureProfile `json:"profiles"`
+	TemperaturePresets []*TemperaturePreset `json:"profiles"`
+
 	// SendAutomatically enable this to have temperature fine adjustments you
 	// do via the + or - button be sent to the printer automatically.
 	SendAutomatically bool `json:"sendAutomatically"`
+
 	// SendAutomaticallyAfter OctoPrint will use this delay to limit the number
 	// of sent temperature commands should you perform multiple fine adjustments
 	// in a short time.
@@ -839,13 +846,18 @@ type WebcamConfig struct {
 	Rotate90 bool `json:"rotate90"`
 }
 
-// TemperatureProfile describes the temperature profile preset for a given
-// material.
-type TemperatureProfile struct {
+
+
+
+// TemperaturePreset describes the temperature preset for a given material.
+type TemperaturePreset struct {
 	Name     string  `json:"name"`
 	Bed      float64 `json:"bed"`
 	Extruder float64 `json:"extruder"`
 }
+
+
+
 
 type PrinterProfilesResponse struct {
 	Profiles []*PrinterProfile `json:"profiles"`
