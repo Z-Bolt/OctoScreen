@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 )
 
@@ -39,36 +40,181 @@ var (
 	}
 )
 
-// StateRequest retrieves the current state of the printer.
-type StateRequest struct {
-	// History if true retrieve the temperature history.
-	History bool
-	// Limit limtis amount of returned history data points.
+
+
+
+
+
+// FullStateRequest retrieves the current state of the printer.
+type FullStateRequest struct {
+	// bytes if true retrieve the temperature history.
+	IncludeHistory bool
+
+	// Limit limits the amount of returned history data points.
 	Limit int
+
 	// Exclude list of fields to exclude from the response (e.g. if not
 	// needed by the client). Valid values to supply here are `temperature`,
 	// `sd` and `state`.
 	Exclude []string
 }
 
+// FullStateResponse contains informantion about the current state of the printer.
+type FullStateResponse struct {
+	// TemperatureStateResponse is the printer’s temperature state data.
+	Temperature TemperatureStateResponse `json:"temperature"`
+
+	// SD is the printer’s sd state data.
+	SD SDState `json:"sd"`
+
+	// State is the printer’s general state.
+	State PrinterState `json:"state"`
+}
+
 // Do sends an API request and returns the API response.
-func (cmd *StateRequest) Do(c *Client) (*FullStateResponse, error) {
-	uri := fmt.Sprintf("%s?history=%t&limit=%d&exclude=%s", URIPrinter,
-		cmd.History, cmd.Limit, strings.Join(cmd.Exclude, ","),
+func (cmd *FullStateRequest) Do(c *Client) (*FullStateResponse, error) {
+	uri := fmt.Sprintf(
+		"%s?history=%t&limit=%d&exclude=%s",
+		URIPrinter,
+		cmd.IncludeHistory,
+		cmd.Limit,
+		strings.Join(cmd.Exclude, ","),
 	)
 
-	b, err := c.doJSONRequest("GET", uri, nil, PrintErrors)
+	log.Printf("TODO-Remove: StateRequest (FullStateResponse) uri is: %s", uri)
+	//StateRequest uri is: %s /api/printer?history=true&limit=1&exclude=sd,state
+	/*
+		{
+			"temperature": {
+				"bed": {
+					"actual": 26.9,
+					"offset": 0,
+					"target": 0.0
+				},
+				"history": [
+					{
+						"bed": {
+							"actual": 26.9,
+							"target": 0.0
+						},
+						"time": 1598235178,
+						"tool0": {
+							"actual": 35.4,
+							"target": 0.0
+						}
+					}
+				],
+				"tool0": {
+					"actual": 35.4,
+					"offset": 0,
+					"target": 0.0
+				}
+			}
+		}
+	*/
+
+
+	bytes, err := c.doJSONRequest("GET", uri, nil, PrintErrors)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &FullStateResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &FullStateResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
+
+
+
+
+
+
+// FullStateRequest retrieves the current state of the printer.
+type TemperatureDataRequest struct {
+	// bytes if true retrieve the temperature history.
+	// IncludeHistory bool
+
+	// Limit limits the amount of returned history data points.
+	// Limit int
+
+	// Exclude list of fields to exclude from the response (e.g. if not
+	// needed by the client). Valid values to supply here are `temperature`,
+	// `sd` and `state`.
+	// Exclude []string
+}
+
+// FullStateResponse contains informantion about the current state of the printer.
+type TemperatureDataResponse struct {
+	// TemperatureStateResponse is the printer’s temperature state data.
+	TemperatureStateResponse TemperatureStateResponse `json:"temperature"`
+
+	// SD is the printer’s sd state data.
+	// SD SDState `json:"sd"`
+
+	// State is the printer’s general state.
+	// State PrinterState `json:"state"`
+}
+
+// Do sends an API request and returns the API response.
+func (cmd *TemperatureDataRequest) Do(c *Client) (*TemperatureDataResponse, error) {
+	uri := fmt.Sprintf(
+		"%s?history=false&exclude=sd,state",
+		URIPrinter,
+	)
+
+	log.Printf("TODO-Remove: StateRequest (TemperatureDataResponse) uri is: %s", uri)
+	//StateRequest uri is: %s /api/printer?history=false&exclude=sd,state
+	/*
+		{
+			"temperature": {
+				"bed": {
+					"actual": 26.9,
+					"offset": 0,
+					"target": 0.0
+				},
+				"tool0": {
+					"actual": 35.4,
+					"offset": 0,
+					"target": 0.0
+				}
+			}
+		}
+	*/
+
+
+	bytes, err := c.doJSONRequest("GET", uri, nil, PrintErrors)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &TemperatureDataResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
+		return nil, err
+	}
+
+	return response, err
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // PrintHeadJogRequest jogs the print head (relatively) by a defined amount in
 // one or more axes.
@@ -145,20 +291,42 @@ func (cmd *PrintHeadHomeRequest) encode(w io.Writer) error {
 // all of the printer’s available tools.
 type ToolStateRequest struct {
 	// History if true retrieve the temperature history.
-	History bool
+	IncludeHistory bool
+
 	// Limit limtis amount of returned history data points.
 	Limit int
 }
 
 // Do sends an API request and returns the API response.
-func (cmd *ToolStateRequest) Do(c *Client) (*TemperatureState, error) {
-	uri := fmt.Sprintf("%s?history=%t&limit=%d", URIPrintTool, cmd.History, cmd.Limit)
+func (cmd *ToolStateRequest) Do(c *Client) (*TemperatureStateResponse, error) {
+	uri := fmt.Sprintf("%s?history=%t&limit=%d", URIPrintTool, cmd.IncludeHistory, cmd.Limit)
+
+	log.Printf("TODO-Remove: ToolStateRequest uri is: %s", uri)
+	//ToolStateRequest uri is: %s /api/printer/tool?history=true&limit=1
+	/*
+		{
+			"history": [
+				{
+					"tool0": {
+						"actual": 38.0,
+						"target": 0.0
+					}
+				}
+			],
+			"tool0": {
+				"actual": 38.0,
+				"offset": 0,
+				"target": 0.0
+			}
+		}
+	*/
+
 	b, err := c.doJSONRequest("GET", uri, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &TemperatureState{}
+	r := &TemperatureStateResponse{}
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, err
 	}
@@ -279,15 +447,19 @@ func (cmd *ToolSelectRequest) encode(w io.Writer) error {
 	})
 }
 
-// ToolFlowrateRequest changes the flow rate factor to apply to extrusion of
-// the tool.
-type ToolFlowrateRequest struct {
+
+
+
+
+
+// ToolFlowRateRequest changes the flow rate factor to apply to extrusion of the tool.
+type ToolFlowRateRequest struct {
 	// Factor is the new factor, percentage as integer, between 75 and 125%.
 	Factor int `json:"factor"`
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ToolFlowrateRequest) Do(c *Client) error {
+func (cmd *ToolFlowRateRequest) Do(c *Client) error {
 	b := bytes.NewBuffer(nil)
 	if err := cmd.encode(b); err != nil {
 		return err
@@ -297,15 +469,22 @@ func (cmd *ToolFlowrateRequest) Do(c *Client) error {
 	return err
 }
 
-func (cmd *ToolFlowrateRequest) encode(w io.Writer) error {
+func (cmd *ToolFlowRateRequest) encode(w io.Writer) error {
 	return json.NewEncoder(w).Encode(struct {
 		Command string `json:"command"`
-		ToolFlowrateRequest
+		ToolFlowRateRequest
 	}{
 		Command:             "flowrate",
-		ToolFlowrateRequest: *cmd,
+		ToolFlowRateRequest: *cmd,
 	})
 }
+
+
+
+
+
+
+
 
 // BedStateRequest retrieves the current temperature data (actual, target and
 // offset) plus optionally a (limited) history (actual, target, timestamp) for
@@ -316,20 +495,21 @@ func (cmd *ToolFlowrateRequest) encode(w io.Writer) error {
 // points can be limited using the limit query parameter.
 type BedStateRequest struct {
 	// History if true retrieve the temperature history.
-	History bool
+	IncludeHistory bool
+
 	// Limit limtis amount of returned history data points.
 	Limit int
 }
 
 // Do sends an API request and returns the API response.
-func (cmd *BedStateRequest) Do(c *Client) (*TemperatureState, error) {
-	uri := fmt.Sprintf("%s?history=%t&limit=%d", URIPrintBed, cmd.History, cmd.Limit)
+func (cmd *BedStateRequest) Do(c *Client) (*TemperatureStateResponse, error) {
+	uri := fmt.Sprintf("%s?history=%t&limit=%d", URIPrintBed, cmd.IncludeHistory, cmd.Limit)
 	b, err := c.doJSONRequest("GET", uri, nil, PrintBedErrors)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &TemperatureState{}
+	r := &TemperatureStateResponse{}
 	if err := json.Unmarshal(b, &r); err != nil {
 		return nil, err
 	}
