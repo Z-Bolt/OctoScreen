@@ -249,6 +249,7 @@ type FilesResponse struct {
 	// are available
 	Files    []*FileInformation
 	Children []*FileInformation
+
 	// Free is the amount of disk space in bytes available in the local disk
 	// space (refers to OctoPrint’s `uploads` folder). Only returned if file
 	// list was requested for origin `local` or all origins.
@@ -260,32 +261,42 @@ type FileInformation struct {
 	// Name is name of the file without path. E.g. “file.gco” for a file
 	// “file.gco” located anywhere in the file system.
 	Name string `json:"name"`
+
 	// Path is the path to the file within the location. E.g.
 	//“folder/subfolder/file.gco” for a file “file.gco” located within “folder”
 	// and “subfolder” relative to the root of the location.
 	Path string `json:"path"`
+
 	// Type of file. model or machinecode. Or folder if it’s a folder, in
 	// which case the children node will be populated.
 	Type string `json:"type"`
+
 	// TypePath path to type of file in extension tree. E.g. `["model", "stl"]`
 	// for .stl files, or `["machinecode", "gcode"]` for .gcode files.
 	// `["folder"]` for folders.
 	TypePath []string `json:"typePath"`
+
 	// Hash is the MD5 hash of the file. Only available for `local` files.
 	Hash string `json:"hash"`
+
 	// Size of the file in bytes. Only available for `local` files or `sdcard`
 	// files if the printer supports file sizes for sd card files.
 	Size uint64 `json:"size"`
+
 	// Date when this file was uploaded. Only available for `local` files.
 	Date JSONTime `json:"date"`
+
 	// Origin of the file, `local` when stored in OctoPrint’s `uploads` folder,
 	// `sdcard` when stored on the printer’s SD card (if available)
 	Origin string `json:"origin"`
+
 	// Refs references relevant to this file, left out in abridged versio
 	Refs Reference `json:"refs"`
+
 	// GCodeAnalysis information from the analysis of the GCODE file, if
 	// available. Left out in abridged version.
 	GCodeAnalysis GCodeAnalysisInformation `json:"gcodeAnalysis"`
+
 	// Print information from the print stats of a file.
 	Print PrintStats `json:"print"`
 }
@@ -304,8 +315,10 @@ type Reference struct {
 	// Resource that represents the file or folder (e.g. for issuing commands
 	// to or for deleting)
 	Resource string `json:"resource"`
+
 	// Download URL for the file. Never present for folders.
 	Download string `json:"download"`
+
 	// Model from which this file was generated (e.g. an STL, currently not
 	// used). Never present for folders.
 	Model string `json:"model"`
