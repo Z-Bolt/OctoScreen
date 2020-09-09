@@ -290,6 +290,8 @@ func (this *UI) loadSettings() {
 func (this *UI) update() {
 	utils.Logger.Info("entering ui.update()")
 
+	this.sdNotify("WATCHDOG=1")
+
 	if this.connectionAttempts > 8 {
 		this.splashPanel.putOnHold()
 		utils.Logger.Info("leaving ui.update() - connectionAttempts > 8")
