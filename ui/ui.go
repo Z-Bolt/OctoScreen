@@ -49,7 +49,7 @@ func New(endpoint, key string, width, height int) *UI {
 		height = utils.WindowHeight
 	}
 
-	ui := &UI{
+	instance := &UI{
 		Printer:				octoprint.NewClient(endpoint, key),
 		NotificationsBox:		uiWidgets.NewNotificationsBox(),
 		OctoPrintPlugin:		true,
@@ -62,115 +62,120 @@ func New(endpoint, key string, width, height int) *UI {
 		height:					height,
 	}
 
-	ui.window.Connect("configure-event", func(win *gtk.Window) {
+	instance.window.Connect("configure-event", func(win *gtk.Window) {
 		allocatedWidth:= win.GetAllocatedWidth()
 		allocatedHeight:= win.GetAllocatedHeight()
 		sizeWidth, sizeHeight := win.GetSize()
 
 		if (allocatedWidth > width || allocatedHeight > height) ||
 			(sizeWidth > width || sizeHeight > height) {
-			utils.Logger.Errorf("Widow resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
+			utils.Logger.Errorf(
+				"Widow resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
 				allocatedWidth,
 				allocatedHeight,
 				sizeWidth,
-				sizeHeight)
-			utils.Logger.Errorf("Widow resize went past max size.  Target width and height: %dx%d",
+				sizeHeight,
+			)
+			utils.Logger.Errorf(
+				"Widow resize went past max size.  Target width and height: %dx%d",
 				width,
-				height)
+				height,
+			)
 		}
 	})
 
 	switch {
 		case width > 480:
-			ui.scaleFactor = 2
+			instance.scaleFactor = 2
 
 		case width > 1000:
-			ui.scaleFactor = 3
+			instance.scaleFactor = 3
 
 		default:
-			ui.scaleFactor = 1
+			instance.scaleFactor = 1
 	}
 
-	ui.splashPanel = NewSplashPanel(ui)
-	ui.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, ui.update)
-	ui.initialize()
+	instance.splashPanel = NewSplashPanel(instance)
+	instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, instance.update)
+	instance.initialize()
 
 	utils.Logger.Info("leaving ui.New()")
-	return ui
+
+	return instance
 }
 
-func (ui *UI) initialize() {
+func (this *UI) initialize() {
 	utils.Logger.Info("entering ui.initialize()")
 
-	defer ui.window.ShowAll()
-	ui.loadStyle()
+	defer this.window.ShowAll()
+	this.loadStyle()
 
-	ui.window.SetTitle(utils.WindowName)
-	ui.window.SetDefaultSize(ui.width, ui.height)
-	ui.window.SetResizable(false)
+	this.window.SetTitle(utils.WindowName)
+	this.window.SetDefaultSize(this.width, this.height)
+	this.window.SetResizable(false)
 
-	ui.window.Connect("show", ui.backgroundTask.Start)
-	ui.window.Connect("destroy", func() {
+	this.window.Connect("show", this.backgroundTask.Start)
+	this.window.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
 
-	o := utils.MustOverlay()
-	ui.window.Add(o)
+	overlay := utils.MustOverlay()
+	this.window.Add(overlay)
 
-	ui.grid = utils.MustGrid()
-	o.Add(ui.grid)
+	this.grid = utils.MustGrid()
+	overlay.Add(this.grid)
 
-	ui.sdNotify("READY=1")
+	this.sdNotify("READY=1")
 
 	utils.Logger.Info("leaving ui.initialize()")
 }
 
-func (ui *UI) loadStyle() {
+func (this *UI) loadStyle() {
 	utils.Logger.Info("entering ui.loadStyle()")
 
-	p := utils.MustCSSProviderFromFile(utils.CSSFilename)
-
-	s, err := gdk.ScreenGetDefault()
+	screenDefault, err := gdk.ScreenGetDefault()
 	if err != nil {
 		utils.LogError("ui.loadStyle()", "ScreenGetDefault()", err)
 		utils.Logger.Error("leaving ui.loadStyle()")
 		return
 	}
 
-	gtk.AddProviderForScreen(s, p, gtk.STYLE_PROVIDER_PRIORITY_USER)
+	cssProvider := utils.MustCSSProviderFromFile(utils.CSSFilename)
+
+	gtk.AddProviderForScreen(screenDefault, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER)
 
 	utils.Logger.Info("leaving ui.loadStyle()")
 }
 
 var errMercyPeriod = time.Second * 10
 
-func (ui *UI) verifyConnection() {
+func (this *UI) verifyConnection() {
 	utils.Logger.Info("entering ui.verifyConnection()")
 
-	ui.sdNotify("WATCHDOG=1")
+	this.sdNotify("WATCHDOG=1")
 
 	newUIState := "<<uninitialized-state>>"
 	splashMessage := "<<uninitialized-message>>"
 
-	s, err := (&octoprint.ConnectionRequest{}).Do(ui.Printer)
+	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(this.Printer)
 	if err == nil {
-		ui.State = s.Current.State
-		strCurrentState := string(s.Current.State)
+		this.State = connectionResponse.Current.State
+		strCurrentState := string(connectionResponse.Current.State)
 
 		switch {
-			case s.Current.State.IsOperational():
+			case connectionResponse.Current.State.IsOperational():
 				newUIState = "idle"
 				splashMessage = "Initializing..."
 
-			case s.Current.State.IsPrinting():
+			case connectionResponse.Current.State.IsPrinting():
 				newUIState = "printing"
 				splashMessage = "Printing..."
 
-			case s.Current.State.IsError():
+			case connectionResponse.Current.State.IsError():
 				fallthrough
-			case s.Current.State.IsOffline():
+			case connectionResponse.Current.State.IsOffline():
 				newUIState = "splash"
-				if err := (&octoprint.ConnectRequest{}).Do(ui.Printer); err != nil {
+				if err := (&octoprint.ConnectRequest{}).Do(this.Printer); err != nil {
 					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(ui.Printer)", err)
 					splashMessage = "Loading..."
 				} else {
@@ -179,20 +184,20 @@ func (ui *UI) verifyConnection() {
 					splashMessage = "Printer is Offline."
 				}
 
-			case s.Current.State.IsConnecting():
+			case connectionResponse.Current.State.IsConnecting():
 				newUIState = "splash"
 				splashMessage = strCurrentState
 
 			default:
-				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of s.Current.State: %q", strCurrentState)
+				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of connectionResponse.Current.State: %q", strCurrentState)
 		}
 	} else {
 		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest)", err)
 		utils.Logger.Info("ui.verifyConnection() - now setting newUIState to 'splash'")
 		newUIState = "splash"
 
-		if time.Since(ui.time) > errMercyPeriod {
-			errMessage := ui.errToUser(err)
+		if time.Since(this.time) > errMercyPeriod {
+			errMessage := this.errToUser(err)
 
 			utils.Logger.Info("ui.verifyConnection() - printer is offline")
 			utils.Logger.Infof("ui.verifyConnection() - errMessage is: %q", errMessage)
@@ -210,31 +215,33 @@ func (ui *UI) verifyConnection() {
 		}
 	}
 
-	defer func() { ui.UIState = newUIState }()
+	defer func() {
+		this.UIState = newUIState
+	}()
 
-	ui.splashPanel.Label.SetText(splashMessage)
+	this.splashPanel.Label.SetText(splashMessage)
 
-	if newUIState == ui.UIState {
-		utils.Logger.Infof("ui.verifyConnection() - newUIState equals ui.UIState and is: %q", ui.UIState)
+	if newUIState == this.UIState {
+		utils.Logger.Infof("ui.verifyConnection() - newUIState equals ui.UIState and is: %q", this.UIState)
 		utils.Logger.Info("leaving ui.verifyConnection()")
 		return
 	}
 
 	utils.Logger.Info("ui.verifyConnection() - newUIState does not equals ui.UIState")
-	utils.Logger.Infof("ui.verifyConnection() - ui.UIState is: %q", ui.UIState)
+	utils.Logger.Infof("ui.verifyConnection() - ui.UIState is: %q", this.UIState)
 	utils.Logger.Infof("ui.verifyConnection() - newUIState is: %q", newUIState)
 
 	switch newUIState {
 		case "idle":
 			utils.Logger.Info("ui.verifyConnection() - printer is ready")
-			ui.Add(IdleStatusPanel(ui))
+			this.Add(IdleStatusPanel(this))
 
 		case "printing":
 			utils.Logger.Info("ui.verifyConnection() - printing a job")
-			ui.Add(PrintStatusPanel(ui))
+			this.Add(PrintStatusPanel(this))
 
 		case "splash":
-			ui.Add(ui.splashPanel)
+			this.Add(this.splashPanel)
 
 		default:
 			utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of newUIState: %q", newUIState)
@@ -243,14 +250,14 @@ func (ui *UI) verifyConnection() {
 	utils.Logger.Info("leaving ui.verifyConnection()")
 }
 
-func (m *UI) checkNotification() {
+func (this *UI) checkNotification() {
 	utils.Logger.Info("entering ui.checkNotification()")
 
-	n, err := (&octoprint.GetNotificationRequest{}).Do(m.Printer)
+	notificationRespone, err := (&octoprint.GetNotificationRequest{}).Do(this.Printer)
 	if err != nil {
 		text := err.Error()
 		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
-			m.OctoPrintPlugin = false
+			this.OctoPrintPlugin = false
 		}
 
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
@@ -258,61 +265,61 @@ func (m *UI) checkNotification() {
 		return
 	}
 
-	if n.Message != "" {
-		utils.InfoMessageDialogBox(m.window, n.Message)
+	if notificationRespone.Message != "" {
+		utils.InfoMessageDialogBox(this.window, notificationRespone.Message)
 	}
 
 	utils.Logger.Info("leaving ui.checkNotification()")
 }
 
-func (m *UI) loadSettings() {
+func (this *UI) loadSettings() {
 	utils.Logger.Info("entering ui.loadSettings()")
 
-	n, err := (&octoprint.GetSettingsRequest{}).Do(m.Printer)
+	settingsResponse, err := (&octoprint.GetSettingsRequest{}).Do(this.Printer)
 	if err != nil {
 		utils.LogError("ui.loadSettings()", "Do(GetSettingsRequest)", err)
 		utils.Logger.Error("leaving ui.loadSettings() - Do(GetSettingsRequest) returned an error")
 		return
 	}
 
-	m.Settings = n
+	this.Settings = settingsResponse
 
 	utils.Logger.Info("leaving ui.loadSettings()")
 }
 
-func (m *UI) update() {
+func (this *UI) update() {
 	utils.Logger.Info("entering ui.update()")
 
-	if m.connectionAttempts > 8 {
-		m.splashPanel.putOnHold()
+	if this.connectionAttempts > 8 {
+		this.splashPanel.putOnHold()
 		utils.Logger.Info("leaving ui.update() - connectionAttempts > 8")
 		return
 	}
 
-	utils.Logger.Infoln("ui.update() - m.UIState is: ", m.UIState)
+	utils.Logger.Infoln("ui.update() - m.UIState is: ", this.UIState)
 
-	if m.UIState == "splash" {
-		m.connectionAttempts++
+	if this.UIState == "splash" {
+		this.connectionAttempts++
 	} else {
-		m.connectionAttempts = 0
+		this.connectionAttempts = 0
 	}
 
-	if m.OctoPrintPlugin {
-		m.checkNotification()
-		m.loadSettings()
+	if this.OctoPrintPlugin {
+		this.checkNotification()
+		this.loadSettings()
 	}
 
-	m.verifyConnection()
+	this.verifyConnection()
 
 	utils.Logger.Info("leaving ui.update()")
 }
 
-func (ui *UI) sdNotify(m string) {
+func (this *UI) sdNotify(state string) {
 	utils.Logger.Info("entering ui.sdNotify()")
 
-	_, err := daemon.SdNotify(false, m)
+	_, err := daemon.SdNotify(false, state)
 	if err != nil {
-		utils.Logger.Errorf("ui.sdNotify()", "SdNotify()", err)
+		utils.LogError("ui.sdNotify()", "SdNotify()", err)
 		utils.Logger.Error("leaving ui.sdNotify()")
 		return
 	}
@@ -320,39 +327,39 @@ func (ui *UI) sdNotify(m string) {
 	utils.Logger.Info("leaving ui.sdNotify()")
 }
 
-func (ui *UI) Add(panel interfaces.IPanel) {
+func (this *UI) Add(panel interfaces.IPanel) {
 	utils.Logger.Info("entering ui.Add()")
 
-	if ui.CurrentPanel != nil {
-		ui.Remove(ui.CurrentPanel)
+	if this.CurrentPanel != nil {
+		this.Remove(this.CurrentPanel)
 	}
 
-	ui.CurrentPanel = panel
-	ui.CurrentPanel.Show()
-	ui.grid.Attach(ui.CurrentPanel.Grid(), 0, 0, 1, 1)
-	ui.grid.ShowAll()
+	this.CurrentPanel = panel
+	this.CurrentPanel.Show()
+	this.grid.Attach(this.CurrentPanel.Grid(), 0, 0, 1, 1)
+	this.grid.ShowAll()
 
 	utils.Logger.Info("leaving ui.Add()")
 }
 
-func (ui *UI) Remove(panel interfaces.IPanel) {
+func (this *UI) Remove(panel interfaces.IPanel) {
 	utils.Logger.Info("entering ui.Remove()")
 
 	defer panel.Hide()
-	ui.grid.Remove(panel.Grid())
+	this.grid.Remove(panel.Grid())
 
 	utils.Logger.Info("leaving ui.Remove()")
 }
 
-func (ui *UI) GoHistory() {
+func (this *UI) GoHistory() {
 	utils.Logger.Info("entering ui.GoHistory()")
 
-	ui.Add(ui.CurrentPanel.ParentPanel())
+	this.Add(this.CurrentPanel.ParentPanel())
 
 	utils.Logger.Info("entering ui.GoHistory()")
 }
 
-func (ui *UI) errToUser(err error) string {
+func (this *UI) errToUser(err error) string {
 	utils.Logger.Info("entering ui.errToUser()")
 
 	text := strings.ToLower(err.Error())
