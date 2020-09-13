@@ -37,6 +37,8 @@ func GetToolheadCount(client *octoprint.Client) int {
 
 	// TESTING: uncomment to force all toolheads to display and use for testing
 	// cachedToolheadCount = 2
+	// cachedToolheadCount = 3
+	// cachedToolheadCount = 4
 
 
 	return cachedToolheadCount
@@ -152,6 +154,27 @@ func GetToolheadFileName(hotendIndex, hotendCount int) string {
 	return strImageFileName
 }
 
+func GetHotendFileName(hotendIndex, hotendCount int) string {
+	strImageFileName := ""
+	if hotendIndex == 1 && hotendCount == 1 {
+		strImageFileName = "hotend.svg"
+	} else {
+		strImageFileName = fmt.Sprintf("hotend-%d.svg", hotendIndex)
+	}
+
+	return strImageFileName
+}
+
+func GetNozzleFileName(hotendIndex, hotendCount int) string {
+	strImageFileName := ""
+	if hotendIndex == 1 && hotendCount == 1 {
+		strImageFileName = "nozzle.svg"
+	} else {
+		strImageFileName = fmt.Sprintf("nozzle-%d.svg", hotendIndex)
+	}
+
+	return strImageFileName
+}
 
 func GetTemperatureDataString(temperatureData octoprint.TemperatureData) string {
 	return fmt.Sprintf("%.0f°C / %.0f°C", temperatureData.Actual, temperatureData.Target)

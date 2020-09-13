@@ -55,10 +55,10 @@ func CreateToolheadButtons(toolheadCount int) []*gtk.Button {
 
 func CreateToolheadButton(num, toolheadCount int, clicked func()) *gtk.Button {
 	name := ""
-	imageFileName := "toolhead.svg"
+	imageFileName := "toolhead-typeB.svg"
 	if toolheadCount >= 2 {
 		name = fmt.Sprintf("Tool%d", num + 1)
-		imageFileName = fmt.Sprintf("toolhead-with-color-%d.svg", num + 1)
+		imageFileName = fmt.Sprintf("toolhead-typeB-%d.svg", num + 1)
 	}
 
 	return MustButtonImageStyle(name, imageFileName, "", clicked)
