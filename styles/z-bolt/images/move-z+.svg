@@ -1,91 +1,39 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="60.13768"
-   height="60.776516"
-   viewBox="0 0 60.137677 60.776516"
-   id="svg4160"
-   version="1.1"
-   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="move-z-.svg">
-  <defs
-     id="defs4162" />
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="-183.94776"
-     inkscape:cy="7.2709709"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer2"
-     showgrid="true"
-     units="in"
-     showguides="false"
-     inkscape:window-width="3196"
-     inkscape:window-height="584"
-     inkscape:window-x="0"
-     inkscape:window-y="1176"
-     inkscape:window-maximized="0"
-     inkscape:snap-bbox="true"
-     inkscape:snap-global="false">
-    <inkscape:grid
-       type="xygrid"
-       id="grid4712"
-       originx="-9.9771178"
-       originy="-29.820954" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata4165">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     inkscape:groupmode="layer"
-     id="layer2"
-     inkscape:label="Move"
-     style="display:inline"
-     transform="translate(-3.5328446,2.2636422)">
-    <g
-       transform="translate(-6.3983144,-16.077827)"
-       id="g37">
-      <path
-         sodipodi:nodetypes="ccccccc"
-         inkscape:connector-curvature="0"
-         id="rect4760-8"
-         d="m 22.795553,16.619161 3.21242,-1.25 3.212421,1.25 v 47.687531 l -3.212421,0.892857 -3.21242,-0.892857 z"
-         style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <rect
-         transform="scale(1,-1)"
-         y="-21.604885"
-         x="14.050002"
-         height="5.8285666"
-         width="51.899994"
-         id="rect7837"
-         style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         inkscape:connector-curvature="0"
-         id="path7561-4-3"
-         d="M 58.029325,54.858544 40.443746,72.628629 22.673661,55.043048 l 7.034623,-7.108037 5.693541,5.634648 -0.236549,-20.738885 9.99935,-0.114053 0.235947,20.686154 5.520713,-5.578953 z"
-         style="fill:#232323;fill-opacity:1;fill-rule:evenodd;stroke:#FFFFFF;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    </g>
-  </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="Layer1" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" sodipodi:docname="move-z+.svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="60.137px"
+	 height="60.777px" viewBox="0 0 60.137 60.777" enable-background="new 0 0 60.137 60.777" xml:space="preserve">
+<rect id="bed" x="4.119" y="52.986" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="51.899" height="5.828"/>
+<g id="Extruder">
+	<g id="Layer_right">
+		<path fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linejoin="round" stroke-miterlimit="10" d="M21.581,22.402
+			h4.247c0.616,0,1.158,0.541,1.158,1.158c0,0.615-0.542,1.155-1.158,1.155h-9.65"/>
+		
+			<polyline fill="none" stroke="#FFFFFF" stroke-width="1.7451" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+			15.792,27.034 21.196,27.034 17.722,31.279 15.522,31.279 13.857,29.251 		"/>
+		<path fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linejoin="round" stroke-miterlimit="10" d="M24.67,22.402
+			V10.629c0-0.733-0.619-1.351-1.353-1.351H13.089"/>
+		<g>
+			<path fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linejoin="round" stroke-miterlimit="10" d="M16.534,8.122
+				c0,0,0-0.541,0-1.16c0-0.616,0.693-1.157,1.544-1.157h2.7c0.851,0,1.546-0.694,1.546-1.544V1.173"/>
+		</g>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="24.67" y1="22.402" x2="20.423" y2="22.402"/>
+	</g>
+	<g id="Layer_left">
+		<path fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linejoin="round" stroke-miterlimit="10" d="M17.057,24.717
+			H7.407c-0.618,0-1.158-0.54-1.158-1.155c0-0.617,0.54-1.158,1.158-1.158h4.245"/>
+		
+			<polyline fill="none" stroke="#FFFFFF" stroke-width="1.7451" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+			19.34,29.292 17.712,31.279 15.512,31.279 12.038,27.034 17.442,27.034 		"/>
+		<path fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linejoin="round" stroke-miterlimit="10" d="M20.144,9.278H9.916
+			c-0.734,0-1.353,0.617-1.353,1.351v11.773"/>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="12.811" y1="22.402" x2="8.565" y2="22.402"/>
+	</g>
+</g>
+<path id="Arrow_1_" fill="#232323" stroke="#FFFFFF" stroke-width="2.1251" stroke-linejoin="round" d="M52.104,20.569l-3.911-3.952
+	l0.001,14.573H41.11V16.5l-4.032,3.991l-4.982-5.035L44.681,3l12.456,12.588L52.104,20.569z"/>
 </svg>

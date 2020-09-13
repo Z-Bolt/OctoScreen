@@ -54,7 +54,7 @@ func CreateTemperatureStatusBox(
 			hotendIndex++
 
 			if includeHotends {
-				strImageFileName := utils.GetToolheadFileName(hotendIndex, hotendCount)
+				strImageFileName := utils.GetNozzleFileName(hotendIndex, hotendCount)
 				instance.labelWithImages[key] = utils.MustLabelWithImage(strImageFileName, "")
 				instance.Add(instance.labelWithImages[key])
 			}

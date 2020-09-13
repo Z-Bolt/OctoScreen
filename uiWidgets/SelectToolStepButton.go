@@ -15,16 +15,8 @@ type SelectToolStepButton struct {
 
 func CreateSelectToolStepButton(
 	client							*octoprint.Client,
-	useToolheadForDisplay			bool,
 	includeBed						bool,
 ) *SelectToolStepButton {
-	strLabel:= ""
-	if useToolheadForDisplay {
-		strLabel = "Toolhead"
-	} else {
-		strLabel = "Hotend"
-	}
-
 	toolheadCount := utils.GetToolheadCount(client)
 
 	var steps []Step
@@ -32,15 +24,15 @@ func CreateSelectToolStepButton(
 		var step Step
 		if i == 0 && toolheadCount == 1 {
 			step = Step {
-				strLabel,
-				"toolhead.svg",
+				"Hotend",
+				utils.GetHotendFileName(1, toolheadCount),
 				nil,
 				"tool0",
 			}
 		} else {
 			step = Step {
-				fmt.Sprintf("%s %d", strLabel, i + 1),
-				fmt.Sprintf("toolhead-%d.svg", i),
+				fmt.Sprintf("Hotend %d", i + 1),
+				utils.GetHotendFileName(i + 1, toolheadCount),
 				nil,
 				fmt.Sprintf("tool%d", i),
 			}

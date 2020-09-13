@@ -15,11 +15,11 @@ type HomeButton struct {
 
 func CreateHomeButton(
 	client				*octoprint.Client,
-	label				string,
-	image				string,
+	buttonLabel			string,
+	imageFileName		string,
 	axes				...octoprint.Axis,
 ) *HomeButton {
-	base := utils.MustButtonImageStyle(label, image, "", nil)
+	base := utils.MustButtonImageStyle(buttonLabel, imageFileName, "", nil)
 
 	instance := &HomeButton {
 		Button:				base,

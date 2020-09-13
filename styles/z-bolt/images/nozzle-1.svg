@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="77px" height="80px" viewBox="0 0 77 80" enable-background="new 0 0 77 80" xml:space="preserve">
+<g id="Nozzle">
+	<g>
+		<path fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-miterlimit="10" d="M68.98,55.98
+			c0,2.107-1.724,3.834-3.834,3.834H11.333c-2.108,0-3.833-1.727-3.833-3.834v-9.598c0-2.107,1.726-3.835,3.833-3.835h53.815
+			c2.108,0,3.836,1.726,3.836,3.835v9.598H68.98z"/>
+	</g>
+	
+		<rect x="21.688" y="42.549" fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-miterlimit="10" width="33.107" height="17.266"/>
+	<path fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-miterlimit="10" d="M38.238,76.344
+		c-1.009,0-1.973-0.395-2.639-1.072L21.687,61.046H54.79L40.652,75.48C40.004,76.031,39.143,76.344,38.238,76.344z"/>
+	<path fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-miterlimit="10" d="M46.325,4.311H30.251
+		c-2.109,0-3.833,1.723-3.833,3.833v24.441v6.135v3.833h3.833h6.387h3.299h6.388h3.834V38.72v-6.135V8.144
+		C50.156,6.034,48.434,4.311,46.325,4.311z"/>
+	
+		<line fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-linecap="round" stroke-miterlimit="10" x1="20.049" y1="19.056" x2="56.605" y2="10.417"/>
+	
+		<line fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-linecap="round" stroke-miterlimit="10" x1="20.049" y1="27.608" x2="56.605" y2="18.967"/>
+	
+		<line fill="none" stroke="#FFFFFF" stroke-width="2.0016" stroke-linecap="round" stroke-miterlimit="10" x1="20.049" y1="36.158" x2="56.605" y2="27.519"/>
+</g>
+<g id="Oval_2_">
+	<circle id="Oval_1_" fill="#FFFFFF" stroke="#000000" stroke-width="0.5" cx="55" cy="22" r="21"/>
+	<text transform="matrix(1 0 0 1 47.6191 31)" font-family="'ArialMT'" font-size="26">1</text>
+</g>
+</svg>

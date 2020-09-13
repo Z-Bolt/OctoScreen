@@ -28,10 +28,10 @@ func CreteToolHeatupButton(index int, printer *octoprint.Client) *ToolHeatup {
 		image = "bed.svg"
 		tool = "bed"
 	} else if index == 0 {
-		image = "toolhead.svg"
+		image = "hotend.svg"
 		tool = "tool0"
 	} else {
-		image = fmt.Sprintf("hotend-with-color-%d.svg", index)
+		image = fmt.Sprintf("hotend-%d.svg", index)
 		tool = fmt.Sprintf("tool%d", index - 1)
 	}
 
