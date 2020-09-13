@@ -34,10 +34,6 @@ func TemperaturePanel(
 			CommonPanel:	NewCommonPanel(ui, parentPanel),
 		}
 		temperaturePanelInstance.initialize()
-	} else {
-		// TODO: code in temperature.go is very similar to code in filament.go
-		// yet FilamentPanel() doesn't have this else clause
-		temperaturePanelInstance.parentPanel = parentPanel
 	}
 
 	return temperaturePanelInstance
@@ -48,7 +44,7 @@ func (this *temperaturePanel) initialize() {
 
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.temperatureAmountStepButton = uiWidgets.CreateTemperatureAmountStepButton()
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false, true)
+	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, true)
 
 
 	// First row
@@ -85,5 +81,5 @@ func (this *temperaturePanel) initialize() {
 
 func (this *temperaturePanel) showTemperaturePresetsPanel() {
 	temperaturePresetsPanel := TemperaturePresetsPanel(this.UI, this, this.selectToolStepButton)
-	this.UI.Add(temperaturePresetsPanel)
+	this.UI.GoToPanel(temperaturePresetsPanel)
 }

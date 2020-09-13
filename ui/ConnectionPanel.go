@@ -100,7 +100,7 @@ func (this *connectionPanel) createTopBar() *gtk.Box {
 func (this *connectionPanel) createActionBar() *gtk.Box {
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
 	backspaceButton := utils.MustButton(image, func() {
-		this.UI.GoHistory()
+		this.UI.GoToPreviousPanel()
 	})
 
 	backspaceButton.SetHAlign(gtk.ALIGN_END)
@@ -158,7 +158,7 @@ func (this *connectionPanel) createConnectToNetworkButton() *gtk.Button {
 		}
 
 		time.Sleep(time.Second * 1)
-		this.UI.GoHistory()
+		this.UI.GoToPreviousPanel()
 	})
 
 	ctx, _ := button.GetStyleContext()

@@ -10,27 +10,27 @@ import (
 )
 
 func getPanel(
-	ui			*UI,
-	parent		interfaces.IPanel,
-	item		octoprint.MenuItem,
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+	menuItem		octoprint.MenuItem,
 ) interfaces.IPanel {
-	switch item.Panel {
+	switch menuItem.Panel {
 		// The standard "top four" panels that are in the idleStatus panel
 		case "home":
-			return HomePanel(ui, parent)
+			return HomePanel(ui, parentPanel)
 
 		case "menu":
 			fallthrough
 		case "custom_items":
-			return CustomItemsPanel(ui, parent, item.Items)
+			return CustomItemsPanel(ui, parentPanel, menuItem.Items)
 
 		case "filament_multitool":
 			fallthrough
 		case "filament":
-			return FilamentPanel(ui, parent)
+			return FilamentPanel(ui, parentPanel)
 
 		case "configuration":
-			return ConfigurationPanel(ui, parent)
+			return ConfigurationPanel(ui, parentPanel)
 
 
 
@@ -39,42 +39,42 @@ func getPanel(
 		// case "extruder-multitool":
 		// 	fallthrough
 		// case "extruder":
-		// 	return ExtruderPanel(ui, parent)
+		// 	return ExtruderPanel(ui, parentPanel)
 
 		case "files":
-			return FilesPanel(ui, parent)
+			return FilesPanel(ui, parentPanel)
 
 		case "temperature":
-			return TemperaturePanel(ui, parent)
+			return TemperaturePanel(ui, parentPanel)
 
 		case "control":
-			return ControlPanel(ui, parent)
+			return ControlPanel(ui, parentPanel)
 
 		case "network":
-			return NetworkPanel(ui, parent)
+			return NetworkPanel(ui, parentPanel)
 
 		case "move":
-			return MovePanel(ui, parent)
+			return MovePanel(ui, parentPanel)
 
 		case "tool-changer":
-			return ToolchangerPanel(ui, parent)
+			return ToolchangerPanel(ui, parentPanel)
 
 		case "system":
-			return SystemPanel(ui, parent)
+			return SystemPanel(ui, parentPanel)
 
 		case "fan":
-			return FanPanel(ui, parent)
+			return FanPanel(ui, parentPanel)
 
 		case "bed-level":
-			return BedLevelPanel(ui, parent)
+			return BedLevelPanel(ui, parentPanel)
 
 		case "nozzle-calibration":
 			fallthrough
 		case "z-offset-calibration":
-			return ZOffsetCalibrationPanel(ui, parent)
+			return ZOffsetCalibrationPanel(ui, parentPanel)
 
 		case "print-menu":
-			return PrintMenuPanel(ui, parent)
+			return PrintMenuPanel(ui, parentPanel)
 
 		default:
 			return nil

@@ -90,9 +90,9 @@ func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
 	return control
 }
 
-func (m *controlPanel) getCommands() []*octoprint.CommandDefinition {
+func (this *controlPanel) getCommands() []*octoprint.CommandDefinition {
 	utils.Logger.Info("Retrieving custom commands")
-	r, err := (&octoprint.SystemCommandsRequest{}).Do(m.UI.Printer)
+	r, err := (&octoprint.SystemCommandsRequest{}).Do(this.UI.Printer)
 	if err != nil {
 		utils.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
 		return nil

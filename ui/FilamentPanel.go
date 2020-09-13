@@ -54,7 +54,7 @@ func (this *filamentPanel) initialize() {
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
 	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Printer)
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false, false)
+	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false)
 
 
 	// First row
@@ -87,8 +87,6 @@ func (this *filamentPanel) initialize() {
 	this.filamentLoadButton = uiWidgets.CreateFilamentLoadButton(
 		this.UI.window,
 		this.UI.Printer,
-		// this.amountToExtrudeStepButton,
-		// this.flowRateStepButton,
 		this.selectToolStepButton,
 		true,
 	)
@@ -100,8 +98,6 @@ func (this *filamentPanel) initialize() {
 	this.filamentUnloadButton = uiWidgets.CreateFilamentLoadButton(
 		this.UI.window,
 		this.UI.Printer,
-		// this.amountToExtrudeStepButton,
-		// this.flowRateStepButton,
 		this.selectToolStepButton,
 		false,
 	)
@@ -121,5 +117,5 @@ func (this *filamentPanel) initialize() {
 }
 
 func (this *filamentPanel) showTemperaturePanel() {
-	this.UI.Add(TemperaturePanel(this.UI, this))
+	this.UI.GoToPanel(TemperaturePanel(this.UI, this))
 }

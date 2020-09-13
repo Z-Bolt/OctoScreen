@@ -6,7 +6,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
-	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -32,39 +32,25 @@ func ToolchangerPanel(
 	return toolchangerPanelInstance
 }
 
-func (m *toolchangerPanel) initialize() {
-	defer m.Initialize()
+func (this *toolchangerPanel) initialize() {
+	defer this.Initialize()
 
-	m.createToolheadButtons()
+	this.createToolheadButtons()
 
-	m.Grid().Attach(m.createHomeButton(),         0, 1, 1, 1)
+	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Printer)
+	this.Grid().Attach(homeAllButton,                   0, 1, 1, 1)
 
-	m.Grid().Attach(m.createMagnetOnButton(),     2, 1, 1, 1)
-	m.Grid().Attach(m.createMagnetOffButton(),    3, 1, 1, 1)
-	m.Grid().Attach(m.createZCalibrationButton(), 1, 2, 1, 1)
+	this.Grid().Attach(this.createMagnetOnButton(),     2, 1, 1, 1)
+	this.Grid().Attach(this.createMagnetOffButton(),    3, 1, 1, 1)
+	this.Grid().Attach(this.createZCalibrationButton(), 1, 2, 1, 1)
 }
 
 func (m *toolchangerPanel) createZCalibrationButton() gtk.IWidget {
 	b := utils.MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
-		m.UI.Add(ZOffsetCalibrationPanel(m.UI, m))
+		m.UI.GoToPanel(ZOffsetCalibrationPanel(m.UI, m))
 	})
 
 	return b
-}
-
-func (m *toolchangerPanel) createHomeButton() gtk.IWidget {
-	return utils.MustButtonImageStyle("Home XYZ", "home.svg", "", func() {
-		cmd := &octoprint.CommandRequest{}
-		cmd.Commands = []string{
-			"G28 Z",
-			"G28 X",
-			"G28 Y",
-		}
-
-		if err := cmd.Do(m.UI.Printer); err != nil {
-			utils.LogError("tool-changer.createHomeButton()", "Do(CommandRequest)", err)
-		}
-	})
 }
 
 func (m *toolchangerPanel) createMagnetOnButton() gtk.IWidget {

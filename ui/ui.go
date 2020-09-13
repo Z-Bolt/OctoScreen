@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-systemd/daemon"
+	"github.com/golang-collections/collections/stack"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
@@ -19,7 +20,7 @@ import (
 type UI struct {
 	sync.Mutex
 
-	CurrentPanel			interfaces.IPanel
+	PanelHistory			*stack.Stack
 	Printer					*octoprint.Client
 	State					octoprint.ConnectionState
 	Settings				*octoprint.GetSettingsResponse
@@ -42,7 +43,7 @@ type UI struct {
 }
 
 func New(endpoint, key string, width, height int) *UI {
-	utils.Logger.Info("entering ui.New()")
+	utils.Logger.Debug("entering ui.New()")
 
 	if width == 0 || height == 0 {
 		width = utils.WindowWidth
@@ -50,6 +51,7 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	instance := &UI{
+		PanelHistory:			stack.New(),
 		Printer:				octoprint.NewClient(endpoint, key),
 		NotificationsBox:		uiWidgets.NewNotificationsBox(),
 		OctoPrintPlugin:		true,
@@ -69,18 +71,14 @@ func New(endpoint, key string, width, height int) *UI {
 
 		if (allocatedWidth > width || allocatedHeight > height) ||
 			(sizeWidth > width || sizeHeight > height) {
-			utils.Logger.Errorf(
-				"Widow resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
+			utils.Logger.Errorf("Widow resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
 				allocatedWidth,
 				allocatedHeight,
 				sizeWidth,
-				sizeHeight,
-			)
-			utils.Logger.Errorf(
-				"Widow resize went past max size.  Target width and height: %dx%d",
+				sizeHeight)
+			utils.Logger.Errorf("Widow resize went past max size.  Target width and height: %dx%d",
 				width,
-				height,
-			)
+				height)
 		}
 	})
 
@@ -99,13 +97,12 @@ func New(endpoint, key string, width, height int) *UI {
 	instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, instance.update)
 	instance.initialize()
 
-	utils.Logger.Info("leaving ui.New()")
-
+	utils.Logger.Debug("leaving ui.New()")
 	return instance
 }
 
 func (this *UI) initialize() {
-	utils.Logger.Info("entering ui.initialize()")
+	utils.Logger.Debug("entering ui.initialize()")
 
 	defer this.window.ShowAll()
 	this.loadStyle()
@@ -127,11 +124,13 @@ func (this *UI) initialize() {
 
 	this.sdNotify("READY=1")
 
-	utils.Logger.Info("leaving ui.initialize()")
+	utils.Logger.Debug("leaving ui.initialize()")
 }
 
 func (this *UI) loadStyle() {
-	utils.Logger.Info("entering ui.loadStyle()")
+	utils.Logger.Debug("entering ui.loadStyle()")
+
+	cssProvider := utils.MustCSSProviderFromFile(utils.CSSFilename)
 
 	screenDefault, err := gdk.ScreenGetDefault()
 	if err != nil {
@@ -140,17 +139,15 @@ func (this *UI) loadStyle() {
 		return
 	}
 
-	cssProvider := utils.MustCSSProviderFromFile(utils.CSSFilename)
-
 	gtk.AddProviderForScreen(screenDefault, cssProvider, gtk.STYLE_PROVIDER_PRIORITY_USER)
 
-	utils.Logger.Info("leaving ui.loadStyle()")
+	utils.Logger.Debug("leaving ui.loadStyle()")
 }
 
 var errMercyPeriod = time.Second * 10
 
 func (this *UI) verifyConnection() {
-	utils.Logger.Info("entering ui.verifyConnection()")
+	utils.Logger.Debug("entering ui.verifyConnection()")
 
 	this.sdNotify("WATCHDOG=1")
 
@@ -189,7 +186,7 @@ func (this *UI) verifyConnection() {
 				splashMessage = strCurrentState
 
 			default:
-				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of connectionResponse.Current.State: %q", strCurrentState)
+				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of s.Current.State: %q", strCurrentState)
 		}
 	} else {
 		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest)", err)
@@ -223,7 +220,7 @@ func (this *UI) verifyConnection() {
 
 	if newUIState == this.UIState {
 		utils.Logger.Infof("ui.verifyConnection() - newUIState equals ui.UIState and is: %q", this.UIState)
-		utils.Logger.Info("leaving ui.verifyConnection()")
+		utils.Logger.Debug("leaving ui.verifyConnection()")
 		return
 	}
 
@@ -234,24 +231,24 @@ func (this *UI) verifyConnection() {
 	switch newUIState {
 		case "idle":
 			utils.Logger.Info("ui.verifyConnection() - printer is ready")
-			this.Add(IdleStatusPanel(this))
+			this.GoToPanel(IdleStatusPanel(this))
 
 		case "printing":
 			utils.Logger.Info("ui.verifyConnection() - printing a job")
-			this.Add(PrintStatusPanel(this))
+			this.GoToPanel(PrintStatusPanel(this))
 
 		case "splash":
-			this.Add(this.splashPanel)
+			this.GoToPanel(this.splashPanel)
 
 		default:
 			utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of newUIState: %q", newUIState)
 	}
 
-	utils.Logger.Info("leaving ui.verifyConnection()")
+	utils.Logger.Debug("leaving ui.verifyConnection()")
 }
 
 func (this *UI) checkNotification() {
-	utils.Logger.Info("entering ui.checkNotification()")
+	utils.Logger.Debug("entering ui.checkNotification()")
 
 	notificationRespone, err := (&octoprint.GetNotificationRequest{}).Do(this.Printer)
 	if err != nil {
@@ -269,11 +266,11 @@ func (this *UI) checkNotification() {
 		utils.InfoMessageDialogBox(this.window, notificationRespone.Message)
 	}
 
-	utils.Logger.Info("leaving ui.checkNotification()")
+	utils.Logger.Debug("leaving ui.checkNotification()")
 }
 
 func (this *UI) loadSettings() {
-	utils.Logger.Info("entering ui.loadSettings()")
+	utils.Logger.Debug("entering ui.loadSettings()")
 
 	settingsResponse, err := (&octoprint.GetSettingsRequest{}).Do(this.Printer)
 	if err != nil {
@@ -284,21 +281,19 @@ func (this *UI) loadSettings() {
 
 	this.Settings = settingsResponse
 
-	utils.Logger.Info("leaving ui.loadSettings()")
+	utils.Logger.Debug("leaving ui.loadSettings()")
 }
 
 func (this *UI) update() {
-	utils.Logger.Info("entering ui.update()")
-
-	this.sdNotify("WATCHDOG=1")
+	utils.Logger.Debug("entering ui.update()")
 
 	if this.connectionAttempts > 8 {
 		this.splashPanel.putOnHold()
-		utils.Logger.Info("leaving ui.update() - connectionAttempts > 8")
+		utils.Logger.Debug("leaving ui.update() - connectionAttempts > 8")
 		return
 	}
 
-	utils.Logger.Infoln("ui.update() - m.UIState is: ", this.UIState)
+	utils.Logger.Infoln("ui.update() - thus.UIState is: ", this.UIState)
 
 	if this.UIState == "splash" {
 		this.connectionAttempts++
@@ -313,56 +308,81 @@ func (this *UI) update() {
 
 	this.verifyConnection()
 
-	utils.Logger.Info("leaving ui.update()")
+	utils.Logger.Debug("leaving ui.update()")
 }
 
 func (this *UI) sdNotify(state string) {
-	utils.Logger.Info("entering ui.sdNotify()")
+	utils.Logger.Debug("entering ui.sdNotify()")
 
 	_, err := daemon.SdNotify(false, state)
 	if err != nil {
-		utils.LogError("ui.sdNotify()", "SdNotify()", err)
+		utils.Logger.Errorf("ui.sdNotify()", "SdNotify()", err)
 		utils.Logger.Error("leaving ui.sdNotify()")
 		return
 	}
 
-	utils.Logger.Info("leaving ui.sdNotify()")
+	utils.Logger.Debug("leaving ui.sdNotify()")
 }
 
-func (this *UI) Add(panel interfaces.IPanel) {
-	utils.Logger.Info("entering ui.Add()")
+func (this *UI) GoToPanel(panel interfaces.IPanel) {
+	utils.Logger.Debug("entering ui.GoToPanel()")
 
-	if this.CurrentPanel != nil {
-		this.Remove(this.CurrentPanel)
+	this.SetUiToPanel(panel)
+	this.PanelHistory.Push(panel)
+
+	utils.Logger.Debug("leaving ui.GoToPanel()")
+}
+
+func (this *UI) GoToPreviousPanel() {
+	utils.Logger.Debug("entering ui.GoToPreviousPanel()")
+
+	stackLength := this.PanelHistory.Len()
+	if stackLength < 2 {
+		utils.Logger.Error("ui.GoToPreviousPanel() - stack does not contain current panel and parent panel")
+		return
 	}
 
-	this.CurrentPanel = panel
-	this.CurrentPanel.Show()
-	this.grid.Attach(this.CurrentPanel.Grid(), 0, 0, 1, 1)
-	this.grid.ShowAll()
+	if stackLength < 1 {
+		utils.Logger.Error("ui.GoToPreviousPanel() - GoToPreviousPanel() was called but the stack is empty")
+		return
+	}
 
-	utils.Logger.Info("leaving ui.Add()")
+	currentPanel := this.PanelHistory.Pop().(interfaces.IPanel)
+	this.RemovePanelFromUi(currentPanel)
+
+	parentPanel := this.PanelHistory.Peek().(interfaces.IPanel)
+	this.SetUiToPanel(parentPanel)
+
+	utils.Logger.Debug("leaving ui.GoToPreviousPanel()")
 }
 
-func (this *UI) Remove(panel interfaces.IPanel) {
-	utils.Logger.Info("entering ui.Remove()")
+func (this *UI) SetUiToPanel(panel interfaces.IPanel) {
+	utils.Logger.Debug("entering ui.SetUiToPanel()")
+
+	stackLength := this.PanelHistory.Len()
+	if stackLength > 0 {
+		currentPanel := this.PanelHistory.Peek().(interfaces.IPanel)
+		this.RemovePanelFromUi(currentPanel)
+	}
+
+	panel.Show()
+	this.grid.Attach(panel.Grid(), 0, 0, 1, 1)
+	this.grid.ShowAll()
+
+	utils.Logger.Debug("leaving ui.SetUiToPanel()")
+}
+
+func (this *UI) RemovePanelFromUi(panel interfaces.IPanel) {
+	utils.Logger.Debug("entering ui.RemovePanelFromUi()")
 
 	defer panel.Hide()
 	this.grid.Remove(panel.Grid())
 
-	utils.Logger.Info("leaving ui.Remove()")
-}
-
-func (this *UI) GoHistory() {
-	utils.Logger.Info("entering ui.GoHistory()")
-
-	this.Add(this.CurrentPanel.ParentPanel())
-
-	utils.Logger.Info("entering ui.GoHistory()")
+	utils.Logger.Debug("leaving ui.RemovePanelFromUi()")
 }
 
 func (this *UI) errToUser(err error) string {
-	utils.Logger.Info("entering ui.errToUser()")
+	utils.Logger.Debug("entering ui.errToUser()")
 
 	text := strings.ToLower(err.Error())
 	if strings.Contains(text, "connection refused") {

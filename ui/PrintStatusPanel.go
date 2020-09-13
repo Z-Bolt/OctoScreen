@@ -122,7 +122,7 @@ func (this *printStatusPanel) showTools() {
 
 func (this *printStatusPanel) createCompleteButton() *gtk.Button {
 	this.completeButton = utils.MustButtonImageStyle("Complete", "complete.svg", "color3", func() {
-		this.UI.Add(IdleStatusPanel(this.UI))
+		this.UI.GoToPanel(IdleStatusPanel(this.UI))
 	})
 
 	return this.completeButton
@@ -229,7 +229,7 @@ func (this *printStatusPanel) createControlButton() gtk.IWidget {
 		"printing-control.svg",
 		"color3",
 		func() {
-			this.UI.Add(PrintMenuPanel(this.UI, this))
+			this.UI.GoToPanel(PrintMenuPanel(this.UI, this))
 		},
 	)
 	return this.menuButton

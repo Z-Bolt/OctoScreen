@@ -41,8 +41,6 @@ func (this *homePanel) initialize() {
 	homeZButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home Z", "home-z.svg", octoprint.ZAxis)
 	this.AddButton(homeZButton)
 
-	homeAllButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home All", "home.svg",
-		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
-	)
+	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Printer)
 	this.AddButton(homeAllButton)
 }

@@ -67,17 +67,17 @@ func (this *configurationPanel) initialize() {
 }
 
 func (this *configurationPanel) showBedLevelPanel() {
-	this.UI.Add(BedLevelPanel(this.UI, this))
+	this.UI.GoToPanel(BedLevelPanel(this.UI, this))
 }
 
 func (this *configurationPanel) showZOffsetCalibrationPanel() {
-	this.UI.Add(ZOffsetCalibrationPanel(this.UI, this))
+	this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI, this))
 }
 
 func (this *configurationPanel) showNetworkPanel() {
-	this.UI.Add(NetworkPanel(this.UI, this))
+	this.UI.GoToPanel(NetworkPanel(this.UI, this))
 }
 
 func (this *configurationPanel) showSystemPanel() {
-	this.UI.Add(SystemPanel(this.UI, this))
+	this.UI.GoToPanel(SystemPanel(this.UI, this))
 }

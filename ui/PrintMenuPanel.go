@@ -49,25 +49,25 @@ func (this *printMenuPanel) initialize() {
 }
 
 func (this *printMenuPanel) showMove() {
-	this.UI.Add(MovePanel(this.UI, this))
+	this.UI.GoToPanel(MovePanel(this.UI, this))
 }
 
 func (this *printMenuPanel) showFilament() {
-	this.UI.Add(FilamentPanel(this.UI, this))
+	this.UI.GoToPanel(FilamentPanel(this.UI, this))
 }
 
 func (this *printMenuPanel) showTemperature() {
-	this.UI.Add(TemperaturePanel(this.UI, this))
+	this.UI.GoToPanel(TemperaturePanel(this.UI, this))
 }
 
 func (this *printMenuPanel) showFan() {
-	this.UI.Add(FanPanel(this.UI, this))
+	this.UI.GoToPanel(FanPanel(this.UI, this))
 }
 
 func (this *printMenuPanel) showNetwork() {
-	this.UI.Add(NetworkPanel(this.UI, this))
+	this.UI.GoToPanel(NetworkPanel(this.UI, this))
 }
 
 func (this *printMenuPanel) showSystem() {
-	this.UI.Add(SystemPanel(this.UI, this))
+	this.UI.GoToPanel(SystemPanel(this.UI, this))
 }

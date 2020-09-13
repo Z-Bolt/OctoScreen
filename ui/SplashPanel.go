@@ -86,9 +86,9 @@ func (this *SplashPanel) releaseFromHold() {
 }
 
 func (this *SplashPanel) showNetwork() {
-	this.UI.Add(NetworkPanel(this.UI, this))
+	this.UI.GoToPanel(NetworkPanel(this.UI, this))
 }
 
 func (this *SplashPanel) showSystem() {
-	this.UI.Add(SystemPanel(this.UI, this))
+	this.UI.GoToPanel(SystemPanel(this.UI, this))
 }

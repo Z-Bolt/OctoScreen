@@ -32,8 +32,6 @@ func NetworkPanel(
 		instance.initialize()
 		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 3, instance.update)
 		networkPanelInstance = instance
-	} else {
-		networkPanelInstance.parentPanel = parentPanel
 	}
 
 	return networkPanelInstance
@@ -105,7 +103,7 @@ func (this *networkPanel) addNetwork(box *gtk.Box, ssid string) {
 	frame, _ := gtk.FrameNew("")
 
 	clicked := func() {
-		this.UI.Add(ConnectionPanel(this.UI, this, ssid))
+		this.UI.GoToPanel(ConnectionPanel(this.UI, this, ssid))
 	}
 
 	image := utils.MustImageFromFileWithSize("network.svg", this.Scaled(25), this.Scaled(25))
@@ -142,7 +140,7 @@ func (this *networkPanel) createActionBar() gtk.IWidget {
 	// NOTE: If a message is logged that the image (SVG) can't be loaded, try installing librsvg.
 	backImage := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
 	backButton := utils.MustButton(backImage, func() {
-		this.UI.GoHistory()
+		this.UI.GoToPreviousPanel()
 	})
 
 	layout.Add(backButton)

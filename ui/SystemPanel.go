@@ -34,8 +34,6 @@ func SystemPanel(
 		}
 		instance.initialize()
 		systemPanelInstance = instance
-	} else {
-		systemPanelInstance.parentPanel = parentPanel
 	}
 
 	return systemPanelInstance

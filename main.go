@@ -43,7 +43,7 @@ func main() {
 	}
 
 	utils.SanityCheckRequiredEnvironmentVariables()
-	
+
 	gtk.Main()
 
 	utils.Logger.Info("leaving main.main()")
@@ -86,11 +86,13 @@ func setLogLevel() {
 		case "info":
 			utils.SetLogLevel(logrus.InfoLevel)
 
-		case "":
-			fallthrough
 		case "warn":
 			utils.SetLogLevel(logrus.WarnLevel)
 
+		case "":
+			logLevel = "error"
+			os.Setenv(utils.EnvLogLevel, "error")
+			fallthrough
 		case "error":
 			utils.SetLogLevel(logrus.ErrorLevel)
 

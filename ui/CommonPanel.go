@@ -1,5 +1,4 @@
 package ui
-// package panels
 
 import (
 	"fmt"
@@ -22,7 +21,7 @@ type CommonPanel struct {
 	UI					*UI
 	grid				*gtk.Grid
 	backgroundTask		*utils.BackgroundTask
-	parentPanel			interfaces.IPanel
+	// parentPanel			interfaces.IPanel
 	panelWidth			int
 	panelHeight			int
 	includeBackButton	bool
@@ -46,7 +45,7 @@ func newPanel(ui *UI, parentPanel interfaces.IPanel, includeBackButton bool) Com
 	return CommonPanel {
 		UI:					ui,
 		grid:				grid,
-		parentPanel:		parentPanel,
+		// parentPanel:		parentPanel,
 		panelWidth:			4,
 		panelHeight:		3,
 		includeBackButton:	includeBackButton,
@@ -65,14 +64,10 @@ func (this *CommonPanel) Initialize() {
 		this.AddButton(box)
 	}
 
-	this.backButton = utils.MustButtonImageStyle("Back", "back.svg", "color-none", this.UI.GoHistory)
+	this.backButton = utils.MustButtonImageStyle("Back", "back.svg", "color-none", this.UI.GoToPreviousPanel)
 	if this.includeBackButton {
 		this.AddButton(this.backButton)
 	}
-}
-
-func (this *CommonPanel) ParentPanel() interfaces.IPanel {
-	return this.parentPanel
 }
 
 func (this *CommonPanel) AddButton(button gtk.IWidget) {
@@ -102,14 +97,18 @@ func (this *CommonPanel) Scaled(s int) int {
 	return s * this.UI.scaleFactor
 }
 
-func (this *CommonPanel) arrangeMenuItems(grid *gtk.Grid, items []octoprint.MenuItem, cols int) {
+func (this *CommonPanel) arrangeMenuItems(
+	grid			*gtk.Grid,
+	items			[]octoprint.MenuItem,
+	cols			int,
+) {
 	for i, item := range items {
 		panel := getPanel(this.UI, this, item)
 		if panel != nil {
 			color := fmt.Sprintf("color%d", (i % 4) + 1)
 			icon := fmt.Sprintf("%s.svg", item.Icon)
 			button := utils.MustButtonImageStyle(item.Name, icon, color, func() {
-				this.UI.Add(panel)
+				this.UI.GoToPanel(panel)
 			})
 			grid.Attach(button, (i % cols), i / cols, 1, 1)
 		}

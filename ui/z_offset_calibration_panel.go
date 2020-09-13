@@ -88,7 +88,7 @@ func (this *zOffsetCalibrationPanel) initialize() {
 
 // First row
 func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false, false)
+	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false)
 	_, err := this.selectToolStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 	if err != nil {
 		panic(err)

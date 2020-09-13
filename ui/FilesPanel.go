@@ -77,10 +77,13 @@ func (this *filesPanel) createRefreshButton() gtk.IWidget {
 }
 
 func (this *filesPanel) createBackButton() gtk.IWidget {
+
+	// TODO: look into making a BackButton class
+
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
 	return utils.MustButton(image, func() {
 		if this.locationHistory.isRoot() {
-			this.UI.GoHistory()
+			this.UI.GoToPreviousPanel()
 		} else {
 			this.locationHistory.goBack()
 			this.doLoadFiles()

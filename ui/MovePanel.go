@@ -50,10 +50,5 @@ func (this *movePanel) initialize() {
 		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z-", "move-z+.svg", octoprint.ZAxis, -1), 3, 1, 1, 1)
 	}
 
-	homeAllButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home All", "home.svg",
-		octoprint.XAxis, octoprint.YAxis, octoprint.ZAxis,
-	)
-	this.Grid().Attach(homeAllButton, 0, 2, 1, 1)
-
 	this.Grid().Attach(this.amountToMoveStepButton, 2, 2, 1, 1)
 }

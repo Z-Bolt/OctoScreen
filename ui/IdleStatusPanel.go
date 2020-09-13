@@ -64,7 +64,7 @@ func (this *idleStatusPanel) initialize() {
 }
 
 func (this *idleStatusPanel) showFiles() {
-	this.UI.Add(FilesPanel(this.UI, this))
+	this.UI.GoToPanel(FilesPanel(this.UI, this))
 }
 
 func (this *idleStatusPanel) update() {

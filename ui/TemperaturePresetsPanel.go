@@ -51,7 +51,7 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 				this.selectToolStepButton,
 				"heat-up.svg",
 				temperaturePreset,
-				this.UI.GoHistory,
+				this.UI.GoToPreviousPanel,
 			)
 			this.AddButton(temperaturePresetButton)
 			count++
@@ -68,7 +68,7 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 		this.selectToolStepButton,
 		"cool-down.svg",
 		&coolDownTemperaturePreset,
-		this.UI.GoHistory,
+		this.UI.GoToPreviousPanel,
 	)
 	this.AddButton(coolDownButton)
 }
