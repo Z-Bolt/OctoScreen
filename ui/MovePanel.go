@@ -36,13 +36,30 @@ func (this *movePanel) initialize() {
 	// Create the step button first, since it is needed by some of the other controls.
 	this.amountToMoveStepButton = uiWidgets.CreateAmountToMoveStepButton()
 
-	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprint.XAxis, -1), 0, 1, 1, 1)
-	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprint.XAxis,  1), 2, 1, 1, 1)
+	xAxisInverted, yAxisInverted, zAxisInverted := false, false, false
+	if this.UI.Settings != nil {
+		xAxisInverted = this.UI.Settings.XAxisInverted
+		yAxisInverted = this.UI.Settings.YAxisInverted
+		zAxisInverted = this.UI.Settings.ZAxisInverted
+	}
 
-	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprint.YAxis,  1), 1, 0, 1, 1)
-	this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprint.YAxis, -1), 1, 2, 1, 1)
+	if xAxisInverted {
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprint.XAxis,  1), 0, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprint.XAxis, -1), 2, 1, 1, 1)
+	} else {
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprint.XAxis, -1), 0, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprint.XAxis,  1), 2, 1, 1, 1)
+	}
 
-	if this.UI.Settings != nil && this.UI.Settings.ZAxisInverted {
+	if yAxisInverted {
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprint.YAxis, -1), 1, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprint.YAxis,  1), 1, 2, 1, 1)
+	} else {
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprint.YAxis,  1), 1, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprint.YAxis, -1), 1, 2, 1, 1)
+	}
+
+	if zAxisInverted {
 		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z+", "move-z+.svg", octoprint.ZAxis, -1), 3, 0, 1, 1)
 		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Printer, this.amountToMoveStepButton, "Z-", "move-z-.svg", octoprint.ZAxis,  1), 3, 1, 1, 1)
 	} else {
