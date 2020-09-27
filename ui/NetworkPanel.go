@@ -16,9 +16,10 @@ var networkPanelInstance *networkPanel
 
 type networkPanel struct {
 	CommonPanel
-	listBox				*gtk.Box
-	netStatus			*gtk.Label
-	wifiStatus			*gtk.Label
+	listBox					*gtk.Box
+	netStatus				*gtk.Label
+	wifiStatus				*gtk.Label
+	overrideForDebugging	bool
 }
 
 func NetworkPanel(
@@ -37,55 +38,114 @@ func NetworkPanel(
 	return networkPanelInstance
 }
 
+func (this *networkPanel) initialize() {
+	this.Grid().Attach(this.createNetworkListWindow(), 0, 0, 4, 1)
+	this.Grid().Attach(this.createLeftBar(), 4, 0, 3, 1)
+
+	// TODO: make sure overrideForDebugging is set to false before checking in.
+	this.overrideForDebugging = false;
+}
+
 func (this *networkPanel) update() {
 	utils.EmptyTheContainer(&this.listBox.Container)
+	this.setNetStatusText()
+	this.setNetworkItems()
+	this.listBox.ShowAll()
+}
 
+func (this *networkPanel) setNetStatusText() {
 	netStatus := ""
 	addresses, _ := net.InterfaceAddrs()
 
-	for _, address := range addresses {
-		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
-			if ipNet.IP.To4() != nil {
-				netStatus += fmt.Sprintf("IP Address: %s\n", ipNet.IP.String())
+	if this.overrideForDebugging {
+		netStatus += fmt.Sprintf("IP Address: %s\n", "111.222.333.444")
+	} else {
+		for _, address := range addresses {
+			if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+				if ipNet.IP.To4() != nil {
+					netStatus += fmt.Sprintf("IP Address: %s\n", ipNet.IP.String())
+				}
 			}
 		}
 	}
 
 	this.netStatus.SetText(netStatus)
-
-	wpa, _ := wpasupplicant.Unixgram("wlan0")
-	if wpa != nil {
-		status, _ := wpa.Status()
-		wifiStatus := ""
-
-		if status.WPAState() == "COMPLETED" {
-			wifiStatus = fmt.Sprintf("Wifi Information\nSSID: %s\nIP Address: %s\n", status.SSID(), status.IPAddr())
-		} else {
-			wifiStatus = fmt.Sprintf("Wifi status is: %s\n", status.WPAState())
-		}
-
-		this.wifiStatus.SetText(wifiStatus)
-
-		result, _ := wpa.ScanResults()
-		for _, bss := range result {
-			this.addNetwork(this.listBox, bss.SSID())
-		}
-
-		err := wpa.Scan()
-		if err != nil {
-			utils.LogError("NetworkPanel.update()", "Scan()", err)
-		}
-	} else {
-		label := utils.MustLabel("\n\nWifi management is not available\non this hardware")
-		this.listBox.Add(label)
-	}
-
-	this.listBox.ShowAll()
 }
 
-func (this *networkPanel) initialize() {
-	this.Grid().Attach(this.createNetworkListWindow(), 0, 0, 4, 1)
-	this.Grid().Attach(this.createLeftBar(), 4, 0, 3, 1)
+func (this *networkPanel) setNetworkItems() {
+	var wpa wpasupplicant.Conn
+
+	if this.overrideForDebugging {
+		wpa = nil
+	} else {
+		wpa, _ = wpasupplicant.Unixgram("wlan0")
+	}
+
+	this.setWiFiStatusText(wpa)
+	this.setNetworkListItems(wpa)
+}
+
+func (this *networkPanel) setWiFiStatusText(wpa wpasupplicant.Conn) {
+	wifiStatus := ""
+
+	if this.overrideForDebugging {
+		wifiStatus = fmt.Sprintf(
+			"WiFi Information\nSSID: %s\nIP Address: %s\n",
+			"FooNet 2.4G",
+			"111.222.333.444",
+		)
+	} else {
+		if wpa != nil {
+			status, _ := wpa.Status()
+
+			if status.WPAState() == "COMPLETED" {
+				wifiStatus = fmt.Sprintf(
+					"WiFi Information\nSSID: %s\nIP Address: %s\n",
+					status.SSID(),
+					status.IPAddr(),
+				)
+			} else {
+				wifiStatus = fmt.Sprintf("WiFi status is: %s\n", status.WPAState())
+			}
+		}
+	}
+
+	this.wifiStatus.SetText(wifiStatus)
+}
+
+func (this *networkPanel) setNetworkListItems(wpa wpasupplicant.Conn) {
+	if this.overrideForDebugging {
+		ssids := []string {
+			"Vodafone-750C",
+			"KabelBox-4E80",
+			"Vodafone Hotspot",
+			"Vodafone Homespot",
+			"kabelBox-4E80",
+			"Telekom_FON",
+			"Test7",
+			"Test8",
+			"Test9-qwertyuiop-asdfghjkl-zxcvbnm-1234567890",
+		}
+
+		for i := 0; i < len(ssids); i++ {
+			this.addNetwork(this.listBox, ssids[i])
+		}
+	} else {
+		if wpa != nil {
+			result, _ := wpa.ScanResults()
+			for _, bss := range result {
+				this.addNetwork(this.listBox, bss.SSID())
+			}
+
+			err := wpa.Scan()
+			if err != nil {
+				utils.LogError("NetworkPanel.update()", "Scan()", err)
+			}
+		} else {
+			label := utils.MustLabel("\n\nWiFi management is not available\non this hardware")
+			this.listBox.Add(label)
+		}
+	}
 }
 
 func (this *networkPanel) createNetworkListWindow() gtk.IWidget {
