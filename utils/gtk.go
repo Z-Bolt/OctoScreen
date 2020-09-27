@@ -62,6 +62,38 @@ func MustLabel(format string, args ...interface{}) *gtk.Label {
 	return label
 }
 
+// MustLabelWithCssClass returns a stylized new gtk.Label, if err panics.
+func MustLabelWithCssClass(format string, className string, args ...interface{}) *gtk.Label {
+	label, err := gtk.LabelNew("")
+	if err != nil {
+		panic(err)
+	}
+
+	ctx, _ := label.GetStyleContext()
+	ctx.AddClass(className)
+
+	label.SetMarkup(fmt.Sprintf(format, args...))
+
+	return label
+}
+
+// MustLabelWithCssClass returns a stylized new gtk.Label, if err panics.
+func MustLabelWithCssClasses(format string, classNames []string, args ...interface{}) *gtk.Label {
+	label, err := gtk.LabelNew("")
+	if err != nil {
+		panic(err)
+	}
+
+	label.SetMarkup(fmt.Sprintf(format, args...))
+
+	ctx, _ := label.GetStyleContext()
+	for i := 0; i < len(classNames); i++ {
+		ctx.AddClass(classNames[i])
+	}
+
+	return label
+}
+
 // LabelWithImage represents a gtk.Label with a image to the right.
 type LabelWithImage struct {
 	Label *gtk.Label
