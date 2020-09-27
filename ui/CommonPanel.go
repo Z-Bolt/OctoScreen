@@ -20,6 +20,7 @@ var OctoScreenVersion = "2.6.0 (development/experimental)"
 type CommonPanel struct {
 	UI					*UI
 	grid				*gtk.Grid
+	preShowCallback		func()
 	backgroundTask		*utils.BackgroundTask
 	// parentPanel			interfaces.IPanel
 	panelWidth			int
@@ -75,6 +76,12 @@ func (this *CommonPanel) AddButton(button gtk.IWidget) {
 	y := len(this.buttons) / this.panelWidth
 	this.grid.Attach(button, x, y, 1, 1)
 	this.buttons = append(this.buttons, button)
+}
+
+func (this *CommonPanel) PreShow() {
+	if this.preShowCallback != nil {
+		this.preShowCallback()
+	}
 }
 
 func (this *CommonPanel) Show() {
