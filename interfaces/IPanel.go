@@ -6,7 +6,8 @@ import (
 
 type IPanel interface {
 	Grid() *gtk.Grid
+	PreShow()
 	Show()
 	Hide()
-	ParentPanel() IPanel
+	// maybe add PostShow(), PreHide(), and PostHide()
 }
