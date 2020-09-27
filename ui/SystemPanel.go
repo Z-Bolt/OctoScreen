@@ -1,8 +1,11 @@
 package ui
 
 import (
+	// "time"
+
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var systemPanelInstance *systemPanel = nil
@@ -33,6 +36,7 @@ func SystemPanel(
 			CommonPanel: NewCommonPanel(ui, parentPanel),
 		}
 		instance.initialize()
+		instance.preShowCallback = instance.refreshSystemInformationInfoBox
 		systemPanelInstance = instance
 	}
 
@@ -55,7 +59,7 @@ func (this *systemPanel) initialize() {
 
 
 	// Second row
-	this.systemInformationInfoBox = uiWidgets.CreateSystemInformationInfoBox(this.UI.Printer)
+	this.systemInformationInfoBox = uiWidgets.CreateSystemInformationInfoBox(this.UI.window, this.UI.scaleFactor)
 	this.Grid().Attach(this.systemInformationInfoBox, 0, 1, 4, 1)
 
 
@@ -86,4 +90,9 @@ func (this *systemPanel) initialize() {
 		"color-warning-sign-yellow",
 	)
 	this.Grid().Attach(this.restartOctoPrintButton,  2, 2, 1, 1)
+}
+
+
+func (this *systemPanel) refreshSystemInformationInfoBox() {
+	this.systemInformationInfoBox.Refresh()
 }
