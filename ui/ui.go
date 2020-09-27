@@ -365,6 +365,7 @@ func (this *UI) SetUiToPanel(panel interfaces.IPanel) {
 		this.RemovePanelFromUi(currentPanel)
 	}
 
+	panel.PreShow()
 	panel.Show()
 	this.grid.Attach(panel.Grid(), 0, 0, 1, 1)
 	this.grid.ShowAll()
