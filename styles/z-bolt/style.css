@@ -35,6 +35,10 @@ progress {
 	opacity: 0.5;
 }
 
+
+
+
+/* Button styles *********************************************************** */
 button {
 	background-image: none;
 	background-color: #13181C;
@@ -48,8 +52,6 @@ button {
 button:active {
 	background-color: #304C62;
 }
-
-
 
 
 button.color-none {
@@ -110,7 +112,7 @@ entry {
 button.keyboard {
 	font-size: 30px;
 	margin: 0px;
-	/* margin-bottom:10px; */
+	/* margin-bottom: 10px; */
 }
 
 .dialog {
@@ -185,7 +187,7 @@ button.keyboard {
 
 
 
-/* Margin styles */
+/* Margin styles *********************************************************** */
 .no-margin {
 	margin: 0;
 }
@@ -202,24 +204,50 @@ button.keyboard {
 	margin-top: 20px;
 }
 
-.margin-left-20 {
-	margin-left: 20px;
-}
-
 .margin-right-20 {
 	margin-right: 20px;
 }
 
+.margin-bottom-1 {
+	margin-right: 1px;
+}
+
+.margin-bottom-2 {
+	margin-right: 2px;
+}
+
+.margin-bottom-3 {
+	margin-right: 3px;
+}
+
+.margin-bottom-4 {
+	margin-right: 4px;
+}
+
+.margin-bottom-10 {
+	margin-right: 10px;
+}
+
+.margin-bottom-20 {
+	margin-right: 20px;
+}
 
 
-/* Border styles */
+.margin-left-20 {
+	margin-left: 20px;
+}
+
+
+
+
+/* Border styles *********************************************************** */
 .no-border {
 	border: 0;
 }
 
 
 
-/*Padding styles*/
+/* Padding styles ********************************************************** */
 .no-padding {
 	padding: 0;
 }
@@ -232,9 +260,14 @@ button.keyboard {
 	padding-right: 20px;
 }
 
+.padding-bottom-20 {
+	padding-right: 20px;
+}
 
 
-/* Font styles */
+
+
+/* Font styles  ************************************************************ */
 .font-size-10 {
 	font-size: 10px;
 }
