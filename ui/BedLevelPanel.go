@@ -104,9 +104,13 @@ func (this *bedLevelPanel) addBedLevelCornerButton(isLeft, isTop bool) {
 }
 
 func (this *bedLevelPanel) defineLevelingPoints() {
+	utils.Logger.Debug("entering BedLevelPanel.verifyConnection()")
+
 	connectionRequest, err := (&octoprint.ConnectionRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(ConnectionRequest)", err)
+
+		utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
 		return
 	}
 
@@ -115,6 +119,8 @@ func (this *bedLevelPanel) defineLevelingPoints() {
 	printerProfile, err := (&octoprint.PrinterProfilesRequest{Id: connectionRequest.Current.PrinterProfile}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(PrinterProfilesRequest)", err)
+
+		utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
 		return
 	}
 
@@ -129,6 +135,8 @@ func (this *bedLevelPanel) defineLevelingPoints() {
 		"b-l": {xOffset, yOffset},
 		"b-r": {xMax - xOffset, yOffset},
 	}
+
+	utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
 }
 
 func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {

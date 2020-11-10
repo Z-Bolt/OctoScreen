@@ -8,6 +8,7 @@ import (
 
 type TemperaturePresetButton struct {
 	*gtk.Button
+
 	client						*octoprint.Client
 	selectToolStepButton		*SelectToolStepButton
 	imageFileName				string
@@ -42,13 +43,13 @@ func CreateTemperaturePresetButton(
 }
 
 func (this *TemperaturePresetButton) handleClicked() {
-	utils.Logger.Infof("TemperaturePresetsPanel.setTemperaturesToPreset() - setting temperature to preset %s.", this.temperaturePreset.Name)
-	utils.Logger.Infof("TemperaturePresetsPanel.setTemperaturesToPreset() - setting hotend temperature to %.0f.", this.temperaturePreset.Extruder)
-	utils.Logger.Infof("TemperaturePresetsPanel.setTemperaturesToPreset() - setting bed temperature to %.0f.", this.temperaturePreset.Bed)
+	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting temperature to preset %s.", this.temperaturePreset.Name)
+	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting hotend temperature to %.0f.", this.temperaturePreset.Extruder)
+	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting bed temperature to %.0f.", this.temperaturePreset.Bed)
 
 	currentTool := this.selectToolStepButton.Value()
 	if currentTool == "" {
-		utils.Logger.Error("TemperaturePresetsPanel.setTemperaturesToPreset() - currentTool is invalid (blank), defaulting to tool0")
+		utils.Logger.Error("TemperaturePresetButton.handleClicked() - currentTool is invalid (blank), defaulting to tool0")
 		currentTool = "tool0"
 	}
 
@@ -68,7 +69,7 @@ func (this *TemperaturePresetButton) handleClicked() {
 	bedTargetRequest := &octoprint.BedTargetRequest{Target: this.temperaturePreset.Bed}
 	err := bedTargetRequest.Do(this.client)
 	if err != nil {
-		utils.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(BedTargetRequest)", err)
+		utils.LogError("TemperaturePresetButton.handleClicked()", "Do(BedTargetRequest)", err)
 		return
 	}
 
@@ -83,7 +84,7 @@ func (this *TemperaturePresetButton) handleClicked() {
 
 	err = toolTargetRequest.Do(this.client)
 	if err != nil {
-		utils.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
+		utils.LogError("TemperaturePresetButton.handleClicked()", "Do(ToolTargetRequest)", err)
 	}
 
 	if this.callback != nil {

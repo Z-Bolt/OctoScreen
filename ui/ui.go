@@ -22,8 +22,9 @@ type UI struct {
 
 	PanelHistory				*stack.Stack
 	Client						*octoprint.Client
-	State						octoprint.ConnectionState
+	ConnectionState				octoprint.ConnectionState
 	Settings					*octoprint.GetSettingsResponse
+
 	UIState						string
 
 	OctoPrintPluginIsAvailable	bool
@@ -135,7 +136,8 @@ func (this *UI) loadStyle() {
 	screenDefault, err := gdk.ScreenGetDefault()
 	if err != nil {
 		utils.LogError("ui.loadStyle()", "ScreenGetDefault()", err)
-		utils.Logger.Error("leaving ui.loadStyle()")
+
+		utils.Logger.Debug("leaving ui.loadStyle()")
 		return
 	}
 
@@ -156,7 +158,7 @@ func (this *UI) verifyConnection() {
 
 	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(this.Client)
 	if err == nil {
-		this.State = connectionResponse.Current.State
+		this.ConnectionState = connectionResponse.Current.State
 		strCurrentState := string(connectionResponse.Current.State)
 
 		switch {
@@ -258,7 +260,8 @@ func (this *UI) checkNotification() {
 		}
 
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
-		utils.Logger.Error("leaving ui.checkNotification()")
+
+		utils.Logger.Debug("leaving ui.checkNotification()")
 		return
 	}
 
@@ -387,13 +390,13 @@ func (this *UI) errToUser(err error) string {
 
 	text := strings.ToLower(err.Error())
 	if strings.Contains(text, "connection refused") {
-		utils.Logger.Error("leaving ui.errToUser() - connection refused")
+		utils.Logger.Debug("leaving ui.errToUser() - connection refused")
 		return "Unable to connect to OctoPrint, check if it running."
 	} else if strings.Contains(text, "request canceled") {
-		utils.Logger.Error("leaving ui.errToUser() - request canceled")
+		utils.Logger.Debug("leaving ui.errToUser() - request canceled")
 		return "Loading..."
 	} else if strings.Contains(text, "connection broken") {
-		utils.Logger.Error("leaving ui.errToUser() - connection broken")
+		utils.Logger.Debug("leaving ui.errToUser() - connection broken")
 		return "Loading..."
 	}
 
