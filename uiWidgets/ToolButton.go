@@ -9,7 +9,35 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-type ToolHeatup struct {
+
+
+func ToolImageFileName(
+	index			int,
+) string {
+	if index < 0 {
+		return "bed.svg"
+	} else if index == 0 {
+		return "hotend.svg"
+	} else {
+		return fmt.Sprintf("hotend-%d.svg", index)
+	}
+}
+
+func ToolName(
+	index			int,
+) string {
+	if index < 0 {
+		return "bed"
+	} else if index == 0 {
+		return "tool0"
+	} else {
+		return fmt.Sprintf("tool%d", index - 1)
+	}
+}
+
+
+
+type ToolButton struct {
 	*gtk.Button
 	sync.RWMutex
 
@@ -18,38 +46,28 @@ type ToolHeatup struct {
 	printer			*octoprint.Client
 }
 
-func CreteToolHeatupButton(index int, printer *octoprint.Client) *ToolHeatup {
-	var (
-		image string
-		tool  string
-	)
+func CreteToolButton(
+	index			int,
+	printer			*octoprint.Client,
+) *ToolButton {
+	imageFileName := ToolImageFileName(index)
+	toolName := ToolName(index)
 
-	if index < 0 {
-		image = "bed.svg"
-		tool = "bed"
-	} else if index == 0 {
-		image = "hotend.svg"
-		tool = "tool0"
-	} else {
-		image = fmt.Sprintf("hotend-%d.svg", index)
-		tool = fmt.Sprintf("tool%d", index - 1)
-	}
-
-	instance := &ToolHeatup{
-		Button:  utils.MustButtonImage("", image, nil),
-		tool:    tool,
+	instance := &ToolButton{
+		Button:  utils.MustButtonImage("", imageFileName, nil),
+		tool:    toolName,
 		printer: printer,
 	}
 
 	_, err := instance.Connect("clicked", instance.clicked)
 	if err != nil {
-		utils.LogError("idle_status.creteToolHeatupButton()", "t.Connect('clicked', t.clicked)", err)
+		utils.LogError("ToolButton.CreteToolButton()", "t.Connect('clicked', t.clicked)", err)
 	}
 
 	return instance
 }
 
-func (this *ToolHeatup) UpdateStatus(heating bool) {
+func (this *ToolButton) UpdateStatus(heating bool) {
 	ctx, _ := this.GetStyleContext()
 	if heating {
 		ctx.AddClass("active")
@@ -60,18 +78,18 @@ func (this *ToolHeatup) UpdateStatus(heating bool) {
 	this.isHeating = heating
 }
 
-func (this *ToolHeatup) SetTemperatures(temperatureData octoprint.TemperatureData) {
+func (this *ToolButton) SetTemperatures(temperatureData octoprint.TemperatureData) {
 	text := utils.GetTemperatureDataString(temperatureData)
 	this.SetLabel(text)
 	this.UpdateStatus(temperatureData.Target > 0)
 }
 
-func (this *ToolHeatup) GetProfileTemperature() float64 {
+func (this *ToolButton) GetProfileTemperature() float64 {
 	temperature := 0.0
 
 	settingsResponse, err := (&octoprint.SettingsRequest{}).Do(this.printer)
 	if err != nil {
-		utils.LogError("idle_status.getProfileTemperature()", "Do(SettingsRequest)", err)
+		utils.LogError("ToolButton.GetProfileTemperature()", "Do(SettingsRequest)", err)
 		return 0
 	}
 
@@ -92,7 +110,7 @@ func (this *ToolHeatup) GetProfileTemperature() float64 {
 	return temperature
 }
 
-func (this *ToolHeatup) clicked() {
+func (this *ToolButton) clicked() {
 	defer func() {
 		this.UpdateStatus(!this.isHeating)
 	}()
@@ -112,13 +130,13 @@ func (this *ToolHeatup) clicked() {
 		cmd := &octoprint.BedTargetRequest{Target: target}
 		err = cmd.Do(this.printer)
 		if err != nil {
-			utils.LogError("idle_status.clicked()", "Do(BedTargetRequest)", err)
+			utils.LogError("ToolButton.clicked()", "Do(BedTargetRequest)", err)
 		}
 	} else {
 		cmd := &octoprint.ToolTargetRequest{Targets: map[string]float64{this.tool: target}}
 		err = cmd.Do(this.printer)
 		if err != nil {
-			utils.LogError("idle_status.clicked()", "Do(ToolTargetRequest)", err)
+			utils.LogError("ToolButton.clicked()", "Do(ToolTargetRequest)", err)
 		}
 	}
 }
