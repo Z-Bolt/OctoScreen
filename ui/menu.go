@@ -264,10 +264,8 @@ func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
 	// }
 
 
-	// utils.Logger.Error("FUCK1")
-	// standardLog.Print("FUCK3")
+	// TODO: removed commented code
 	// standardLog.Printf("Logger.Level: %q", utils.Logger.GetLogLevel())
-	// utils.Logger.Error("FUCK4")
 
 
 	var menuItems []octoprint.MenuItem
