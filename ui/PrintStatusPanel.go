@@ -7,7 +7,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
-	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -17,11 +17,13 @@ type printStatusPanel struct {
 	CommonPanel
 
 	progressBar			*gtk.ProgressBar
-	bedButton  			*gtk.Button
+
 	tool0Button			*gtk.Button
 	tool1Button			*gtk.Button
 	tool2Button			*gtk.Button
 	tool3Button			*gtk.Button
+	bedButton  			*gtk.Button
+
 	fileLabel			*utils.LabelWithImage
 	timeLabel			*utils.LabelWithImage
 	timeLeftLabel		*utils.LabelWithImage
@@ -55,7 +57,7 @@ func (this *printStatusPanel) initialize() {
 	this.Grid().Attach(this.createProgressBar(),    2, 1, 2, 1)
 
 	this.Grid().Attach(this.createPauseButton(),    1, 2, 1, 1)
-	this.Grid().Attach(this.createStopButton(),     2, 2, 1, 1)
+	this.Grid().Attach(this.createCancelButton(),   2, 2, 1, 1)
 	this.Grid().Attach(this.createControlButton(),  3, 2, 1, 1)
 
 	this.Grid().Attach(this.createCompleteButton(), 1, 2, 3, 1)
@@ -64,14 +66,19 @@ func (this *printStatusPanel) initialize() {
 }
 
 func (this *printStatusPanel) showTools() {
+	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
+	// PrintStatusPanel look similar, but there are subtle differences between the two
+	// and they can't be reused.
 	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-
-	this.tool0Button = this.createToolButton(0, toolheadCount)
-	this.tool1Button = this.createToolButton(1, toolheadCount)
-	this.tool2Button = this.createToolButton(2, toolheadCount)
-	this.tool3Button = this.createToolButton(3, toolheadCount)
-
-	this.bedButton = this.createBedButton()
+	if toolheadCount == 1 {
+		this.tool0Button = uiWidgets.CreateToolPrintingButton(0)
+	} else {
+		this.tool0Button = uiWidgets.CreateToolPrintingButton(1)
+	}
+	this.tool1Button = uiWidgets.CreateToolPrintingButton( 2)
+	this.tool2Button = uiWidgets.CreateToolPrintingButton( 3)
+	this.tool3Button = uiWidgets.CreateToolPrintingButton( 4)
+	this.bedButton   = uiWidgets.CreateToolPrintingButton(-1)
 
 	switch toolheadCount {
 		case 1:
@@ -79,15 +86,15 @@ func (this *printStatusPanel) showTools() {
 			this.Grid().Attach(this.bedButton,   0, 1, 2, 1)
 
 		case 2:
-			this.Grid().Attach(this.tool0Button, 0, 0, 2, 1)
-			this.Grid().Attach(this.tool1Button, 0, 1, 2, 1)
-			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.bedButton,   0, 1, 2, 1)
 
 		case 3:
 			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
 			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
 			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
-			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
+			this.Grid().Attach(this.bedButton,   1, 1, 1, 1)
 
 		case 4:
 			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
@@ -96,28 +103,6 @@ func (this *printStatusPanel) showTools() {
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 	}
-
-
-	// this.tool0Button = this.createToolButton(0, toolheadCount)
-	// this.tool1Button = this.createToolButton(1, toolheadCount)
-	// this.tool2Button = this.createToolButton(2, toolheadCount)
-	// this.tool3Button = this.createToolButton(3, toolheadCount)
-	// this.bedButton   = this.createBedButton()
-
-	// this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
-	// if toolheadCount >= 2 {
-	//	this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
-	// }
-
-	// if toolheadCount >= 3 {
-	// 	this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
-	// }
-
-	// if toolheadCount >= 4 {
-	// 	this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
-	// }
-
-	// this.Grid().Attach(this.bedButton, 0, 2, 1, 1)
 }
 
 func (this *printStatusPanel) createCompleteButton() *gtk.Button {
@@ -167,31 +152,6 @@ func (this *printStatusPanel) createInfoBox() *gtk.Box {
 	return infoBox
 }
 
-func (this *printStatusPanel) createToolButton(num, toolheadCount int) *gtk.Button {
-	imageFileName := ""
-	if num == 0 && toolheadCount == 0 {
-		imageFileName = "toolhead.svg"
-	} else {
-		imageFileName = fmt.Sprintf("toolhead-%d.svg", num + 1)
-	}
-
-	toolButton := utils.MustButtonImage("", imageFileName, func() {})
-
-	ctx, _ := toolButton.GetStyleContext()
-	ctx.AddClass("printing-state")
-
-	return toolButton
-}
-
-func (this *printStatusPanel) createBedButton() *gtk.Button {
-	bedButton := utils.MustButtonImage("", "bed.svg", func() {})
-
-	ctx, _ := bedButton.GetStyleContext()
-	ctx.AddClass("printing-state")
-
-	return bedButton
-}
-
 func (this *printStatusPanel) createPauseButton() gtk.IWidget {
 	this.pauseButton = utils.MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
 		defer this.updateTemperature()
@@ -212,9 +172,9 @@ func (this *printStatusPanel) createPauseButton() gtk.IWidget {
 	return this.pauseButton
 }
 
-func (this *printStatusPanel) createStopButton() gtk.IWidget {
+func (this *printStatusPanel) createCancelButton() gtk.IWidget {
 	this.stopButton = utils.MustButtonImageStyle(
-		"Stop",
+		"Cancel",
 		"stop.svg",
 		"color-warning-sign-yellow",
 		confirmStopDialogBox(this.UI.window, "Are you sure you want to stop the current print?", this),
