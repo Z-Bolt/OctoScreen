@@ -282,7 +282,6 @@ func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
 		utils.LogError("menu.getDefaultMenuItems()", "json.Unmarshal()", err)
 	}
 	// utils.LogError("menu.getDefaultMenuItems()", "now leaving", err)
-	// utils.Logger.Error("FUCK2")
 
 
 	return menuItems
