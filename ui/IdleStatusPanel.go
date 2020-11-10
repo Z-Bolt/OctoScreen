@@ -15,11 +15,11 @@ var idleStatusPanelInstance *idleStatusPanel
 type idleStatusPanel struct {
 	CommonPanel
 
-	tool0				*uiWidgets.ToolHeatup
-	tool1				*uiWidgets.ToolHeatup
-	tool2				*uiWidgets.ToolHeatup
-	tool3				*uiWidgets.ToolHeatup
-	bed					*uiWidgets.ToolHeatup
+	tool0Button			*uiWidgets.ToolButton
+	tool1Button			*uiWidgets.ToolButton
+	tool2Button			*uiWidgets.ToolButton
+	tool3Button			*uiWidgets.ToolButton
+	bedButton			*uiWidgets.ToolButton
 }
 
 func IdleStatusPanel(ui *UI) *idleStatusPanel {
@@ -72,97 +72,78 @@ func (this *idleStatusPanel) update() {
 }
 
 func (this *idleStatusPanel) showTools() {
+	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
+	// PrintStatusPanel look similar, but there are subtle differences between the two
+	// and they can't be reused.
 	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-
 	if toolheadCount == 1 {
-		this.tool0 = uiWidgets.CreteToolHeatupButton(0, this.UI.Client)
+		this.tool0Button = uiWidgets.CreteToolButton(0, this.UI.Client)
 	} else {
-		this.tool0 = uiWidgets.CreteToolHeatupButton(1, this.UI.Client)
+		this.tool0Button = uiWidgets.CreteToolButton(1, this.UI.Client)
 	}
-	this.tool1 = uiWidgets.CreteToolHeatupButton(2, this.UI.Client)
-	this.tool2 = uiWidgets.CreteToolHeatupButton(3, this.UI.Client)
-	this.tool3 = uiWidgets.CreteToolHeatupButton(4, this.UI.Client)
-	this.bed = uiWidgets.CreteToolHeatupButton( -1, this.UI.Client)
+	this.tool1Button = uiWidgets.CreteToolButton( 2, this.UI.Client)
+	this.tool2Button = uiWidgets.CreteToolButton( 3, this.UI.Client)
+	this.tool3Button = uiWidgets.CreteToolButton( 4, this.UI.Client)
+	this.bedButton   = uiWidgets.CreteToolButton(-1, this.UI.Client)
 
 	switch toolheadCount {
 		case 1:
-			grid := utils.MustGrid()
-			grid.SetRowHomogeneous(true)
-			grid.SetColumnHomogeneous(true)
-			this.Grid().Attach(grid, 0, 0, 2, 3)
-			grid.Attach(this.tool0,  0, 0, 2, 1)
-			grid.Attach(this.bed,    0, 1, 2, 1)
+			toolGrid := utils.MustGrid()
+			toolGrid.SetRowHomogeneous(true)
+			toolGrid.SetColumnHomogeneous(true)
+			this.Grid().Attach(toolGrid, 0, 0, 2, 3)
+			toolGrid.Attach(this.tool0Button, 0, 0, 2, 1)
+			toolGrid.Attach(this.bedButton,   0, 1, 2, 1)
 
 		case 2:
-			this.Grid().Attach(this.tool0, 0, 0, 2, 1)
-			this.Grid().Attach(this.tool1, 0, 1, 2, 1)
-			this.Grid().Attach(this.bed,   0, 2, 2, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 2, 1)
+			this.Grid().Attach(this.tool1Button, 0, 1, 2, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
 
 		case 3:
-			this.Grid().Attach(this.tool0, 0, 0, 1, 1)
-			this.Grid().Attach(this.tool1, 1, 0, 1, 1)
-			this.Grid().Attach(this.tool2, 0, 1, 2, 1)
-			this.Grid().Attach(this.bed,   0, 2, 2, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2Button, 0, 1, 2, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
 
 		case 4:
-			this.Grid().Attach(this.tool0, 0, 0, 1, 1)
-			this.Grid().Attach(this.tool1, 1, 0, 1, 1)
-			this.Grid().Attach(this.tool2, 0, 1, 1, 1)
-			this.Grid().Attach(this.tool3, 1, 1, 1, 1)
-			this.Grid().Attach(this.bed,   0, 2, 2, 1)
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
+			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
 	}
-
-
-	// if toolheadCount == 1 {
-	// 	this.tool0 = creteToolHeatupButton(0, this.UI.Client)
-	// } else {
-	// 	this.tool0 = creteToolHeatupButton(1, this.UI.Client)
-	// }
-
-	// this.tool1 = creteToolHeatupButton(2, this.UI.Client)
-	// this.tool2 = creteToolHeatupButton(3, this.UI.Client)
-	// this.tool3 = creteToolHeatupButton(4, this.UI.Client)
-	// this.bed   = creteToolHeatupButton(-1, this.UI.Client)
-
-	// this.Grid().Attach(this.tool0, 0, 0, 1, 1)
-	// if toolheadCount >= 2 {
-	// 	this.Grid().Attach(this.tool1, 1, 0, 1, 1)
-	// }
-
-	// if toolheadCount >= 3 {
-	// 	this.Grid().Attach(this.tool2, 0, 1, 1, 1)
-	// }
-
-	// if toolheadCount >= 4 {
-	// 	this.Grid().Attach(this.tool3, 1, 1, 1, 1)
-	// }
-
-	// this.Grid().Attach(this.bed, 0, 2, 1, 1)
 }
 
 func (this *idleStatusPanel) updateTemperature() {
+	utils.Logger.Debug("entering IdleStatusPanel.updateTemperature()")
+
 	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("idle_status.updateTemperature()", "Do(StateRequest)", err)
+		utils.LogError("IdleStatusPanel.updateTemperature()", "Do(StateRequest)", err)
+
+		utils.Logger.Debug("leaving IdleStatusPanel.updateTemperature()")
 		return
 	}
 
 	for tool, currentTemperatureData := range fullStateResponse.Temperature.CurrentTemperatureData {
 		switch tool {
 			case "bed":
-				this.bed.SetTemperatures(currentTemperatureData)
+				this.bedButton.SetTemperatures(currentTemperatureData)
 
 			case "tool0":
-				this.tool0.SetTemperatures(currentTemperatureData)
+				this.tool0Button.SetTemperatures(currentTemperatureData)
 
 			case "tool1":
-				this.tool1.SetTemperatures(currentTemperatureData)
+				this.tool1Button.SetTemperatures(currentTemperatureData)
 
 			case "tool2":
-				this.tool2.SetTemperatures(currentTemperatureData)
+				this.tool2Button.SetTemperatures(currentTemperatureData)
 
 			case "tool3":
-				this.tool3.SetTemperatures(currentTemperatureData)
+				this.tool3Button.SetTemperatures(currentTemperatureData)
 		}
 	}
+
+	utils.Logger.Debug("leaving IdleStatusPanel.updateTemperature()")
 }
