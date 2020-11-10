@@ -20,26 +20,26 @@ import (
 type UI struct {
 	sync.Mutex
 
-	PanelHistory			*stack.Stack
-	Client					*octoprint.Client
-	State					octoprint.ConnectionState
-	Settings				*octoprint.GetSettingsResponse
-	UIState					string
+	PanelHistory				*stack.Stack
+	Client						*octoprint.Client
+	State						octoprint.ConnectionState
+	Settings					*octoprint.GetSettingsResponse
+	UIState						string
 
-	OctoPrintPlugin			bool
+	OctoPrintPluginIsAvailable	bool
 
-	NotificationsBox		*uiWidgets.NotificationsBox
+	NotificationsBox			*uiWidgets.NotificationsBox
 
-	splashPanel				*SplashPanel
-	backgroundTask			*utils.BackgroundTask
-	grid					*gtk.Grid
-	window					*gtk.Window
-	time					time.Time
+	splashPanel					*SplashPanel
+	backgroundTask				*utils.BackgroundTask
+	grid						*gtk.Grid
+	window						*gtk.Window
+	time						time.Time
 
-	width					int
-	height					int
-	scaleFactor				int
-	connectionAttempts		int
+	width						int
+	height						int
+	scaleFactor					int
+	connectionAttempts			int
 }
 
 func New(endpoint, key string, width, height int) *UI {
@@ -51,17 +51,17 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	instance := &UI{
-		PanelHistory:			stack.New(),
-		Client:				octoprint.NewClient(endpoint, key),
-		NotificationsBox:		uiWidgets.NewNotificationsBox(),
-		OctoPrintPlugin:		true,
-		Settings:				nil,
+		PanelHistory:				stack.New(),
+		Client:						octoprint.NewClient(endpoint, key),
+		NotificationsBox:			uiWidgets.NewNotificationsBox(),
+		OctoPrintPluginIsAvailable:	true,
+		Settings:					nil,
 
-		window:					utils.MustWindow(gtk.WINDOW_TOPLEVEL),
-		time:					time.Now(),
+		window:						utils.MustWindow(gtk.WINDOW_TOPLEVEL),
+		time:						time.Now(),
 
-		width:					width,
-		height:					height,
+		width:						width,
+		height:						height,
 	}
 
 	instance.window.Connect("configure-event", func(win *gtk.Window) {
@@ -254,7 +254,7 @@ func (this *UI) checkNotification() {
 	if err != nil {
 		text := err.Error()
 		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
-			this.OctoPrintPlugin = false
+			this.OctoPrintPluginIsAvailable = false
 		}
 
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
@@ -301,7 +301,7 @@ func (this *UI) update() {
 		this.connectionAttempts = 0
 	}
 
-	if this.OctoPrintPlugin {
+	if this.OctoPrintPluginIsAvailable {
 		this.checkNotification()
 		this.loadSettings()
 	}
