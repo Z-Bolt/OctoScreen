@@ -10,29 +10,29 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-var toolchangerPanelInstance *toolchangerPanel
+var toolChangerPanelInstance *toolChangerPanel
 
-type toolchangerPanel struct {
+type toolChangerPanel struct {
 	CommonPanel
 	//activeTool int
 }
 
-func ToolchangerPanel(
+func ToolChangerPanel(
 	ui				*UI,
 	parentPanel		interfaces.IPanel,
-) *toolchangerPanel {
-	if toolchangerPanelInstance == nil {
-		m := &toolchangerPanel {
+) *toolChangerPanel {
+	if toolChangerPanelInstance == nil {
+		this := &toolChangerPanel {
 			CommonPanel: NewCommonPanel(ui, parentPanel),
 		}
-		m.initialize()
-		toolchangerPanelInstance = m
+		this.initialize()
+		toolChangerPanelInstance = this
 	}
 
-	return toolchangerPanelInstance
+	return toolChangerPanelInstance
 }
 
-func (this *toolchangerPanel) initialize() {
+func (this *toolChangerPanel) initialize() {
 	defer this.Initialize()
 
 	this.createToolheadButtons()
@@ -45,57 +45,57 @@ func (this *toolchangerPanel) initialize() {
 	this.Grid().Attach(this.createZCalibrationButton(), 1, 2, 1, 1)
 }
 
-func (m *toolchangerPanel) createZCalibrationButton() gtk.IWidget {
-	b := utils.MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
-		m.UI.GoToPanel(ZOffsetCalibrationPanel(m.UI, m))
+func (this *toolChangerPanel) createZCalibrationButton() gtk.IWidget {
+	button := utils.MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
+		this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI, this))
 	})
 
-	return b
+	return button
 }
 
-func (m *toolchangerPanel) createMagnetOnButton() gtk.IWidget {
+func (this *toolChangerPanel) createMagnetOnButton() gtk.IWidget {
 	return utils.MustButtonImageStyle("Magnet On", "magnet-on.svg", "", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=1"}
 
 		utils.Logger.Info("Turn on magnet")
-		if err := cmd.Do(m.UI.Client); err != nil {
+		if err := cmd.Do(this.UI.Client); err != nil {
 			utils.LogError("tool-changer.createMagnetOnButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
 }
 
-func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
+func (this *toolChangerPanel) createMagnetOffButton() gtk.IWidget {
 	return utils.MustButtonImageStyle("Magnet Off", "magnet-off.svg", "", func() {
 		cmd := &octoprint.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=0"}
 
 		utils.Logger.Info("Turn off magnet")
-		if err := cmd.Do(m.UI.Client); err != nil {
+		if err := cmd.Do(this.UI.Client); err != nil {
 			utils.LogError("tool-changer.createMagnetOffButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
 }
 
-func (m *toolchangerPanel) createToolheadButtons() {
-	toolheadCount := utils.GetToolheadCount(m.UI.Client)
-	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, m.Grid())
-	m.setToolheadButtonClickHandlers(toolheadButtons)
+func (this *toolChangerPanel) createToolheadButtons() {
+	toolheadCount := utils.GetToolheadCount(this.UI.Client)
+	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, this.Grid())
+	this.setToolheadButtonClickHandlers(toolheadButtons)
 }
 
-func (m *toolchangerPanel) setToolheadButtonClickHandlers(toolheadButtons []*gtk.Button) {
+func (this *toolChangerPanel) setToolheadButtonClickHandlers(toolheadButtons []*gtk.Button) {
 	for index, toolheadButton := range toolheadButtons {
-		m.setToolheadButtonClickHandler(toolheadButton, index)
+		this.setToolheadButtonClickHandler(toolheadButton, index)
 	}
 }
 
-func (m *toolchangerPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
+func (this *toolChangerPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
 	toolheadButton.Connect("clicked", func() {
 		utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 		gcode := fmt.Sprintf("T%d", toolheadIndex)
-		m.command(gcode)
+		this.command(gcode)
 	})
 }

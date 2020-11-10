@@ -57,7 +57,7 @@ func getPanel(
 			return MovePanel(ui, parentPanel)
 
 		case "tool-changer":
-			return ToolchangerPanel(ui, parentPanel)
+			return ToolChangerPanel(ui, parentPanel)
 
 		case "system":
 			return SystemPanel(ui, parentPanel)
