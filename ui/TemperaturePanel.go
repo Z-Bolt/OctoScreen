@@ -14,15 +14,16 @@ type temperaturePanel struct {
 
 	// First row
 	decreaseButton					*uiWidgets.TemperatureIncreaseButton
+	selectToolStepButton			*uiWidgets.SelectToolStepButton
 	temperatureAmountStepButton		*uiWidgets.TemperatureAmountStepButton
 	increaseButton					*uiWidgets.TemperatureIncreaseButton
 
 	// Second row
+	coolDownButton					*uiWidgets.CoolDownButton
 	temperatureStatusBox			*uiWidgets.TemperatureStatusBox
 
 	// Third row
 	presetsButton					*gtk.Button
-	selectToolStepButton			*uiWidgets.SelectToolStepButton
 }
 
 func TemperaturePanel(
@@ -56,7 +57,9 @@ func (this *temperaturePanel) initialize() {
 	)
 	this.Grid().Attach(this.decreaseButton, 0, 0, 1, 1)
 
-	this.Grid().Attach(this.temperatureAmountStepButton, 1, 0, 1, 1)
+	this.Grid().Attach(this.selectToolStepButton, 1, 0, 1, 1)
+
+	this.Grid().Attach(this.temperatureAmountStepButton, 2, 0, 1, 1)
 
 	this.increaseButton = uiWidgets.CreateTemperatureIncreaseButton(
 		this.UI.Client,
@@ -64,10 +67,13 @@ func (this *temperaturePanel) initialize() {
 		this.selectToolStepButton,
 		true,
 	)
-	this.Grid().Attach(this.increaseButton, 2, 0, 1, 1)
+	this.Grid().Attach(this.increaseButton, 3, 0, 1, 1)
 
 
 	// Second row
+	this.coolDownButton = uiWidgets.CreateCoolDownButton(this.UI.Client, nil)
+	this.Grid().Attach(this.coolDownButton, 0, 1, 1, 1)
+
 	this.temperatureStatusBox = uiWidgets.CreateTemperatureStatusBox(this.UI.Client, true, true)
 	this.Grid().Attach(this.temperatureStatusBox, 1, 1, 2, 1)
 
@@ -75,8 +81,6 @@ func (this *temperaturePanel) initialize() {
 	// Third row
 	this.presetsButton = utils.MustButtonImageStyle("Presets", "heat-up.svg",  "color2", this.showTemperaturePresetsPanel)
 	this.Grid().Attach(this.presetsButton, 0, 2, 1, 1)
-
-	this.Grid().Attach(this.selectToolStepButton, 1, 2, 1, 1)
 }
 
 func (this *temperaturePanel) showTemperaturePresetsPanel() {
