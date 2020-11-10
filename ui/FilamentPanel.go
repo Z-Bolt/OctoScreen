@@ -19,8 +19,8 @@ type filamentPanel struct {
 
 	// First row
 	filamentExtrudeButton		*uiWidgets.FilamentExtrudeButton
-	amountToExtrudeStepButton	*uiWidgets.AmountToExtrudeStepButton
 	flowRateStepButton			*uiWidgets.FlowRateStepButton
+	amountToExtrudeStepButton	*uiWidgets.AmountToExtrudeStepButton
 	filamentRetractButton		*uiWidgets.FilamentExtrudeButton
 
 	// Second row
@@ -52,8 +52,8 @@ func (this *filamentPanel) initialize() {
 	defer this.Initialize()
 
 	// Create the step buttons first, since they are needed by some of the other controls.
-	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
 	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Client)
+	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
 	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, false)
 
 
@@ -68,9 +68,9 @@ func (this *filamentPanel) initialize() {
 	)
 	this.Grid().Attach(this.filamentExtrudeButton,		0, 0, 1, 1)
 
-	this.Grid().Attach(this.amountToExtrudeStepButton,	1, 0, 1, 1)
+	this.Grid().Attach(this.flowRateStepButton,			1, 0, 1, 1)
 
-	this.Grid().Attach(this.flowRateStepButton,			2, 0, 1, 1)
+	this.Grid().Attach(this.amountToExtrudeStepButton,	2, 0, 1, 1)
 
 	this.filamentRetractButton = uiWidgets.CreateFilamentExtrudeButton(
 		this.UI.window,
