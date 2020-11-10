@@ -97,7 +97,7 @@ func (this *filesPanel) doLoadFiles() {
 	utils.Logger.Info("Loading list of files from: ", string(this.locationHistory.current()))
 
 	filesRequest := &octoprint.FilesRequest{Location: this.locationHistory.current(), Recursive: false}
-	filesResponse, err := filesRequest.Do(this.UI.Printer)
+	filesResponse, err := filesRequest.Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("files.doLoadFiles()", "Do(FilesRequest)", err)
 		files = []*octoprint.FileInformation{}
@@ -218,7 +218,7 @@ func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileInfor
 			selectFileRequest.Print = shouldPrint
 
 			utils.Logger.Infof("Loading file %q, printing: %v", fileInformation.Name, shouldPrint)
-			if err := selectFileRequest.Do(this.UI.Printer); err != nil {
+			if err := selectFileRequest.Do(this.UI.Client); err != nil {
 				utils.LogError("files.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return
 			}
@@ -248,7 +248,7 @@ func (this *filesPanel) createOpenFolderButton(fileInformation *octoprint.FileIn
 
 /*
 func (this *filesPanel) isReady() bool {
-	state, err := (&octoprint.SDStateRequest{}).Do(this.UI.Printer)
+	state, err := (&octoprint.SDStateRequest{}).Do(this.UI.Client)
 	if err != nil {
 		Logger.Error(err)
 		return false

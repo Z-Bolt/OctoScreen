@@ -54,7 +54,7 @@ func (this *HomeAllButton) handleClicked() {
 		"G28 Y",
 	}
 
-	if err := cmd.Do(m.UI.Printer); err != nil {
+	if err := cmd.Do(m.UI.Client); err != nil {
 		utils.LogError("HomeAllButton.handleClicked()", "Do(CommandRequest)", err)
 	}
 	*/

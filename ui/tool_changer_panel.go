@@ -37,7 +37,7 @@ func (this *toolchangerPanel) initialize() {
 
 	this.createToolheadButtons()
 
-	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Printer)
+	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Client)
 	this.Grid().Attach(homeAllButton,                   0, 1, 1, 1)
 
 	this.Grid().Attach(this.createMagnetOnButton(),     2, 1, 1, 1)
@@ -59,7 +59,7 @@ func (m *toolchangerPanel) createMagnetOnButton() gtk.IWidget {
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=1"}
 
 		utils.Logger.Info("Turn on magnet")
-		if err := cmd.Do(m.UI.Printer); err != nil {
+		if err := cmd.Do(m.UI.Client); err != nil {
 			utils.LogError("tool-changer.createMagnetOnButton()", "Do(CommandRequest)", err)
 			return
 		}
@@ -72,7 +72,7 @@ func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=0"}
 
 		utils.Logger.Info("Turn off magnet")
-		if err := cmd.Do(m.UI.Printer); err != nil {
+		if err := cmd.Do(m.UI.Client); err != nil {
 			utils.LogError("tool-changer.createMagnetOffButton()", "Do(CommandRequest)", err)
 			return
 		}
@@ -80,7 +80,7 @@ func (m *toolchangerPanel) createMagnetOffButton() gtk.IWidget {
 }
 
 func (m *toolchangerPanel) createToolheadButtons() {
-	toolheadCount := utils.GetToolheadCount(m.UI.Printer)
+	toolheadCount := utils.GetToolheadCount(m.UI.Client)
 	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, m.Grid())
 	m.setToolheadButtonClickHandlers(toolheadButtons)
 }

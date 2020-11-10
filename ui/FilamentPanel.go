@@ -53,14 +53,14 @@ func (this *filamentPanel) initialize() {
 
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
-	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Printer)
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false)
+	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Client)
+	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, false)
 
 
 	// First row
 	this.filamentExtrudeButton = uiWidgets.CreateFilamentExtrudeButton(
 		this.UI.window,
-		this.UI.Printer,
+		this.UI.Client,
 		this.amountToExtrudeStepButton,
 		this.flowRateStepButton,
 		this.selectToolStepButton,
@@ -74,7 +74,7 @@ func (this *filamentPanel) initialize() {
 
 	this.filamentRetractButton = uiWidgets.CreateFilamentExtrudeButton(
 		this.UI.window,
-		this.UI.Printer,
+		this.UI.Client,
 		this.amountToExtrudeStepButton,
 		this.flowRateStepButton,
 		this.selectToolStepButton,
@@ -86,18 +86,18 @@ func (this *filamentPanel) initialize() {
 	// Second row
 	this.filamentLoadButton = uiWidgets.CreateFilamentLoadButton(
 		this.UI.window,
-		this.UI.Printer,
+		this.UI.Client,
 		this.selectToolStepButton,
 		true,
 	)
 	this.Grid().Attach(this.filamentLoadButton,			0, 1, 1, 1)
 
-	this.temperatureStatusBox = uiWidgets.CreateTemperatureStatusBox(this.UI.Printer, true, true)
+	this.temperatureStatusBox = uiWidgets.CreateTemperatureStatusBox(this.UI.Client, true, true)
 	this.Grid().Attach(this.temperatureStatusBox,		1, 1, 2, 1)
 
 	this.filamentUnloadButton = uiWidgets.CreateFilamentLoadButton(
 		this.UI.window,
-		this.UI.Printer,
+		this.UI.Client,
 		this.selectToolStepButton,
 		false,
 	)
@@ -110,7 +110,7 @@ func (this *filamentPanel) initialize() {
 
 	// The select tool step button is needed by some of the other controls (to get the name/ID of the tool
 	// to send the command to), but only display it if multiple hotends are present.
-	toolheadCount := utils.GetToolheadCount(this.UI.Printer)
+	toolheadCount := utils.GetToolheadCount(this.UI.Client)
 	if toolheadCount > 1 {
 		this.Grid().Attach(this.selectToolStepButton, 1, 2, 1, 1)
 	}

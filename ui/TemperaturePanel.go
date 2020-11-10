@@ -44,12 +44,12 @@ func (this *temperaturePanel) initialize() {
 
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.temperatureAmountStepButton = uiWidgets.CreateTemperatureAmountStepButton()
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, true)
+	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, true)
 
 
 	// First row
 	this.decreaseButton = uiWidgets.CreateTemperatureIncreaseButton(
-		this.UI.Printer,
+		this.UI.Client,
 		this.temperatureAmountStepButton,
 		this.selectToolStepButton,
 		false,
@@ -59,7 +59,7 @@ func (this *temperaturePanel) initialize() {
 	this.Grid().Attach(this.temperatureAmountStepButton, 1, 0, 1, 1)
 
 	this.increaseButton = uiWidgets.CreateTemperatureIncreaseButton(
-		this.UI.Printer,
+		this.UI.Client,
 		this.temperatureAmountStepButton,
 		this.selectToolStepButton,
 		true,
@@ -68,7 +68,7 @@ func (this *temperaturePanel) initialize() {
 
 
 	// Second row
-	this.temperatureStatusBox = uiWidgets.CreateTemperatureStatusBox(this.UI.Printer, true, true)
+	this.temperatureStatusBox = uiWidgets.CreateTemperatureStatusBox(this.UI.Client, true, true)
 	this.Grid().Attach(this.temperatureStatusBox, 1, 1, 2, 1)
 
 

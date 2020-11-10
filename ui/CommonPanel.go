@@ -125,5 +125,5 @@ func (this *CommonPanel) arrangeMenuItems(
 func (this *CommonPanel) command(gcode string) error {
 	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{gcode}
-	return cmd.Do(this.UI.Printer)
+	return cmd.Do(this.UI.Client)
 }

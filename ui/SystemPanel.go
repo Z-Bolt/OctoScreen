@@ -48,13 +48,13 @@ func (this *systemPanel) initialize() {
 
 	// First row
 	logoWidth := this.Scaled(52)
-	this.octoPrintInfoBox = uiWidgets.CreateOctoPrintInfoBox(this.UI.Printer, logoWidth)
+	this.octoPrintInfoBox = uiWidgets.CreateOctoPrintInfoBox(this.UI.Client, logoWidth)
 	this.Grid().Attach(this.octoPrintInfoBox,        0, 0, 1, 1)
 
-	this.octoScreenInfoBox = uiWidgets.CreateOctoScreenInfoBox(this.UI.Printer, OctoScreenVersion)
+	this.octoScreenInfoBox = uiWidgets.CreateOctoScreenInfoBox(this.UI.Client, OctoScreenVersion)
 	this.Grid().Attach(this.octoScreenInfoBox,       1, 0, 2, 1)
 
-	this.octoScreenPluginInfoBox = uiWidgets.CreateOctoScreenPluginInfoBox(this.UI.Printer, this.UI.OctoPrintPlugin)
+	this.octoScreenPluginInfoBox = uiWidgets.CreateOctoScreenPluginInfoBox(this.UI.Client, this.UI.OctoPrintPlugin)
 	this.Grid().Attach(this.octoScreenPluginInfoBox, 3, 0, 1, 1)
 
 
@@ -65,7 +65,7 @@ func (this *systemPanel) initialize() {
 
 	// Third row
 	this.shutdownSystemButton = uiWidgets.CreateSystemCommandButton(
-		this.UI.Printer,
+		this.UI.Client,
 		this.UI.window,
 		"Shutdown System",
 		"shutdown",
@@ -74,7 +74,7 @@ func (this *systemPanel) initialize() {
 	this.Grid().Attach(this.shutdownSystemButton,    0, 2, 1, 1)
 
 	this.rebootSystemButton = uiWidgets.CreateSystemCommandButton(
-		this.UI.Printer,
+		this.UI.Client,
 		this.UI.window,
 		"Reboot System",
 		"reboot",
@@ -83,7 +83,7 @@ func (this *systemPanel) initialize() {
 	this.Grid().Attach(this.rebootSystemButton,      1, 2, 1, 1)
 
 	this.restartOctoPrintButton = uiWidgets.CreateSystemCommandButton(
-		this.UI.Printer,
+		this.UI.Client,
 		this.UI.window,
 		"Restart OctoPrint",
 		"restart",

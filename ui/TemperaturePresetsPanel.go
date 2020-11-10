@@ -37,7 +37,7 @@ func (this *temperaturePresetsPanel) initialize() {
 }
 
 func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
-	settings, err := (&octoprint.SettingsRequest{}).Do(this.UI.Printer)
+	settings, err := (&octoprint.SettingsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("TemperaturePresetsPanel.getTemperaturePresets()", "Do(SettingsRequest)", err)
 		return
@@ -47,7 +47,7 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 	for _, temperaturePreset := range settings.Temperature.TemperaturePresets {
 		if count < 10 {
 			temperaturePresetButton := uiWidgets.CreateTemperaturePresetButton(
-				this.UI.Printer,
+				this.UI.Client,
 				this.selectToolStepButton,
 				"heat-up.svg",
 				temperaturePreset,
@@ -64,7 +64,7 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 		Extruder:	0.0,
 	}
 	coolDownButton := uiWidgets.CreateTemperaturePresetButton(
-		this.UI.Printer,
+		this.UI.Client,
 		this.selectToolStepButton,
 		"cool-down.svg",
 		&coolDownTemperaturePreset,

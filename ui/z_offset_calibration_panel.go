@@ -88,13 +88,13 @@ func (this *zOffsetCalibrationPanel) initialize() {
 
 // First row
 func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Printer, false)
+	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, false)
 	_, err := this.selectToolStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 	if err != nil {
 		panic(err)
 	}
 
-	toolheadCount := utils.GetToolheadCount(this.UI.Printer)
+	toolheadCount := utils.GetToolheadCount(this.UI.Client)
 	if toolheadCount > 1 {
 		// Only display the select tool button if there are multiple toolheads.
 		this.Grid().Attach(this.selectToolStepButton, 0, 0, 1, 1)
@@ -115,7 +115,7 @@ func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
 		this.command(fmt.Sprintf("G0 X%f Y%f F10000", this.cPoint.x, this.cPoint.y))
 
 		cmd := &octoprint.GetZOffsetRequest{Tool: this.activeTool}
-		response, err := cmd.Do(this.UI.Printer)
+		response, err := cmd.Do(this.UI.Client)
 		if err != nil {
 			utils.LogError("z_offset_calibration.setToolheadButtonClickHandler()", "Do(GetZOffsetRequest)", err)
 			return
@@ -215,7 +215,7 @@ func (this *zOffsetCalibrationPanel) CreateAutoZCalibrationButton() gtk.IWidget 
 		// BUG: This does not work.  At least not on a Prusa i3.  Need to get this working with all printers.
 		// when RunZOffsetCalibrationRequest is called, it's returning a 404.
 		cmd := &octoprint.RunZOffsetCalibrationRequest{}
-		if err := cmd.Do(this.UI.Printer); err != nil {
+		if err := cmd.Do(this.UI.Client); err != nil {
 			utils.LogError("z_offset_calibration.createAutoZCalibrationButton()", "Do(RunZOffsetCalibrationRequest)", err)
 		}
 	})
@@ -233,7 +233,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 		fmt.Sprintf("SET_GCODE_OFFSET Z=%f", this.zOffset),
 		"G0 Z0 F100",
 	}
-	if err := cmd.Do(this.UI.Printer); err != nil {
+	if err := cmd.Do(this.UI.Client); err != nil {
 		utils.LogError("z_offset_calibration.updateZOffset()", "Do(CommandRequest)", err)
 	}
 
@@ -241,7 +241,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 		Value: this.zOffset,
 		Tool: this.activeTool,
 	}
-	if err := cmd2.Do(this.UI.Printer); err != nil {
+	if err := cmd2.Do(this.UI.Client); err != nil {
 		utils.LogError("z_offset_calibration.updateZOffset()", "Do(SetZOffsetRequest)", err)
 	}
 }
@@ -251,5 +251,5 @@ func (this *zOffsetCalibrationPanel) command(gcode string) error {
 	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{gcode}
 
-	return cmd.Do(this.UI.Printer)
+	return cmd.Do(this.UI.Client)
 }

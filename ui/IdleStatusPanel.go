@@ -44,7 +44,7 @@ func (this *idleStatusPanel) initialize() {
 	var menuItems []octoprint.MenuItem
 	if this.UI.Settings == nil || len(this.UI.Settings.MenuStructure) == 0 {
 		utils.Logger.Info("Loading default menu")
-		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Printer)
+		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)
 	} else {
 		utils.Logger.Info("Loading octo menu")
 	}
@@ -72,17 +72,17 @@ func (this *idleStatusPanel) update() {
 }
 
 func (this *idleStatusPanel) showTools() {
-	toolheadCount := utils.GetToolheadCount(this.UI.Printer)
+	toolheadCount := utils.GetToolheadCount(this.UI.Client)
 
 	if toolheadCount == 1 {
-		this.tool0 = uiWidgets.CreteToolHeatupButton(0, this.UI.Printer)
+		this.tool0 = uiWidgets.CreteToolHeatupButton(0, this.UI.Client)
 	} else {
-		this.tool0 = uiWidgets.CreteToolHeatupButton(1, this.UI.Printer)
+		this.tool0 = uiWidgets.CreteToolHeatupButton(1, this.UI.Client)
 	}
-	this.tool1 = uiWidgets.CreteToolHeatupButton(2, this.UI.Printer)
-	this.tool2 = uiWidgets.CreteToolHeatupButton(3, this.UI.Printer)
-	this.tool3 = uiWidgets.CreteToolHeatupButton(4, this.UI.Printer)
-	this.bed = uiWidgets.CreteToolHeatupButton( -1, this.UI.Printer)
+	this.tool1 = uiWidgets.CreteToolHeatupButton(2, this.UI.Client)
+	this.tool2 = uiWidgets.CreteToolHeatupButton(3, this.UI.Client)
+	this.tool3 = uiWidgets.CreteToolHeatupButton(4, this.UI.Client)
+	this.bed = uiWidgets.CreteToolHeatupButton( -1, this.UI.Client)
 
 	switch toolheadCount {
 		case 1:
@@ -114,15 +114,15 @@ func (this *idleStatusPanel) showTools() {
 
 
 	// if toolheadCount == 1 {
-	// 	this.tool0 = creteToolHeatupButton(0, this.UI.Printer)
+	// 	this.tool0 = creteToolHeatupButton(0, this.UI.Client)
 	// } else {
-	// 	this.tool0 = creteToolHeatupButton(1, this.UI.Printer)
+	// 	this.tool0 = creteToolHeatupButton(1, this.UI.Client)
 	// }
 
-	// this.tool1 = creteToolHeatupButton(2, this.UI.Printer)
-	// this.tool2 = creteToolHeatupButton(3, this.UI.Printer)
-	// this.tool3 = creteToolHeatupButton(4, this.UI.Printer)
-	// this.bed   = creteToolHeatupButton(-1, this.UI.Printer)
+	// this.tool1 = creteToolHeatupButton(2, this.UI.Client)
+	// this.tool2 = creteToolHeatupButton(3, this.UI.Client)
+	// this.tool3 = creteToolHeatupButton(4, this.UI.Client)
+	// this.bed   = creteToolHeatupButton(-1, this.UI.Client)
 
 	// this.Grid().Attach(this.tool0, 0, 0, 1, 1)
 	// if toolheadCount >= 2 {
@@ -141,7 +141,7 @@ func (this *idleStatusPanel) showTools() {
 }
 
 func (this *idleStatusPanel) updateTemperature() {
-	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Printer)
+	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("idle_status.updateTemperature()", "Do(StateRequest)", err)
 		return

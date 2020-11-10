@@ -21,7 +21,7 @@ type UI struct {
 	sync.Mutex
 
 	PanelHistory			*stack.Stack
-	Printer					*octoprint.Client
+	Client					*octoprint.Client
 	State					octoprint.ConnectionState
 	Settings				*octoprint.GetSettingsResponse
 	UIState					string
@@ -52,7 +52,7 @@ func New(endpoint, key string, width, height int) *UI {
 
 	instance := &UI{
 		PanelHistory:			stack.New(),
-		Printer:				octoprint.NewClient(endpoint, key),
+		Client:				octoprint.NewClient(endpoint, key),
 		NotificationsBox:		uiWidgets.NewNotificationsBox(),
 		OctoPrintPlugin:		true,
 		Settings:				nil,
@@ -154,7 +154,7 @@ func (this *UI) verifyConnection() {
 	newUIState := "<<uninitialized-state>>"
 	splashMessage := "<<uninitialized-message>>"
 
-	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(this.Printer)
+	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(this.Client)
 	if err == nil {
 		this.State = connectionResponse.Current.State
 		strCurrentState := string(connectionResponse.Current.State)
@@ -172,8 +172,8 @@ func (this *UI) verifyConnection() {
 				fallthrough
 			case connectionResponse.Current.State.IsOffline():
 				newUIState = "splash"
-				if err := (&octoprint.ConnectRequest{}).Do(this.Printer); err != nil {
-					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(ui.Printer)", err)
+				if err := (&octoprint.ConnectRequest{}).Do(this.Client); err != nil {
+					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
 					splashMessage = "Loading..."
 				} else {
 					// Use 'Offline' here and 'offline' later.  Having different variations may help in
@@ -250,7 +250,7 @@ func (this *UI) verifyConnection() {
 func (this *UI) checkNotification() {
 	utils.Logger.Debug("entering ui.checkNotification()")
 
-	notificationRespone, err := (&octoprint.GetNotificationRequest{}).Do(this.Printer)
+	notificationRespone, err := (&octoprint.GetNotificationRequest{}).Do(this.Client)
 	if err != nil {
 		text := err.Error()
 		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
@@ -272,7 +272,7 @@ func (this *UI) checkNotification() {
 func (this *UI) loadSettings() {
 	utils.Logger.Debug("entering ui.loadSettings()")
 
-	settingsResponse, err := (&octoprint.GetSettingsRequest{}).Do(this.Printer)
+	settingsResponse, err := (&octoprint.GetSettingsRequest{}).Do(this.Client)
 	if err != nil {
 		utils.LogError("ui.loadSettings()", "Do(GetSettingsRequest)", err)
 		utils.Logger.Error("leaving ui.loadSettings() - Do(GetSettingsRequest) returned an error")

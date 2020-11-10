@@ -35,11 +35,11 @@ func (this *fanPanel) initialize() {
 	defer this.Initialize()
 
 	// First row
-	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 25),  0, 0, 1, 1)
-	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 50),  1, 0, 1, 1)
-	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 75),  2, 0, 1, 1)
-	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 100), 3, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Client, 25),  0, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Client, 50),  1, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Client, 75),  2, 0, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Client, 100), 3, 0, 1, 1)
 
 	// Second row
-	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Printer, 0),   0, 1, 1, 1)
+	this.Grid().Attach(uiWidgets.CreateFanButton(this.UI.Client, 0),   0, 1, 1, 1)
 }

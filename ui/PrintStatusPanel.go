@@ -64,7 +64,7 @@ func (this *printStatusPanel) initialize() {
 }
 
 func (this *printStatusPanel) showTools() {
-	toolheadCount := utils.GetToolheadCount(this.UI.Printer)
+	toolheadCount := utils.GetToolheadCount(this.UI.Client)
 
 	this.tool0Button = this.createToolButton(0, toolheadCount)
 	this.tool1Button = this.createToolButton(1, toolheadCount)
@@ -198,7 +198,7 @@ func (this *printStatusPanel) createPauseButton() gtk.IWidget {
 
 		utils.Logger.Info("Pausing/Resuming job")
 		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
-		err := cmd.Do(this.UI.Printer)
+		err := cmd.Do(this.UI.Client)
 		utils.Logger.Info("Pausing/Resuming job 2, Do() was just called")
 
 		if err != nil {
@@ -247,7 +247,7 @@ func (this *printStatusPanel) update() {
 func (this *printStatusPanel) updateTemperature() {
 	//Logger.Printf("Now in print_status.updateTemperature()")
 
-	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Printer)
+	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("print_status.updateTemperature()", "Do(StateRequest)", err)
 		return
@@ -333,7 +333,7 @@ func (this *printStatusPanel) doUpdateState(printerState *octoprint.PrinterState
 func (this *printStatusPanel) updateJob() {
 	//Logger.Printf("Now in print_status.updateJob()")
 
-	jobResponse, err := (&octoprint.JobRequest{}).Do(this.UI.Printer)
+	jobResponse, err := (&octoprint.JobRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("print_status.updateJob()", "Do(JobRequest)", err)
 		return
@@ -402,7 +402,7 @@ func confirmStopDialogBox(
 		userResponse := dialogBox.Run()
 		if userResponse == int(gtk.RESPONSE_YES) {
 			utils.Logger.Warning("Stopping job")
-			if err := (&octoprint.CancelRequest{}).Do(printStatusPanel.UI.Printer); err != nil {
+			if err := (&octoprint.CancelRequest{}).Do(printStatusPanel.UI.Client); err != nil {
 				utils.LogError("print_status.confirmStopDialogBox()", "Do(CancelRequest)", err)
 				return
 			}

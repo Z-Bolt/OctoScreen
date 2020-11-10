@@ -104,7 +104,7 @@ func (this *bedLevelPanel) addBedLevelCornerButton(isLeft, isTop bool) {
 }
 
 func (this *bedLevelPanel) defineLevelingPoints() {
-	connectionRequest, err := (&octoprint.ConnectionRequest{}).Do(this.UI.Printer)
+	connectionRequest, err := (&octoprint.ConnectionRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(ConnectionRequest)", err)
 		return
@@ -112,7 +112,7 @@ func (this *bedLevelPanel) defineLevelingPoints() {
 
 	utils.Logger.Info(connectionRequest.Current.PrinterProfile)
 
-	printerProfile, err := (&octoprint.PrinterProfilesRequest{Id: connectionRequest.Current.PrinterProfile}).Do(this.UI.Printer)
+	printerProfile, err := (&octoprint.PrinterProfilesRequest{Id: connectionRequest.Current.PrinterProfile}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(PrinterProfilesRequest)", err)
 		return
@@ -144,7 +144,7 @@ func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
 			"G0 Z0 F400",
 		}
 
-		if err := cmd.Do(this.UI.Printer); err != nil {
+		if err := cmd.Do(this.UI.Client); err != nil {
 			utils.LogError("BedLevelPanel.createLevelButton()", "Do(CommandRequest)", err)
 			return
 		}
@@ -163,7 +163,7 @@ func (this *bedLevelPanel) goHomeIfRequired() {
 		"G28",
 	}
 
-	if err := cmd.Do(this.UI.Printer); err != nil {
+	if err := cmd.Do(this.UI.Client); err != nil {
 		utils.LogError("BedLevelPanel.goHomeIfRequire()", "Do(CommandRequest)", err)
 		return
 	}
@@ -178,7 +178,7 @@ func (this *bedLevelPanel) createAutoLevelButton(gcode string) *gtk.Button {
 			gcode,
 		}
 
-		if err := cmd.Do(this.UI.Printer); err != nil {
+		if err := cmd.Do(this.UI.Client); err != nil {
 			utils.LogError("BedLevelPanel.createAutoLevelButton()", "Do(CommandRequest)", err)
 			return
 		}

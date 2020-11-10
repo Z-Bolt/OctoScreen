@@ -32,15 +32,15 @@ func HomePanel(
 func (this *homePanel) initialize() {
 	defer this.Initialize()
 
-	homeXButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home X", "home-x.svg", octoprint.XAxis)
+	homeXButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home X", "home-x.svg", octoprint.XAxis)
 	this.Grid().Attach(homeXButton, 2, 1, 1, 1)
 
-	homeYButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home Y", "home-y.svg", octoprint.YAxis)
+	homeYButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home Y", "home-y.svg", octoprint.YAxis)
 	this.Grid().Attach(homeYButton, 1, 0, 1, 1)
 
-	homeZButton := uiWidgets.CreateHomeButton(this.UI.Printer, "Home Z", "home-z.svg", octoprint.ZAxis)
+	homeZButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home Z", "home-z.svg", octoprint.ZAxis)
 	this.Grid().Attach(homeZButton, 1, 1, 1, 1)
 
-	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Printer)
+	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Client)
 	this.Grid().Attach(homeAllButton, 2, 0, 1, 1)
 }

@@ -36,17 +36,17 @@ func (this *controlPanel) initialize() {
 
 	for _, controlDefinition := range this.getDefaultControls() {
 		icon := strings.ToLower(strings.Replace(controlDefinition.Name, " ", "-", -1))
-		button := uiWidgets.CreateControlButton(this.UI.Printer, this.UI.window, controlDefinition, icon)
+		button := uiWidgets.CreateControlButton(this.UI.Client, this.UI.window, controlDefinition, icon)
 		this.AddButton(button)
 	}
 
 	for _, controlDefinition := range this.getCustomControls() {
-		button := uiWidgets.CreateControlButton(this.UI.Printer, this.UI.window, controlDefinition, "custom-script")
+		button := uiWidgets.CreateControlButton(this.UI.Client, this.UI.window, controlDefinition, "custom-script")
 		this.AddButton(button)
 	}
 
 	for _, commandDefinition := range this.getCommands() {
-		button := uiWidgets.CreateCommandButton(this.UI.Printer, this.UI.window, commandDefinition, "custom-script")
+		button := uiWidgets.CreateCommandButton(this.UI.Client, this.UI.window, commandDefinition, "custom-script")
 		this.AddButton(button)
 	}
 }
@@ -73,7 +73,7 @@ func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
 	control := []*octoprint.ControlDefinition{}
 
 	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
-	r, err := (&octoprint.CustomCommandsRequest{}).Do(this.UI.Printer)
+	r, err := (&octoprint.CustomCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
 		return control
@@ -92,7 +92,7 @@ func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
 
 func (this *controlPanel) getCommands() []*octoprint.CommandDefinition {
 	utils.Logger.Info("Retrieving custom commands")
-	r, err := (&octoprint.SystemCommandsRequest{}).Do(this.UI.Printer)
+	r, err := (&octoprint.SystemCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
 		return nil
