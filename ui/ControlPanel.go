@@ -70,33 +70,33 @@ func (this *controlPanel) getDefaultControls() []*octoprint.ControlDefinition {
 }
 
 func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
-	control := []*octoprint.ControlDefinition{}
+	controlDefinitions := []*octoprint.ControlDefinition{}
 
 	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
-	r, err := (&octoprint.CustomCommandsRequest{}).Do(this.UI.Client)
+	response, err := (&octoprint.CustomCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
-		return control
+		return controlDefinitions
 	}
 
-	for _, c := range r.Controls {
-		for _, cc := range c.Children {
-			if cc.Command != "" || cc.Script != "" {
-				control = append(control, cc)
+	for _, control := range response.Controls {
+		for _, childControl := range control.Children {
+			if childControl.Command != "" || childControl.Script != "" {
+				controlDefinitions = append(controlDefinitions, childControl)
 			}
 		}
 	}
 
-	return control
+	return controlDefinitions
 }
 
 func (this *controlPanel) getCommands() []*octoprint.CommandDefinition {
 	utils.Logger.Info("Retrieving custom commands")
-	r, err := (&octoprint.SystemCommandsRequest{}).Do(this.UI.Client)
+	response, err := (&octoprint.SystemCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
 		return nil
 	}
 
-	return r.Custom
+	return response.Custom
 }
