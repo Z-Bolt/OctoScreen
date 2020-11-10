@@ -58,17 +58,10 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 		}
 	}
 
-	coolDownTemperaturePreset := octoprint.TemperaturePreset{
-		Name:		"Cool Down",
-		Bed:		0.0,
-		Extruder:	0.0,
-	}
-	coolDownButton := uiWidgets.CreateTemperaturePresetButton(
-		this.UI.Client,
-		this.selectToolStepButton,
-		"cool-down.svg",
-		&coolDownTemperaturePreset,
-		this.UI.GoToPreviousPanel,
-	)
-	this.AddButton(coolDownButton)
+	this.createAllOffButton()
+}
+
+func (this *temperaturePresetsPanel) createAllOffButton() {
+	allOffButton := uiWidgets.CreateCoolDownButton(this.UI.Client, this.UI.GoToPreviousPanel)
+	this.AddButton(allOffButton)
 }
