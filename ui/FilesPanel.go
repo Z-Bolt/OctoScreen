@@ -147,7 +147,7 @@ func (this *filesPanel) addFile(box *gtk.Box, fileInformation *octoprint.FileInf
 	labels.SetHAlign(gtk.ALIGN_START)
 
 	actions := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actions.Add(this.createLoadAndPrintButton("print.svg", fileInformation, true))
+	actions.Add(this.createLoadAndPrintButton("print.svg", fileInformation))
 
 	file := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	file.SetMarginTop(1)
@@ -208,16 +208,16 @@ func (this *filesPanel) addFolder(box *gtk.Box, fileInformation *octoprint.FileI
 	box.Add(frame)
 }
 
-func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileInformation *octoprint.FileInformation, shouldPrint bool) gtk.IWidget {
+func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileInformation *octoprint.FileInformation) gtk.IWidget {
 	button := utils.MustButton(
 		utils.MustImageFromFileWithSize(imageFileName, this.Scaled(40), this.Scaled(40)),
-		utils.MustConfirmDialogBox(this.UI.window, "Are you sure you want to proceed?", func() {
+		utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
 			selectFileRequest := &octoprint.SelectFileRequest{}
 			selectFileRequest.Location = octoprint.Local
 			selectFileRequest.Path = fileInformation.Path
-			selectFileRequest.Print = shouldPrint
+			selectFileRequest.Print = true
 
-			utils.Logger.Infof("Loading file %q, printing: %v", fileInformation.Name, shouldPrint)
+			utils.Logger.Infof("Loading file %q", fileInformation.Name)
 			if err := selectFileRequest.Do(this.UI.Client); err != nil {
 				utils.LogError("files.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return
