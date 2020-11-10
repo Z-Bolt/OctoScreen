@@ -188,7 +188,13 @@ func (this *UI) verifyConnection() {
 				splashMessage = strCurrentState
 
 			default:
-				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of s.Current.State: %q", strCurrentState)
+				switch strCurrentState {
+					case "Cancelling":
+						newUIState = "idle"
+
+					default:
+						utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of s.Current.State: %q", strCurrentState)
+				}
 		}
 	} else {
 		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest)", err)
@@ -292,6 +298,7 @@ func (this *UI) update() {
 
 	if this.connectionAttempts > 8 {
 		this.splashPanel.putOnHold()
+
 		utils.Logger.Debug("leaving ui.update() - connectionAttempts > 8")
 		return
 	}
@@ -320,7 +327,7 @@ func (this *UI) sdNotify(state string) {
 	_, err := daemon.SdNotify(false, state)
 	if err != nil {
 		utils.Logger.Errorf("ui.sdNotify()", "SdNotify()", err)
-		utils.Logger.Error("leaving ui.sdNotify()")
+		utils.Logger.Debug("leaving ui.sdNotify()")
 		return
 	}
 
@@ -342,11 +349,15 @@ func (this *UI) GoToPreviousPanel() {
 	stackLength := this.PanelHistory.Len()
 	if stackLength < 2 {
 		utils.Logger.Error("ui.GoToPreviousPanel() - stack does not contain current panel and parent panel")
+
+		utils.Logger.Debug("leaving ui.GoToPreviousPanel()")
 		return
 	}
 
 	if stackLength < 1 {
 		utils.Logger.Error("ui.GoToPreviousPanel() - GoToPreviousPanel() was called but the stack is empty")
+
+		utils.Logger.Debug("leaving ui.GoToPreviousPanel()")
 		return
 	}
 
@@ -400,6 +411,6 @@ func (this *UI) errToUser(err error) string {
 		return "Loading..."
 	}
 
-	utils.Logger.Errorf("leaving ui.errToUser() - unexpected error: %q", text)
+	utils.Logger.Debugf("leaving ui.errToUser() - unexpected error: %q", text)
 	return fmt.Sprintf("Unexpected error: %s", err)
 }
