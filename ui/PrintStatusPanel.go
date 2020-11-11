@@ -281,6 +281,11 @@ func (this *printStatusPanel) doUpdateState(printerState *octoprint.PrinterState
 			this.completeButton.Show()
 
 		default:
+			logLevel := utils.LowerCaseLogLevel()
+			if logLevel == "debug" {
+				utils.Logger.Fatalf("PrintStatusPanel.doUpdateState() - unknown printerState.Flags")
+			}
+
 			this.pauseButton.SetSensitive(false)
 			this.stopButton.SetSensitive(false)
 	}

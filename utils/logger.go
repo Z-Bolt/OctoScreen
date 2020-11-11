@@ -45,6 +45,12 @@ func SetLogLevel(level logrus.Level) {
 	standardLog.Printf("logger.SetLogLevel() - the log level is now set to: %q", level)
 }
 
+func LowerCaseLogLevel() string {
+	logLevel := os.Getenv(EnvLogLevel)
+	return strings.ToLower(logLevel)
+}
+
+
 func init() {
 	log = logrus.New()
 	log.AddHook(ContextHook{})

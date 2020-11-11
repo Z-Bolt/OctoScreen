@@ -3,7 +3,7 @@ package uiWidgets
 import (
 	"fmt"
 	"os"
-	"strings"
+	// "strings"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -56,11 +56,10 @@ func CreateSystemInformationInfoBox(
 
 
 
-	logLevel := os.Getenv(utils.EnvLogLevel)
+	logLevel := utils.LowerCaseLogLevel()
 	if logLevel == "" {
-		logLevel = "debug"
-	} else {
-		logLevel = strings.ToLower(logLevel)
+		// If not set, default to warning level.
+		logLevel = "warn"
 	}
 
 	if logLevel == "debug" {

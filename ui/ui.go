@@ -193,7 +193,10 @@ func (this *UI) verifyConnection() {
 						newUIState = "idle"
 
 					default:
-						utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of s.Current.State: %q", strCurrentState)
+						logLevel := utils.LowerCaseLogLevel()
+						if logLevel == "debug" {
+							utils.Logger.Fatalf("menu.getPanel() - unknown CurrentState: %q", strCurrentState)
+						}
 				}
 		}
 	} else {
@@ -249,7 +252,10 @@ func (this *UI) verifyConnection() {
 			this.GoToPanel(this.splashPanel)
 
 		default:
-			utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of newUIState: %q", newUIState)
+			logLevel := utils.LowerCaseLogLevel()
+			if logLevel == "debug" {
+				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of newUIState: %q", newUIState)
+			}
 	}
 
 	utils.Logger.Debug("leaving ui.verifyConnection()")

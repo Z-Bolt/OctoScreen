@@ -77,6 +77,11 @@ func getPanel(
 			return PrintMenuPanel(ui, parentPanel)
 
 		default:
+			logLevel := utils.LowerCaseLogLevel()
+			if logLevel == "debug" {
+				utils.Logger.Fatalf("menu.getPanel() - unknown menuItem.Panel: %q", menuItem.Panel)
+			}
+
 			return nil
 	}
 }
