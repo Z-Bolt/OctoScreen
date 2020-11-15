@@ -16,21 +16,21 @@ var printStatusPanelInstance *printStatusPanel
 type printStatusPanel struct {
 	CommonPanel
 
-	progressBar			*gtk.ProgressBar
+	progressBar *gtk.ProgressBar
 
-	tool0Button			*gtk.Button
-	tool1Button			*gtk.Button
-	tool2Button			*gtk.Button
-	tool3Button			*gtk.Button
-	bedButton  			*gtk.Button
+	tool0Button *uiWidgets.ToolButton
+	tool1Button *uiWidgets.ToolButton
+	tool2Button *uiWidgets.ToolButton
+	tool3Button *uiWidgets.ToolButton
+	bedButton   *uiWidgets.ToolButton
 
-	fileLabel			*utils.LabelWithImage
-	timeLabel			*utils.LabelWithImage
-	timeLeftLabel		*utils.LabelWithImage
-	completeButton		*gtk.Button
-	pauseButton			*gtk.Button
-	stopButton			*gtk.Button
-	menuButton			*gtk.Button
+	fileLabel      *utils.LabelWithImage
+	timeLabel      *utils.LabelWithImage
+	timeLeftLabel  *utils.LabelWithImage
+	completeButton *gtk.Button
+	pauseButton    *gtk.Button
+	stopButton     *gtk.Button
+	menuButton     *gtk.Button
 }
 
 func PrintStatusPanel(ui *UI) *printStatusPanel {
@@ -71,14 +71,14 @@ func (this *printStatusPanel) showTools() {
 	// and they can't be reused.
 	toolheadCount := utils.GetToolheadCount(this.UI.Client)
 	if toolheadCount == 1 {
-		this.tool0Button = uiWidgets.CreateToolPrintingButton(0)
+		this.tool0Button = uiWidgets.CreateToolButton(0, this.UI.Client)
 	} else {
-		this.tool0Button = uiWidgets.CreateToolPrintingButton(1)
+		this.tool0Button = uiWidgets.CreateToolButton(1, this.UI.Client)
 	}
-	this.tool1Button = uiWidgets.CreateToolPrintingButton( 2)
-	this.tool2Button = uiWidgets.CreateToolPrintingButton( 3)
-	this.tool3Button = uiWidgets.CreateToolPrintingButton( 4)
-	this.bedButton   = uiWidgets.CreateToolPrintingButton(-1)
+	this.tool1Button = uiWidgets.CreateToolButton(2, this.UI.Client)
+	this.tool2Button = uiWidgets.CreateToolButton(3, this.UI.Client)
+	this.tool3Button = uiWidgets.CreateToolButton(4, this.UI.Client)
+	this.bedButton = uiWidgets.CreateToolButton(-1, this.UI.Client)
 
 	switch toolheadCount {
 		case 1:
