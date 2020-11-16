@@ -75,7 +75,8 @@ button.color4 {
 }
 
 button.color-dash {
-	background-image: linear-gradient(to right, white 60%, rgba(255, 255, 255, 0) 20%);
+	background-image: linear-gradient(to right, #560FD1 60%, rgba(255, 255, 255, 0) 20%);
+
 	background-position: bottom;
 	background-size: 70px 8px;
 	background-repeat: repeat-x;
@@ -181,7 +182,7 @@ button.keyboard {
 }
 
 .hidden {
-    opacity: 0;
+	opacity: 0;
 }
 
 
