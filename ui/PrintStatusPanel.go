@@ -18,11 +18,11 @@ type printStatusPanel struct {
 
 	progressBar			*gtk.ProgressBar
 
-	tool0Button			*gtk.Button
-	tool1Button			*gtk.Button
-	tool2Button			*gtk.Button
-	tool3Button			*gtk.Button
-	bedButton  			*gtk.Button
+	tool0Button			*uiWidgets.ToolPrintingButton
+	tool1Button			*uiWidgets.ToolPrintingButton
+	tool2Button			*uiWidgets.ToolPrintingButton
+	tool3Button			*uiWidgets.ToolPrintingButton
+	bedButton  			*uiWidgets.ToolPrintingButton
 
 	fileLabel			*utils.LabelWithImage
 	timeLabel			*utils.LabelWithImage
