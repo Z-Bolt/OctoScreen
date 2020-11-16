@@ -77,14 +77,14 @@ func (this *idleStatusPanel) showTools() {
 	// and they can't be reused.
 	toolheadCount := utils.GetToolheadCount(this.UI.Client)
 	if toolheadCount == 1 {
-		this.tool0Button = uiWidgets.CreteToolButton(0, this.UI.Client)
+		this.tool0Button = uiWidgets.CreateToolButton(0, this.UI.Client)
 	} else {
-		this.tool0Button = uiWidgets.CreteToolButton(1, this.UI.Client)
+		this.tool0Button = uiWidgets.CreateToolButton(1, this.UI.Client)
 	}
-	this.tool1Button = uiWidgets.CreteToolButton( 2, this.UI.Client)
-	this.tool2Button = uiWidgets.CreteToolButton( 3, this.UI.Client)
-	this.tool3Button = uiWidgets.CreteToolButton( 4, this.UI.Client)
-	this.bedButton   = uiWidgets.CreteToolButton(-1, this.UI.Client)
+	this.tool1Button = uiWidgets.CreateToolButton( 2, this.UI.Client)
+	this.tool2Button = uiWidgets.CreateToolButton( 3, this.UI.Client)
+	this.tool3Button = uiWidgets.CreateToolButton( 4, this.UI.Client)
+	this.bedButton   = uiWidgets.CreateToolButton(-1, this.UI.Client)
 
 	switch toolheadCount {
 		case 1:
