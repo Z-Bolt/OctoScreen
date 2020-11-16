@@ -26,7 +26,7 @@ var (
 )
 
 func main() {
-	utils.Logger.Info("entering main.main()")
+	utils.Logger.Debug("entering main.main()")
 
 	gtk.Init(nil)
 	settings, _ := gtk.SettingsGetDefault()
@@ -46,16 +46,17 @@ func main() {
 
 	gtk.Main()
 
-	utils.Logger.Info("leaving main.main()")
+	utils.Logger.Debug("leaving main.main()")
 }
 
 
 func init() {
-	utils.Logger.Info("entering main.init()")
+	utils.Logger.Debug("entering main.init()")
 
 	if !utils.RequiredEnvironmentVariablesAreSet() {
 		utils.Logger.Error("main.init() - RequiredEnvironmentVariablesAreSet() returned false")
-		utils.Logger.Error("leaving main.init()")
+
+		utils.Logger.Debug("leaving main.init()")
 		return
 	}
 
@@ -72,14 +73,12 @@ func init() {
 	setBaseUrl(cfg)
 	setApiKey(cfg)
 
-	utils.Logger.Info("leaving main.init()")
+	utils.Logger.Debug("leaving main.init()")
 }
 
 func setLogLevel() {
-	standardLog.Print("entering main.setLogLevel()")
-
-	logLevel := os.Getenv(utils.EnvLogLevel)
-	switch strings.ToLower(logLevel) {
+	logLevel := utils.LowerCaseLogLevel()
+	switch logLevel {
 		case "debug":
 			utils.SetLogLevel(logrus.DebugLevel)
 
@@ -97,7 +96,8 @@ func setLogLevel() {
 			utils.SetLogLevel(logrus.ErrorLevel)
 
 		default:
-			utils.Logger.Fatalf("main.init() - unknown logLevel: %q", logLevel)
+			// unknown log level, so exit
+			utils.Logger.Fatalf("main.setLogLevel() - unknown logLevel: %q", logLevel)
 	}
 
 	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
@@ -148,12 +148,13 @@ type config struct {
 }
 
 func readConfig(configFile string) *config {
-	utils.Logger.Info("entering main.readConfig()")
+	utils.Logger.Debug("entering main.readConfig()")
 
 	cfg := &config{}
 	if configFile == "" {
 		utils.Logger.Info("main.readConfig() - configFile is empty")
-		utils.Logger.Info("leaving main.readConfig(), returning the default config")
+
+		utils.Logger.Debug("leaving main.readConfig(), returning the default config")
 		return cfg
 	}
 
@@ -176,53 +177,57 @@ func readConfig(configFile string) *config {
 		cfg.Server.Port = 5000
 	}
 
-	utils.Logger.Info("leaving main.readConfig()")
+	utils.Logger.Debug("leaving main.readConfig()")
 	return cfg
 }
 
 func findConfigFile() string {
-	utils.Logger.Info("entering main.findConfigFile()")
+	utils.Logger.Debug("entering main.findConfigFile()")
 
 	if file := doFindConfigFile(homeOctoPi); file != "" {
 		utils.Logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
-		utils.Logger.Info("leaving main.findConfigFile(), returning the file")
+
+		utils.Logger.Debug("leaving main.findConfigFile(), returning the file")
 		return file
 	}
 
 	usr, err := user.Current()
 	if err != nil {
 		utils.LogError("main.findConfigFile()", "Current()", err)
-		utils.Logger.Error("leaving main.findConfigFile(), returning an empty string")
+
+		utils.Logger.Debug("leaving main.findConfigFile(), returning an empty string")
 		return ""
 	}
 
 	configFile := doFindConfigFile(usr.HomeDir)
 
-	utils.Logger.Info("leaving main.findConfigFile(), returning configFile")
+	utils.Logger.Debug("leaving main.findConfigFile(), returning configFile")
 	return configFile
 }
 
 func doFindConfigFile(home string) string {
-	utils.Logger.Info("entering main.doFindConfigFile()")
+	utils.Logger.Debug("entering main.doFindConfigFile()")
 
 	path := filepath.Join(home, configLocation)
 
 	if _, err := os.Stat(path); err == nil {
 		utils.LogError("main.doFindConfigFile()", "Stat()", err)
-		utils.Logger.Error("leaving main.doFindConfigFile(), returning path")
+
+		utils.Logger.Debug("leaving main.doFindConfigFile(), returning path")
 		return path
 	}
 
-	utils.Logger.Info("leaving main.doFindConfigFile(), returning an empty string")
+	utils.Logger.Debug("leaving main.doFindConfigFile(), returning an empty string")
 	return ""
 }
 
 func getSize() (width, height int) {
-	utils.Logger.Info("entering main.getSize()")
+	utils.Logger.Debug("entering main.getSize()")
 
 	if Resolution == "" {
 		utils.Logger.Error("main.getSize() - Resolution is empty")
-		utils.Logger.Error("leaving main.getSize()")
+
+		utils.Logger.Debug("leaving main.getSize()")
 		return
 	}
 
@@ -245,6 +250,6 @@ func getSize() (width, height int) {
 		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
 	}
 
-	utils.Logger.Info("leaving main.getSize()")
+	utils.Logger.Debug("leaving main.getSize()")
 	return
 }
