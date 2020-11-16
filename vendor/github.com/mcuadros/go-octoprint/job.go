@@ -18,17 +18,17 @@ type JobRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *JobRequest) Do(c *Client) (*JobResponse, error) {
-	b, err := c.doJSONRequest("GET", JobTool, nil, nil)
+	bytes, err := c.doJSONRequest("GET", JobTool, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &JobResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &JobResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
 
 // StartRequest starts the print of the currently selected file.
@@ -38,12 +38,12 @@ type StartRequest struct{}
 func (cmd *StartRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "start"}
 
-	b := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(b).Encode(payload); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(buffer).Encode(payload); err != nil {
 		return err
 	}
 
-	_, err := c.doJSONRequest("POST", JobTool, b, JobToolErrors)
+	_, err := c.doJSONRequest("POST", JobTool, buffer, JobToolErrors)
 	return err
 }
 
@@ -54,12 +54,12 @@ type CancelRequest struct{}
 func (cmd *CancelRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "cancel"}
 
-	b := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(b).Encode(payload); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(buffer).Encode(payload); err != nil {
 		return err
 	}
 
-	_, err := c.doJSONRequest("POST", JobTool, b, JobToolErrors)
+	_, err := c.doJSONRequest("POST", JobTool, buffer, JobToolErrors)
 	return err
 }
 
@@ -72,12 +72,12 @@ type RestartRequest struct{}
 func (cmd *RestartRequest) Do(c *Client) error {
 	payload := map[string]string{"command": "restart"}
 
-	b := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(b).Encode(payload); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(buffer).Encode(payload); err != nil {
 		return err
 	}
 
-	_, err := c.doJSONRequest("POST", JobTool, b, JobToolErrors)
+	_, err := c.doJSONRequest("POST", JobTool, buffer, JobToolErrors)
 	return err
 }
 
@@ -86,8 +86,10 @@ type PauseAction string
 const (
 	// Pause the current job if it’s printing, does nothing if it’s already paused.
 	Pause PauseAction = "pause"
+
 	// Resume the current job if it’s paused, does nothing if it’s printing.
 	Resume PauseAction = "resume"
+
 	// Toggle the pause state of the job, pausing it if it’s printing and
 	// resuming it if it’s currently paused.
 	Toggle PauseAction = "toggle"
@@ -104,12 +106,12 @@ type PauseRequest struct {
 
 // Do sends an API request and returns an error if any.
 func (cmd *PauseRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := cmd.encode(b); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := cmd.encode(buffer); err != nil {
 		return err
 	}
 
-	_, err := c.doJSONRequest("POST", JobTool, b, JobToolErrors)
+	_, err := c.doJSONRequest("POST", JobTool, buffer, JobToolErrors)
 	return err
 }
 
