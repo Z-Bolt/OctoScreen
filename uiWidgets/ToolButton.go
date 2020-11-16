@@ -46,7 +46,7 @@ type ToolButton struct {
 	printer			*octoprint.Client
 }
 
-func CreteToolButton(
+func CreateToolButton(
 	index			int,
 	printer			*octoprint.Client,
 ) *ToolButton {
@@ -61,7 +61,7 @@ func CreteToolButton(
 
 	_, err := instance.Connect("clicked", instance.clicked)
 	if err != nil {
-		utils.LogError("ToolButton.CreteToolButton()", "t.Connect('clicked', t.clicked)", err)
+		utils.LogError("ToolButton.CreateToolButton()", "t.Connect('clicked', t.clicked)", err)
 	}
 
 	return instance
