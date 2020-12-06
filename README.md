@@ -34,7 +34,7 @@ in my 3d printer.
 Installation
 ------------
 
-A seperate install guide [Setting Up OctoScreen and Your Display](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display), has been posted.
+A seperate install guide, [Setting Up OctoScreen and Your Display](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display) has been posted to the wiki.  Please consult this guide for setting up OctoScreen and configuring your display.
 
 
 Configuration
