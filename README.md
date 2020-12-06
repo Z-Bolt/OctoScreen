@@ -34,62 +34,8 @@ in my 3d printer.
 Installation
 ------------
 
-### Dependencies
+A seperate install guide [Setting Up Your Display](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-Your-Display), has ben posted.
 
-*OctoScreen* is based on [Golang](golang.org), usually this means that is
-dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
-is used, this means that GTK+3 libraries are required to be installed on
-the system. Be sure that graphical environment is additionally installed.
-
-If you are using `Raspbian` or any other `Debian` based distribution, required packages can
-be installed using:
-
-```sh
-sudo apt-get install libgtk-3-0 xserver-xorg xinit x11-xserver-utils
-```
-Also you may need to install video drive, usually **no screens found** error indicates this. Please find manual here:
-[https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation](https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation)
-
-
-### Install from .deb package
-
-The recommended way to install *OctoScreen* is use the `.deb` packages
-from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page. The packages
-are available for Debian Stretch based distributions such as Raspbian and OctoPi.
-
-For example for a Raspbian Stretch:
-```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.5.1/octoscreen_2.5-1_armhf.deb
-sudo dpkg -i octoscreen_2.5-1_armhf.deb
-```
-
-### Install from source
-
-The compilation and packaging tasks are managed by the [`Makefile`](Makefile)
-and backed on [Docker](Dockerfile). Docker is used to avoid installing any other
-dependencies since all the operations are done inside of the container.
-
-If you need to install docker inside `Raspbian` or any other linux distrubution
-just run:
-
-```sh
-curl -fsSL get.docker.com -o get-docker.sh
-sh get-docker.sh
-```
-
-> You can read more about this at [`docker-install`](https://github.com/docker/docker-install)
-
-To compile the project, assuming that you already cloned this repository, just
-execute the `build` target, this will generate in `build` folder all the binaries
-and debian packages:
-
-```sh
-> make build
-> ls -1 build/
-```
-
-If you are using `Raspbian` you can install any of the `.deb` generated packages.
-If not, just use the compiled binary.
 
 Configuration
 -------------
