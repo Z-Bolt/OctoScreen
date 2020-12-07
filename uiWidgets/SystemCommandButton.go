@@ -1,7 +1,7 @@
 package uiWidgets
 
 import (
-	// "fmt"
+	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/mcuadros/go-octoprint"
@@ -46,10 +46,16 @@ func CreateSystemCommandButton(
 			}
 		}
 
-		cb = do
+		confirmationMessage := ""
 		if len(cmd.Confirm) != 0 {
-			cb = utils.MustConfirmDialogBox(parentWindow, cmd.Confirm, do)
+			confirmationMessage = cmd.Confirm
+		} else if len(name) != 0 {
+			confirmationMessage = fmt.Sprintf("Do you wish to %s?", name)
+		} else {
+			confirmationMessage = "Do you wish to proceed?"
 		}
+
+		cb = utils.MustConfirmDialogBox(parentWindow, confirmationMessage, do)
 	}
 
 	base := utils.MustButtonImageStyle(name, action + ".svg", style, cb)
