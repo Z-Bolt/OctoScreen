@@ -88,6 +88,13 @@ and debian packages:
 > ls -1 build/
 ```
 
+> Default build is for STRETCH release of debian, but BUSTER and JESSIE is supported, if you build one, you just have to specify it during make.
+> Example for BUSTER:
+> ```sh
+> > make build DEBIAN_PACKAGES=BUSTER
+> > ls -1 build/
+> ```
+
 If you are using `Raspbian` you can install any of the `.deb` generated packages.
 If not, just use the compiled binary.
 
