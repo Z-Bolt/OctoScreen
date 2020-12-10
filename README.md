@@ -17,7 +17,7 @@ Some of the functionality of OctoScreen incude:
 
 
 
-## How is OctoScreen Different From TouchUI?
+## How Is OctoScreen Different From TouchUI?
 
 [TouchUI](http://plugins.octoprint.org/plugins/touchui/) is an amazing plugin for OctoPrint.  It was created as a responsive design application to access OctoPrint from low resolution devices, such as smartphones, tablets, etc.
 
@@ -26,7 +26,7 @@ Executing TouchUI under a RPi w/TFT modules presents two big problems: First, it
 
 
 
-##Installation
+## Installation
 ------------
 
 ### Dependencies
@@ -43,7 +43,7 @@ You will also need to set up the video drivers for the display you are using.  I
 
 
 
-### Install From a .deb package
+### Install From a .deb Package
 
 There are two ways to install OctoScreen: install from a .deb package (the recommended and supported way), or install from sources.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian Stretch based distributions such as Raspbian and OctoPi.
 
@@ -87,7 +87,7 @@ If you are using `Raspbian` you can install any of the `.deb` generated packages
 
 
 
-##Configuration
+## Configuration
 -------------
 
 ### Basic Configuration
@@ -115,9 +115,9 @@ The basic configuration is handled via environment variables, if you are using t
 
 
 
-## [Menu Configuration](https://github.com/Z-Bolt/OctoScreen/blob/master/docs/README.md)
+## Menu Configuration
 
-### Custom controls and commands
+### Custom Controls and Commands
 
 Custom [controls](http://docs.octoprint.org/en/master/configuration/config_yaml.html#controls) to execute GCODE instructions and [commands](http://docs.octoprint.org/en/master/configuration/config_yaml.html#system) to execute shell commands can be defined in the `config.yaml` file.
 
@@ -133,7 +133,7 @@ The controls are limit to static controls without `inputs`.
 
 
 
-##License
+## License
 -------
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
