@@ -6,7 +6,7 @@ _OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
-### Some of the functionality of OctoScreen incude:
+Some of the functionality of OctoScreen incude:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
@@ -14,15 +14,19 @@ _OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on
 - Wifi connection management.
 - Toolchanger management tools.
 
-### How this is different from TouchUI?
 
-[TouchUI](http://plugins.octoprint.org/plugins/touchui/), is an amazing plugin for OctoPrint, was created as a responsive design for access to OctoPrint, from low resolution devices, such as smartphones, tablets, etc.
+
+
+## How is OctoScreen Different From TouchUI?
+
+[TouchUI](http://plugins.octoprint.org/plugins/touchui/) is an amazing plugin for OctoPrint.  It was created as a responsive design application to access OctoPrint from low resolution devices, such as smartphones, tablets, etc.
 
 Executing TouchUI under a RPi w/TFT modules presents two big problems: First, it isn't optimized to be used with resistive touch screens with low resolutions like 480x320, and second, it requires a browser to run, which consumes a lot of resources.  This is the main reason OctoScreen was developed as an X application.
 
-## [Roadmap](https://github.com/Z-Bolt/OctoScreen/projects/2)
 
-Installation
+
+
+##Installation
 ------------
 
 ### Dependencies
@@ -39,7 +43,7 @@ You will also need to set up the video drivers for the display you are using.  I
 
 
 
-### Install from .deb package
+### Install From a .deb package
 
 There are two ways to install OctoScreen: install from a .deb package (the recommended and supported way), or install from sources.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian Stretch based distributions such as Raspbian and OctoPi.
 
@@ -49,7 +53,9 @@ wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.5.1/octoscreen_2.
 sudo dpkg -i octoscreen_2.5-1_armhf.deb
 ```
 
-### Install from source
+
+
+### Install From Source
 
 The compilation and packaging tasks are managed by the [`Makefile`](Makefile) and backed on [Docker](Dockerfile).  Docker is used to avoid installing any other dependencies since all the operations are done inside of the container.
 
@@ -78,7 +84,10 @@ ls -1 build/
 
 If you are using `Raspbian` you can install any of the `.deb` generated packages.  If not, just use the compiled binary.
 
-Configuration
+
+
+
+##Configuration
 -------------
 
 ### Basic Configuration
@@ -93,8 +102,6 @@ The basic configuration is handled via environment variables, if you are using t
 
 - `OCTOPRINT_APIKEY` - OctoScreen expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured one or a user specific one if “Access Control”. if OctoPrint is locally installed will be read from the config file.
 
-
-
 #### Optional Configuration Settings
 
 - `OCTOSCREEN_LOG_LEVEL` - Controls the level of logging.  Accepted values are (with increasing levels): Debug, Info, Warn, and Error.  If no value is provided, the log level will default to Warn.
@@ -108,7 +115,7 @@ The basic configuration is handled via environment variables, if you are using t
 
 
 
-### [Menu Configuration](https://github.com/Z-Bolt/OctoScreen/blob/master/docs/README.md)
+## [Menu Configuration](https://github.com/Z-Bolt/OctoScreen/blob/master/docs/README.md)
 
 ### Custom controls and commands
 
@@ -116,7 +123,17 @@ Custom [controls](http://docs.octoprint.org/en/master/configuration/config_yaml.
 
 The controls are limit to static controls without `inputs`.
 
-License
+
+
+
+
+## [Roadmap](https://github.com/Z-Bolt/OctoScreen/projects/2)
+
+
+
+
+
+##License
 -------
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
