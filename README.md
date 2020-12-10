@@ -39,7 +39,7 @@ If you are using `Raspbian` or any other `Debian` based distribution, required p
 sudo apt-get install libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 ```
 
-You will also need to set up the video drivers for the display you are using.  Installation and configuration of the drivers is usually specific to the display you are using, and you will need to contact the manufacturer for instructions.  To help you set up you system and display, a [setup guide](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display) is available in the wiki.
+You will also need to set up the video drivers for the display you are using.  Installation and configuration of the drivers is usually specific to the display you are using, and you will need to contact the manufacturer for instructions.  To help you set up your system and display, a setup guide ([Setting Up OctoScreen and Your Display](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display)) is available in the wiki.
 
 
 
