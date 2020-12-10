@@ -96,7 +96,7 @@ The basic configuration is handled via environment variables, if you are using t
 
 #### Required Configuration Settings
 
-- `OCTOPRINT_HOST` - The OctoPrint HTTP address.  Example: `http://octopi.local` or `http://localhost:5000`.  Note: the protocol (`http://` or `https://`) is required.  If the setting for OCTOPRINT_HOST does not contain the protocol, an error will be displayed when OctoScreen starts.
+- `OCTOPRINT_HOST` - The URL to the OctoPrint server.  Example: `http://octopi.local` or `http://localhost:5000`.  Note: the protocol (`http://` or `https://`) is required.  If the setting for OCTOPRINT_HOST does not contain the protocol, an error will be displayed when OctoScreen starts.
 
 - `OCTOPRINT_APIKEY` - OctoScreen expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured key, or a user-specific one if “Access Control” is enabled.
 
