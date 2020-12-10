@@ -1,7 +1,6 @@
 # OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 
-_OctoScreen_, LCD touch interface for our Octoprint based on GTK+3, that allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi. It's a _X application_ to be executed directly in the X Server without any windows
-manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
+_OctoScreen_, LCD touch interface for our OctoPrint based on GTK+3, that allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.  It's a _X application_ to be executed directly in the X Server without a window manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
 equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
 
 <img width="480" src="https://user-images.githubusercontent.com/390214/60487814-ef9d1a00-9ca8-11e9-9c48-31bf54a5488d.png" />
@@ -18,7 +17,7 @@ equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD
 ### How this is different from TouchUI?
 
 [TouchUI](http://plugins.octoprint.org/plugins/touchui/), is an amazing plugin
-for Octoprint, was created as a responsive design for access to OctoPrint,
+for OctoPrint, was created as a responsive design for access to OctoPrint,
 from low resolution devices, such as smartphones, tablets, etc.
 
 Executing TouchUI under a RPi w/TFT modules, presents two big problems,
@@ -36,28 +35,23 @@ Installation
 
 ### Dependencies
 
-*OctoScreen* is based on [Golang](golang.org), usually this means that is
-dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html)
-is used, this means that GTK+3 libraries are required to be installed on
-the system. Be sure that graphical environment is additionally installed.
+OctoScreen is based on [GoLang](https://golang.org).  GoLang applications are usually dependency-less, but in this case [GTK+3](https://developer.gnome.org/gtk3/3.0/gtk.html) is used, and the GTK+3 libraries are required in order to run.  Be sure that GTK+3 is installed and is the only graphical environment that's been installed.
 
-If you are using `Raspbian` or any other `Debian` based distribution, required packages can
-be installed using:
+If you are using `Raspbian` or any other `Debian` based distribution, required packages can be installed using:
 
 ```sh
 sudo apt-get install libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 ```
-Also you may need to install video drive, usually **no screens found** error indicates this. Please find manual here:
-[https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation](https://github.com/ssvb/xf86-video-fbturbo/wiki/Installation)
+
+You will also need to set up the video drivers for the display you are using.  Installation and configuration of the drivers is usually specific to the display you are using, and you will need to contact the manufacturer for instructions.  To help you set up you system and display, a [setup guide](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display) is available in the wiki.
+
 
 
 ### Install from .deb package
 
-The recommended way to install *OctoScreen* is use the `.deb` packages
-from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page. The packages
-are available for Debian Stretch based distributions such as Raspbian and OctoPi.
+There are two ways to install OctoScreen: install from a .deb package (the recommended and supported way), or install from sources.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian Stretch based distributions such as Raspbian and OctoPi.
 
-For example for a Raspbian Stretch:
+For example, to install on Raspbian or OctoPi:
 ```sh
 wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.5.1/octoscreen_2.5-1_armhf.deb
 sudo dpkg -i octoscreen_2.5-1_armhf.deb
@@ -65,9 +59,9 @@ sudo dpkg -i octoscreen_2.5-1_armhf.deb
 
 ### Install from source
 
-The compilation and packaging tasks are managed by the [`Makefile`](Makefile) and backed on [Docker](Dockerfile). Docker is used to avoid installing any other dependencies since all the operations are done inside of the container.
+The compilation and packaging tasks are managed by the [`Makefile`](Makefile) and backed on [Docker](Dockerfile).  Docker is used to avoid installing any other dependencies since all the operations are done inside of the container.
 
-If you need to install docker inside `Raspbian` or any other linux distrubution just run:
+If you need to install docker inside `Raspbian` or any other linux distribution just run:
 
 ```sh
 curl -fsSL get.docker.com -o get-docker.sh
@@ -90,16 +84,14 @@ make build DEBIAN_PACKAGES=BUSTER
 ls -1 build/
 ```
 
-If you are using `Raspbian` you can install any of the `.deb` generated packages.
-If not, just use the compiled binary.
+If you are using `Raspbian` you can install any of the `.deb` generated packages.  If not, just use the compiled binary.
 
 Configuration
 -------------
 
 ### Basic Configuration
 
-The basic configuration is handled via environment variables, if you are using
-the `.deb` package you can configure it at `/etc/octoscreen/config`.
+The basic configuration is handled via environment variables, if you are using the `.deb` package you can configure it at `/etc/octoscreen/config`.
 
 #### Required Configuration Settings
 
