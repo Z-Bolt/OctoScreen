@@ -21,7 +21,7 @@ Some of the functionality of OctoScreen incude:
 
 [TouchUI](http://plugins.octoprint.org/plugins/touchui/) is an amazing plugin for OctoPrint.  It was created as a responsive design application to access OctoPrint from low resolution devices, such as smartphones, tablets, etc.
 
-Executing TouchUI under a RPi w/TFT modules presents two big problems: First, it isn't optimized to be used with resistive touch screens with low resolutions like 480x320, and second, it requires a browser to run, which consumes a lot of resources.  This is the main reason OctoScreen was developed as an X application.
+Executing TouchUI under a RPi with a TFT display presents two big problems: First, it isn't optimized to be used with resistive touch screens with low resolutions like 480x320, and second, it requires a browser to run, which consumes a lot of resources.  This is the main reason OctoScreen was developed as an X application.
 
 
 
