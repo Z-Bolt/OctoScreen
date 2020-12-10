@@ -6,7 +6,7 @@ _OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
-### Some of the functionality incudes:
+### Some of the functionality of OctoScreen incude:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
