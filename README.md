@@ -45,7 +45,7 @@ You will also need to set up the video drivers for the display you are using.  I
 
 ### Install From a .deb Package
 
-There are two ways to install OctoScreen: install from a .deb package (the recommended and supported way), or install from sources.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian Stretch based distributions such as Raspbian and OctoPi.
+There are two ways to install OctoScreen: the recommended and supported way is to install from a .deb package, or you can choose to install from building the sources yourself.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian Stretch based distributions such as Raspbian and OctoPi.
 
 For example, to install on Raspbian or OctoPi:
 ```sh
