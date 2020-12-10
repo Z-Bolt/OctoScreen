@@ -6,6 +6,45 @@ _OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
+
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729412-f66ab780-3a6c-11eb-8fd8-8bbf5c8c1dc7.png" />
+Idle
+<br />
+<br />
+<br />
+
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729660-6ed17880-3a6d-11eb-80b0-b1170d1e59f9.png" />
+Idle-Multiple Hotends
+<br />
+<br />
+<br />
+
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729487-14381c80-3a6d-11eb-8e24-298dc3b34fe4.png" />
+Home
+<br />
+<br />
+<br />
+
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729522-24e89280-3a6d-11eb-85bb-ae0f1973b867.png" />
+Filament
+<br />
+<br />
+<br />
+
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729592-4a759c00-3a6d-11eb-8086-daab19cd6ff5.png" />
+Actions
+<br />
+<br />
+<br />
+
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729636-5feac600-3a6d-11eb-9121-83808b3decb7.png" />
+Printing
+<br />
+<br />
+<br />
+
+
+
 Some of the functionality of OctoScreen incude:
 
 - Print jobs monitoring.
