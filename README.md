@@ -65,12 +65,9 @@ sudo dpkg -i octoscreen_2.5-1_armhf.deb
 
 ### Install from source
 
-The compilation and packaging tasks are managed by the [`Makefile`](Makefile)
-and backed on [Docker](Dockerfile). Docker is used to avoid installing any other
-dependencies since all the operations are done inside of the container.
+The compilation and packaging tasks are managed by the [`Makefile`](Makefile) and backed on [Docker](Dockerfile). Docker is used to avoid installing any other dependencies since all the operations are done inside of the container.
 
-If you need to install docker inside `Raspbian` or any other linux distrubution
-just run:
+If you need to install docker inside `Raspbian` or any other linux distrubution just run:
 
 ```sh
 curl -fsSL get.docker.com -o get-docker.sh
@@ -79,16 +76,14 @@ sh get-docker.sh
 
 You can read more about this at [`docker-install`](https://github.com/docker/docker-install)
 
-To compile the project, assuming that you already cloned this repository, just
-execute the `build` target, this will generate in `build` folder all the binaries
-and debian packages:
+To compile the project (assuming that you already cloned this repository), just execute the `build` target.  This will generate all the binaries and debian packages in the `build` folder:
 
 ```sh
 make build
 ls -1 build/
 ```
 
-Default build is for STRETCH release of debian, but BUSTER and JESSIE is supported, if you build one, you just have to specify it during make.
+The default build is for the STRETCH release of debian, but BUSTER and JESSIE is possible.  To build one of these targets, you just have to specify the package during make.
 Example for BUSTER:
 ```sh
 make build DEBIAN_PACKAGES=BUSTER
