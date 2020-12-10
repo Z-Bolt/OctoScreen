@@ -96,7 +96,7 @@ The basic configuration is handled via environment variables, if you are using t
 
 #### Required Configuration Settings
 
-- `OCTOPRINT_HOST` - The URL to the OctoPrint server.  Example: `http://octopi.local` or `http://localhost:5000`.  Note: the protocol (`http://` or `https://`) is required.  If the setting for OCTOPRINT_HOST does not contain the protocol, an error will be displayed when OctoScreen starts.
+- `OCTOPRINT_HOST` - The URL to the OctoPrint server.  Example: `http://octopi.local` or `http://localhost:5000`.  Note: the protocol (`http://` or `https://`) is required.  If the setting for `OCTOPRINT_HOST` does not contain the protocol, an error will be displayed when OctoScreen starts.
 
 - `OCTOPRINT_APIKEY` - OctoScreen expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured key, or a user-specific one if “Access Control” is enabled.
 
@@ -105,11 +105,11 @@ The basic configuration is handled via environment variables, if you are using t
 
 #### Optional Configuration Settings
 
-- `OCTOPRINT_CONFIG_FILE` - The location of the OctoPrint's config.yaml file.  If empty, the file path used will be the `pi` home folder of the current user. Only used for locally installed OctoPrint servers.
+- `OCTOPRINT_CONFIG_FILE` - The location of the OctoPrint's config.yaml file.  If empty, the file path used will be the `pi` home folder of the current user.
 
-- `OCTOSCREEN_LOG_FILE_PATH` - The file path to where the log file will be saved.  The file path must be in the location of where the app is run, and can not use external paths (eq, ~/ or / are out).  The file path should not only include the path to the log file, but the name of the log file as well (eq logs/logfile.txt).  The log file is appended to, and never automatically truncated and will grow over time.  If you turn log file logging on (by specifying a path), be sure to turn it off (by setting the value to "").
+- `OCTOSCREEN_LOG_FILE_PATH` - The file path to where the log file will be saved.  The file path must be in the location of where the app runs, and can not use external paths (eg `~/` or `/` are out).  The file path should not only include the path to the log file, but the name of the log file as well (eg `logs/logfile.txt`).  The log file is appended to and is never automatically truncated, and will grow over time.  If you turn log file logging on (by specifying a path), be sure to turn it off (by setting the value to "").
 
-- `OCTOSCREEN_LOG_LEVEL` - Controls the level of logging.  Accepted values are (with increasing levels): debug, info, warn, and error.  If no value is provided, the log level will default to warn.
+- `OCTOSCREEN_LOG_LEVEL` - Controls the level of logging.  Accepted values are (with increasing levels): `debug`, `info`, `warn`, and `error`.  If no value is provided, the log level will default to `warn`.
 
 - `OCTOSCREEN_RESOLUTION` - Resolution of the application, and should be configured to the resolution of your screen.  Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533.  If you are using Raspbian you can do it by changing [`hdmi_cvt`](https://www.raspberrypi.org/documentation/configuration/config-txt/video.md) param in `/boot/config.txt` file.  Please see [Setting Up OctoScreen and Your Display](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display) and [Installing OctoScreen with a 3.5" 480x320 TFT screen](https://github.com/Z-Bolt/OctoScreen/wiki/Installing-OctoScreen-with-a-3.5%22-480x320-TFT-screen) for more information.
 
