@@ -26,8 +26,8 @@ Executing TouchUI under a RPi w/TFT modules presents two big problems: First, it
 
 
 
-## Installation
 ------------
+## Installation
 
 ### Dependencies
 
@@ -87,8 +87,8 @@ If you are using `Raspbian` you can install any of the `.deb` generated packages
 
 
 
+------------
 ## Configuration
--------------
 
 ### Basic Configuration
 
@@ -115,6 +115,7 @@ The basic configuration is handled via environment variables, if you are using t
 
 
 
+------------
 ## Menu Configuration
 
 ### Custom Controls and Commands
@@ -127,14 +128,15 @@ The controls are limit to static controls without `inputs`.
 
 
 
+------------
 ## [Roadmap](https://github.com/Z-Bolt/OctoScreen/projects/2)
 
 
 
 
 
+------------
 ## License
--------
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
 
