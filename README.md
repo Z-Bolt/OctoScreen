@@ -6,27 +6,19 @@ _OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" />
 <img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
-### These are some of the functionalities supported:
+### Some of the functionality incudes:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
 - Jogging operations.
-- Wifi connection management
-- Toolchanger management tools
+- Wifi connection management.
+- Toolchanger management tools.
 
 ### How this is different from TouchUI?
 
-[TouchUI](http://plugins.octoprint.org/plugins/touchui/), is an amazing plugin
-for OctoPrint, was created as a responsive design for access to OctoPrint,
-from low resolution devices, such as smartphones, tablets, etc.
+[TouchUI](http://plugins.octoprint.org/plugins/touchui/), is an amazing plugin for OctoPrint, was created as a responsive design for access to OctoPrint, from low resolution devices, such as smartphones, tablets, etc.
 
-Executing TouchUI under a RPi w/TFT modules, presents two big problems,
-first isn't optimized to be used with resistive touch screens with low resolutions
-like 480x320 and second requires a browser to be access, consuming a lot of
-resources.
-
-This is the main reason because I develop this X application to be executed
-in my 3d printer.
+Executing TouchUI under a RPi w/TFT modules presents two big problems: First, it isn't optimized to be used with resistive touch screens with low resolutions like 480x320, and second, it requires a browser to run, which consumes a lot of resources.  This is the main reason OctoScreen was developed as an X application.
 
 ## [Roadmap](https://github.com/Z-Bolt/OctoScreen/projects/2)
 
