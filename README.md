@@ -1,10 +1,10 @@
 # OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 
-_OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on GTK+3, and allows you to control your 3D Printer, like you can do with any [LCD panel](http://reprap.org/wiki/RepRapTouch), but using _OctoPrint_ and a Raspberry Pi.  It's an _X application_ that's executed directly in the X Server without a window manager or browser, as _frontend of a [OctoPrint](http://octoprint.org) server_ in a Raspberry Pi
-equipped with any [Touch Screen](https://www.waveshare.com/wiki/4.3inch_HDMI_LCD_(B)).
+_OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on GTK+3 and allows you to control your 3D Printer using a [LCD touch screen](https://amzn.to/2L8cRkR), a [Raspberry Pi](https://amzn.to/39LPvvF), and [OctoPrint](https://octoprint.org/).  It's an _X application_ that's executed directly in the X Server without a window manager or browser, and opreates as frontend for OctoPrint.
 
 <img width="480" src="https://user-images.githubusercontent.com/390214/60487814-ef9d1a00-9ca8-11e9-9c48-31bf54a5488d.png" />
-<img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" /><img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
+<img width="240" src="https://user-images.githubusercontent.com/390214/60277300-f4a74580-9905-11e9-8b88-f6cc35533c2a.png" />
+<img width="240" src="https://user-images.githubusercontent.com/390214/60277572-84e58a80-9906-11e9-8334-202544f0191d.png" />
 
 ### These are some of the functionalities supported:
 
