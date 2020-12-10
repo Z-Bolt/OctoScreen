@@ -77,23 +77,23 @@ curl -fsSL get.docker.com -o get-docker.sh
 sh get-docker.sh
 ```
 
-> You can read more about this at [`docker-install`](https://github.com/docker/docker-install)
+You can read more about this at [`docker-install`](https://github.com/docker/docker-install)
 
 To compile the project, assuming that you already cloned this repository, just
 execute the `build` target, this will generate in `build` folder all the binaries
 and debian packages:
 
 ```sh
-> make build
-> ls -1 build/
+make build
+ls -1 build/
 ```
 
-> Default build is for STRETCH release of debian, but BUSTER and JESSIE is supported, if you build one, you just have to specify it during make.
-> Example for BUSTER:
-> ```sh
-> > make build DEBIAN_PACKAGES=BUSTER
-> > ls -1 build/
-> ```
+Default build is for STRETCH release of debian, but BUSTER and JESSIE is supported, if you build one, you just have to specify it during make.
+Example for BUSTER:
+```sh
+make build DEBIAN_PACKAGES=BUSTER
+ls -1 build/
+```
 
 If you are using `Raspbian` you can install any of the `.deb` generated packages.
 If not, just use the compiled binary.
