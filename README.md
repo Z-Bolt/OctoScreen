@@ -75,7 +75,7 @@ make build
 ls -1 build/
 ```
 
-The default build is for the STRETCH release of debian, but BUSTER and JESSIE is possible.  To build one of these targets, you just have to specify the package during make.
+The default build is for the STRETCH release of debian, but BUSTER and JESSIE are also possible.  To build one of these targets, you just have to specify the package during make.
 Example for BUSTER:
 ```sh
 make build DEBIAN_PACKAGES=BUSTER
