@@ -4,6 +4,7 @@ export DH_VERBOSE := 1
 export DH_GOPKG := github.com/Z-Bolt/OctoScreen
 export DH_GOLANG_INSTALL_ALL := 1
 export DH_GOLANG_EXCLUDES := vendor
+export GOCACHE := $(GOPATH)/pkg
 
 %:
 	dh $@ --buildsystem=golang --with=golang,systemd

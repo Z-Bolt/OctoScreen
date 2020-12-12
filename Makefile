@@ -16,6 +16,11 @@ BUILD_PATH := $(WORKDIR)/build
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
 DEBIAN_PACKAGES = STRETCH
+
+BUSTER_NAME := buster
+BUSTER_IMAGE := golang:1.15-buster
+BUSTER_GO_TAGS := gtk_3_24
+
 STRETCH_NAME := stretch
 STRETCH_IMAGE := golang:1.9-stretch
 STRETCH_GO_TAGS := gtk_3_22
