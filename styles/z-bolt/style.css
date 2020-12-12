@@ -74,8 +74,16 @@ button.color4 {
 	border-bottom: 8px solid #A7E100;
 }
 
-button.color-dash {
+button.color-dash-1 {
 	background-image: linear-gradient(to right, #560FD1 60%, rgba(255, 255, 255, 0) 20%);
+
+	background-position: bottom;
+	background-size: 70px 8px;
+	background-repeat: repeat-x;
+}
+
+button.color-dash-2 {
+	background-image: linear-gradient(to right, #C8ADF8 60%, rgba(255, 255, 255, 0) 20%);
 
 	background-position: bottom;
 	background-size: 70px 8px;
@@ -120,14 +128,7 @@ button.keyboard {
 	border: 2px solid black;
 	font-size: 20px;
 	padding: 50px;
-	background-color: #000;
-}
-
-.dialog {
-	border: 2px solid black;
-	font-size: 20px;
-	padding: 50px;
-	background-color: #000;
+	background-color: #333;
 }
 
 .dialog button {
