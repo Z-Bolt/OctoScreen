@@ -9,6 +9,7 @@ type ManualZCalibrationStepButton struct {
 
 func CreateManualZCalibrationStepButton() *ManualZCalibrationStepButton {
 	base, err := CreateStepButton(
+		1,
 		Step{"Start Manual\nZ Calibration", "z-calibration.svg", nil, false},
 		Step{"Stop Manual\nZ Calibration",  "z-calibration.svg", nil, true},
 	)

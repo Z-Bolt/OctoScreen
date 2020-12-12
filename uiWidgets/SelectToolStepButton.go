@@ -45,7 +45,10 @@ func CreateSelectToolStepButton(
 		steps = append(steps, Step{"Bed", "bed.svg", nil, "bed"})
 	}
 
-	base, err := CreateStepButton(steps...)
+	base, err := CreateStepButton(
+		1,
+		steps...,
+	)
 	if err != nil {
 		panic(err)
 	}

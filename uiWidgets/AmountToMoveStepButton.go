@@ -9,6 +9,7 @@ type AmountToMoveStepButton struct {
 
 func CreateAmountToMoveStepButton() *AmountToMoveStepButton {
 	base, err := CreateStepButton(
+		1,
 		Step{"10mm",   "move-step.svg", nil, 10.00},
 		Step{"20mm",   "move-step.svg", nil, 20.00},
 		Step{"50mm",   "move-step.svg", nil, 50.00},

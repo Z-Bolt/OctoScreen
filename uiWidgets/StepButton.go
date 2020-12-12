@@ -1,7 +1,7 @@
 package uiWidgets
 
 import (
-	// "fmt"
+	"fmt"
 	// "strings"
 	"sync"
 
@@ -24,14 +24,15 @@ type StepButton struct {
 	CurrentStep		int
 }
 
-func CreateStepButton(steps ...Step) (*StepButton, error) {
+func CreateStepButton(colorVariation int, steps ...Step) (*StepButton, error) {
 	if len(steps) < 1 {
 		panic("StepButton.CreateStepButton() - steps is empty")
 	}
 
 	base := utils.MustButtonImage(steps[0].Label, steps[0].ImageFileName, nil)
 	ctx, _ := base.GetStyleContext()
-	ctx.AddClass("color-dash")
+	colorClass := fmt.Sprintf("color-dash-%d", colorVariation)
+	ctx.AddClass(colorClass)
 
 	instance := &StepButton{
 		Button:			base,
