@@ -177,7 +177,7 @@ func (this *printStatusPanel) createCancelButton() gtk.IWidget {
 		"Cancel",
 		"stop.svg",
 		"color-warning-sign-yellow",
-		confirmStopDialogBox(this.UI.window, "Are you sure you want to stop the current print?", this),
+		confirmStopDialogBox(this.UI.window, "Are you sure you want to cancel the current print?", this),
 	)
 
 	return this.stopButton
