@@ -60,16 +60,28 @@ func NameOfMissingRequiredEnvironmentVariable() string {
 
 
 func DumpEnvironmentVariables() {
+	Logger.Info("")
+	Logger.Info("")
+	Logger.Info("Environment variables...")
+
 	// Required environment variables
-	dumpEnvironmentVariable(EnvStylePath)
+	Logger.Infof("Required environment variables:")
 	dumpEnvironmentVariable(EnvBaseURL)
 	dumpEnvironmentVariable(EnvAPIKey)
+	dumpEnvironmentVariable(EnvStylePath)
 
 	// Optional environment variables
-	dumpEnvironmentVariable(EnvLogLevel)
-	dumpEnvironmentVariable(EnvLogFilePath)
-	dumpEnvironmentVariable(EnvResolution)
+	Logger.Info("")
+	Logger.Infof("Optional environment variables:")
 	dumpEnvironmentVariable(EnvConfigFile)
+	dumpEnvironmentVariable(EnvLogFilePath)
+	dumpEnvironmentVariable(EnvLogLevel)
+	dumpEnvironmentVariable(EnvResolution)
+	// EnvResolution is optional.  If not set, the window size will
+	// default to the values defined in globalVars.go.
+
+	Logger.Info("")
+	Logger.Info("")
 }
 
 
