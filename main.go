@@ -36,6 +36,9 @@ func main() {
 
 	if utils.RequiredEnvironmentVariablesAreSet() {
 		width, height := getSize()
+		// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
+		// and aren't required - if not set, ui.New() will use the default
+		// values (defined in globalVars.go).
 		_ = ui.New(BaseURL, APIKey, width, height)
 	} else {
 		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable())
@@ -148,6 +151,8 @@ type config struct {
 }
 
 func readConfig(configFile string) *config {
+	utils.Logger.Debug("")
+	utils.Logger.Debug("")
 	utils.Logger.Debug("entering main.readConfig()")
 
 	cfg := &config{}
@@ -156,28 +161,40 @@ func readConfig(configFile string) *config {
 
 		utils.Logger.Debug("leaving main.readConfig(), returning the default config")
 		return cfg
+	} else {
+		utils.Logger.Infof("Path to OctoPrint's config file: %q", configFile)
 	}
-
-	utils.Logger.Infof("OctoPrint's config file was found: %q", configFile)
 
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		utils.Logger.Fatalf("main.readConfig() - ReadFile() returned an error: %q", err)
+	} else {
+		utils.Logger.Info("main.readConfig() - ReadFile() succeeded")
 	}
 
 	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
 		utils.Logger.Fatalf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
+	} else {
+		utils.Logger.Info("main.readConfig() - YAML config file was decoded")
 	}
 
 	if cfg.Server.Host == "" {
 		cfg.Server.Host = "localhost"
 	}
 
+	utils.Logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
+
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 5000
 	}
 
+	utils.Logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
+
+
 	utils.Logger.Debug("leaving main.readConfig()")
+	utils.Logger.Debug("")
+	utils.Logger.Debug("")
+
 	return cfg
 }
 
@@ -225,7 +242,7 @@ func getSize() (width, height int) {
 	utils.Logger.Debug("entering main.getSize()")
 
 	if Resolution == "" {
-		utils.Logger.Error("main.getSize() - Resolution is empty")
+		utils.Logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
 
 		utils.Logger.Debug("leaving main.getSize()")
 		return
