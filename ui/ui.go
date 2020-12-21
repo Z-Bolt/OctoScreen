@@ -294,9 +294,56 @@ func (this *UI) loadSettings() {
 		return
 	}
 
+	if !this.validateMenuItems(settingsResponse.MenuStructure, "", true) {
+		settingsResponse.MenuStructure = nil
+	}
+
 	this.Settings = settingsResponse
 
 	utils.Logger.Debug("leaving ui.loadSettings()")
+}
+
+func (this *UI) validateMenuItems(menuItems []octoprint.MenuItem, name string, isRoot bool) bool {
+	if menuItems == nil {
+		return true
+	}
+
+	maxCount := 11
+	if isRoot {
+		maxCount = 4
+	}
+
+	menuItemsLength := len(menuItems)
+	if menuItemsLength > maxCount {
+		message := ""
+		description := ""
+		if isRoot {
+			message = fmt.Sprintf("Error!  The custom menu structure can only have %d items\n    at the root level (the idle panel).", maxCount)
+			description = fmt.Sprintf("\n    When the MenuStructure was parsed, %d items were found.", menuItemsLength)
+		} else {
+			message = fmt.Sprintf("Error!  A panel can only have a maximum of %d items.", maxCount)
+			description = fmt.Sprintf("\n    When the MenuStructure for '%s' was parsed,\n    %d items were found.", name, menuItemsLength)
+		}
+
+		fatalErrorWindow := CreateFatalErrorWindow(
+			message,
+			description,
+		)
+		fatalErrorWindow.ShowAll()
+
+		return false
+	}
+
+	for i := 0; i < len(menuItems); i++ {
+		menuItem := menuItems[i]
+		if menuItem.Panel == "menu" {
+			if !this.validateMenuItems(menuItem.Items, menuItem.Name, false) {
+				return false
+			}
+		}
+	}
+
+	return true
 }
 
 func (this *UI) update() {
