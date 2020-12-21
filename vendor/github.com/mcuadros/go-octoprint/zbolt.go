@@ -3,6 +3,7 @@ package octoprint
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 )
 
@@ -91,28 +92,18 @@ type GetNotificationResponse struct {
 }
 
 func (cmd *GetNotificationRequest) Do(c *Client) (*GetNotificationResponse, error) {
-	cmd.Command = "get_notification"
-
-	params := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(params).Encode(cmd); err != nil {
-		log.Println("zbolt.Do() 4 - Encode() failed")
-		return nil, err
-	}
-
-	// b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
-	b, err := c.doJSONRequest("GET", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	target := fmt.Sprintf("%s?command=get_notification", URIZBoltOctoScreenRequest)
+	bytes, err := c.doJSONRequest("GET", target, nil, ConnectionErrors)
 	if err != nil {
-		log.Println("zbolt.Do() 4 - doJSONRequest() failed")
 		return nil, err
 	}
 
-	r := &GetNotificationResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
-		log.Println("zbolt.Do() 4 - Unmarshal() failed")
+	response := &GetNotificationResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
 
 
@@ -142,26 +133,16 @@ type GetSettingsResponse struct {
 }
 
 func (cmd *GetSettingsRequest) Do(c *Client) (*GetSettingsResponse, error) {
-	cmd.Command = "get_settings"
-
-	params := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(params).Encode(cmd); err != nil {
-		log.Println("zbolt.Do() 5 - Encode() failed")
-		return nil, err
-	}
-
-	// b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
-	b, err := c.doJSONRequest("GET", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	target := fmt.Sprintf("%s?command=get_settings", URIZBoltOctoScreenRequest)
+	bytes, err := c.doJSONRequest("GET", target, nil, ConnectionErrors)
 	if err != nil {
-		log.Println("zbolt.Do() 5 - doJSONRequest() failed")
 		return nil, err
 	}
 
-	r := &GetSettingsResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
-		log.Println("zbolt.Do() 5 - Unmarshal() failed")
+	response := &GetSettingsResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
