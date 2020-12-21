@@ -2,7 +2,7 @@ package utils
 
 import (
 	"os"
-	"strings"
+	//"strings"
 )
 
 // Required environment variables
@@ -40,14 +40,12 @@ func environmentVariableIsSet(environmentVariable string) bool {
 	return os.Getenv(environmentVariable) != ""
 }
 
-
 func NameOfMissingRequiredEnvironmentVariable() string {
 	if( !environmentVariableIsSet(EnvStylePath) ) {
 		return EnvStylePath
 	}
 
 	if( !environmentVariableIsSet(EnvBaseURL) ) {
-		// OCTOPRINT_HOST must be in the form of "http://octopi.local" or "http://1.2.3.4"
 		return EnvBaseURL
 	}
 
@@ -57,7 +55,6 @@ func NameOfMissingRequiredEnvironmentVariable() string {
 
 	return "UNKNOWN"
 }
-
 
 func DumpEnvironmentVariables() {
 	Logger.Info("")
@@ -84,7 +81,6 @@ func DumpEnvironmentVariables() {
 	Logger.Info("")
 }
 
-
 func dumpEnvironmentVariable(key string) {
 	value := os.Getenv(key)
 	if value == "" {
@@ -92,13 +88,4 @@ func dumpEnvironmentVariable(key string) {
 	}
 
 	Logger.Infof("key: %q, value: %q", key, value)
-}
-
-
-func SanityCheckRequiredEnvironmentVariables() {
-	envBaseURL := strings.ToLower(os.Getenv(EnvBaseURL))
-	if !strings.HasPrefix(envBaseURL, "http://") && !strings.HasPrefix(envBaseURL, "https://") {
-		Logger.Error("Error: OCTOPRINT_HOST needs to start with a protocol (eg http:// is missing)")
-		os.Setenv(EnvBaseURL, "http://" + envBaseURL)
-	}
 }

@@ -45,8 +45,6 @@ func main() {
 		fatalErrorWindow.ShowAll()
 	}
 
-	utils.SanityCheckRequiredEnvironmentVariables()
-
 	gtk.Main()
 
 	utils.Logger.Debug("leaving main.main()")
@@ -113,6 +111,12 @@ func setBaseUrl(cfg *config) {
 			BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
 		} else {
 			BaseURL = "http://0.0.0.0:5000"
+		}
+	} else {
+		url := strings.ToLower(BaseURL)
+		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
+			utils.Logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
+			BaseURL = fmt.Sprintf("http://%s", BaseURL)
 		}
 	}
 
