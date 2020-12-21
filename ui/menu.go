@@ -24,8 +24,6 @@ func getPanel(
 		case "custom_items":
 			return CustomItemsPanel(ui, parentPanel, menuItem.Items)
 
-		case "filament_multitool":
-			fallthrough
 		case "filament":
 			return FilamentPanel(ui, parentPanel)
 
@@ -33,13 +31,6 @@ func getPanel(
 			return ConfigurationPanel(ui, parentPanel)
 
 
-
-		// obsolete and removed, since everything in ExtruderPanel
-		// is already in FilamentPanel
-		// case "extruder-multitool":
-		// 	fallthrough
-		// case "extruder":
-		// 	return ExtruderPanel(ui, parentPanel)
 
 		case "files":
 			return FilesPanel(ui, parentPanel)
@@ -68,8 +59,6 @@ func getPanel(
 		case "bed-level":
 			return BedLevelPanel(ui, parentPanel)
 
-		case "nozzle-calibration":
-			fallthrough
 		case "z-offset-calibration":
 			return ZOffsetCalibrationPanel(ui, parentPanel)
 
@@ -154,9 +143,9 @@ func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
 					"panel": "move"
 				},
 				{
-					"name": "Extruder",
-					"icon": "extruder",
-					"panel": "extruder"
+					"name": "Filament",
+					"icon": "filament-spool",
+					"panel": "filament"
 				},
 				{
 					"name": "Fan",
@@ -174,7 +163,7 @@ func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
 					"panel": "control"
 				},
 				{
-					"name": "ToolChanger",
+					"name": "Tool Changer",
 					"icon": "tool-changer",
 					"panel": "tool-changer"
 				}
@@ -193,86 +182,6 @@ func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
 	]`
 
 
-
-
-
-	/*
-		// do we need a home_multtool panel?
-		// do we need a move_multtool panel?
-		// do we need a temperature_multtool panel?
-
-
-		"name": "Extruder",
-					"icon": "extruder-multi",
-					"panel": "extruder_multitool"
-
-					"icon": "extruder",
-					"panel": "extruder"
-
-		"name": "Filament",
-			"icon": "filament-spool",
-			"panel": "filament_multitool"
-
-			"icon": "filament-spool",
-			"panel": "filament"
-
-
-
-		{
-			"name": "Configuration",
-			"icon": "control",
-			"panel": "custom_items",
-			"items": [
-				{
-					"name": "Bed Level",
-					"icon": "bed-level",
-					"panel": "bed-level"
-				},
-				{
-					"name": "ZOffsets",
-					"icon": "z-offset-increase",
-					"panel": "nozzle-calibration"
-				},
-				{
-					"name": "Network",
-					"icon": "network",
-					"panel": "network"
-				},
-				{
-					"name": "System",
-					"icon": "info",
-					"panel": "system"
-				}
-			]
-		}
-	*/
-
-
-
-
-
-	// filePath := filepath.Join(os.Getenv("OCTOSCREEN_STYLE_PATH"), "default_menu.json")
-	// // filePath := "/etc/octoscreen/config/default_menu.json"
-	// jsonFile, err := os.Open(filePath)
-
-	// if err != nil {
-	// 	Logger.Info(err)
-	// }
-
-	// defer jsonFile.Close()
-
-	// byteValue, err := ioutil.ReadAll(jsonFile)
-	// if err != nil {
-	// 	Logger.Info("Error in default_menu.json")
-	// 	Logger.Info(err)
-	// 	return items
-	// }
-
-
-	// TODO: removed commented code
-	// standardLog.Printf("Logger.Level: %q", utils.Logger.GetLogLevel())
-
-
 	var menuItems []octoprint.MenuItem
 	var err error
 
@@ -286,8 +195,6 @@ func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
 	if err != nil {
 		utils.LogError("menu.getDefaultMenuItems()", "json.Unmarshal()", err)
 	}
-	// utils.LogError("menu.getDefaultMenuItems()", "now leaving", err)
-
 
 	return menuItems
 }
