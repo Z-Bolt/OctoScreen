@@ -235,7 +235,7 @@ func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileInfor
 func (this *filesPanel) createOpenFolderButton(fileInformation *octoprint.FileInformation) gtk.IWidget {
 	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
 	button := utils.MustButton(image, func() {
-		this.locationHistory.goForward(fileInformation.Path)
+		this.locationHistory.goForward(fileInformation.Name)
 		this.doLoadFiles()
 	})
 
