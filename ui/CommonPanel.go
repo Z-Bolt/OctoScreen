@@ -15,7 +15,7 @@ import (
 )
 
 // OctoScreenVersion - set at compilation time.
-var OctoScreenVersion = "2.6.0 (development/experimental)"
+var OctoScreenVersion = "2.6.0"
 
 type CommonPanel struct {
 	UI					*UI
