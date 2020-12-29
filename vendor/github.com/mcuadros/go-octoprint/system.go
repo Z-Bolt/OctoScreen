@@ -46,6 +46,7 @@ func (cmd *SystemCommandsRequest) Do(c *Client) (*SystemCommandsResponse, error)
 type SystemExecuteCommandRequest struct {
 	// Source for which to list commands.
 	Source CommandSource `json:"source"`
+
 	// Action is the identifier of the command, action from its definition.
 	Action string `json:"action"`
 }

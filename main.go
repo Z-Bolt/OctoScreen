@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	standardLog "log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -10,16 +11,11 @@ import (
 	"strings"
 
 	"github.com/Z-Bolt/OctoScreen/ui"
+	"github.com/Z-Bolt/OctoScreen/utils"
 	"github.com/gotk3/gotk3/gtk"
 	"gopkg.in/yaml.v1"
-)
 
-const (
-	EnvStylePath  = "OCTOSCREEN_STYLE_PATH"
-	EnvResolution = "OCTOSCREEN_RESOLUTION"
-	EnvBaseURL    = "OCTOPRINT_HOST"
-	EnvAPIKey     = "OCTOPRINT_APIKEY"
-	EnvConfigFile = "OCTOPRINT_CONFIG_FILE"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -29,49 +25,114 @@ var (
 	Resolution string
 )
 
-func init() {
-	ui.StylePath = os.Getenv(EnvStylePath)
-	Resolution = os.Getenv(EnvResolution)
+func main() {
+	utils.Logger.Debug("entering main.main()")
 
-	ConfigFile = os.Getenv(EnvConfigFile)
+	gtk.Init(nil)
+	settings, _ := gtk.SettingsGetDefault()
+	settings.SetProperty("gtk-application-prefer-dark-theme", true)
+
+	utils.DumpEnvironmentVariables()
+
+	if utils.RequiredEnvironmentVariablesAreSet() {
+		width, height := getSize()
+		// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
+		// and aren't required - if not set, ui.New() will use the default
+		// values (defined in globalVars.go).
+		_ = ui.New(BaseURL, APIKey, width, height)
+	} else {
+		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable())
+		fatalErrorWindow.ShowAll()
+	}
+
+	gtk.Main()
+
+	utils.Logger.Debug("leaving main.main()")
+}
+
+
+func init() {
+	utils.Logger.Debug("entering main.init()")
+
+	if !utils.RequiredEnvironmentVariablesAreSet() {
+		utils.Logger.Error("main.init() - RequiredEnvironmentVariablesAreSet() returned false")
+
+		utils.Logger.Debug("leaving main.init()")
+		return
+	}
+
+	setLogLevel()
+
+	utils.StylePath = os.Getenv(utils.EnvStylePath)
+	Resolution = os.Getenv(utils.EnvResolution)
+	ConfigFile = os.Getenv(utils.EnvConfigFile)
 	if ConfigFile == "" {
 		ConfigFile = findConfigFile()
 	}
 
 	cfg := readConfig(ConfigFile)
+	setBaseUrl(cfg)
+	setApiKey(cfg)
 
-	BaseURL = os.Getenv(EnvBaseURL)
+	utils.Logger.Debug("leaving main.init()")
+}
+
+func setLogLevel() {
+	logLevel := utils.LowerCaseLogLevel()
+	switch logLevel {
+		case "debug":
+			utils.SetLogLevel(logrus.DebugLevel)
+
+		case "info":
+			utils.SetLogLevel(logrus.InfoLevel)
+
+		case "warn":
+			utils.SetLogLevel(logrus.WarnLevel)
+
+		case "":
+			logLevel = "error"
+			os.Setenv(utils.EnvLogLevel, "error")
+			fallthrough
+		case "error":
+			utils.SetLogLevel(logrus.ErrorLevel)
+
+		default:
+			// unknown log level, so exit
+			utils.Logger.Fatalf("main.setLogLevel() - unknown logLevel: %q", logLevel)
+	}
+
+	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
+}
+
+func setBaseUrl(cfg *config) {
+	BaseURL = os.Getenv(utils.EnvBaseURL)
 	if BaseURL == "" {
 		if cfg.Server.Host != "" {
 			BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
 		} else {
 			BaseURL = "http://0.0.0.0:5000"
 		}
+	} else {
+		url := strings.ToLower(BaseURL)
+		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
+			utils.Logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
+			BaseURL = fmt.Sprintf("http://%s", BaseURL)
+		}
 	}
 
-	ui.Logger.Infof("Using %q as server address", BaseURL)
+	utils.Logger.Infof("main.setBaseUrl() - using %q as server address", BaseURL)
+}
 
-	APIKey = os.Getenv(EnvAPIKey)
+func setApiKey(cfg *config) {
+	APIKey = os.Getenv(utils.EnvAPIKey)
 	if APIKey == "" {
 		APIKey = cfg.API.Key
 		if cfg.API.Key != "" {
-			ui.Logger.Infof("Found API key at %q file", ConfigFile)
+			utils.Logger.Infof("main.setApiKey() - found API key in file %q", ConfigFile)
 		}
 	}
 }
 
-func main() {
-	gtk.Init(nil)
-
-	settings, _ := gtk.SettingsGetDefault()
-
-	settings.SetProperty("gtk-application-prefer-dark-theme", true)
-
-	width, height := getSize()
-	_ = ui.New(BaseURL, APIKey, width, height)
-
-	gtk.Main()
-}
 
 var (
 	configLocation = ".octoprint/config.yaml"
@@ -94,83 +155,122 @@ type config struct {
 }
 
 func readConfig(configFile string) *config {
+	utils.Logger.Debug("")
+	utils.Logger.Debug("")
+	utils.Logger.Debug("entering main.readConfig()")
+
 	cfg := &config{}
 	if configFile == "" {
-		return cfg
-	}
+		utils.Logger.Info("main.readConfig() - configFile is empty")
 
-	ui.Logger.Infof("OctoPrint's config file found: %q", configFile)
+		utils.Logger.Debug("leaving main.readConfig(), returning the default config")
+		return cfg
+	} else {
+		utils.Logger.Infof("Path to OctoPrint's config file: %q", configFile)
+	}
 
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		ui.Logger.Fatal(err)
-		return cfg
+		utils.Logger.Fatalf("main.readConfig() - ReadFile() returned an error: %q", err)
+	} else {
+		utils.Logger.Info("main.readConfig() - ReadFile() succeeded")
 	}
 
 	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
-		ui.Logger.Fatalf("Error decoding YAML config file %q: %s", configFile, err)
-		return cfg
+		utils.Logger.Fatalf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
+	} else {
+		utils.Logger.Info("main.readConfig() - YAML config file was decoded")
 	}
 
 	if cfg.Server.Host == "" {
 		cfg.Server.Host = "localhost"
 	}
 
+	utils.Logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
+
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 5000
 	}
+
+	utils.Logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
+
+
+	utils.Logger.Debug("leaving main.readConfig()")
+	utils.Logger.Debug("")
+	utils.Logger.Debug("")
 
 	return cfg
 }
 
 func findConfigFile() string {
+	utils.Logger.Debug("entering main.findConfigFile()")
+
 	if file := doFindConfigFile(homeOctoPi); file != "" {
+		utils.Logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
+
+		utils.Logger.Debug("leaving main.findConfigFile(), returning the file")
 		return file
 	}
 
 	usr, err := user.Current()
 	if err != nil {
+		utils.LogError("main.findConfigFile()", "Current()", err)
+
+		utils.Logger.Debug("leaving main.findConfigFile(), returning an empty string")
 		return ""
 	}
 
-	return doFindConfigFile(usr.HomeDir)
+	configFile := doFindConfigFile(usr.HomeDir)
+
+	utils.Logger.Debug("leaving main.findConfigFile(), returning configFile")
+	return configFile
 }
 
 func doFindConfigFile(home string) string {
+	utils.Logger.Debug("entering main.doFindConfigFile()")
+
 	path := filepath.Join(home, configLocation)
 
 	if _, err := os.Stat(path); err == nil {
+		utils.LogError("main.doFindConfigFile()", "Stat()", err)
+
+		utils.Logger.Debug("leaving main.doFindConfigFile(), returning path")
 		return path
 	}
 
+	utils.Logger.Debug("leaving main.doFindConfigFile(), returning an empty string")
 	return ""
 }
 
 func getSize() (width, height int) {
+	utils.Logger.Debug("entering main.getSize()")
+
 	if Resolution == "" {
+		utils.Logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
+
+		utils.Logger.Debug("leaving main.getSize()")
 		return
 	}
 
 	parts := strings.SplitN(Resolution, "x", 2)
 	if len(parts) != 2 {
-		ui.Logger.Fatalf("Malformed %s variable: %q", EnvResolution, Resolution)
-		return
+		utils.Logger.Error("main.getSize() - SplitN() - len(parts) != 2")
+		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
 	}
 
 	var err error
 	width, err = strconv.Atoi(parts[0])
 	if err != nil {
-		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
-			EnvResolution, Resolution, err)
-		return
+		utils.LogError("main.getSize()", "Atoi(parts[0])", err)
+		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
 	}
 
 	height, err = strconv.Atoi(parts[1])
 	if err != nil {
-		ui.Logger.Fatalf("Malformed %s variable: %q, %s",
-			EnvResolution, Resolution, err)
-		return
+		utils.LogError("main.getSize()", "Atoi(parts[1])", err)
+		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
 	}
 
+	utils.Logger.Debug("leaving main.getSize()")
 	return
 }

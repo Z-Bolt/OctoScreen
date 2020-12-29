@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="62px" height="62px" viewBox="0 0 62 62" enable-background="new 0 0 62 62" xml:space="preserve">
+<g id="Circle" sodipodi:docname="pause.svg" inkscape:version="0.92.2 5c3e80d, 2017-08-06" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:cc="http://creativecommons.org/ns#">
+	
+		<ellipse id="path4508" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" cx="30.8" cy="30.8" rx="29.041" ry="29.131"/>
+</g>
+<g id="Controls">
+	<g>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.88" stroke-linecap="round" stroke-miterlimit="10" x1="18.404" y1="12.98" x2="18.404" y2="48.62"/>
+		<g>
+			<circle fill="#FFFFFF" stroke="#231F20" stroke-width="1.44" stroke-miterlimit="10" cx="18.404" cy="29" r="5.533"/>
+			<ellipse fill="#231F20" cx="18.404" cy="28.999" rx="1.946" ry="1.922"/>
+		</g>
+	</g>
+	<g>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.88" stroke-linecap="round" stroke-miterlimit="10" x1="30.799" y1="12.98" x2="30.799" y2="48.62"/>
+		<g>
+			<circle fill="#FFFFFF" stroke="#231F20" stroke-width="1.44" stroke-miterlimit="10" cx="30.799" cy="41" r="5.533"/>
+			<path d="M32.746,40.999c0,1.062-0.871,1.922-1.947,1.922c-1.075,0-1.947-0.86-1.947-1.922c0-1.06,0.872-1.92,1.947-1.92
+				C31.874,39.079,32.746,39.939,32.746,40.999z"/>
+		</g>
+	</g>
+	<g>
+		
+			<line fill="none" stroke="#FFFFFF" stroke-width="2.88" stroke-linecap="round" stroke-miterlimit="10" x1="43.198" y1="12.98" x2="43.198" y2="48.62"/>
+		<g>
+			<circle fill="#FFFFFF" stroke="#231F20" stroke-width="1.44" stroke-miterlimit="10" cx="43.198" cy="20.999" r="5.533"/>
+			<path fill="#231F20" d="M45.145,20.998c0,1.062-0.873,1.922-1.946,1.922c-1.075,0-1.947-0.86-1.947-1.922
+				c0-1.059,0.872-1.92,1.947-1.92C44.271,19.078,45.145,19.94,45.145,20.998z"/>
+		</g>
+	</g>
+</g>
+</svg>

@@ -43,7 +43,7 @@ func (v *Object) connectClosure(after bool, detailedSignal string, f interface{}
 }
 
 // Connect is a wrapper around g_signal_connect_closure().  f must be
-// a function with a signaure matching the callback signature for
+// a function with a signature matching the callback signature for
 // detailedSignal.  userData must either 0 or 1 elements which can
 // be optionally passed to f.  If f takes less arguments than it is
 // passed from the GLib runtime, the extra arguments are ignored.
@@ -57,7 +57,7 @@ func (v *Object) Connect(detailedSignal string, f interface{}, userData ...inter
 }
 
 // ConnectAfter is a wrapper around g_signal_connect_closure().  f must be
-// a function with a signaure matching the callback signature for
+// a function with a signature matching the callback signature for
 // detailedSignal.  userData must either 0 or 1 elements which can
 // be optionally passed to f.  If f takes less arguments than it is
 // passed from the GLib runtime, the extra arguments are ignored.

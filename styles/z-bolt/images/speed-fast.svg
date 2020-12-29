@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="60.137px" height="60.777px" viewBox="0 0 60.137 60.777" enable-background="new 0 0 60.137 60.777" xml:space="preserve">
+<g id="group" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" sodipodi:docname="speed-step.svg" inkscape:version="0.92.2 5c3e80d, 2017-08-06">
+	
+		<path id="arch" inkscape:connector-curvature="0" sodipodi:nodetypes="csssc" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M11.455,55c-4.766-4.778-7.71-11.383-7.71-18.678c0-14.587,11.786-26.413,26.322-26.413c14.538,0,26.324,11.826,26.324,26.413
+		c0,7.295-2.947,13.896-7.711,18.678"/>
+	
+		<path id="_x30__x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M11.51,54.964l3.861-3.178"/>
+	
+		<path id="_x31_7_x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M4.602,35.998L9.6,36.111"/>
+	
+		<path id="_x33_4_x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M11.27,18.976l3.448,3.621"/>
+	
+		<path id="_x35_0_x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M30.248,10.34v5"/>
+	
+		<path id="_x36_7_x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M49.025,18.887l-3.446,3.619"/>
+	
+		<path id="_x38_3_x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M55.694,35.82l-5,0.112"/>
+	
+		<path id="_x31_00_x25_" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M48.696,55.054l-3.859-3.18"/>
+	<g id="needle">
+		
+			<path id="cone" inkscape:connector-curvature="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" d="
+			M33.379,36.896l-1.498-3.709l14.658-3.764L33.379,36.896z"/>
+		
+			<circle id="dot" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" cx="30.158" cy="36.001" r="2.5"/>
+	</g>
+</g>
+</svg>

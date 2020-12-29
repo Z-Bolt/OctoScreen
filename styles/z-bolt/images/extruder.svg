@@ -1,44 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="52px" height="60px" viewBox="0 0 52 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>extruder</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Artboard" transform="translate(-69.000000, -313.000000)" stroke="#FFFFFF">
-            <g id="extruder" transform="translate(69.000000, 313.000000)">
-                <g id="Group" transform="translate(3.000000, 1.000000)" fill="#FFFFFF" stroke-linecap="round" stroke-width="3">
-                    <path d="M0.402777778,2.81944444 L4.83333333,0.402777778" id="Line"></path>
-                    <path d="M4.83333333,0.402777778 L11.6805556,0.402777778" id="Line-2"></path>
-                    <path d="M11.6805556,0.402777778 L14.0972222,3.625" id="Line-3" stroke-linejoin="round"></path>
-                    <path d="M0.402777778,2.81944444 L0.402777778,12.4861111" id="Line-5"></path>
-                    <path d="M14.0972222,3.625 L23.7638889,3.625" id="Line-4"></path>
-                    <path d="M0.402777778,12.4861111 L3.22222222,17.3194444" id="Line-6"></path>
-                    <path d="M3.22222222,38.2638889 L0.402777778,42.2916667" id="Line-8"></path>
-                    <path d="M0.402777778,42.2916667 L0.402777778,53.5694444" id="Line-9"></path>
-                    <path d="M3.22222222,17.3194444 L3.22222222,38.2638889" id="Line-7"></path>
-                    <path d="M0.402777778,53.5694444 L10.875,55.5833333" id="Line-10"></path>
-                    <path d="M10.875,55.5833333 L14.0972222,51.9583333" id="Line-11"></path>
-                    <path d="M14.0972222,51.9583333 L23.7638889,51.9583333" id="Line-12"></path>
-                </g>
-                <g id="Group" transform="translate(36.564815, 28.925926) scale(-1, 1) translate(-36.564815, -28.925926) translate(24.212963, 1.000000)" stroke-linecap="round" stroke-width="3">
-                    <path d="M0.402777778,2.81944444 L4.83333333,0.402777778" id="Line"></path>
-                    <path d="M4.83333333,0.402777778 L11.6805556,0.402777778" id="Line-2"></path>
-                    <path d="M11.6805556,0.402777778 L14.0972222,3.625" id="Line-3" stroke-linejoin="round"></path>
-                    <path d="M0.402777778,2.81944444 L0.402777778,12.4861111" id="Line-5"></path>
-                    <path d="M14.0972222,3.625 L23.7638889,3.625" id="Line-4"></path>
-                    <path d="M0.402777778,12.4861111 L3.22222222,17.3194444" id="Line-6"></path>
-                    <path d="M3.22222222,38.2638889 L0.402777778,42.2916667" id="Line-8"></path>
-                    <path d="M0.402777778,42.2916667 L0.402777778,53.5694444" id="Line-9"></path>
-                    <path d="M3.22222222,17.3194444 L3.22222222,38.2638889" id="Line-7"></path>
-                    <path d="M0.402777778,53.5694444 L10.875,55.5833333" id="Line-10"></path>
-                    <path d="M10.875,55.5833333 L14.0972222,51.9583333" id="Line-11"></path>
-                    <path d="M14.0972222,51.9583333 L23.7638889,51.9583333" id="Line-12"></path>
-                </g>
-                <circle id="Oval" stroke-width="3" cx="25.9583333" cy="24.7638889" r="15.7083333"></circle>
-                <path d="M23.5416667,55.375 L25.9583333,58.5972222" id="Line-16" stroke-width="2" stroke-linecap="round"></path>
-                <path d="M25.9583333,58.5972222 L28.375,55.375" id="Line-17" stroke-width="2" stroke-linecap="round"></path>
-                <path d="M18.7083333,55.375 L33.2083333,55.375" id="Line-14" stroke-width="2" stroke-linecap="round"></path>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+	 id="svg4160" sodipodi:docname="retract.svg" inkscape:version="0.92.2 5c3e80d, 2017-08-06" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:svg="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="60.137px"
+	 height="60.777px" viewBox="0 0 60.137 60.777" enable-background="new 0 0 60.137 60.777" xml:space="preserve">
+<sodipodi:namedview  showgrid="true" inkscape:window-maximized="0" units="in" inkscape:zoom="5.6" inkscape:window-y="0" pagecolor="#ffffff" inkscape:document-units="px" showguides="false" id="base" inkscape:window-x="0" bordercolor="#666666" inkscape:window-width="3200" inkscape:cy="7.2709709" inkscape:pageshadow="2" inkscape:cx="-133.6799" borderopacity="1.0" inkscape:window-height="1800" inkscape:current-layer="layer3" inkscape:snap-global="false" inkscape:pageopacity="0.0" inkscape:snap-bbox="true">
+	<inkscape:grid  type="xygrid" originy="-29.820954" originx="-9.9771178" id="grid4712"></inkscape:grid>
+</sodipodi:namedview>
+<g id="layer3" transform="translate(-3.5328446,2.2636422)" inkscape:groupmode="layer" inkscape:label="Home">
+	<g id="g69" transform="translate(-8.330339,-11.885381)">
+		<path id="path4720" inkscape:connector-curvature="0" fill="none" d="M34.812,60.728l-5.32-5.938l5.286-0.047
+			c2.907-0.026,7.654-0.026,10.548,0l5.262,0.047l-5.128,5.927c-2.821,3.26-5.173,5.932-5.228,5.938
+			C40.177,66.66,37.738,63.993,34.812,60.728z"/>
+		<path id="path4722" inkscape:connector-curvature="0" fill="none" d="M20.243,44.254v-7.231h19.286h19.286v7.231v7.232H39.528
+			H20.243V44.254z"/>
+		
+			<path id="path4178" sodipodi:radius="15.811388" sodipodi:argument="-18.248306" sodipodi:expansion="1" sodipodi:type="spiral" sodipodi:cx="-30" sodipodi:cy="39" sodipodi:t0="0" sodipodi:revolution="3.1031001" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" d="
+			M48.936,40.126c-0.646-0.41-0.873,0.669-0.682,1.076c0.516,1.1,2.039,0.955,2.834,0.289c1.42-1.189,1.125-3.388-0.104-4.591
+			c-1.806-1.766-4.757-1.308-6.35,0.497c-2.124,2.405-1.493,6.132,0.89,8.108c3,2.486,7.512,1.682,9.866-1.283
+			c2.851-3.591,1.87-8.893-1.677-11.624c-4.18-3.218-10.275-2.062-13.382,2.069c-3.586,4.769-2.252,11.658,2.463,15.141
+			c5.356,3.955,13.042,2.443,16.897-2.856c4.326-5.944,2.635-14.427-3.248-18.656c-6.532-4.695-15.812-2.826-20.415,3.642
+			c-1.956,2.75-2.956,6.121-2.851,9.492"/>
+		<path id="path4180" inkscape:connector-curvature="0" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" d="
+			M33.192,41.098v10"/>
+		
+			<path id="rect4168-1" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccc" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="
+			M27.55,53.381h12.333c0,2.707,2.773,5.307,0,8.12H27.55C25.091,58.688,27.55,56.088,27.55,53.381z"/>
+		
+			<path id="path4710-2" inkscape:connector-curvature="0" sodipodi:nodetypes="ccc" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round" d="
+			M29.753,64.147l3.757,5.27l3.638-5.27H29.753z"/>
+	</g>
+</g>
 </svg>

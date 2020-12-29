@@ -8,16 +8,16 @@ const URISettings = "/api/settings"
 type SettingsRequest struct{}
 
 // Do sends an API request and returns the API response.
-func (cmd *SettingsRequest) Do(c *Client) (*Settings, error) {
-	b, err := c.doJSONRequest("GET", URISettings, nil, nil)
+func (cmd *SettingsRequest) Do(c *Client) (*SettingsResponse, error) {
+	bytes, err := c.doJSONRequest("GET", URISettings, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &Settings{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &SettingsResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

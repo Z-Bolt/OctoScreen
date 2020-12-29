@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Group" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="52px" height="60px" viewBox="0 0 52 60" enable-background="new 0 0 52 60" xml:space="preserve">
+<g id="Layer_right">
+	<path fill="none" stroke="#FFFFFF" stroke-width="3.3194" stroke-linejoin="round" stroke-miterlimit="10" d="M34.62,40.424h8.083
+		c1.176,0,2.204,1.027,2.204,2.204c0,1.175-1.028,2.204-2.204,2.204h-18.37"/>
+	
+		<polyline fill="none" stroke="#FFFFFF" stroke-width="3.3221" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+		23.599,49.241 33.887,49.241 27.273,57.322 23.084,57.322 19.917,53.463 	"/>
+	<path fill="none" stroke="#FFFFFF" stroke-width="3.3194" stroke-linejoin="round" stroke-miterlimit="10" d="M40.499,40.424
+		V18.013c0-1.396-1.177-2.572-2.572-2.572H18.455"/>
+	
+		<line fill="none" stroke="#FFFFFF" stroke-width="3.3194" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="40.499" y1="40.424" x2="32.416" y2="40.424"/>
+</g>
+<g id="Layer_left">
+	<path fill="none" stroke="#FFFFFF" stroke-width="3.3194" stroke-linejoin="round" stroke-miterlimit="10" d="M26.007,44.832H7.637
+		c-1.175,0-2.204-1.029-2.204-2.204c0-1.177,1.029-2.204,2.204-2.204h8.083"/>
+	
+		<polyline fill="none" stroke="#FFFFFF" stroke-width="3.3221" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" points="
+		30.354,53.541 27.256,57.322 23.067,57.322 16.454,49.241 26.742,49.241 	"/>
+	<path fill="none" stroke="#FFFFFF" stroke-width="3.3194" stroke-linejoin="round" stroke-miterlimit="10" d="M31.885,15.44H12.414
+		c-1.396,0-2.573,1.176-2.573,2.572v22.411"/>
+	
+		<line fill="none" stroke="#FFFFFF" stroke-width="3.3194" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="17.924" y1="40.424" x2="9.841" y2="40.424"/>
+</g>
+<g id="CircleWithNumber">
+	<circle id="Circle_1_" fill="#FFFFFF" cx="36.7" cy="15.2" r="14.5"/>
+	<text transform="matrix(1 0 0 1 31.6025 21.415)" font-family="'ArialMT'" font-size="17.9526">3</text>
+</g>
+</svg>

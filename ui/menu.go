@@ -4,71 +4,103 @@ import (
 	"encoding/json"
 
 	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-func getPanel(ui *UI, parent Panel, item octoprint.MenuItem) Panel {
-	switch item.Panel {
-	case "menu":
-		return MenuPanel(ui, parent, item.Items)
-	case "home":
-		return HomePanel(ui, parent)
-	case "filament":
-		return FilamentPanel(ui, parent)
-	case "filament_multitool":
-		return FilamentMultitoolPanel(ui, parent)
-	case "extrude":
-		return ExtrudePanel(ui, parent)
-	case "extrude_multitool":
-		return ExtrudeMultitoolPanel(ui, parent)
-	case "files":
-		return FilesPanel(ui, parent)
-	case "temperature":
-		return TemperaturePanel(ui, parent)
-	case "control":
-		return ControlPanel(ui, parent)
-	case "network":
-		return NetworkPanel(ui, parent)
-	case "move":
-		return MovePanel(ui, parent)
-	case "toolchanger":
-		return ToolchangerPanel(ui, parent)
-	case "system":
-		return SystemPanel(ui, parent)
-	case "fan":
-		return FanPanel(ui, parent)
-	case "bed-level":
-		return BedLevelPanel(ui, parent)
-	case "nozzle-calibration":
-		return NozzleCalibrationPanel(ui, parent)
-	default:
-		return nil
+func getPanel(
+	ui				*UI,
+	parentPanel		interfaces.IPanel,
+	menuItem		octoprint.MenuItem,
+) interfaces.IPanel {
+	switch menuItem.Panel {
+		// The standard "top four" panels that are in the idleStatus panel
+		case "home":
+			return HomePanel(ui, parentPanel)
+
+		case "menu":
+			fallthrough
+		case "custom_items":
+			return CustomItemsPanel(ui, parentPanel, menuItem.Items)
+
+		case "filament":
+			return FilamentPanel(ui, parentPanel)
+
+		case "configuration":
+			return ConfigurationPanel(ui, parentPanel)
+
+
+
+		case "files":
+			return FilesPanel(ui, parentPanel)
+
+		case "temperature":
+			return TemperaturePanel(ui, parentPanel)
+
+		case "control":
+			return ControlPanel(ui, parentPanel)
+
+		case "network":
+			return NetworkPanel(ui, parentPanel)
+
+		case "move":
+			return MovePanel(ui, parentPanel)
+
+		case "tool-changer":
+			return ToolChangerPanel(ui, parentPanel)
+
+		case "system":
+			return SystemPanel(ui, parentPanel)
+
+		case "fan":
+			return FanPanel(ui, parentPanel)
+
+		case "bed-level":
+			return BedLevelPanel(ui, parentPanel)
+
+		case "z-offset-calibration":
+			return ZOffsetCalibrationPanel(ui, parentPanel)
+
+		case "print-menu":
+			return PrintMenuPanel(ui, parentPanel)
+
+
+		case "filament_multitool":
+			fallthrough
+		case "extrude_multitool":
+			fallthrough
+		case "extruder":
+			utils.Logger.Warnf("WARNING! the '%s' panel has been deprecated.  Please use the 'filament' panel instead.", menuItem.Panel)
+			utils.Logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
+			utils.Logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
+			return FilamentPanel(ui, parentPanel)
+
+		case "toolchanger":
+			utils.Logger.Warn("WARNING! the 'toolchanger' panel has been renamed to 'tool-changer'.  Please use the 'tool-changer' panel instead.")
+			utils.Logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
+			utils.Logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
+			return ToolChangerPanel(ui, parentPanel)
+
+		case "nozzle-calibration":
+			utils.Logger.Warn("WARNING! the 'nozzle-calibration' panel has been deprecated.  Please use the 'z-offset-calibration' panel instead.")
+			utils.Logger.Warn("Support for the nozzle-calibration panel remains in this release, but will be removed in a future.")
+			utils.Logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
+			return ZOffsetCalibrationPanel(ui, parentPanel)
+
+
+		default:
+			logLevel := utils.LowerCaseLogLevel()
+			if logLevel == "debug" {
+				utils.Logger.Fatalf("menu.getPanel() - unknown menuItem.Panel: %q", menuItem.Panel)
+			}
+
+			return nil
 	}
 }
 
-type menuPanel struct {
-	CommonPanel
-	items []octoprint.MenuItem
-}
-
-func MenuPanel(ui *UI, parent Panel, items []octoprint.MenuItem) Panel {
-	m := &menuPanel{
-		CommonPanel: NewCommonPanel(ui, parent),
-		items:       items,
-	}
-
-	m.panelH = 1 + len(items)/4
-
-	m.initialize()
-	return m
-}
-
-func (m *menuPanel) initialize() {
-	defer m.Initialize()
-	m.arrangeMenuItems(m.g, m.items, 4)
-}
-
-func getDefaultMenu() []octoprint.MenuItem {
-	default_menu := `[
+func getDefaultMenuItems(client *octoprint.Client) []octoprint.MenuItem {
+	defaultMenuItemsForSingleToolhead := `[
 		{
 			"name": "Home",
 			"icon": "home",
@@ -77,7 +109,7 @@ func getDefaultMenu() []octoprint.MenuItem {
 		{
 			"name": "Actions",
 			"icon": "actions",
-			"panel": "menu",
+			"panel": "custom_items",
 			"items": [
 				{
 					"name": "Move",
@@ -85,9 +117,59 @@ func getDefaultMenu() []octoprint.MenuItem {
 					"panel": "move"
 				},
 				{
-					"name": "Extrude",
-					"icon": "filament",
-					"panel": "extrude_multitool"
+					"name": "Filament",
+					"icon": "filament-spool",
+					"panel": "filament"
+				},
+				{
+					"name": "Fan",
+					"icon": "fan",
+					"panel": "fan"
+				},
+				{
+					"name": "Temperature",
+					"icon": "heat-up",
+					"panel": "temperature"
+				},
+				{
+					"name": "Control",
+					"icon": "control",
+					"panel": "control"
+				}
+			]
+		},
+		{
+			"name": "Filament",
+			"icon": "filament-spool",
+			"panel": "filament"
+		},
+		{
+			"name": "Configuration",
+			"icon": "control",
+			"panel": "configuration"
+		}
+	]`
+
+	defaultMenuItemsForMultipleToolheads := `[
+		{
+			"name": "Home",
+			"icon": "home",
+			"panel": "home"
+		},
+		{
+			"name": "Actions",
+			"icon": "actions",
+			"panel": "custom_items",
+			"items": [
+				{
+					"name": "Move",
+					"icon": "move",
+					"panel": "move"
+				},
+				{
+					"name": "Filament",
+					"icon": "filament-spool",
+					"panel": "filament"
 				},
 				{
 					"name": "Fan",
@@ -105,66 +187,38 @@ func getDefaultMenu() []octoprint.MenuItem {
 					"panel": "control"
 				},
 				{
-					"name": "ToolChanger",
-					"icon": "toolchanger",
-					"panel": "toolchanger"
+					"name": "Tool Changer",
+					"icon": "tool-changer",
+					"panel": "tool-changer"
 				}
 			]
 		},
 		{
 			"name": "Filament",
-			"icon": "filament",
-			"panel": "filament_multitool"
+			"icon": "filament-spool",
+			"panel": "filament"
 		},
 		{
 			"name": "Configuration",
 			"icon": "control",
-			"panel": "menu",
-			"items": [
-				{
-					"name": "Bed Level",
-					"icon": "bed-level",
-					"panel": "bed-level"
-				},
-				{
-					"name": "ZOffsets",
-					"icon": "z-offset-increase",
-					"panel": "nozzle-calibration"
-				},
-				{
-					"name": "Network",
-					"icon": "network",
-					"panel": "network"
-				},
-				{
-					"name": "System",
-					"icon": "info",
-					"panel": "system"
-				}
-			]
+			"panel": "configuration"
 		}
 	]`
 
-	// filePath := filepath.Join(os.Getenv("OCTOSCREEN_STYLE_PATH"), "default_menu.json")
-	// // filePath := "/etc/octoscreen/config/default_menu.json"
-	// jsonFile, err := os.Open(filePath)
 
-	// if err != nil {
-	// 	Logger.Info(err)
-	// }
+	var menuItems []octoprint.MenuItem
+	var err error
 
-	// defer jsonFile.Close()
+	toolheadCount := utils.GetToolheadCount(client)
+	if toolheadCount > 1 {
+		err = json.Unmarshal([]byte(defaultMenuItemsForMultipleToolheads), &menuItems)
+	} else {
+		err = json.Unmarshal([]byte(defaultMenuItemsForSingleToolhead), &menuItems)
+	}
 
-	// byteValue, err := ioutil.ReadAll(jsonFile)
-	// if err != nil {
-	// 	Logger.Info("Error in default_menu.json")
-	// 	Logger.Info(err)
-	// 	return items
-	// }
+	if err != nil {
+		utils.LogError("menu.getDefaultMenuItems()", "json.Unmarshal()", err)
+	}
 
-	var items []octoprint.MenuItem
-
-	json.Unmarshal([]byte(default_menu), &items)
-
-	return items
+	return menuItems
 }

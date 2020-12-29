@@ -1,3 +1,5 @@
+# Required Configuration Settings
+
 # Location of the OctoPrint's config.yaml file. If empty the file will
 # be search at the `pi` home folder or the current user. Only used for locally
 # installed OctoPrint servers.
@@ -13,12 +15,21 @@ OCTOPRINT_HOST=http://localhost:5000
 # locally installed will be read from the config file.
 OCTOPRINT_APIKEY=
 
-# Location of the application theme.
-OCTOSCREEN_STYLE_PATH=/opt/octoscreen/styles/z-bolt/
 
-# Resolution of the application, should be configured to the resolution of your
-# screen, for example 800x480.
-OCTOSCREEN_RESOLUTION=
+
+# Optional Configuration Settings
 
 # Location of file for logging (optional)
-OCTOSCREEN_LOG_FILE=
+OCTOSCREEN_LOG_LEVEL=Warn
+
+# Location of file for logging (optional)
+OCTOSCREEN_LOG_FILE_PATH=logs/logfile.txt
+
+# Location of the application theme (optional)
+OCTOSCREEN_STYLE_PATH=/opt/octoscreen/styles/z-bolt/
+
+# Resolution of the application, and should be configured to the resolution of your
+# screen, for example 800x480.
+OCTOSCREEN_RESOLUTION=800x480
+# OCTOSCREEN_RESOLUTION is optional and defaults to 800x480 if missing
+# (defined in globalVars.go)

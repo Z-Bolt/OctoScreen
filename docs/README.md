@@ -12,8 +12,13 @@ Config example:
 }
 ```
 <img width="320" src="img/home.png" />
+<br />
+<br />
+<br />
+<br />
 
-### Extrusion and filament changing
+
+### Filament
 Config example:
 ```
 {
@@ -23,28 +28,11 @@ Config example:
 }
 ```
 <img width="320" src="img/filament.png" />
+<br />
+<br />
+<br />
+<br />
 
-Config example:
-
-```
-{
-  "name": "Extrude",
-  "icon": "filament",
-  "panel": "filament_multitool"
-}
-```
-<img width="320" src="img/filament_multitool.png" />
-
-Config example:
-
-```
-{
-  "name": "Extrude",
-  "icon": "filament",
-  "panel": "extrude_multitool"
-}
-```
-<img width="320" src="img/extrude_multitool.png" />
 
 ### Move
 Config example:
@@ -56,6 +44,11 @@ Config example:
 }
 ```
 <img width="320" src="img/move.png" />
+<br />
+<br />
+<br />
+<br />
+
 
 ### Fan
 Config example:
@@ -67,6 +60,59 @@ Config example:
 }
 ```
 <img width="320" src="img/fan.png" />
+<br />
+<br />
+<br />
+<br />
+
+
+### Temperature
+Config example:
+```
+{
+  "name": "Temperature",
+  "icon": "heat-up",
+  "panel": "temperature"
+}
+```
+<img width="320" src="img/temperature.png" />
+<br />
+<br />
+<br />
+<br />
+
+
+### Temperature Presets
+Config example:
+```
+{
+  "name": "Presets",
+  "icon": "heat-up",
+  "panel": "temperature-presets"
+}
+```
+<img width="320" src="img/temperature-presets.png" />
+<br />
+<br />
+<br />
+<br />
+
+
+### Control
+Config example:
+```
+{
+  "name": "Control",
+  "icon": "control",
+  "panel": "control"
+}
+```
+<img width="320" src="img/control.png" />
+<br />
+<br />
+<br />
+<br />
+
 
 ### Bed leveling
 Config example:
@@ -78,28 +124,11 @@ Config example:
 }
 ```
 <img width="320" src="img/bed-level.png" />
+<br />
+<br />
+<br />
+<br />
 
-### Temperature Management
-Config example:
-```
-{
-  "name": "Temperature",
-  "icon": "heat-up",
-  "panel": "temperature"
-}
-```
-<img width="320" src="img/temperature.png" />
-
-### Octoprint Custom commands
-Config example:
-```
-{
-  "name": "Control",
-  "icon": "control",
-  "panel": "control"
-}
-```
-<img width="320" src="img/control.png" />
 
 ### Network
 Config example:
@@ -111,6 +140,11 @@ Config example:
 }
 ```
 <img width="320" src="img/network.png" />
+<br />
+<br />
+<br />
+<br />
+
 
 ### System info and commands
 Config example:
@@ -122,26 +156,35 @@ Config example:
 }
 ```
 <img width="320" src="img/system.png" />
+<br />
+<br />
+<br />
+<br />
 
-### Nozzle Calibration
+
+### Z-Offset Calibration
 Config example:
 ```
 {
   "name": "ZOffsets",
   "icon": "z-offset-increase",
-  "panel": "nozzle-calibration"
+  "panel": "z-offset-calibration"
 }
 ```
-<img width="320" src="img/nozzle-calibration.png" />
+<img width="320" src="img/z-offset-calibration.png" />
+<br />
+<br />
+<br />
+<br />
 
-### Toolchanger
+
+### Tool Changer
 Config example:
 ```
 {
-  "name": "ToolChanger",
-  "icon": "toolchanger",
-  "panel": "toolchanger"
+  "name": "Tool Changer",
+  "icon": "tool-changer",
+  "panel": "tool-changer"
 }
 ```
-<img width="320" src="img/toolchanger.png" />
-
+<img width="320" src="img/tool-changer.png" />

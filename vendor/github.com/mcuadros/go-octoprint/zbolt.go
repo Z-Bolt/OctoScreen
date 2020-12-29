@@ -3,6 +3,8 @@ package octoprint
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"log"
 )
 
 const URIZBoltRequest = "/api/plugin/zbolt"
@@ -17,6 +19,7 @@ func (cmd *RunZOffsetCalibrationRequest) Do(c *Client) error {
 
 	b := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(b).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 1 - NewEncoder() failed")
 		return err
 	}
 
@@ -24,7 +27,7 @@ func (cmd *RunZOffsetCalibrationRequest) Do(c *Client) error {
 	return err
 }
 
-// SettingsRequest retrieves the current configuration of OctoPrint.
+// SetZOffsetRequest - retrieves the current configuration of OctoPrint.
 type SetZOffsetRequest struct {
 	Command string  `json:"command"`
 	Tool    int     `json:"tool"`
@@ -36,6 +39,7 @@ func (cmd *SetZOffsetRequest) Do(c *Client) error {
 
 	b := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(b).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 2 - Encode() failed")
 		return err
 	}
 
@@ -58,16 +62,20 @@ func (cmd *GetZOffsetRequest) Do(c *Client) (*GetZOffsetResponse, error) {
 
 	params := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(params).Encode(cmd); err != nil {
+		log.Println("zbolt.Do() 3 - Encode() failed")
 		return nil, err
 	}
 
-	b, err := c.doJSONRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	// b, err := c.doJSONRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	b, err := c.doJSONRequest("GET", URIZBoltRequest, params, ConnectionErrors)
 	if err != nil {
+		log.Println("zbolt.Do() 3 - doJSONRequest() failed")
 		return nil, err
 	}
 
 	r := &GetZOffsetResponse{}
 	if err := json.Unmarshal(b, r); err != nil {
+		log.Println("zbolt.Do() 3 - Unmarshal() failed")
 		return nil, err
 	}
 
@@ -77,40 +85,46 @@ func (cmd *GetZOffsetRequest) Do(c *Client) (*GetZOffsetResponse, error) {
 type GetNotificationRequest struct {
 	Command string `json:"command"`
 }
+
 type GetNotificationResponse struct {
 	// Job contains information regarding the target of the current print job.
 	Message string `json:"message"`
 }
 
 func (cmd *GetNotificationRequest) Do(c *Client) (*GetNotificationResponse, error) {
-	cmd.Command = "get_notification"
-
-	params := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(params).Encode(cmd); err != nil {
-		return nil, err
-	}
-
-	b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	target := fmt.Sprintf("%s?command=get_notification", URIZBoltOctoScreenRequest)
+	bytes, err := c.doJSONRequest("GET", target, nil, ConnectionErrors)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &GetNotificationResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &GetNotificationResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
+
 
 type GetSettingsRequest struct {
 	Command string `json:"command"`
 }
+
+type MenuItem struct {
+	Name  string     `json:"name"`
+	Icon  string     `json:"icon"`
+	Panel string     `json:"panel"`
+	Items []MenuItem `json:"items"`
+}
+
 type GetSettingsResponse struct {
 	// Job contains information regarding the target of the current print job.
 	FilamentInLength  float64    `json:"filament_in_length"`
 	FilamentOutLength float64    `json:"filament_out_length"`
 	ToolChanger       bool       `json:"toolchanger"`
+	XAxisInverted     bool       `json:"x_axis_inverted"`
+	YAxisInverted     bool       `json:"y_axis_inverted"`
 	ZAxisInverted     bool       `json:"z_axis_inverted"`
 	MenuStructure     []MenuItem `json:"menu_structure"`
 	GCodes            struct {
@@ -119,29 +133,16 @@ type GetSettingsResponse struct {
 }
 
 func (cmd *GetSettingsRequest) Do(c *Client) (*GetSettingsResponse, error) {
-	cmd.Command = "get_settings"
-
-	params := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(params).Encode(cmd); err != nil {
-		return nil, err
-	}
-
-	b, err := c.doJSONRequest("POST", URIZBoltOctoScreenRequest, params, ConnectionErrors)
+	target := fmt.Sprintf("%s?command=get_settings", URIZBoltOctoScreenRequest)
+	bytes, err := c.doJSONRequest("GET", target, nil, ConnectionErrors)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &GetSettingsResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &GetSettingsResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
-}
-
-type MenuItem struct {
-	Name  string     `json:"name"`
-	Icon  string     `json:"icon"`
-	Panel string     `json:"panel"`
-	Items []MenuItem `json:"items"`
+	return response, err
 }

@@ -1,7 +1,3 @@
-/* * {
-    
-} */
-
 window {
 	background-color: #13181C;
 	-gtk-icon-shadow: none;
@@ -39,6 +35,10 @@ progress {
 	opacity: 0.5;
 }
 
+
+
+
+/* Button styles *********************************************************** */
 button {
 	background-image: none;
 	background-color: #13181C;
@@ -51,6 +51,11 @@ button {
 
 button:active {
 	background-color: #304C62;
+}
+
+
+button.color-none {
+	border-bottom: 8px solid black;
 }
 
 button.color1 {
@@ -68,6 +73,33 @@ button.color3 {
 button.color4 {
 	border-bottom: 8px solid #A7E100;
 }
+
+button.color-dash-1 {
+	background-image: linear-gradient(to right, #560FD1 60%, rgba(255, 255, 255, 0) 20%);
+
+	background-position: bottom;
+	background-size: 70px 8px;
+	background-repeat: repeat-x;
+}
+
+button.color-dash-2 {
+	background-image: linear-gradient(to right, #C8ADF8 60%, rgba(255, 255, 255, 0) 20%);
+
+	background-position: bottom;
+	background-size: 70px 8px;
+	background-repeat: repeat-x;
+}
+
+button.color-warning-sign-yellow {
+	border-bottom: 8px solid #FFE700;
+}
+
+button.color-warning-sign-yellow-dark {
+	border-bottom: 8px solid #E6D300;
+}
+
+
+
 
 button.active {
 	background-color: #20303D;
@@ -89,14 +121,14 @@ entry {
 button.keyboard {
 	font-size: 30px;
 	margin: 0px;
-	/* margin-bottom:10px; */
+	/* margin-bottom: 10px; */
 }
 
 .dialog {
 	border: 2px solid black;
 	font-size: 20px;
 	padding: 50px;
-	background-color: #000;
+	background-color: #333;
 }
 
 .dialog button {
@@ -104,16 +136,14 @@ button.keyboard {
 	border-bottom: 8px solid #009384;
 }
 
-.dialog {
-	border: 2px solid black;
-	font-size: 20px;
-	padding: 50px;
-	background-color: #000;
+/* For the Cancel/No button */
+.dialog button:nth-child(1) {
+	border-bottom-color: #D22E40;
 }
 
-.dialog button {
-	padding: 30px 50px 30px 50px;
-	border-bottom: 8px solid #009384;
+/* For the OK/Yes button */
+.dialog button:nth-child(2) {
+	border-bottom-color: #3BB22C;
 }
 
 .message {
@@ -153,5 +183,158 @@ button.keyboard {
 }
 
 .hidden {
-    opacity: 0;
+	opacity: 0;
+}
+
+
+
+
+/* Margin styles *********************************************************** */
+.no-margin {
+	margin: 0;
+}
+
+.margin-top-5 {
+	margin-top: 5px;
+}
+
+.margin-top-10 {
+	margin-top: 10px;
+}
+
+.margin-top-20 {
+	margin-top: 20px;
+}
+
+.margin-right-20 {
+	margin-right: 20px;
+}
+
+.margin-bottom-1 {
+	margin-right: 1px;
+}
+
+.margin-bottom-2 {
+	margin-right: 2px;
+}
+
+.margin-bottom-3 {
+	margin-right: 3px;
+}
+
+.margin-bottom-4 {
+	margin-right: 4px;
+}
+
+.margin-bottom-10 {
+	margin-right: 10px;
+}
+
+.margin-bottom-20 {
+	margin-right: 20px;
+}
+
+
+.margin-left-20 {
+	margin-left: 20px;
+}
+
+
+
+
+/* Border styles *********************************************************** */
+.no-border {
+	border: 0;
+}
+
+
+
+/* Padding styles ********************************************************** */
+.no-padding {
+	padding: 0;
+}
+
+.padding-left-20 {
+	padding-left: 20px;
+}
+
+.padding-right-20 {
+	padding-right: 20px;
+}
+
+.padding-bottom-20 {
+	padding-right: 20px;
+}
+
+
+
+
+/* Font styles  ************************************************************ */
+.font-size-10 {
+	font-size: 10px;
+}
+
+.font-size-15 {
+	font-size: 15px;
+}
+
+.font-size-16 {
+	font-size: 16px;
+}
+
+.font-size-17 {
+	font-size: 17px;
+}
+
+.font-size-18 {
+	font-size: 18px;
+}
+
+.font-size-19 {
+	font-size: 19px;
+}
+
+.font-size-20 {
+	font-size: 20px;
+}
+
+.font-size-21 {
+	font-size: 21px;
+}
+
+.font-size-30 {
+	font-size: 30px;
+}
+
+
+
+
+
+
+/*
+These solid background colors are only meant to aid in testing.
+Do not use any of these in production.
+*/
+.red-background {
+	background-color: red;
+}
+
+.green-background {
+	background-color: green;
+}
+
+.blue-background {
+	background-color: blue;
+}
+
+.yellow-background {
+	background-color: yellow;
+}
+
+.orange-background {
+	background-color: orange;
+}
+
+.red-foreground {
+	color: red
 }

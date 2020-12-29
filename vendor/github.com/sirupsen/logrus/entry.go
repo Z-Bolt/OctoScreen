@@ -3,6 +3,7 @@ package logrus
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -162,6 +163,8 @@ func (entry *Entry) Error(args ...interface{}) {
 }
 
 func (entry *Entry) Fatal(args ...interface{}) {
+	log.Println("!!! now in entry.Fatal() !!!")
+
 	if entry.Logger.level() >= FatalLevel {
 		entry.log(FatalLevel, fmt.Sprint(args...))
 	}
@@ -210,6 +213,9 @@ func (entry *Entry) Errorf(format string, args ...interface{}) {
 }
 
 func (entry *Entry) Fatalf(format string, args ...interface{}) {
+	log.Println("!!! now in entry.FatalIf() !!!")
+
+
 	if entry.Logger.level() >= FatalLevel {
 		entry.Fatal(fmt.Sprintf(format, args...))
 	}
@@ -257,6 +263,8 @@ func (entry *Entry) Errorln(args ...interface{}) {
 }
 
 func (entry *Entry) Fatalln(args ...interface{}) {
+	log.Println("!!! now in entry.Fatalln() !!!")
+
 	if entry.Logger.level() >= FatalLevel {
 		entry.Fatal(entry.sprintlnn(args...))
 	}
@@ -276,4 +284,8 @@ func (entry *Entry) Panicln(args ...interface{}) {
 func (entry *Entry) sprintlnn(args ...interface{}) string {
 	msg := fmt.Sprintln(args...)
 	return msg[:len(msg)-1]
+}
+
+func (entry *Entry) GetLogLevel() Level {
+	return entry.Logger.level()
 }
