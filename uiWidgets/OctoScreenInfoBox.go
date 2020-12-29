@@ -16,7 +16,7 @@ func CreateOctoScreenInfoBox(
 	client				*octoprint.Client,
 	octoScreenVersion	string,
 ) *OctoScreenInfoBox {
-	logoImage := utils.MustImageFromFile("logos/octoScreen-isometric-90%.png")
+	logoImage := utils.MustImageFromFile("logos/octoscreen-isometric-90%.png")
 
 	str2 := ""
 	str3 := ""
