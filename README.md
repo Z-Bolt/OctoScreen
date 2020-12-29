@@ -14,6 +14,12 @@ Idle-Multiple Hotends
 <br />
 <br />
 
+<img width="480" src="https://user-images.githubusercontent.com/10328858/101729636-5feac600-3a6d-11eb-9121-83808b3decb7.png" />
+Printing
+<br />
+<br />
+<br />
+
 <img width="480" src="https://user-images.githubusercontent.com/10328858/101729487-14381c80-3a6d-11eb-8e24-298dc3b34fe4.png" />
 Home
 <br />
@@ -28,12 +34,6 @@ Filament
 
 <img width="480" src="https://user-images.githubusercontent.com/10328858/101729592-4a759c00-3a6d-11eb-8086-daab19cd6ff5.png" />
 Actions
-<br />
-<br />
-<br />
-
-<img width="480" src="https://user-images.githubusercontent.com/10328858/101729636-5feac600-3a6d-11eb-9121-83808b3decb7.png" />
-Printing
 <br />
 <br />
 <br />
