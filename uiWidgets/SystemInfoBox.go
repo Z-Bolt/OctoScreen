@@ -40,10 +40,13 @@ func CreateSystemInfoBox(
 	ctx.AddClass("font-size-18")
 	base.Add(label2)
 
-	label3 := utils.MustLabel(str3)
-	ctx, _ = label3.GetStyleContext()
-	ctx.AddClass("font-size-16")
-	base.Add(label3)
+	logLevel := utils.LowerCaseLogLevel()
+	if logLevel == "debug" {
+		label3 := utils.MustLabel(str3)
+		ctx, _ = label3.GetStyleContext()
+		ctx.AddClass("font-size-16")
+		base.Add(label3)
+	}
 
 	instance := &SystemInfoBox {
 		Box:			base,
