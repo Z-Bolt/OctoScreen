@@ -8,7 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 	// "github.com/mcuadros/go-octoprint"
-	"github.com/shirou/gopsutil/load"
+	// "github.com/shirou/gopsutil/load"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -17,13 +17,14 @@ type SystemInformationInfoBox struct {
 	*gtk.Box
 
 	parentWindow					*gtk.Window
+	logLevel						string
 	uiScaleFactor					int
 	memoryLabel						*gtk.Label
-	loadAverageLabel				*gtk.Label
+	// loadAverageLabel				*gtk.Label
 	octoScreenResolutionLabel		*gtk.Label
 	allocatedResolutionLabel		*gtk.Label
 	currentResolutionLabel			*gtk.Label
-	uiScaleFactorLabel				*gtk.Label
+	// uiScaleFactorLabel				*gtk.Label
 }
 
 func CreateSystemInformationInfoBox(
@@ -42,31 +43,30 @@ func CreateSystemInformationInfoBox(
 	instance := &SystemInformationInfoBox {
 		Box:						base,
 		parentWindow:				parentWindow,
+		logLevel:					utils.LowerCaseLogLevel(),
 		uiScaleFactor:				uiScaleFactor,
 		memoryLabel:				createStyledLabel(),
-		loadAverageLabel:			createStyledLabel(),
+		// loadAverageLabel:			createStyledLabel(),
 		octoScreenResolutionLabel:	createStyledLabel(),
 		allocatedResolutionLabel:	createStyledLabel(),
 		currentResolutionLabel:		createStyledLabel(),
-		uiScaleFactorLabel:			createStyledLabel(),
+		// uiScaleFactorLabel:			createStyledLabel(),
 	}
 
 	instance.Add(instance.memoryLabel)
-	instance.Add(instance.loadAverageLabel)
+	// instance.Add(instance.loadAverageLabel)
 
 
-
-	logLevel := utils.LowerCaseLogLevel()
-	if logLevel == "" {
+	if instance.logLevel == "" {
 		// If not set, default to warning level.
-		logLevel = "warn"
+		instance.logLevel = "warn"
 	}
 
-	if logLevel == "debug" {
+	if instance.logLevel == "debug" {
 		instance.Add(instance.octoScreenResolutionLabel)
 		instance.Add(instance.allocatedResolutionLabel)
 		instance.Add(instance.currentResolutionLabel)
-		instance.Add(instance.uiScaleFactorLabel)
+		//instance.Add(instance.uiScaleFactorLabel)
 
 		// Uncomment the following line to force the screen to expand.
 		// instance.Add(utils.MustLabel("test"))
@@ -87,7 +87,7 @@ func createStyledLabel() *gtk.Label {
 func (this *SystemInformationInfoBox) refreshMemoryLabel() {
 	virtualMemoryStat, _ := mem.VirtualMemory()
 	memoryString := fmt.Sprintf(
-		"Memory free / total: %s / %s",
+		"Virtual memory: %s (free) / %s (total)",
 		humanize.Bytes(virtualMemoryStat.Free),
 		humanize.Bytes(virtualMemoryStat.Total),
 	)
@@ -95,7 +95,7 @@ func (this *SystemInformationInfoBox) refreshMemoryLabel() {
 	this.memoryLabel.SetText(memoryString)
 }
 
-
+/*
 func (this *SystemInformationInfoBox) refreshLoadAverageLabel() {
 	avgStat, _ := load.Avg()
 	loadAverageString := fmt.Sprintf(
@@ -106,7 +106,7 @@ func (this *SystemInformationInfoBox) refreshLoadAverageLabel() {
 	)
 	this.loadAverageLabel.SetText(loadAverageString)
 }
-
+*/
 
 func (this *SystemInformationInfoBox) refreshOctoScreenResolutionLabel() {
 	envResolution := os.Getenv(utils.EnvResolution)
@@ -114,7 +114,7 @@ func (this *SystemInformationInfoBox) refreshOctoScreenResolutionLabel() {
 		envResolution = ">>MISSING<<"
 	}
 	octoScreenResolutionString := fmt.Sprintf(
-		"OCTOSCREEN_RESOLUTION configuration: %s",
+		"OCTOSCREEN_RESOLUTION configuration setting: %s",
 		envResolution,
 	)
 	this.octoScreenResolutionLabel.SetText(octoScreenResolutionString)
@@ -135,15 +135,23 @@ func (this *SystemInformationInfoBox) refreshAllocatedResolutionLabel() {
 
 func (this *SystemInformationInfoBox) refreshCurrentResolutionLabel() {
 	currentWidth, currentHeight := this.parentWindow.GetSize()
+	// currentResolutionString := fmt.Sprintf(
+	// 	"Current window size: %dx%d",
+	// 	currentWidth,
+	// 	currentHeight,
+	// )
+
 	currentResolutionString := fmt.Sprintf(
-		"Current window size: %dx%d",
+		"Current window size: %dx%d - UI scale factor: %d",
 		currentWidth,
 		currentHeight,
+		this.uiScaleFactor,
 	)
+
 	this.currentResolutionLabel.SetText(currentResolutionString)
 }
 
-
+/*
 func (this *SystemInformationInfoBox) refreshUiScaleFactorLabel() {
 	uiScaleFactorString := fmt.Sprintf(
 		"UI scale factor: %d",
@@ -151,13 +159,18 @@ func (this *SystemInformationInfoBox) refreshUiScaleFactorLabel() {
 	)
 	this.uiScaleFactorLabel.SetText(uiScaleFactorString)
 }
-
+*/
 
 func (this *SystemInformationInfoBox) Refresh() {
 	this.refreshMemoryLabel()
-	this.refreshLoadAverageLabel()
-	this.refreshOctoScreenResolutionLabel()
-	this.refreshAllocatedResolutionLabel()
-	this.refreshCurrentResolutionLabel()
-	this.refreshUiScaleFactorLabel()
+	//this.refreshLoadAverageLabel()
+
+	if this.logLevel == "debug" {
+		this.refreshOctoScreenResolutionLabel()
+		this.refreshAllocatedResolutionLabel()
+		this.refreshCurrentResolutionLabel()
+		// this.refreshUiScaleFactorLabel()
+	} else {
+		this.refreshCurrentResolutionLabel()
+	}
 }
