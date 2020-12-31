@@ -42,7 +42,7 @@ func (this *idleStatusPanel) initialize() {
 	utils.Logger.Info(this.UI.Settings)
 
 	var menuItems []octoprint.MenuItem
-	if this.UI.Settings == nil || len(this.UI.Settings.MenuStructure) == 0 {
+	if this.UI.Settings == nil || this.UI.Settings.MenuStructure == nil || len(this.UI.Settings.MenuStructure) < 1 {
 		utils.Logger.Info("Loading default menu")
 		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)
 	} else {
