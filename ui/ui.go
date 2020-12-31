@@ -178,7 +178,7 @@ func (this *UI) verifyConnection() {
 					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
 					splashMessage = "Loading..."
 				} else {
-					// Use 'Offline' here and 'offline' later.  Having different variations may help in
+					// Use 'Offline.' here and 'offline!' later.  Having different variations may help in
 					// troubleshooting any issues around this state.
 					splashMessage = "Printer is Offline."
 				}
@@ -212,14 +212,14 @@ func (this *UI) verifyConnection() {
 
 			if strings.Contains(strings.ToLower(errMessage), "deadline exceeded") {
 				// Use 'offline' here, but no ending period.
-				splashMessage = "Printer is offline"
+				splashMessage = "Printer is OFFLINE"
 			} else {
 				splashMessage = errMessage
 			}
 		} else {
-			// Use 'offline.' here and 'offline' above.  Having different variations may help in
+			// Use 'offline!' here and 'OFFLINE' above.  Having different variations may help in
 			// troubleshooting any issues around this state.
-			splashMessage = "Printer is offline."
+			splashMessage = "Printer is offline!"
 		}
 	}
 
@@ -264,15 +264,15 @@ func (this *UI) verifyConnection() {
 func (this *UI) checkNotification() {
 	utils.Logger.Debug("entering ui.checkNotification()")
 
+	if !this.OctoPrintPluginIsAvailable {
+		utils.Logger.Info("ui.checkNotification() - OctoPrintPluginIsAvailable is false, so not calling GetNotification")
+		utils.Logger.Debug("leaving ui.checkNotification()")
+		return
+	}
+
 	notificationRespone, err := (&octoprint.GetNotificationRequest{}).Do(this.Client)
 	if err != nil {
-		text := err.Error()
-		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
-			this.OctoPrintPluginIsAvailable = false
-		}
-
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
-
 		utils.Logger.Debug("leaving ui.checkNotification()")
 		return
 	}
@@ -289,9 +289,22 @@ func (this *UI) loadSettings() {
 
 	settingsResponse, err := (&octoprint.GetSettingsRequest{}).Do(this.Client)
 	if err != nil {
-		utils.LogError("ui.loadSettings()", "Do(GetSettingsRequest)", err)
-		utils.Logger.Error("leaving ui.loadSettings() - Do(GetSettingsRequest) returned an error")
+		text := err.Error()
+		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
+			// The call to GetSettings is also used to determine whether or not the
+			// OctoScreen plug-in is available.  If calling GetSettings returns
+			// a 404, the plug-in isn't available.
+			this.OctoPrintPluginIsAvailable = false
+			utils.Logger.Info("The OctoPrint plug-in is not available")
+		} else {
+			// If we get back any other kind of error, something bad happened, so log an error.
+			utils.LogError("ui.loadSettings()", "Do(GetSettingsRequest)", err)
+		}
+
+		utils.Logger.Debug("leaving ui.loadSettings()")
 		return
+	} else {
+		utils.Logger.Info("The call to GetSettings succeeded and the OctoPrint plug-in is available")
 	}
 
 	if !this.validateMenuItems(settingsResponse.MenuStructure, "", true) {
@@ -364,9 +377,24 @@ func (this *UI) update() {
 		this.connectionAttempts = 0
 	}
 
+	if this.Settings == nil {
+		this.loadSettings()
+
+		if this.Settings == nil {
+			this.Settings = &octoprint.GetSettingsResponse {
+				FilamentInLength: 750.0,
+				FilamentOutLength: 800.0,
+				ToolChanger: false,
+				XAxisInverted: false,
+				YAxisInverted: false,
+				ZAxisInverted: false,
+				MenuStructure: nil,
+			}
+		}
+	}
+
 	if this.OctoPrintPluginIsAvailable {
 		this.checkNotification()
-		this.loadSettings()
 	}
 
 	this.verifyConnection()
