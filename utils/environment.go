@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	//"strings"
 )
@@ -64,7 +65,7 @@ func DumpEnvironmentVariables() {
 	// Required environment variables
 	Logger.Infof("Required environment variables:")
 	dumpEnvironmentVariable(EnvBaseURL)
-	dumpEnvironmentVariable(EnvAPIKey)
+	dumpObfuscatedEnvironmentVariable(EnvAPIKey)
 	dumpEnvironmentVariable(EnvStylePath)
 
 	// Optional environment variables
@@ -88,4 +89,33 @@ func dumpEnvironmentVariable(key string) {
 	}
 
 	Logger.Infof("key: %q, value: %q", key, value)
+}
+
+func dumpObfuscatedEnvironmentVariable(key string) {
+	value := os.Getenv(key)
+	if value == "" {
+		value = ">>MISSING<<"
+	}
+
+	Logger.Infof("key: %q, value: %q", key, getObfuscatedValue(value))
+}
+
+func getObfuscatedValue(value string) string {
+	length := len(value)
+
+	obfuscatedValue := ""
+	if length < 6 {
+		obfuscatedValue = "!!!INVALID!!!"
+	} else {
+		obfuscatedValue = fmt.Sprintf("%c%c%c---%c%c%c",
+			value[0],
+			value[1],
+			value[2],
+			value[length - 3],
+			value[length - 2],
+			value[length - 1],
+		)
+	}
+
+	return obfuscatedValue
 }
