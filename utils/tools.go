@@ -16,23 +16,24 @@ func GetToolheadCount(client *octoprint.Client) int {
 		return cachedToolheadCount
 	}
 
-	c, err := (&octoprint.ConnectionRequest{}).Do(client)
+	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(client)
 	if err != nil {
 		LogError("toolhaad.GetToolheadCount()", "Do(ConnectionRequest)", err)
 		return 0
 	}
 
-	profile, err := (&octoprint.PrinterProfilesRequest{Id: c.Current.PrinterProfile}).Do(client)
+	printerProfile, err := (&octoprint.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(client)
 	if err != nil {
 		LogError("toolhaad.GetToolheadCount()", "Do(PrinterProfilesRequest)", err)
 		return 0
 	}
 
-	if profile.Extruder.SharedNozzle {
+	cachedToolheadCount = printerProfile.Extruder.Count
+	if printerProfile.Extruder.SharedNozzle {
 		cachedToolheadCount = 1
+	} else if cachedToolheadCount > 4 {
+		cachedToolheadCount = 4
 	}
-
-	cachedToolheadCount = profile.Extruder.Count
 
 
 	// TESTING: uncomment to force all toolheads to display and use for testing
