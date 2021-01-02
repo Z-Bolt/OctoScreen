@@ -87,7 +87,7 @@ func createStyledLabel() *gtk.Label {
 func (this *SystemInformationInfoBox) refreshMemoryLabel() {
 	virtualMemoryStat, _ := mem.VirtualMemory()
 	memoryString := fmt.Sprintf(
-		"Virtual memory: %s (free) / %s (total)",
+		"Memory: %s (free) / %s (total)",
 		humanize.Bytes(virtualMemoryStat.Free),
 		humanize.Bytes(virtualMemoryStat.Total),
 	)
