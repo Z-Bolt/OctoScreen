@@ -138,14 +138,14 @@ The basic configuration is handled via environment variables, if you are using t
 
 - `OCTOPRINT_HOST` - The URL to the OctoPrint server.  Example: `http://octopi.local` or `http://localhost:5000`.  Note: the protocol (`http://` or `https://`) is required.  If the setting for `OCTOPRINT_HOST` does not contain the protocol, an error will be displayed when OctoScreen starts.
 
-- `OCTOPRINT_APIKEY` - OctoScreen expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. This API key can be either the globally configured key, or a user-specific one if “Access Control” is enabled.
+- `OCTOPRINT_APIKEY` - OctoScreen expects an [API key]( http://docs.octoprint.org/en/master/api/general.html) to be supplied. The API key can either be set in OctoScreen's config file, or in OctoPrint's config file (OCTOPRINT_CONFIG_FILE below)
 
 - `OCTOSCREEN_STYLE_PATH` - Several themes are supported, and style configurations can be done through CSS.  This variable defines the location of the application theme.
 
 
 #### Optional Configuration Settings
 
-- `OCTOPRINT_CONFIG_FILE` - The location of the OctoPrint's config.yaml file.  If empty, the file path used will be the `pi` home folder of the current user.
+- `OCTOPRINT_CONFIG_FILE` - The location of OctoPrint's config.yaml file.  If empty, the file path used will be the `pi` home folder of the current user.  The OCTOPRINT_APIKEY is required, and if it isn't defined in OctoScreen's config file (see OCTOPRINT_APIKEY above) it needs to be defined in OctoPrint's config file.
 
 - `OCTOSCREEN_LOG_FILE_PATH` - The file path to where the log file will be saved.  The file path should be a fully qualified path and not only include the path to the log file, but the name of the log file as well (eg `/home/pi/logs/logfile.txt`).  The log file is appended to and is never automatically truncated, and will grow over time.  If you turn log file logging on (by specifying a path), be sure to turn it off (by setting the value to "").
 

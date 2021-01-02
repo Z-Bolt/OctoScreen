@@ -26,7 +26,7 @@ var (
 )
 
 func main() {
-	utils.Logger.Debug("entering main.main()")
+	utils.Logger.Debug("OctoScreen - entering main.main()")
 
 	gtk.Init(nil)
 	settings, _ := gtk.SettingsGetDefault()
@@ -34,30 +34,38 @@ func main() {
 
 	utils.DumpEnvironmentVariables()
 
-	if utils.RequiredEnvironmentVariablesAreSet() {
+	if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
 		width, height := getSize()
 		// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
 		// and aren't required - if not set, ui.New() will use the default
 		// values (defined in globalVars.go).
 		_ = ui.New(BaseURL, APIKey, width, height)
 	} else {
-		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable())
+		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable(APIKey))
 		fatalErrorWindow.ShowAll()
 	}
 
 	gtk.Main()
 
-	utils.Logger.Debug("leaving main.main()")
+	utils.Logger.Debug("OctoScreen - leaving main.main()")
 }
 
 
 func init() {
-	utils.Logger.Debug("entering main.init()")
+	utils.Logger.Debug("OctoScreen - entering main.init()")
 
-	if !utils.RequiredEnvironmentVariablesAreSet() {
-		utils.Logger.Error("main.init() - RequiredEnvironmentVariablesAreSet() returned false")
+	ConfigFile = os.Getenv(utils.EnvConfigFile)
+	if ConfigFile == "" {
+		ConfigFile = findConfigFile()
+	}
 
-		utils.Logger.Debug("leaving main.init()")
+	cfg := readConfig(ConfigFile)
+	setApiKey(cfg)
+
+	if !utils.RequiredEnvironmentVariablesAreSet(APIKey) {
+		utils.Logger.Error("OctoScreen - main.init() - RequiredEnvironmentVariablesAreSet() returned false")
+
+		utils.Logger.Debug("OctoScreen - leaving main.init()")
 		return
 	}
 
@@ -65,16 +73,9 @@ func init() {
 
 	utils.StylePath = os.Getenv(utils.EnvStylePath)
 	Resolution = os.Getenv(utils.EnvResolution)
-	ConfigFile = os.Getenv(utils.EnvConfigFile)
-	if ConfigFile == "" {
-		ConfigFile = findConfigFile()
-	}
-
-	cfg := readConfig(ConfigFile)
 	setBaseUrl(cfg)
-	setApiKey(cfg)
 
-	utils.Logger.Debug("leaving main.init()")
+	utils.Logger.Debug("OctoScreen - leaving main.init()")
 }
 
 func setLogLevel() {
@@ -124,13 +125,23 @@ func setBaseUrl(cfg *config) {
 }
 
 func setApiKey(cfg *config) {
+	utils.Logger.Debug("OctoScreen - entering main.setApiKey()")
+
 	APIKey = os.Getenv(utils.EnvAPIKey)
 	if APIKey == "" {
+		utils.Logger.Debug("main.setApiKey() - APIKey is empty, now using cfg.API.Key")
+
 		APIKey = cfg.API.Key
-		if cfg.API.Key != "" {
-			utils.Logger.Infof("main.setApiKey() - found API key in file %q", ConfigFile)
-		}
 	}
+
+	if APIKey == "" {
+		utils.Logger.Debug("main.setApiKey() - APIKey is empty!")
+	} else {
+		obfuscatedApiKey := utils.GetObfuscatedValue(APIKey)
+		utils.Logger.Debugf("main.setApiKey() - APIKey is %q", obfuscatedApiKey)
+	}
+
+	utils.Logger.Debug("OctoScreen - leaving main.setApiKey()")
 }
 
 
