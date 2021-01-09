@@ -156,7 +156,7 @@ func (this *filesPanel) addFile(box *gtk.Box, fileInformation *octoprint.FileInf
 	file.SetMarginBottom(1)
 	file.SetHExpand(true)
 
-	image := utils.MustImageFromFileWithSize("file-stl.svg", this.Scaled(35), this.Scaled(35))
+	image := utils.MustImageFromFileWithSize("file-gcode.svg", this.Scaled(35), this.Scaled(35))
 	file.Add(image)
 
 	file.Add(labels)
