@@ -128,7 +128,7 @@ func (this *printStatusPanel) createProgressBar() *gtk.ProgressBar {
 }
 
 func (this *printStatusPanel) createInfoBox() *gtk.Box {
-	this.fileLabel = utils.MustLabelWithImage("file-stl.svg", "")
+	this.fileLabel = utils.MustLabelWithImage("file-gcode.svg", "")
 	ctx, _ := this.fileLabel.GetStyleContext()
 	ctx.AddClass("printing-status-label")
 
