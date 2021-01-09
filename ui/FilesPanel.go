@@ -18,7 +18,7 @@ type filesPanel struct {
 	CommonPanel
 
 	listBox				*gtk.Box
-	locationHistory		locationHistory
+	locationHistory		utils.LocationHistory
 }
 
 func FilesPanel(
@@ -26,8 +26,8 @@ func FilesPanel(
 	parentPanel			interfaces.IPanel,
 ) *filesPanel {
 	if filesPanelInstance == nil {
-		locationHistory := locationHistory {
-			locations: []octoprint.Location{},
+		locationHistory := utils.LocationHistory {
+			Locations: []octoprint.Location{},
 		}
 
 		instance := &filesPanel {
@@ -79,13 +79,13 @@ func (this *filesPanel) createRefreshButton() gtk.IWidget {
 func (this *filesPanel) createBackButton() gtk.IWidget {
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
 	return utils.MustButton(image, func() {
-		if this.locationHistory.length() < 1 {
+		if this.locationHistory.Length() < 1 {
 			this.UI.GoToPreviousPanel()
-		} else if this.locationHistory.isRoot() {
-			this.locationHistory.goBack()
+		} else if this.locationHistory.IsRoot() {
+			this.locationHistory.GoBack()
 			this.doLoadFiles()
 		} else {
-			this.locationHistory.goBack()
+			this.locationHistory.GoBack()
 			this.doLoadFiles()
 		}
 	})
@@ -107,12 +107,12 @@ func (this *filesPanel) doLoadFiles() {
 func (this *filesPanel) getSortedFiles() []*octoprint.FileInformation {
 	var files []*octoprint.FileInformation
 
-	length := this.locationHistory.length()
+	length := this.locationHistory.Length()
 	if length < 1 {
 		return nil
 	}
 
-	current := this.locationHistory.current()
+	current := this.locationHistory.CurrentLocation()
 	utils.Logger.Info("Loading list of files from: ", string(current))
 
 	filesRequest := &octoprint.FilesRequest {
@@ -127,7 +127,7 @@ func (this *filesPanel) getSortedFiles() []*octoprint.FileInformation {
 		files = filesResponse.Files
 	}
 
-	sortedFiles := byDate(files)
+	sortedFiles := utils.FileInformationsByDate(files)
 	sort.Sort(sortedFiles)
 
 	return sortedFiles
@@ -245,8 +245,8 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 func (this *filesPanel) createOpenLocationButton(location octoprint.Location) *gtk.Button {
 	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
 	button := utils.MustButton(image, func() {
-		this.locationHistory = locationHistory {
-			locations: []octoprint.Location{location},
+		this.locationHistory = utils.LocationHistory {
+			Locations: []octoprint.Location{location},
 		}
 
 		this.doLoadFiles()
@@ -262,7 +262,7 @@ func (this *filesPanel) createOpenLocationButton(location octoprint.Location) *g
 func (this *filesPanel) createOpenFolderButton(fileInformation *octoprint.FileInformation) *gtk.Button {
 	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
 	button := utils.MustButton(image, func() {
-		this.locationHistory.goForward(fileInformation.Name)
+		this.locationHistory.GoForward(fileInformation.Name)
 		this.doLoadFiles()
 	})
 
