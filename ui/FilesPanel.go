@@ -150,19 +150,7 @@ func (this *filesPanel) addRootLocations() {
 }
 
 func (this *filesPanel) addMessage(message string) {
-	// nameLabel := utils.MustLabel(message)
-	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(message)))
-	// nameLabel.SetHExpand(true)
-	// nameLabel.SetHAlign(gtk.ALIGN_START)
 	nameLabel := this.createNameLabel(message)
-
-	// labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	// labelsBox.Add(nameLabel)
-	// labelsBox.SetVExpand(false)
-	// labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	// labelsBox.SetHAlign(gtk.ALIGN_START)
-	// labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	// labelsBoxStyleContext.AddClass("labels-box")
 	labelsBox := this.createLabelsBox(nameLabel, nil)
 
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -194,26 +182,13 @@ func (this *filesPanel) addRootLocation(location octoprint.Location, index int) 
 	} else {
 		name = "  SD Card"
 	}
-	// nameLabel := utils.MustLabel(name)
-	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
-	// nameLabel.SetHExpand(true)
-	// nameLabel.SetHAlign(gtk.ALIGN_START)
 	nameLabel := this.createNameLabel(name)
 
 	infoLabel := utils.MustLabel("")
 	infoLabel.SetHAlign(gtk.ALIGN_START)
 	infoLabel.SetMarkup("<small> </small>")
 
-	// labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	// labelsBox.Add(nameLabel)
-	// labelsBox.Add(infoLabel)
-	// labelsBox.SetVExpand(false)
-	// labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	// labelsBox.SetHAlign(gtk.ALIGN_START)
-	// labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	// labelsBoxStyleContext.AddClass("labels-box")
 	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
-
 	topBox.Add(labelsBox)
 
 
@@ -228,10 +203,8 @@ func (this *filesPanel) addRootLocation(location octoprint.Location, index int) 
 	actionBox.Add(itemButton)
 	topBox.Add(actionBox)
 
-
 	listItemBox := this.createListItemBox()
 	listItemBox.Add(topBox)
-
 
 	listItemFrame, _ := gtk.FrameNew("")
 	listItemFrame.Add(listItemBox)
@@ -271,12 +244,7 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	topBox.Add(itemImage)
 
-
 	name := fileResponse.Name
-	// nameLabel := utils.MustLabel(name)
-	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
-	// nameLabel.SetHExpand(true)
-	// nameLabel.SetHAlign(gtk.ALIGN_START)
 	nameLabel := this.createNameLabel(name)
 
 	infoLabel := utils.MustLabel("")
@@ -291,20 +259,8 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 		))
 	}
 
-	// labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	// labelsBox.Add(nameLabel)
-	// labelsBox.Add(infoLabel)
-	// labelsBox.SetVExpand(false)
-	// labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	// labelsBox.SetHAlign(gtk.ALIGN_START)
-	// labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	// labelsBoxStyleContext.AddClass("labels-box")
 	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
-
 	topBox.Add(labelsBox)
-
-
-
 
 	var itemButton *gtk.Button
 	if isFolder {
@@ -317,28 +273,15 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 	actionBox.Add(itemButton)
 	topBox.Add(actionBox)
 
-
-
-
 	listItemBox := this.createListItemBox()
 	listItemBox.Add(topBox)
-
-
-
-
-
 
 	if !isFolder {
 		this.addThumbnail(fileResponse, listItemBox)
 	}
 
-
-
-
 	listItemFrame, _ := gtk.FrameNew("")
 	listItemFrame.Add(listItemBox)
-
-
 
 	itemButtonStyleContext, _ := itemButton.GetStyleContext()
 	listItemBoxStyleContext, _:= listItemBox.GetStyleContext()
@@ -351,8 +294,6 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 
 	this.listBox.Add(listItemFrame)
 }
-
-
 
 func (this *filesPanel) createLabelsBox(nameLabel, infoLabel *gtk.Label) *gtk.Box {
 	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
@@ -373,7 +314,6 @@ func (this *filesPanel) createLabelsBox(nameLabel, infoLabel *gtk.Label) *gtk.Bo
 
 func (this *filesPanel) createNameLabel(name string) *gtk.Label {
 	nameLabel := utils.MustLabel(name)
-	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
 	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
 	nameLabel.SetHExpand(true)
 	nameLabel.SetHAlign(gtk.ALIGN_START)
@@ -391,12 +331,6 @@ func (this *filesPanel) createListItemBox() *gtk.Box {
 
 	return listItemBox
 }
-
-
-
-
-
-
 
 func (this *filesPanel) addThumbnail(fileResponse *octoprint.FileResponse, listItemBox *gtk.Box) {
 	if fileResponse.Thumbnail != "" {
@@ -485,9 +419,6 @@ func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileRespo
 
 	return button
 }
-
-
-
 
 /*
 func (this *filesPanel) isReady() bool {
