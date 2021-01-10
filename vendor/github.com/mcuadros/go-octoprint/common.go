@@ -281,62 +281,64 @@ type FilesResponse struct {
 	Free uint64
 }
 
+// FileInformation is now in FileRequest.go
+// TODO: remove this commented code
 // FileInformation contains information regarding a file.
-type FileInformation struct {
-	// Name is name of the file without path. E.g. “file.gco” for a file
-	// “file.gco” located anywhere in the file system.
-	Name string `json:"name"`
+// type FileInformation struct {
+// 	// Name is name of the file without path. E.g. “file.gco” for a file
+// 	// “file.gco” located anywhere in the file system.
+// 	Name string `json:"name"`
 
-	// The name of the file without the path
-	Display string `json:"display"`
+// 	// The name of the file without the path
+// 	Display string `json:"display"`
 
-	// Path is the path to the file within the location. E.g.
-	//“folder/subfolder/file.gco” for a file “file.gco” located within “folder”
-	// and “subfolder” relative to the root of the location.
-	Path string `json:"path"`
+// 	// Path is the path to the file within the location. E.g.
+// 	//“folder/subfolder/file.gco” for a file “file.gco” located within “folder”
+// 	// and “subfolder” relative to the root of the location.
+// 	Path string `json:"path"`
 
-	// Type of file. model or machinecode. Or folder if it’s a folder, in
-	// which case the children node will be populated.
-	Type string `json:"type"`
+// 	// Type of file. model or machinecode. Or folder if it’s a folder, in
+// 	// which case the children node will be populated.
+// 	Type string `json:"type"`
 
-	// TypePath path to type of file in extension tree. E.g. `["model", "stl"]`
-	// for .stl files, or `["machinecode", "gcode"]` for .gcode files.
-	// `["folder"]` for folders.
-	TypePath []string `json:"typePath"`
+// 	// TypePath path to type of file in extension tree. E.g. `["model", "stl"]`
+// 	// for .stl files, or `["machinecode", "gcode"]` for .gcode files.
+// 	// `["folder"]` for folders.
+// 	TypePath []string `json:"typePath"`
 
-	// Hash is the MD5 hash of the file. Only available for `local` files.
-	Hash string `json:"hash"`
+// 	// Hash is the MD5 hash of the file. Only available for `local` files.
+// 	Hash string `json:"hash"`
 
-	// Size of the file in bytes. Only available for `local` files or `sdcard`
-	// files if the printer supports file sizes for sd card files.
-	Size uint64 `json:"size"`
+// 	// Size of the file in bytes. Only available for `local` files or `sdcard`
+// 	// files if the printer supports file sizes for sd card files.
+// 	Size uint64 `json:"size"`
 
-	// Date when this file was uploaded. Only available for `local` files.
-	Date JSONTime `json:"date"`
+// 	// Date when this file was uploaded. Only available for `local` files.
+// 	Date JSONTime `json:"date"`
 
-	// Origin of the file, `local` when stored in OctoPrint’s `uploads` folder,
-	// `sdcard` when stored on the printer’s SD card (if available)
-	Origin string `json:"origin"`
+// 	// Origin of the file, `local` when stored in OctoPrint’s `uploads` folder,
+// 	// `sdcard` when stored on the printer’s SD card (if available)
+// 	Origin string `json:"origin"`
 
-	// Refs references relevant to this file, left out in abridged versio
-	Refs Reference `json:"refs"`
+// 	// Refs references relevant to this file, left out in abridged versio
+// 	Refs Reference `json:"refs"`
 
-	// GCodeAnalysis information from the analysis of the GCODE file, if
-	// available. Left out in abridged version.
-	GCodeAnalysis GCodeAnalysisInformation `json:"gcodeAnalysis"`
+// 	// GCodeAnalysis information from the analysis of the GCODE file, if
+// 	// available. Left out in abridged version.
+// 	GCodeAnalysis GCodeAnalysisInformation `json:"gcodeAnalysis"`
 
-	// Print information from the print stats of a file.
-	Print PrintStats `json:"print"`
-}
+// 	// Print information from the print stats of a file.
+// 	Print PrintStats `json:"print"`
+// }
 
-// IsFolder it returns true if the file is a folder.
-func (f *FileInformation) IsFolder() bool {
-	if len(f.TypePath) == 1 && f.TypePath[0] == "folder" {
-		return true
-	}
+// // IsFolder it returns true if the file is a folder.
+// func (f *FileInformation) IsFolder() bool {
+// 	if len(f.TypePath) == 1 && f.TypePath[0] == "folder" {
+// 		return true
+// 	}
 
-	return false
-}
+// 	return false
+// }
 
 // Reference of a file.
 type Reference struct {

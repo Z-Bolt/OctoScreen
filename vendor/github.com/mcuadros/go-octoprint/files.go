@@ -40,36 +40,44 @@ var (
 	}
 )
 
+// FileRequest is now in FileRequest.go
+// TODO: remove this commented code
 // FileRequest retrieves the selected file’s or folder’s information.
-type FileRequest struct {
-	// Location of the file for which to retrieve the information, either
-	// `local` or `sdcard`.
-	Location Location
-	// Filename of the file for which to retrieve the information
-	Filename string
-	// Recursive if set to true, return all files and folders recursively.
-	// Otherwise only return items on same level.
-	Recursive bool
-}
+// type FileRequest struct {
+// 	// Location of the file for which to retrieve the information, either
+// 	// `local` or `sdcard`.
+// 	Location Location
 
-// Do sends an API request and returns the API response
-func (cmd *FileRequest) Do(c *Client) (*FileInformation, error) {
-	uri := fmt.Sprintf("%s/%s/%s?recursive=%t", URIFiles,
-		cmd.Location, cmd.Filename, cmd.Recursive,
-	)
+// 	// Filename of the file for which to retrieve the information
+// 	Filename string
 
-	b, err := c.doJSONRequest("GET", uri, nil, FilesLocationGETErrors)
-	if err != nil {
-		return nil, err
-	}
+// 	// Recursive if set to true, return all files and folders recursively.
+// 	// Otherwise only return items on same level.
+// 	Recursive bool
+// }
 
-	r := &FileInformation{}
-	if err := json.Unmarshal(b, r); err != nil {
-		return nil, err
-	}
+// // Do sends an API request and returns the API response
+// func (cmd *FileRequest) Do(c *Client) (*FileInformation, error) {
+// 	uri := fmt.Sprintf("%s/%s/%s?recursive=%t", URIFiles,
+// 		cmd.Location, cmd.Filename, cmd.Recursive,
+// 	)
 
-	return r, err
-}
+// 	b, err := c.doJSONRequest("GET", uri, nil, FilesLocationGETErrors)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	r := &FileInformation{}
+// 	if err := json.Unmarshal(b, r); err != nil {
+// 		return nil, err
+// 	}
+
+// 	return r, err
+// }
+
+
+
+
 
 // FilesRequest retrieve information regarding all files currently available and
 // regarding the disk space still available locally in the system.
