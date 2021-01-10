@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"net/http"
 	"path/filepath"
 
 	"github.com/gotk3/gotk3/gdk"
@@ -237,6 +240,46 @@ func MustImageFromFile(imageFileName string) *gtk.Image {
 
 	return image
 }
+
+func ImageFromUrl(imageUrl string) (*gtk.Image, error) {
+	if imageUrl == "" {
+		Logger.Error("MustImageFromUrl() - imageUrl is empty")
+		return nil, errors.New("imageUrl is empty")
+	}
+
+	response, getErr:= http.Get(imageUrl)
+	if getErr != nil {
+		return nil, getErr
+	}
+	defer response.Body.Close()
+
+	buf := new(bytes.Buffer)
+	readLength, readErr := buf.ReadFrom(response.Body)
+	if readErr != nil {
+		return nil, readErr
+	} else if readLength < 1 {
+		return nil, errors.New("bytes read was zero")
+	}
+
+	pixbufLoader, newPixbufLoaderErr := gdk.PixbufLoaderNew()
+	if newPixbufLoaderErr != nil {
+		return nil, newPixbufLoaderErr
+	}
+	defer pixbufLoader.Close()
+
+	writeLength, writeErr := pixbufLoader.Write(buf.Bytes())
+	if writeErr != nil {
+		return nil, writeErr
+	} else if writeLength < 1 {
+		return nil, errors.New("bytes written was zero")
+	}
+
+	pixbuf, _ := pixbufLoader.GetPixbuf()
+	image, imageNewFromPixbufErr := gtk.ImageNewFromPixbuf(pixbuf)
+
+	return image, imageNewFromPixbufErr
+}
+
 
 // MustCSSProviderFromFile returns a new gtk.CssProvider for a given css file, if error panics.
 func MustCSSProviderFromFile(css string) *gtk.CssProvider {

@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 
@@ -336,6 +337,43 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 	listItemBox.SetMarginEnd(15)
 	listItemBox.SetHExpand(true)
 	listItemBox.Add(topBox)
+
+
+
+
+
+
+
+
+	if !isFolder {
+		if fileInformation.Thumbnail != "" {
+			thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileInformation.Thumbnail)
+			utils.Logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
+
+			previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
+			if imageFromUrlErr == nil {
+				utils.Logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it............")
+
+				previewImageStyleContext, _ := previewImage.GetStyleContext()
+				previewImageStyleContext.AddClass("preview-image-list-item")
+
+				bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
+				bottomBox.Add(previewImage)
+				listItemBox.Add(bottomBox)
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
 
 
 	listItemFrame, _ := gtk.FrameNew("")
