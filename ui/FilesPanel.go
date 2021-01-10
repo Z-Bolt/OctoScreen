@@ -150,50 +150,43 @@ func (this *filesPanel) addRootLocations() {
 }
 
 func (this *filesPanel) addMessage(message string) {
+	// nameLabel := utils.MustLabel(message)
+	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(message)))
+	// nameLabel.SetHExpand(true)
+	// nameLabel.SetHAlign(gtk.ALIGN_START)
+	nameLabel := this.createNameLabel(message)
+
+	// labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	// labelsBox.Add(nameLabel)
+	// labelsBox.SetVExpand(false)
+	// labelsBox.SetVAlign(gtk.ALIGN_CENTER)
+	// labelsBox.SetHAlign(gtk.ALIGN_START)
+	// labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
+	// labelsBoxStyleContext.AddClass("labels-box")
+	labelsBox := this.createLabelsBox(nameLabel, nil)
+
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	nameLabel := utils.MustLabel(message)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(message)))
-	nameLabel.SetHExpand(true)
-	nameLabel.SetHAlign(gtk.ALIGN_START)
-
-	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	labelsBox.Add(nameLabel)
-	labelsBox.SetVExpand(false)
-	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	labelsBox.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
-
 	topBox.Add(labelsBox)
 
-
-
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	listItemBox.SetMarginTop(1)
-	listItemBox.SetMarginBottom(1)
-	listItemBox.SetMarginStart(15)
-	listItemBox.SetMarginEnd(15)
-	listItemBox.SetHExpand(true)
+	listItemBox := this.createListItemBox()
 	listItemBox.Add(topBox)
 
 	listItemFrame, _ := gtk.FrameNew("")
 	listItemFrame.Add(listItemBox)
 
-
 	this.listBox.Add(listItemFrame)
 }
 
 func (this *filesPanel) addRootLocation(location octoprint.Location, index int) {
-	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-
 	var itemImage *gtk.Image
 	if location == octoprint.Local {
 		itemImage = utils.MustImageFromFileWithSize("octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
 	} else {
 		itemImage = utils.MustImageFromFileWithSize("sd.svg", this.Scaled(35), this.Scaled(35))
 	}
-	topBox.Add(itemImage)
 
+	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	topBox.Add(itemImage)
 
 	name := ""
 	if location == octoprint.Local {
@@ -201,23 +194,25 @@ func (this *filesPanel) addRootLocation(location octoprint.Location, index int) 
 	} else {
 		name = "  SD Card"
 	}
-	nameLabel := utils.MustLabel(name)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
-	nameLabel.SetHExpand(true)
-	nameLabel.SetHAlign(gtk.ALIGN_START)
+	// nameLabel := utils.MustLabel(name)
+	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
+	// nameLabel.SetHExpand(true)
+	// nameLabel.SetHAlign(gtk.ALIGN_START)
+	nameLabel := this.createNameLabel(name)
 
 	infoLabel := utils.MustLabel("")
 	infoLabel.SetHAlign(gtk.ALIGN_START)
 	infoLabel.SetMarkup("<small> </small>")
 
-	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	labelsBox.Add(nameLabel)
-	labelsBox.Add(infoLabel)
-	labelsBox.SetVExpand(false)
-	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	labelsBox.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
+	// labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	// labelsBox.Add(nameLabel)
+	// labelsBox.Add(infoLabel)
+	// labelsBox.SetVExpand(false)
+	// labelsBox.SetVAlign(gtk.ALIGN_CENTER)
+	// labelsBox.SetHAlign(gtk.ALIGN_START)
+	// labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
+	// labelsBoxStyleContext.AddClass("labels-box")
+	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
 
 	topBox.Add(labelsBox)
 
@@ -234,12 +229,7 @@ func (this *filesPanel) addRootLocation(location octoprint.Location, index int) 
 	topBox.Add(actionBox)
 
 
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	listItemBox.SetMarginTop(1)
-	listItemBox.SetMarginBottom(1)
-	listItemBox.SetMarginStart(15)
-	listItemBox.SetMarginEnd(15)
-	listItemBox.SetHExpand(true)
+	listItemBox := this.createListItemBox()
 	listItemBox.Add(topBox)
 
 
@@ -271,24 +261,23 @@ func (this *filesPanel) addSortedFiles(sortedFiles []*octoprint.FileResponse) {
 func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int) {
 	isFolder := fileResponse.IsFolder()
 
-	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-
 	var itemImage *gtk.Image
 	if isFolder {
 		itemImage = utils.MustImageFromFileWithSize("folder.svg", this.Scaled(35), this.Scaled(35))
 	} else {
 		itemImage = utils.MustImageFromFileWithSize("file-gcode.svg", this.Scaled(35), this.Scaled(35))
 	}
+
+	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	topBox.Add(itemImage)
 
 
-
-
 	name := fileResponse.Name
-	nameLabel := utils.MustLabel(name)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
-	nameLabel.SetHExpand(true)
-	nameLabel.SetHAlign(gtk.ALIGN_START)
+	// nameLabel := utils.MustLabel(name)
+	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
+	// nameLabel.SetHExpand(true)
+	// nameLabel.SetHAlign(gtk.ALIGN_START)
+	nameLabel := this.createNameLabel(name)
 
 	infoLabel := utils.MustLabel("")
 	infoLabel.SetHAlign(gtk.ALIGN_START)
@@ -302,14 +291,15 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 		))
 	}
 
-	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	labelsBox.Add(nameLabel)
-	labelsBox.Add(infoLabel)
-	labelsBox.SetVExpand(false)
-	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	labelsBox.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
+	// labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	// labelsBox.Add(nameLabel)
+	// labelsBox.Add(infoLabel)
+	// labelsBox.SetVExpand(false)
+	// labelsBox.SetVAlign(gtk.ALIGN_CENTER)
+	// labelsBox.SetHAlign(gtk.ALIGN_START)
+	// labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
+	// labelsBoxStyleContext.AddClass("labels-box")
+	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
 
 	topBox.Add(labelsBox)
 
@@ -330,12 +320,7 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 
 
 
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	listItemBox.SetMarginTop(1)
-	listItemBox.SetMarginBottom(1)
-	listItemBox.SetMarginStart(15)
-	listItemBox.SetMarginEnd(15)
-	listItemBox.SetHExpand(true)
+	listItemBox := this.createListItemBox()
 	listItemBox.Add(topBox)
 
 
@@ -343,46 +328,9 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 
 
 
-
-
 	if !isFolder {
-		if fileResponse.Thumbnail != "" {
-			thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileResponse.Thumbnail)
-			utils.Logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
-
-			previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
-			if imageFromUrlErr == nil {
-				utils.Logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it............")
-
-				bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
-
-				// Initially was setting the horizontal alignment with CSS, but different resolutions
-				// (eg 800x480 vs 480x320) didn't align correctly, so I added a blank SVG to offset
-				// the preview thumbnail image.
-				spacerImage := utils.MustImageFromFileWithSize("blank.svg", this.Scaled(35), this.Scaled(35))
-				bottomBox.Add(spacerImage)
-
-				// Still need some CSS for the bottom margin.
-				previewImageStyleContext, _ := previewImage.GetStyleContext()
-				previewImageStyleContext.AddClass("preview-image-list-item")
-
-				// OK, now add the preview image.
-				bottomBox.Add(previewImage)
-
-				// ...and finally add everything to the bottom box/container.
-				listItemBox.Add(bottomBox)
-			}
-		}
+		this.addThumbnail(fileResponse, listItemBox)
 	}
-
-
-
-
-
-
-
-
-
 
 
 
@@ -402,6 +350,84 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 	}
 
 	this.listBox.Add(listItemFrame)
+}
+
+
+
+func (this *filesPanel) createLabelsBox(nameLabel, infoLabel *gtk.Label) *gtk.Box {
+	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	if nameLabel != nil {
+		labelsBox.Add(nameLabel)
+	}
+	if infoLabel != nil {
+		labelsBox.Add(infoLabel)
+	}
+	labelsBox.SetVExpand(false)
+	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
+	labelsBox.SetHAlign(gtk.ALIGN_START)
+	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
+	labelsBoxStyleContext.AddClass("labels-box")
+
+	return labelsBox
+}
+
+func (this *filesPanel) createNameLabel(name string) *gtk.Label {
+	nameLabel := utils.MustLabel(name)
+	// nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
+	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
+	nameLabel.SetHExpand(true)
+	nameLabel.SetHAlign(gtk.ALIGN_START)
+
+	return nameLabel
+}
+
+func (this *filesPanel) createListItemBox() *gtk.Box {
+	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	listItemBox.SetMarginTop(1)
+	listItemBox.SetMarginBottom(1)
+	listItemBox.SetMarginStart(15)
+	listItemBox.SetMarginEnd(15)
+	listItemBox.SetHExpand(true)
+
+	return listItemBox
+}
+
+
+
+
+
+
+
+func (this *filesPanel) addThumbnail(fileResponse *octoprint.FileResponse, listItemBox *gtk.Box) {
+	if fileResponse.Thumbnail != "" {
+		utils.Logger.Infof("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
+
+		thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileResponse.Thumbnail)
+		utils.Logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
+
+		previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
+		if imageFromUrlErr == nil {
+			utils.Logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
+
+			bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
+
+			// Initially was setting the horizontal alignment with CSS, but different resolutions
+			// (eg 800x480 vs 480x320) didn't align correctly, so I added a blank SVG to offset
+			// the preview thumbnail image.
+			spacerImage := utils.MustImageFromFileWithSize("blank.svg", this.Scaled(35), this.Scaled(35))
+			bottomBox.Add(spacerImage)
+
+			// Still need some CSS for the bottom margin.
+			previewImageStyleContext, _ := previewImage.GetStyleContext()
+			previewImageStyleContext.AddClass("preview-image-list-item")
+
+			// OK, now add the preview image.
+			bottomBox.Add(previewImage)
+
+			// ...and finally add everything to the bottom box/container.
+			listItemBox.Add(bottomBox)
+		}
+	}
 }
 
 
