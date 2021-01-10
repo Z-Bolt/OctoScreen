@@ -36,6 +36,21 @@ progress {
 }
 
 
+/* File browser *********************************************************** */
+.list-item-nth-child-even {
+	background-color: #34383C;
+}
+
+.labels-box {
+	margin-top: 10px;
+}
+
+.preview-image-list-item {
+	margin-left: 76px;
+	margin-bottom: 15px;
+}
+
+
 
 
 /* Button styles *********************************************************** */
@@ -108,6 +123,7 @@ button.active {
 button.file-list {
 	margin: 0px;
 }
+
 
 entry {
 	font-size: 30px;
