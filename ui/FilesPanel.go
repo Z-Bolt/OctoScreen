@@ -354,11 +354,22 @@ func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int)
 			if imageFromUrlErr == nil {
 				utils.Logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it............")
 
+				bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
+
+				// Initially was setting the horizontal alignment with CSS, but different resolutions
+				// (eg 800x480 vs 480x320) didn't align correctly, so I added a blank SVG to offset
+				// the preview thumbnail image.
+				spacerImage := utils.MustImageFromFileWithSize("blank.svg", this.Scaled(35), this.Scaled(35))
+				bottomBox.Add(spacerImage)
+
+				// Still need some CSS for the bottom margin.
 				previewImageStyleContext, _ := previewImage.GetStyleContext()
 				previewImageStyleContext.AddClass("preview-image-list-item")
 
-				bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
+				// OK, now add the preview image.
 				bottomBox.Add(previewImage)
+
+				// ...and finally add everything to the bottom box/container.
 				listItemBox.Add(bottomBox)
 			}
 		}
