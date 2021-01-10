@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -127,12 +128,125 @@ func (this *filesPanel) getSortedFiles() []*octoprint.FileInformation {
 		files = filesResponse.Files
 	}
 
-	sortedFiles := utils.FileInformationsByDate(files)
+	var filteredFiles []*octoprint.FileInformation
+	for i := range files {
+		if !strings.HasPrefix(files[i].Path, "trash") {
+			filteredFiles = append(filteredFiles, files[i])
+		}
+	}
+
+	sortedFiles := utils.FileInformationsByDate(filteredFiles)
+	// sortedFiles := utils.FileInformationsByName(filteredFiles)
 	sort.Sort(sortedFiles)
 
 	return sortedFiles
 }
 
+func (this *filesPanel) addRootLocations() {
+	this.addMessage("Select source location:")
+	this.addRootLocation(octoprint.Local, 0)
+	this.addRootLocation(octoprint.SDCard, 1)
+}
+
+func (this *filesPanel) addMessage(message string) {
+	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	nameLabel := utils.MustLabel(message)
+	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(message)))
+	nameLabel.SetHExpand(true)
+	nameLabel.SetHAlign(gtk.ALIGN_START)
+
+	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	labelsBox.Add(nameLabel)
+	labelsBox.SetVExpand(false)
+	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
+	labelsBox.SetHAlign(gtk.ALIGN_START)
+	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
+	labelsBoxStyleContext.AddClass("labels-box")
+
+	topBox.Add(labelsBox)
+
+
+
+	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	listItemBox.SetMarginTop(1)
+	listItemBox.SetMarginBottom(1)
+	listItemBox.SetMarginStart(15)
+	listItemBox.SetMarginEnd(15)
+	listItemBox.SetHExpand(true)
+	listItemBox.Add(topBox)
+
+	listItemFrame, _ := gtk.FrameNew("")
+	listItemFrame.Add(listItemBox)
+
+
+	this.listBox.Add(listItemFrame)
+}
+
+func (this *filesPanel) addRootLocation(location octoprint.Location, index int) {
+	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+
+	var itemImage *gtk.Image
+	if location == octoprint.Local {
+		itemImage = utils.MustImageFromFileWithSize("octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
+	} else {
+		itemImage = utils.MustImageFromFileWithSize("sd.svg", this.Scaled(35), this.Scaled(35))
+	}
+	topBox.Add(itemImage)
+
+
+	name := ""
+	if location == octoprint.Local {
+		name = "  OctoPrint"
+	} else {
+		name = "  SD Card"
+	}
+	nameLabel := utils.MustLabel(name)
+	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
+	nameLabel.SetHExpand(true)
+	nameLabel.SetHAlign(gtk.ALIGN_START)
+
+	infoLabel := utils.MustLabel("")
+	infoLabel.SetHAlign(gtk.ALIGN_START)
+	infoLabel.SetMarkup("<small> </small>")
+
+	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	labelsBox.Add(nameLabel)
+	labelsBox.Add(infoLabel)
+	labelsBox.SetVExpand(false)
+	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
+	labelsBox.SetHAlign(gtk.ALIGN_START)
+	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
+	labelsBoxStyleContext.AddClass("labels-box")
+
+	topBox.Add(labelsBox)
+
+
+	var itemButton *gtk.Button
+	if location == octoprint.Local {
+		itemButton = this.createOpenLocationButton(location)
+	} else {
+		itemButton = this.createOpenLocationButton(location)
+	}
+
+	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+	actionBox.Add(itemButton)
+	topBox.Add(actionBox)
+
+
+	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	listItemBox.SetMarginTop(1)
+	listItemBox.SetMarginBottom(1)
+	listItemBox.SetMarginStart(15)
+	listItemBox.SetMarginEnd(15)
+	listItemBox.SetHExpand(true)
+	listItemBox.Add(topBox)
+
+
+	listItemFrame, _ := gtk.FrameNew("")
+	listItemFrame.Add(listItemBox)
+
+	this.listBox.Add(listItemFrame)
+}
 
 func (this *filesPanel) addSortedFiles(sortedFiles []*octoprint.FileInformation) {
 	var index int = 0
@@ -171,7 +285,7 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 
 	name := fileInformation.Name
 	nameLabel := utils.MustLabel(name)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
+	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
 	nameLabel.SetHExpand(true)
 	nameLabel.SetHAlign(gtk.ALIGN_START)
 
@@ -297,112 +411,6 @@ func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileInfor
 	return button
 }
 
-func (this *filesPanel) addRootLocations() {
-	this.addMessage("Select source location:")
-	this.addRootLocation(octoprint.Local, 0)
-	this.addRootLocation(octoprint.SDCard, 1)
-}
-
-func (this *filesPanel) addMessage(message string) {
-	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	nameLabel := utils.MustLabel(message)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(message)))
-	nameLabel.SetHExpand(true)
-	nameLabel.SetHAlign(gtk.ALIGN_START)
-
-	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	labelsBox.Add(nameLabel)
-	labelsBox.SetVExpand(false)
-	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	labelsBox.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
-
-	topBox.Add(labelsBox)
-
-
-
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	listItemBox.SetMarginTop(1)
-	listItemBox.SetMarginBottom(1)
-	listItemBox.SetMarginStart(15)
-	listItemBox.SetMarginEnd(15)
-	listItemBox.SetHExpand(true)
-	listItemBox.Add(topBox)
-
-	listItemFrame, _ := gtk.FrameNew("")
-	listItemFrame.Add(listItemBox)
-
-
-	this.listBox.Add(listItemFrame)
-}
-
-
-func (this *filesPanel) addRootLocation(location octoprint.Location, index int) {
-	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-
-	var itemImage *gtk.Image
-	if location == octoprint.Local {
-		itemImage = utils.MustImageFromFileWithSize("octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
-	} else {
-		itemImage = utils.MustImageFromFileWithSize("sd.svg", this.Scaled(35), this.Scaled(35))
-	}
-	topBox.Add(itemImage)
-
-
-	name := ""
-	if location == octoprint.Local {
-		name = "  OctoPrint"
-	} else {
-		name = "  SD Card"
-	}
-	nameLabel := utils.MustLabel(name)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.StrEllipsis(name)))
-	nameLabel.SetHExpand(true)
-	nameLabel.SetHAlign(gtk.ALIGN_START)
-
-	infoLabel := utils.MustLabel("")
-	infoLabel.SetHAlign(gtk.ALIGN_START)
-	infoLabel.SetMarkup("<small> </small>")
-
-	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	labelsBox.Add(nameLabel)
-	labelsBox.Add(infoLabel)
-	labelsBox.SetVExpand(false)
-	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	labelsBox.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
-
-	topBox.Add(labelsBox)
-
-
-	var itemButton *gtk.Button
-	if location == octoprint.Local {
-		itemButton = this.createOpenLocationButton(location)
-	} else {
-		itemButton = this.createOpenLocationButton(location)
-	}
-
-	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actionBox.Add(itemButton)
-	topBox.Add(actionBox)
-
-
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	listItemBox.SetMarginTop(1)
-	listItemBox.SetMarginBottom(1)
-	listItemBox.SetMarginStart(15)
-	listItemBox.SetMarginEnd(15)
-	listItemBox.SetHExpand(true)
-	listItemBox.Add(topBox)
-
-
-	listItemFrame, _ := gtk.FrameNew("")
-	listItemFrame.Add(listItemBox)
-
-	this.listBox.Add(listItemFrame)
-}
 
 
 
