@@ -106,8 +106,8 @@ func (this *filesPanel) doLoadFiles() {
 	this.listBox.ShowAll()
 }
 
-func (this *filesPanel) getSortedFiles() []*octoprint.FileInformation {
-	var files []*octoprint.FileInformation
+func (this *filesPanel) getSortedFiles() []*octoprint.FileResponse {
+	var files []*octoprint.FileResponse
 
 	length := this.locationHistory.Length()
 	if length < 1 {
@@ -124,20 +124,20 @@ func (this *filesPanel) getSortedFiles() []*octoprint.FileInformation {
 	filesResponse, err := filesRequest.Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("files.getSortedFiles()", "Do(FilesRequest)", err)
-		files = []*octoprint.FileInformation{}
+		files = []*octoprint.FileResponse{}
 	} else {
 		files = filesResponse.Files
 	}
 
-	var filteredFiles []*octoprint.FileInformation
+	var filteredFiles []*octoprint.FileResponse
 	for i := range files {
 		if !strings.HasPrefix(files[i].Path, "trash") {
 			filteredFiles = append(filteredFiles, files[i])
 		}
 	}
 
-	sortedFiles := utils.FileInformationsByDate(filteredFiles)
-	// sortedFiles := utils.FileInformationsByName(filteredFiles)
+	sortedFiles := utils.FileResponsesSortedByDate(filteredFiles)
+	// sortedFiles := utils.FileResponsesSortedByName(filteredFiles)
 	sort.Sort(sortedFiles)
 
 	return sortedFiles
@@ -249,27 +249,27 @@ func (this *filesPanel) addRootLocation(location octoprint.Location, index int) 
 	this.listBox.Add(listItemFrame)
 }
 
-func (this *filesPanel) addSortedFiles(sortedFiles []*octoprint.FileInformation) {
+func (this *filesPanel) addSortedFiles(sortedFiles []*octoprint.FileResponse) {
 	var index int = 0
 
-	for _, fileInformation := range sortedFiles {
-		if fileInformation.IsFolder() {
-			this.addItem(fileInformation, index)
+	for _, fileResponse := range sortedFiles {
+		if fileResponse.IsFolder() {
+			this.addItem(fileResponse, index)
 			index++
 		}
 	}
 
-	for _, fileInformation := range sortedFiles {
-		if !fileInformation.IsFolder() {
-			this.addItem(fileInformation, index)
+	for _, fileResponse := range sortedFiles {
+		if !fileResponse.IsFolder() {
+			this.addItem(fileResponse, index)
 			index++
 		}
 	}
 }
 
 
-func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, index int) {
-	isFolder := fileInformation.IsFolder()
+func (this *filesPanel) addItem(fileResponse *octoprint.FileResponse, index int) {
+	isFolder := fileResponse.IsFolder()
 
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 
@@ -284,7 +284,7 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 
 
 
-	name := fileInformation.Name
+	name := fileResponse.Name
 	nameLabel := utils.MustLabel(name)
 	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
 	nameLabel.SetHExpand(true)
@@ -294,11 +294,11 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 	infoLabel.SetHAlign(gtk.ALIGN_START)
 	if isFolder {
 		infoLabel.SetMarkup(fmt.Sprintf("<small>Size: <b>%s</b></small>",
-			humanize.Bytes(uint64(fileInformation.Size)),
+			humanize.Bytes(uint64(fileResponse.Size)),
 		))
 	} else {
 		infoLabel.SetMarkup(fmt.Sprintf("<small>Uploaded: <b>%s</b> - Size: <b>%s</b></small>",
-			humanize.Time(fileInformation.Date.Time), humanize.Bytes(uint64(fileInformation.Size)),
+			humanize.Time(fileResponse.Date.Time), humanize.Bytes(uint64(fileResponse.Size)),
 		))
 	}
 
@@ -318,9 +318,9 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 
 	var itemButton *gtk.Button
 	if isFolder {
-		itemButton = this.createOpenFolderButton(fileInformation)
+		itemButton = this.createOpenFolderButton(fileResponse)
 	} else {
-		itemButton = this.createLoadAndPrintButton("print.svg", fileInformation)
+		itemButton = this.createLoadAndPrintButton("print.svg", fileResponse)
 	}
 
 	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -346,8 +346,8 @@ func (this *filesPanel) addItem(fileInformation *octoprint.FileInformation, inde
 
 
 	if !isFolder {
-		if fileInformation.Thumbnail != "" {
-			thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileInformation.Thumbnail)
+		if fileResponse.Thumbnail != "" {
+			thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileResponse.Thumbnail)
 			utils.Logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
 
 			previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
@@ -411,10 +411,10 @@ func (this *filesPanel) createOpenLocationButton(location octoprint.Location) *g
 	return button
 }
 
-func (this *filesPanel) createOpenFolderButton(fileInformation *octoprint.FileInformation) *gtk.Button {
+func (this *filesPanel) createOpenFolderButton(fileResponse *octoprint.FileResponse) *gtk.Button {
 	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
 	button := utils.MustButton(image, func() {
-		this.locationHistory.GoForward(fileInformation.Name)
+		this.locationHistory.GoForward(fileResponse.Name)
 		this.doLoadFiles()
 	})
 
@@ -425,16 +425,16 @@ func (this *filesPanel) createOpenFolderButton(fileInformation *octoprint.FileIn
 	return button
 }
 
-func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileInformation *octoprint.FileInformation) *gtk.Button {
+func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileResponse *octoprint.FileResponse) *gtk.Button {
 	button := utils.MustButton(
 		utils.MustImageFromFileWithSize(imageFileName, this.Scaled(40), this.Scaled(40)),
 		utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
 			selectFileRequest := &octoprint.SelectFileRequest{}
 			selectFileRequest.Location = octoprint.Local
-			selectFileRequest.Path = fileInformation.Path
+			selectFileRequest.Path = fileResponse.Path
 			selectFileRequest.Print = true
 
-			utils.Logger.Infof("Loading file %q", fileInformation.Name)
+			utils.Logger.Infof("Loading file %q", fileResponse.Name)
 			if err := selectFileRequest.Do(this.UI.Client); err != nil {
 				utils.LogError("files.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return

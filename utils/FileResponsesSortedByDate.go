@@ -9,16 +9,16 @@ import (
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
 
-type FileInformationsByDate []*octoprint.FileInformation
+type FileResponsesSortedByDate []*octoprint.FileResponse
 
-func (this FileInformationsByDate) Len() int {
+func (this FileResponsesSortedByDate) Len() int {
 	 return len(this)
 }
 
-func (this FileInformationsByDate) Swap(i, j int) {
+func (this FileResponsesSortedByDate) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
 }
 
-func (this FileInformationsByDate) Less(i, j int) bool {
+func (this FileResponsesSortedByDate) Less(i, j int) bool {
 	return this[j].Date.Time.Before(this[i].Date.Time)
 }

@@ -33,9 +33,9 @@ type FileRequest struct {
 	Recursive bool
 }
 
-// FileInformation contains information regarding a file.
+// FileResponse contains information regarding a file.
 // https://docs.octoprint.org/en/master/api/datamodel.html#file-information
-type FileInformation struct {
+type FileResponse struct {
 	// Name is name of the file without path. E.g. “file.gco” for a file
 	// “file.gco” located anywhere in the file system.
 	Name string `json:"name"`
@@ -105,8 +105,8 @@ type FileInformation struct {
 }
 
 // IsFolder it returns true if the file is a folder.
-func (f *FileInformation) IsFolder() bool {
-	if len(f.TypePath) == 1 && f.TypePath[0] == "folder" {
+func (response *FileResponse) IsFolder() bool {
+	if len(response.TypePath) == 1 && response.TypePath[0] == "folder" {
 		return true
 	}
 
@@ -114,20 +114,23 @@ func (f *FileInformation) IsFolder() bool {
 }
 
 // Do sends an API request and returns the API response
-func (cmd *FileRequest) Do(c *Client) (*FileInformation, error) {
-	uri := fmt.Sprintf("%s/%s/%s?recursive=%t", URIFiles,
-		cmd.Location, cmd.Filename, cmd.Recursive,
+func (request *FileRequest) Do(c *Client) (*FileResponse, error) {
+	uri := fmt.Sprintf("%s/%s/%s?recursive=%t",
+		URIFiles,
+		request.Location,
+		request.Filename,
+		request.Recursive,
 	)
 
-	b, err := c.doJSONRequest("GET", uri, nil, FilesLocationGETErrors)
+	bytes, err := c.doJSONRequest("GET", uri, nil, FilesLocationGETErrors)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &FileInformation{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &FileResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

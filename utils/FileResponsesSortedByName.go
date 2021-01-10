@@ -10,16 +10,16 @@ import (
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
 
-type FileInformationsByName []*octoprint.FileInformation
+type FileResponsesSortedByName []*octoprint.FileResponse
 
-func (this FileInformationsByName) Len() int {
+func (this FileResponsesSortedByName) Len() int {
 	 return len(this)
 }
 
-func (this FileInformationsByName) Swap(i, j int) {
+func (this FileResponsesSortedByName) Swap(i, j int) {
 	this[i], this[j] = this[j], this[i]
 }
 
-func (this FileInformationsByName) Less(i, j int) bool {
+func (this FileResponsesSortedByName) Less(i, j int) bool {
 	return this[j].Name > this[i].Name
 }

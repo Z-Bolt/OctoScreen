@@ -33,7 +33,7 @@ type JobResponse struct {
 // JobInformation contains information regarding the target of the current job.
 type JobInformation struct {
 	// File is the file that is the target of the current print job.
-	File FileInformation `json:"file"`
+	File FileResponse `json:"file"`
 
 	// EstimatedPrintTime is the estimated print time for the file, in seconds.
 	EstimatedPrintTime float64 `json:"estimatedPrintTime"`
@@ -272,8 +272,8 @@ type Profile struct {
 type FilesResponse struct {
 	// Files is the list of requested files. Might be an empty list if no files
 	// are available
-	Files    []*FileInformation
-	Children []*FileInformation
+	Files    []*FileResponse
+	Children []*FileResponse
 
 	// Free is the amount of disk space in bytes available in the local disk
 	// space (refers to OctoPrint’s `uploads` folder). Only returned if file
@@ -281,7 +281,7 @@ type FilesResponse struct {
 	Free uint64
 }
 
-// FileInformation is now in FileRequest.go
+// FileInformation/FileResponse is now in FileRequest.go
 // TODO: remove this commented code
 // FileInformation contains information regarding a file.
 // type FileInformation struct {
@@ -397,11 +397,11 @@ type UploadFileResponse struct {
 	File struct {
 		// Local is the information regarding the file that was just uploaded
 		// to the local storage.
-		Local *FileInformation `json:"local"`
+		Local *FileResponse `json:"local"`
 
 		// SDCard is the information regarding the file that was just uploaded
 		// to the printer’s SD card.
-		SDCard *FileInformation `json:"sdcard"`
+		SDCard *FileResponse `json:"sdcard"`
 	} `json:"files"`
 
 	// Done whether any file processing after upload has already finished or
