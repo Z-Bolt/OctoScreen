@@ -401,13 +401,16 @@ func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileRespo
 		utils.MustImageFromFileWithSize(imageFileName, this.Scaled(40), this.Scaled(40)),
 		utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
 			selectFileRequest := &octoprint.SelectFileRequest{}
-			selectFileRequest.Location = octoprint.Local
+
+			// Set the location to "local" or "sdcard"
+			selectFileRequest.Location = this.locationHistory.Locations[0]
+
 			selectFileRequest.Path = fileResponse.Path
 			selectFileRequest.Print = true
 
 			utils.Logger.Infof("Loading file %q", fileResponse.Name)
 			if err := selectFileRequest.Do(this.UI.Client); err != nil {
-				utils.LogError("files.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
+				utils.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return
 			}
 		}),
