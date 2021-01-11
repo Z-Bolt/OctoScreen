@@ -113,9 +113,11 @@ func dumpObfuscatedEnvironmentVariable(key string) {
 	value := os.Getenv(key)
 	if value == "" {
 		value = ">>MISSING<<"
+	} else {
+		value = GetObfuscatedValue(value)
 	}
 
-	Logger.Infof("key: %q, value: %q", key, GetObfuscatedValue(value))
+	Logger.Infof("key: %q, value: %q", key, value)
 }
 
 func GetObfuscatedValue(value string) string {
