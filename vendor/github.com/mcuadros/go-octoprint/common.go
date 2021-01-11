@@ -17,107 +17,118 @@ const (
 	ZAxis Axis = "z"
 )
 
+// JobResponse is now in JobRequest.go
+// // JobResponse is the response from a job command.
+// type JobResponse struct {
+// 	// Job contains information regarding the target of the current print job.
+// 	Job JobInformation `json:"job"`
 
-// JobResponse is the response from a job command.
-type JobResponse struct {
-	// Job contains information regarding the target of the current print job.
-	Job JobInformation `json:"job"`
+// 	// Progress contains information regarding the progress of the current job.
+// 	Progress ProgressInformation `json:"progress"`
 
-	// Progress contains information regarding the progress of the current job.
-	Progress ProgressInformation `json:"progress"`
+// 	//State StateInformation `json:"state"`
+// 	State string `json:"state"`
+// }
 
-	//State StateInformation `json:"state"`
-	State string `json:"state"`
-}
 
-// JobInformation contains information regarding the target of the current job.
-type JobInformation struct {
-	// File is the file that is the target of the current print job.
-	File FileResponse `json:"file"`
 
-	// EstimatedPrintTime is the estimated print time for the file, in seconds.
-	EstimatedPrintTime float64 `json:"estimatedPrintTime"`
+// JobInformation i no in JobInformation.go
+// // JobInformation contains information regarding the target of the current job.
+// type JobInformation struct {
+// 	// File is the file that is the target of the current print job.
+// 	File FileResponse `json:"file"`
 
-	// LastPrintTime is the print time of the last print of the file, in seconds.
-	LastPrintTime float64 `json:"lastPrintTime"`
+// 	// EstimatedPrintTime is the estimated print time for the file, in seconds.
+// 	EstimatedPrintTime float64 `json:"estimatedPrintTime"`
 
-	// Filament contains Information regarding the estimated filament
-	// usage of the print job.
-	Filament struct {
-		// Length of filament used, in mm
-		Length float64 `json:"length"`
-		// Volume of filament used, in cm³
-		Volume float64 `json:"volume"`
-	} `json:"filament"`
+// 	// LastPrintTime is the print time of the last print of the file, in seconds.
+// 	LastPrintTime float64 `json:"lastPrintTime"`
 
-	FilePosition uint64 `json:"filepos"`
-}
+// 	// Filament contains Information regarding the estimated filament
+// 	// usage of the print job.
+// 	Filament struct {
+// 		// Length of filament used, in mm
+// 		Length float64 `json:"length"`
+// 		// Volume of filament used, in cm³
+// 		Volume float64 `json:"volume"`
+// 	} `json:"filament"`
 
+// 	FilePosition uint64 `json:"filepos"`
+// }
+
+
+
+// ProgressInformation is now in ProgressInformation.go
 // ProgressInformation contains information regarding the progress of the
 // current print job.
-type ProgressInformation struct {
-	// Completion percentage of completion of the current print job.
-	Completion float64 `json:"completion"`
+// type ProgressInformation struct {
+// 	// Completion percentage of completion of the current print job.
+// 	Completion float64 `json:"completion"`
 
-	// FilePosition current position in the file being printed, in bytes
-	// from the beginning.
-	FilePosition uint64 `json:"filepos"`
+// 	// FilePosition current position in the file being printed, in bytes
+// 	// from the beginning.
+// 	FilePosition uint64 `json:"filepos"`
 
-	// PrintTime is time already spent printing, in seconds
-	PrintTime float64 `json:"printTime"`
+// 	// PrintTime is time already spent printing, in seconds
+// 	PrintTime float64 `json:"printTime"`
 
-	// PrintTimeLeft is estimate of time left to print, in seconds
-	PrintTimeLeft float64 `json:"printTimeLeft"`
+// 	// PrintTimeLeft is estimate of time left to print, in seconds
+// 	PrintTimeLeft float64 `json:"printTimeLeft"`
 
-	// Origin of the current time left estimate
-	PrintTimeLeftOrigin string `json:"printTimeLeftOrigin"`
-}
+// 	// Origin of the current time left estimate
+// 	PrintTimeLeftOrigin string `json:"printTimeLeftOrigin"`
+// }
 
-// TemperatureState is the printer’s temperature state data.
-type TemperatureStateResponse temperatureStateResponse
 
-type temperatureStateResponse struct {
-	// Current temperature stats.
-	CurrentTemperatureData map[string]TemperatureData `json:"current"`
 
-	// Temperature history.
-	History []*HistoricTemperatureData `json:"history"`
-}
 
-func (r *TemperatureStateResponse) UnmarshalJSON(b []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(b, &raw); err != nil {
-		return err
-	}
+// TemperatureStateResponse is now in TemperatureStateResponse.go
+// // TemperatureState is the printer’s temperature state data.
+// type TemperatureStateResponse temperatureStateResponse
 
-	history := raw["history"]
-	delete(raw, "history")
-	b, _ = json.Marshal(map[string]interface{}{
-		"current": raw,
-		"history": history,
-	})
+// type temperatureStateResponse struct {
+// 	// Current temperature stats.
+// 	CurrentTemperatureData map[string]TemperatureData `json:"current"`
 
-	i := &temperatureStateResponse{}
-	if err := json.Unmarshal(b, i); err != nil {
-		return err
-	}
+// 	// Temperature history.
+// 	History []*HistoricTemperatureData `json:"history"`
+// }
 
-	*r = TemperatureStateResponse(*i)
-	return nil
-}
+// func (r *TemperatureStateResponse) UnmarshalJSON(b []byte) error {
+// 	var raw map[string]interface{}
+// 	if err := json.Unmarshal(b, &raw); err != nil {
+// 		return err
+// 	}
 
-// TemperatureData is temperature stats for a tool.
-type TemperatureData struct {
-	// Actual current temperature.
-	Actual float64 `json:"actual"`
+// 	history := raw["history"]
+// 	delete(raw, "history")
+// 	b, _ = json.Marshal(map[string]interface{}{
+// 		"current": raw,
+// 		"history": history,
+// 	})
 
-	// Target temperature, may be nil if no target temperature is set.
-	Target float64 `json:"target"`
+// 	i := &temperatureStateResponse{}
+// 	if err := json.Unmarshal(b, i); err != nil {
+// 		return err
+// 	}
 
-	// Offset currently configured temperature offset to apply, will be left
-	// out for historic temperature information.
-	Offset float64 `json:"offset"`
-}
+// 	*r = TemperatureStateResponse(*i)
+// 	return nil
+// }
+
+// TemperatureData is now in TemperatureData.go
+// // TemperatureData is temperature stats for a tool.
+// type TemperatureData struct {
+// 	// Actual current temperature.
+// 	Actual float64 `json:"actual"`
+
+// 	// Target temperature, may be nil if no target temperature is set.
+// 	Target float64 `json:"target"`
+
+// 	// Offset currently configured temperature offset to apply, will be left
+// 	// out for historic temperature information.
+// 	Offset float64 `json:"offset"`
+// }
 
 // PrinterState current state of the printer.
 type PrinterState struct {

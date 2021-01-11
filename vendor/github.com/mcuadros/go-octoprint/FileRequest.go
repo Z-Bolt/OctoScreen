@@ -113,6 +113,8 @@ func (response *FileResponse) IsFolder() bool {
 	return false
 }
 
+const URIFiles = "/api/files"
+
 // Do sends an API request and returns the API response
 func (request *FileRequest) Do(c *Client) (*FileResponse, error) {
 	uri := fmt.Sprintf("%s/%s/%s?recursive=%t",
