@@ -8,7 +8,7 @@ import (
 )
 
 
-var JobToolErrors = statusMapping{
+var JobToolErrors = StatusMapping{
 	409: "Printer is not operational or the current print job state does not match the preconditions for the command.",
 }
 
