@@ -5,7 +5,7 @@ import (
 	// "sync"
 	"time"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -41,7 +41,7 @@ func (this *idleStatusPanel) initialize() {
 
 	utils.Logger.Info(this.UI.Settings)
 
-	var menuItems []octoprint.MenuItem
+	var menuItems []octoprintApis.MenuItem
 	if this.UI.Settings == nil || this.UI.Settings.MenuStructure == nil || len(this.UI.Settings.MenuStructure) < 1 {
 		utils.Logger.Info("Loading default menu")
 		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)
@@ -118,7 +118,7 @@ func (this *idleStatusPanel) showTools() {
 func (this *idleStatusPanel) updateTemperature() {
 	utils.Logger.Debug("entering IdleStatusPanel.updateTemperature()")
 
-	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
+	fullStateResponse, err := (&octoprintApis.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("IdleStatusPanel.updateTemperature()", "Do(StateRequest)", err)
 

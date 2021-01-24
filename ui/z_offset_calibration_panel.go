@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -114,7 +114,7 @@ func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
 		time.Sleep(time.Second * 1)
 		this.command(fmt.Sprintf("G0 X%f Y%f F10000", this.cPoint.x, this.cPoint.y))
 
-		cmd := &octoprint.GetZOffsetRequest{Tool: this.activeTool}
+		cmd := &octoprintApis.GetZOffsetRequest{Tool: this.activeTool}
 		response, err := cmd.Do(this.UI.Client)
 		if err != nil {
 			utils.LogError("z_offset_calibration.setToolheadButtonClickHandler()", "Do(GetZOffsetRequest)", err)
@@ -214,7 +214,7 @@ func (this *zOffsetCalibrationPanel) CreateAutoZCalibrationButton() gtk.IWidget 
 
 		// BUG: This does not work.  At least not on a Prusa i3.  Need to get this working with all printers.
 		// when RunZOffsetCalibrationRequest is called, it's returning a 404.
-		cmd := &octoprint.RunZOffsetCalibrationRequest{}
+		cmd := &octoprintApis.RunZOffsetCalibrationRequest{}
 		if err := cmd.Do(this.UI.Client); err != nil {
 			utils.LogError("z_offset_calibration.createAutoZCalibrationButton()", "Do(RunZOffsetCalibrationRequest)", err)
 		}
@@ -228,7 +228,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 
 	this.zOffsetLabel.SetText(fmt.Sprintf("Z-Offset: %.2f", this.zOffset))
 
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	cmd.Commands = []string {
 		fmt.Sprintf("SET_GCODE_OFFSET Z=%f", this.zOffset),
 		"G0 Z0 F100",
@@ -237,7 +237,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 		utils.LogError("z_offset_calibration.updateZOffset()", "Do(CommandRequest)", err)
 	}
 
-	cmd2 := &octoprint.SetZOffsetRequest {
+	cmd2 := &octoprintApis.SetZOffsetRequest {
 		Value: this.zOffset,
 		Tool: this.activeTool,
 	}
@@ -248,7 +248,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 
 
 func (this *zOffsetCalibrationPanel) command(gcode string) error {
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	cmd.Commands = []string{gcode}
 
 	return cmd.Do(this.UI.Client)

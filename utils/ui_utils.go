@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 )
 
 
@@ -144,7 +144,7 @@ func messageDialogBox(parentWindow *gtk.Window, messageType gtk.MessageType, mes
 	dialogBox.Run()
 }
 
-func HotendTemperatureIsTooLow(temperatureData octoprint.TemperatureData, action string, parentWindow *gtk.Window) bool {
+func HotendTemperatureIsTooLow(temperatureData octoprintApis.TemperatureData, action string, parentWindow *gtk.Window) bool {
 	targetTemperature := temperatureData.Target
 	Logger.Infof("filament.hotendTemperatureIsTooLow() - targetTemperature is %.2f", targetTemperature)
 

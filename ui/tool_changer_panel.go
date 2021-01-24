@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -55,7 +55,7 @@ func (this *toolChangerPanel) createZCalibrationButton() gtk.IWidget {
 
 func (this *toolChangerPanel) createMagnetOnButton() gtk.IWidget {
 	return utils.MustButtonImageStyle("Magnet On", "magnet-on.svg", "", func() {
-		cmd := &octoprint.CommandRequest{}
+		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=1"}
 
 		utils.Logger.Info("Turn on magnet")
@@ -68,7 +68,7 @@ func (this *toolChangerPanel) createMagnetOnButton() gtk.IWidget {
 
 func (this *toolChangerPanel) createMagnetOffButton() gtk.IWidget {
 	return utils.MustButtonImageStyle("Magnet Off", "magnet-off.svg", "", func() {
-		cmd := &octoprint.CommandRequest{}
+		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=0"}
 
 		utils.Logger.Info("Turn off magnet")

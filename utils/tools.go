@@ -6,23 +6,23 @@ import (
 	"strconv"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 )
 
 var cachedToolheadCount = -1
 
-func GetToolheadCount(client *octoprint.Client) int {
+func GetToolheadCount(client *octoprintApis.Client) int {
 	if cachedToolheadCount != -1 {
 		return cachedToolheadCount
 	}
 
-	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(client)
+	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(client)
 	if err != nil {
 		LogError("toolhaad.GetToolheadCount()", "Do(ConnectionRequest)", err)
 		return 0
 	}
 
-	printerProfile, err := (&octoprint.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(client)
+	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(client)
 	if err != nil {
 		LogError("toolhaad.GetToolheadCount()", "Do(PrinterProfilesRequest)", err)
 		return 0
@@ -72,11 +72,11 @@ func GetDisplayNameForTool(toolName string) string {
 }
 
 
-func GetToolTarget(client *octoprint.Client, tool string) (float64, error) {
+func GetToolTarget(client *octoprintApis.Client, tool string) (float64, error) {
 	Logger.Debug("entering Tools.GetToolTarget()")
 
 
-	fullStateRequest, err := (&octoprint.FullStateRequest{
+	fullStateRequest, err := (&octoprintApis.FullStateRequest{
 		Exclude: []string{"sd", "state"},
 	}).Do(client)
 
@@ -98,27 +98,27 @@ func GetToolTarget(client *octoprint.Client, tool string) (float64, error) {
 }
 
 
-func SetToolTarget(client *octoprint.Client, tool string, target float64) error {
+func SetToolTarget(client *octoprintApis.Client, tool string, target float64) error {
 	Logger.Debug("entering Tools.SetToolTarget()")
 
 	if tool == "bed" {
-		cmd := &octoprint.BedTargetRequest{Target: target}
+		cmd := &octoprintApis.BedTargetRequest{Target: target}
 
 		Logger.Debug("leaving Tools.SetToolTarget()")
 		return cmd.Do(client)
 	}
 
-	cmd := &octoprint.ToolTargetRequest{Targets: map[string]float64{tool: target}}
+	cmd := &octoprintApis.ToolTargetRequest{Targets: map[string]float64{tool: target}}
 
 	Logger.Debug("leaving Tools.SetToolTarget()")
 	return cmd.Do(client)
 }
 
 
-func GetCurrentTemperatureData(client *octoprint.Client) (map[string]octoprint.TemperatureData, error) {
+func GetCurrentTemperatureData(client *octoprintApis.Client) (map[string]octoprintApis.TemperatureData, error) {
 	Logger.Debug("entering Tools.GetCurrentTemperatureData()")
 
-	temperatureDataResponse, err := (&octoprint.TemperatureDataRequest{}).Do(client)
+	temperatureDataResponse, err := (&octoprintApis.TemperatureDataRequest{}).Do(client)
 	if err != nil {
 		LogError("tools.GetCurrentTemperatureData()", "Do(TemperatureDataRequest)", err)
 
@@ -147,7 +147,7 @@ func GetCurrentTemperatureData(client *octoprint.Client) (map[string]octoprint.T
 }
 
 
-func CurrentHotendTemperatureIsTooLow(client *octoprint.Client, extruderId, action string, parentWindow *gtk.Window) bool {
+func CurrentHotendTemperatureIsTooLow(client *octoprintApis.Client, extruderId, action string, parentWindow *gtk.Window) bool {
 	currentTemperatureData, err := GetCurrentTemperatureData(client)
 	if err != nil {
 		LogError("tools.CurrentHotendTemperatureIsTooLow()", "GetCurrentTemperatureData()", err)
@@ -198,6 +198,6 @@ func GetNozzleFileName(hotendIndex, hotendCount int) string {
 	return strImageFileName
 }
 
-func GetTemperatureDataString(temperatureData octoprint.TemperatureData) string {
+func GetTemperatureDataString(temperatureData octoprintApis.TemperatureData) string {
 	return fmt.Sprintf("%.0f°C / %.0f°C", temperatureData.Actual, temperatureData.Target)
 }

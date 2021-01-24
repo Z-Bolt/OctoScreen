@@ -5,12 +5,10 @@ import (
 	// "sort"
 	// "strings"
 
-	"github.com/mcuadros/go-octoprint"
-	// "github.com/mcuadros/go-octoprint/apis"
-	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 )
 
-type FileResponsesSortedByName []*octoprint.FileResponse
+type FileResponsesSortedByName []*octoprintApis.FileResponse
 
 func (this FileResponsesSortedByName) Len() int {
 	 return len(this)

@@ -2,7 +2,7 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -10,14 +10,14 @@ type FilamentLoadButton struct {
 	*gtk.Button
 
 	parentWindow				*gtk.Window
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	selectToolStepButton		*SelectToolStepButton
 	isForward					bool
 }
 
 func CreateFilamentLoadButton(
 	parentWindow				*gtk.Window,
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	selectToolStepButton		*SelectToolStepButton,
 	isForward					bool,
 ) *FilamentLoadButton {
@@ -61,7 +61,7 @@ func (this *FilamentLoadButton) sendLoadCommand() {
 	}
 
 	// BUG: This does not work.  At least not on a Prusa i3.  Need to get this working with all printers.
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	if this.isForward {
 		cmd.Commands = []string{"G91", "G0 E600 F5000", "G0 E120 F500", "G90"}
 	} else {

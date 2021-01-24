@@ -2,21 +2,21 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type TemperatureIncreaseButton struct {
 	*gtk.Button
 
-	client							*octoprint.Client
+	client							*octoprintApis.Client
 	temperatureAmountStepButton		*TemperatureAmountStepButton
 	selectToolStepButton			*SelectToolStepButton
 	isIncrease						bool
 }
 
 func CreateTemperatureIncreaseButton(
-	client							*octoprint.Client,
+	client							*octoprintApis.Client,
 	temperatureAmountStepButton		*TemperatureAmountStepButton,
 	selectToolStepButton			*SelectToolStepButton,
 	isIncrease						bool,

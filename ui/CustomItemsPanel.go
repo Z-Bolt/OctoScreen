@@ -1,20 +1,20 @@
 package ui
 
 import (
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
 
 type customItemsPanel struct {
 	CommonPanel
-	items			[]octoprint.MenuItem
+	items			[]octoprintApis.MenuItem
 }
 
 func CustomItemsPanel(
 	ui				*UI,
 	parentPanel		interfaces.IPanel,
-	items			[]octoprint.MenuItem,
+	items			[]octoprintApis.MenuItem,
 ) *customItemsPanel {
 	instance := &customItemsPanel {
 		CommonPanel: NewCommonPanel(ui, parentPanel),

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -14,7 +14,7 @@ type SelectToolStepButton struct {
 }
 
 func CreateSelectToolStepButton(
-	client							*octoprint.Client,
+	client							*octoprintApis.Client,
 	includeBed						bool,
 ) *SelectToolStepButton {
 	toolheadCount := utils.GetToolheadCount(client)

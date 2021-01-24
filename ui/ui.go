@@ -10,9 +10,8 @@ import (
 	"github.com/golang-collections/collections/stack"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
-
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -21,9 +20,9 @@ type UI struct {
 	sync.Mutex
 
 	PanelHistory				*stack.Stack
-	Client						*octoprint.Client
-	ConnectionState				octoprint.ConnectionState
-	Settings					*octoprint.GetSettingsResponse
+	Client						*octoprintApis.Client
+	ConnectionState				octoprintApis.ConnectionState
+	Settings					*octoprintApis.GetSettingsResponse
 
 	UIState						string
 
@@ -53,7 +52,7 @@ func New(endpoint, key string, width, height int) *UI {
 
 	instance := &UI{
 		PanelHistory:				stack.New(),
-		Client:						octoprint.NewClient(endpoint, key),
+		Client:						octoprintApis.NewClient(endpoint, key),
 		NotificationsBox:			uiWidgets.NewNotificationsBox(),
 		OctoPrintPluginIsAvailable:	true,
 		Settings:					nil,
@@ -156,7 +155,7 @@ func (this *UI) verifyConnection() {
 	newUIState := "<<uninitialized-state>>"
 	splashMessage := "<<uninitialized-message>>"
 
-	connectionResponse, err := (&octoprint.ConnectionRequest{}).Do(this.Client)
+	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.Client)
 	if err == nil {
 		this.ConnectionState = connectionResponse.Current.State
 		strCurrentState := string(connectionResponse.Current.State)
@@ -174,7 +173,7 @@ func (this *UI) verifyConnection() {
 				fallthrough
 			case connectionResponse.Current.State.IsOffline():
 				newUIState = "splash"
-				if err := (&octoprint.ConnectRequest{}).Do(this.Client); err != nil {
+				if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
 					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
 					splashMessage = "Loading..."
 				} else {
@@ -270,7 +269,7 @@ func (this *UI) checkNotification() {
 		return
 	}
 
-	notificationRespone, err := (&octoprint.GetNotificationRequest{}).Do(this.Client)
+	notificationRespone, err := (&octoprintApis.GetNotificationRequest{}).Do(this.Client)
 	if err != nil {
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
 		utils.Logger.Debug("leaving ui.checkNotification()")
@@ -287,7 +286,7 @@ func (this *UI) checkNotification() {
 func (this *UI) loadSettings() {
 	utils.Logger.Debug("entering ui.loadSettings()")
 
-	settingsResponse, err := (&octoprint.GetSettingsRequest{}).Do(this.Client)
+	settingsResponse, err := (&octoprintApis.GetSettingsRequest{}).Do(this.Client)
 	if err != nil {
 		text := err.Error()
 		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
@@ -316,7 +315,7 @@ func (this *UI) loadSettings() {
 	utils.Logger.Debug("leaving ui.loadSettings()")
 }
 
-func (this *UI) validateMenuItems(menuItems []octoprint.MenuItem, name string, isRoot bool) bool {
+func (this *UI) validateMenuItems(menuItems []octoprintApis.MenuItem, name string, isRoot bool) bool {
 	if menuItems == nil {
 		return true
 	}
@@ -381,7 +380,7 @@ func (this *UI) update() {
 		this.loadSettings()
 
 		if this.Settings == nil {
-			this.Settings = &octoprint.GetSettingsResponse {
+			this.Settings = &octoprintApis.GetSettingsResponse {
 				FilamentInLength: 750.0,
 				FilamentOutLength: 800.0,
 				ToolChanger: false,

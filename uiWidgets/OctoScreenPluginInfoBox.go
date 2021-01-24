@@ -3,7 +3,7 @@ package uiWidgets
 import (
 	// "fmt"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -12,7 +12,7 @@ type OctoScreenPluginInfoBox struct {
 }
 
 func CreateOctoScreenPluginInfoBox(
-	client							*octoprint.Client,
+	client							*octoprintApis.Client,
 	octoPrintPluginIsInstalled		bool,
 ) *OctoScreenPluginInfoBox {
 	logoImage := utils.MustImageFromFile("logos/puzzle-piece.png")
@@ -20,7 +20,7 @@ func CreateOctoScreenPluginInfoBox(
 
 	str2 := ""
 	if octoPrintPluginIsInstalled {
-		getPluginManagerInfoResponse, err := (&octoprint.GetPluginManagerInfoRequest{}).Do(client)
+		getPluginManagerInfoResponse, err := (&octoprintApis.GetPluginManagerInfoRequest{}).Do(client)
 		if err != nil {
 			panic(err)
 		}

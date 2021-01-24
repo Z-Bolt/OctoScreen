@@ -6,7 +6,6 @@ import (
 	// "time"
 
 	"github.com/gotk3/gotk3/gtk"
-	// "github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"

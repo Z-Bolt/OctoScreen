@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	// "github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -51,8 +51,8 @@ func (this *controlPanel) initialize() {
 	}
 }
 
-func (this *controlPanel) getDefaultControls() []*octoprint.ControlDefinition {
-	var controlDefinitions = []*octoprint.ControlDefinition{{
+func (this *controlPanel) getDefaultControls() []*octoprintApis.ControlDefinition {
+	var controlDefinitions = []*octoprintApis.ControlDefinition{{
 		Name:    "Motor Off",
 		Command: "M18",			// Disable all stepper motors immediately
 	}, {
@@ -69,11 +69,11 @@ func (this *controlPanel) getDefaultControls() []*octoprint.ControlDefinition {
 	return controlDefinitions
 }
 
-func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
-	controlDefinitions := []*octoprint.ControlDefinition{}
+func (this *controlPanel) getCustomControls() []*octoprintApis.ControlDefinition {
+	controlDefinitions := []*octoprintApis.ControlDefinition{}
 
 	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
-	response, err := (&octoprint.CustomCommandsRequest{}).Do(this.UI.Client)
+	response, err := (&octoprintApis.CustomCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
 		return controlDefinitions
@@ -90,9 +90,9 @@ func (this *controlPanel) getCustomControls() []*octoprint.ControlDefinition {
 	return controlDefinitions
 }
 
-func (this *controlPanel) getCommands() []*octoprint.CommandDefinition {
+func (this *controlPanel) getCommands() []*octoprintApis.CommandDefinition {
 	utils.Logger.Info("Retrieving custom commands")
-	response, err := (&octoprint.SystemCommandsRequest{}).Do(this.UI.Client)
+	response, err := (&octoprintApis.SystemCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
 		return nil

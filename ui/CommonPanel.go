@@ -9,8 +9,8 @@ import (
 
 	// "github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -106,7 +106,7 @@ func (this *CommonPanel) Scaled(s int) int {
 
 func (this *CommonPanel) arrangeMenuItems(
 	grid			*gtk.Grid,
-	items			[]octoprint.MenuItem,
+	items			[]octoprintApis.MenuItem,
 	cols			int,
 ) {
 	for i, item := range items {
@@ -123,7 +123,7 @@ func (this *CommonPanel) arrangeMenuItems(
 }
 
 func (this *CommonPanel) command(gcode string) error {
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	cmd.Commands = []string{gcode}
 	return cmd.Do(this.UI.Client)
 }

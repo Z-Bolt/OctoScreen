@@ -2,18 +2,18 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type HomeAllButton struct {
 	*gtk.Button
 
-	client				*octoprint.Client
+	client				*octoprintApis.Client
 }
 
 func CreateHomeAllButton(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 ) *HomeAllButton {
 	base := utils.MustButtonImageStyle("Home All", "home.svg", "", nil)
 
@@ -33,12 +33,12 @@ func (this *HomeAllButton) handleClicked() {
 	utils.Logger.Infof("Homing the print head")
 
 	// Version A:
-	axes := []octoprint.Axis {
-		octoprint.XAxis,
-		octoprint.YAxis,
-		octoprint.ZAxis,
+	axes := []octoprintApis.Axis {
+		octoprintApis.XAxis,
+		octoprintApis.YAxis,
+		octoprintApis.ZAxis,
 	}
-	cmd := &octoprint.PrintHeadHomeRequest{Axes: axes}
+	cmd := &octoprintApis.PrintHeadHomeRequest{Axes: axes}
 	err := cmd.Do(this.client);
 	if err != nil {
 		utils.LogError("HomeAllButton.handleClicked()", "Do(PrintHeadHomeRequest)", err)
@@ -47,7 +47,7 @@ func (this *HomeAllButton) handleClicked() {
 
 	/*
 	// If there are issues with version A, there's also version B:
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	cmd.Commands = []string{
 		"G28 Z",
 		"G28 X",

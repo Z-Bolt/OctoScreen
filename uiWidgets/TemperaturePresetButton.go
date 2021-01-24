@@ -2,25 +2,25 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type TemperaturePresetButton struct {
 	*gtk.Button
 
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	selectToolStepButton		*SelectToolStepButton
 	imageFileName				string
-	temperaturePreset			*octoprint.TemperaturePreset
+	temperaturePreset			*octoprintApis.TemperaturePreset
 	callback					func()
 }
 
 func CreateTemperaturePresetButton(
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	selectToolStepButton		*SelectToolStepButton,
 	imageFileName				string,
-	temperaturePreset			*octoprint.TemperaturePreset,
+	temperaturePreset			*octoprintApis.TemperaturePreset,
 	callback					func(),
 ) *TemperaturePresetButton {
 	presetName := utils.StrEllipsisLen(temperaturePreset.Name, 10)
@@ -66,7 +66,7 @@ func (this *TemperaturePresetButton) handleClicked() {
 	*/
 
 	// Set the bed's temp.
-	bedTargetRequest := &octoprint.BedTargetRequest{Target: this.temperaturePreset.Bed}
+	bedTargetRequest := &octoprintApis.BedTargetRequest{Target: this.temperaturePreset.Bed}
 	err := bedTargetRequest.Do(this.client)
 	if err != nil {
 		utils.LogError("TemperaturePresetButton.handleClicked()", "Do(BedTargetRequest)", err)
@@ -74,12 +74,12 @@ func (this *TemperaturePresetButton) handleClicked() {
 	}
 
 	// Set the hotend's temp.
-	var toolTargetRequest *octoprint.ToolTargetRequest
+	var toolTargetRequest *octoprintApis.ToolTargetRequest
 	if currentTool == "bed" {
 		// If current tool is set to "bed", use tool0.
-		toolTargetRequest = &octoprint.ToolTargetRequest{Targets: map[string]float64{"tool0": this.temperaturePreset.Extruder}}
+		toolTargetRequest = &octoprintApis.ToolTargetRequest{Targets: map[string]float64{"tool0": this.temperaturePreset.Extruder}}
 	} else {
-		toolTargetRequest = &octoprint.ToolTargetRequest{Targets: map[string]float64{currentTool: this.temperaturePreset.Extruder}}
+		toolTargetRequest = &octoprintApis.ToolTargetRequest{Targets: map[string]float64{currentTool: this.temperaturePreset.Extruder}}
 	}
 
 	err = toolTargetRequest.Do(this.client)

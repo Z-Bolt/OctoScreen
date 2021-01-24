@@ -4,12 +4,10 @@ import (
 	// "fmt"
 	// "sort"
 
-	"github.com/mcuadros/go-octoprint"
-	// "github.com/mcuadros/go-octoprint/apis"
-	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 )
 
-type FileResponsesSortedByDate []*octoprint.FileResponse
+type FileResponsesSortedByDate []*octoprintApis.FileResponse
 
 func (this FileResponsesSortedByDate) Len() int {
 	 return len(this)

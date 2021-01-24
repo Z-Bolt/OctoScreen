@@ -2,22 +2,22 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type HomeButton struct {
 	*gtk.Button
 
-	client				*octoprint.Client
-	axes				[]octoprint.Axis
+	client				*octoprintApis.Client
+	axes				[]octoprintApis.Axis
 }
 
 func CreateHomeButton(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	buttonLabel			string,
 	imageFileName		string,
-	axes				...octoprint.Axis,
+	axes				...octoprintApis.Axis,
 ) *HomeButton {
 	base := utils.MustButtonImageStyle(buttonLabel, imageFileName, "", nil)
 
@@ -35,7 +35,7 @@ func CreateHomeButton(
 }
 
 func (this *HomeButton) handleClicked() {
-	cmd := &octoprint.PrintHeadHomeRequest{Axes: this.axes}
+	cmd := &octoprintApis.PrintHeadHomeRequest{Axes: this.axes}
 	utils.Logger.Infof("Homing the print head in %s axes", this.axes)
 	err := cmd.Do(this.client);
 	if err != nil {

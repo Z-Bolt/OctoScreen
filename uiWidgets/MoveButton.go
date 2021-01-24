@@ -2,25 +2,25 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type MoveButton struct {
 	*gtk.Button
 
-	client					*octoprint.Client
+	client					*octoprintApis.Client
 	amountToMoveStepButton	*AmountToMoveStepButton
-	axis					octoprint.Axis
+	axis					octoprintApis.Axis
 	direction				float64
 }
 
 func CreateMoveButton(
-	client					*octoprint.Client,
+	client					*octoprintApis.Client,
 	amountToMoveStepButton	*AmountToMoveStepButton,
 	label					string,
 	image					string,
-	axis					octoprint.Axis,
+	axis					octoprintApis.Axis,
 	direction				float64,
 ) *MoveButton {
 	// A little bit of a "chicken or the egg" situation here.  Create the
@@ -41,15 +41,15 @@ func CreateMoveButton(
 
 func (this *MoveButton) handlePressed() {
 	distance := this.amountToMoveStepButton.Value() * this.direction
-	cmd := &octoprint.PrintHeadJogRequest{}
+	cmd := &octoprintApis.PrintHeadJogRequest{}
 	switch this.axis {
-		case octoprint.XAxis:
+		case octoprintApis.XAxis:
 			cmd.X = distance
 
-		case octoprint.YAxis:
+		case octoprintApis.YAxis:
 			cmd.Y = distance
 
-		case octoprint.ZAxis:
+		case octoprintApis.ZAxis:
 			cmd.Z = distance
 	}
 

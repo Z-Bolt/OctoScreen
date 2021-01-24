@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -157,7 +157,7 @@ func (this *printStatusPanel) createPauseButton() gtk.IWidget {
 		defer this.updateTemperature()
 
 		utils.Logger.Info("Pausing/Resuming job")
-		cmd := &octoprint.PauseRequest{Action: octoprint.Toggle}
+		cmd := &octoprintApis.PauseRequest{Action: octoprintApis.Toggle}
 		err := cmd.Do(this.UI.Client)
 		utils.Logger.Info("Pausing/Resuming job 2, Do() was just called")
 
@@ -207,7 +207,7 @@ func (this *printStatusPanel) update() {
 func (this *printStatusPanel) updateTemperature() {
 	//Logger.Printf("Now in print_status.updateTemperature()")
 
-	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
+	fullStateResponse, err := (&octoprintApis.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("print_status.updateTemperature()", "Do(StateRequest)", err)
 		return
@@ -238,7 +238,7 @@ func (this *printStatusPanel) updateTemperature() {
 	//Logger.Printf("Now leaving print_status.updateTemperature()")
 }
 
-func (this *printStatusPanel) doUpdateState(printerState *octoprint.PrinterState) {
+func (this *printStatusPanel) doUpdateState(printerState *octoprintApis.PrinterState) {
 	switch {
 		case printerState.Flags.Printing:
 			this.pauseButton.SetSensitive(true)
@@ -298,7 +298,7 @@ func (this *printStatusPanel) doUpdateState(printerState *octoprint.PrinterState
 func (this *printStatusPanel) updateJob() {
 	//Logger.Printf("Now in print_status.updateJob()")
 
-	jobResponse, err := (&octoprint.JobRequest{}).Do(this.UI.Client)
+	jobResponse, err := (&octoprintApis.JobRequest{}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("print_status.updateJob()", "Do(JobRequest)", err)
 		return
@@ -308,11 +308,17 @@ func (this *printStatusPanel) updateJob() {
 	if jobResponse.Job.File.Name != "" {
 		jobFileName = jobResponse.Job.File.Name
 		jobFileName = strings.Replace(jobFileName, ".gcode", "", -1)
-		jobFileName = utils.StrEllipsisLen(jobFileName, 20)
+		jobFileName = utils.TruncateString(jobFileName, 20)
 	}
 
 	this.fileLabel.Label.SetLabel(jobFileName)
 	this.progressBar.SetFraction(jobResponse.Progress.Completion / 100)
+	// strProgress := fmd.Sprintf("%d%% L=%d/%d",
+	// 	jobResponse.Progress.Completion / 100,
+	// 	jobResponse.Progress,
+	// )
+	// this.progressBar.SetText(strProgress)
+
 
 	var timeSpent, timeLeft string
 	switch jobResponse.Progress.Completion {
@@ -367,7 +373,7 @@ func confirmStopDialogBox(
 		userResponse := dialogBox.Run()
 		if userResponse == int(gtk.RESPONSE_YES) {
 			utils.Logger.Warning("Stopping job")
-			if err := (&octoprint.CancelRequest{}).Do(printStatusPanel.UI.Client); err != nil {
+			if err := (&octoprintApis.CancelRequest{}).Do(printStatusPanel.UI.Client); err != nil {
 				utils.LogError("print_status.confirmStopDialogBox()", "Do(CancelRequest)", err)
 				return
 			}

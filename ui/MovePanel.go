@@ -1,11 +1,9 @@
 package ui
 
 import (
-	// "github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
-	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var movePanelInstance *movePanel
@@ -44,27 +42,27 @@ func (this *movePanel) initialize() {
 	}
 
 	if xAxisInverted {
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprint.XAxis,  1), 0, 1, 1, 1)
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprint.XAxis, -1), 2, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprintApis.XAxis,  1), 0, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprintApis.XAxis, -1), 2, 1, 1, 1)
 	} else {
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprint.XAxis, -1), 0, 1, 1, 1)
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprint.XAxis,  1), 2, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X-", "move-x-.svg", octoprintApis.XAxis, -1), 0, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "X+", "move-x+.svg", octoprintApis.XAxis,  1), 2, 1, 1, 1)
 	}
 
 	if yAxisInverted {
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprint.YAxis, -1), 1, 0, 1, 1)
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprint.YAxis,  1), 1, 2, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprintApis.YAxis, -1), 1, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprintApis.YAxis,  1), 1, 2, 1, 1)
 	} else {
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprint.YAxis,  1), 1, 0, 1, 1)
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprint.YAxis, -1), 1, 2, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y+", "move-y+.svg", octoprintApis.YAxis,  1), 1, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Y-", "move-y-.svg", octoprintApis.YAxis, -1), 1, 2, 1, 1)
 	}
 
 	if zAxisInverted {
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z+", "move-z+.svg", octoprint.ZAxis, -1), 3, 0, 1, 1)
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z-", "move-z-.svg", octoprint.ZAxis,  1), 3, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z+", "move-z+.svg", octoprintApis.ZAxis, -1), 3, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z-", "move-z-.svg", octoprintApis.ZAxis,  1), 3, 1, 1, 1)
 	} else {
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z+", "move-z+.svg", octoprint.ZAxis,  1), 3, 0, 1, 1)
-		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z-", "move-z-.svg", octoprint.ZAxis, -1), 3, 1, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z+", "move-z+.svg", octoprintApis.ZAxis,  1), 3, 0, 1, 1)
+		this.Grid().Attach(uiWidgets.CreateMoveButton(this.UI.Client, this.amountToMoveStepButton, "Z-", "move-z-.svg", octoprintApis.ZAxis, -1), 3, 1, 1, 1)
 	}
 
 	this.Grid().Attach(this.amountToMoveStepButton, 1, 1, 1, 1)

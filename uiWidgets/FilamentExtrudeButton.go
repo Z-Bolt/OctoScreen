@@ -2,7 +2,7 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -10,7 +10,7 @@ type FilamentExtrudeButton struct {
 	*gtk.Button
 
 	parentWindow				*gtk.Window
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	amountToExtrudeStepButton	*AmountToExtrudeStepButton
 	flowRateStepButton			*FlowRateStepButton // The flow rate step button is optional.
 	selectToolStepButton		*SelectToolStepButton
@@ -19,7 +19,7 @@ type FilamentExtrudeButton struct {
 
 func CreateFilamentExtrudeButton(
 	parentWindow				*gtk.Window,
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	amountToExtrudeStepButton	*AmountToExtrudeStepButton,
 	flowRateStepButton			*FlowRateStepButton, // The flow rate step button is optional.
 	selectToolStepButton		*SelectToolStepButton,
@@ -75,7 +75,7 @@ func (this *FilamentExtrudeButton) sendExtrudeCommand(amount int) {
 		return
 	}
 
-	cmd := &octoprint.ToolExtrudeRequest{}
+	cmd := &octoprintApis.ToolExtrudeRequest{}
 	if this.isForward {
 		cmd.Amount = amount
 	} else {

@@ -4,22 +4,22 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type ControlButton struct {
 	*gtk.Button
 
-	client				*octoprint.Client
+	client				*octoprintApis.Client
 	parentWindow		*gtk.Window
-	controlDefinition	*octoprint.ControlDefinition
+	controlDefinition	*octoprintApis.ControlDefinition
 }
 
 func CreateControlButton(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	parentWindow		*gtk.Window,
-	controlDefinition	*octoprint.ControlDefinition,
+	controlDefinition	*octoprintApis.ControlDefinition,
 	iconName			string,
 ) *ControlButton {
 	base := utils.MustButtonImage(utils.StrEllipsisLen(controlDefinition.Name, 16), iconName + ".svg", nil)
@@ -47,7 +47,7 @@ func (this *ControlButton) handleClicked() {
 }
 
 func (this *ControlButton) sendCommand() {
-	commandRequest := &octoprint.CommandRequest{
+	commandRequest := &octoprintApis.CommandRequest{
 		Commands: this.controlDefinition.Commands,
 	}
 

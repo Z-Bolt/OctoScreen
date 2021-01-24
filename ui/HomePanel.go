@@ -2,8 +2,8 @@ package ui
 
 import (
 	// "github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	// "github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -32,13 +32,13 @@ func HomePanel(
 func (this *homePanel) initialize() {
 	defer this.Initialize()
 
-	homeXButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home X", "home-x.svg", octoprint.XAxis)
+	homeXButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home X", "home-x.svg", octoprintApis.XAxis)
 	this.Grid().Attach(homeXButton, 2, 1, 1, 1)
 
-	homeYButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home Y", "home-y.svg", octoprint.YAxis)
+	homeYButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home Y", "home-y.svg", octoprintApis.YAxis)
 	this.Grid().Attach(homeYButton, 1, 0, 1, 1)
 
-	homeZButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home Z", "home-z.svg", octoprint.ZAxis)
+	homeZButton := uiWidgets.CreateHomeButton(this.UI.Client, "Home Z", "home-z.svg", octoprintApis.ZAxis)
 	this.Grid().Attach(homeZButton, 1, 1, 1, 1)
 
 	homeAllButton := uiWidgets.CreateHomeAllButton(this.UI.Client)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -12,12 +12,12 @@ import (
 type CoolDownButton struct {
 	*gtk.Button
 
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	callback					func()
 }
 
 func CreateCoolDownButton(
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	callback					func(),
 ) *CoolDownButton {
 	base := utils.MustButtonImage("All Off", "cool-down.svg", nil)
@@ -44,10 +44,10 @@ func (this *CoolDownButton) handleClicked() {
 }
 
 func TurnAllHeatersOff(
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 ) {
 	// Set the bed's temp.
-	bedTargetRequest := &octoprint.BedTargetRequest{Target: 0.0}
+	bedTargetRequest := &octoprintApis.BedTargetRequest{Target: 0.0}
 	err := bedTargetRequest.Do(client)
 	if err != nil {
 		utils.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
@@ -57,7 +57,7 @@ func TurnAllHeatersOff(
 	// Set the temp of each hotend.
 	toolheadCount := utils.GetToolheadCount(client)
 	for i := 0; i < toolheadCount; i++ {
-		var toolTargetRequest = &octoprint.ToolTargetRequest{Targets: map[string]float64{fmt.Sprintf("tool%d", i): 0.0}}
+		var toolTargetRequest = &octoprintApis.ToolTargetRequest{Targets: map[string]float64{fmt.Sprintf("tool%d", i): 0.0}}
 		err = toolTargetRequest.Do(client)
 		if err != nil {
 			utils.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
