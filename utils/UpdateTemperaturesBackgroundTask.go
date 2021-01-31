@@ -5,9 +5,11 @@ import (
 
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
-// TODO: convert this into a singleton class
+
+// TODO: convert this into a singleton
 
 var UpdateTemperaturesBackgroundTask *BackgroundTask = nil
 var temperatureDataDisplays []interfaces.ITemperatureDataDisplay

@@ -5,8 +5,9 @@ import (
 
 	// "github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
-	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -51,8 +52,8 @@ func (this *controlPanel) initialize() {
 	}
 }
 
-func (this *controlPanel) getDefaultControls() []*octoprintApis.ControlDefinition {
-	var controlDefinitions = []*octoprintApis.ControlDefinition{{
+func (this *controlPanel) getDefaultControls() []*dataModels.ControlDefinition {
+	var controlDefinitions = []*dataModels.ControlDefinition{{
 		Name:    "Motor Off",
 		Command: "M18",			// Disable all stepper motors immediately
 	}, {
@@ -69,8 +70,8 @@ func (this *controlPanel) getDefaultControls() []*octoprintApis.ControlDefinitio
 	return controlDefinitions
 }
 
-func (this *controlPanel) getCustomControls() []*octoprintApis.ControlDefinition {
-	controlDefinitions := []*octoprintApis.ControlDefinition{}
+func (this *controlPanel) getCustomControls() []*dataModels.ControlDefinition {
+	controlDefinitions := []*dataModels.ControlDefinition{}
 
 	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
 	response, err := (&octoprintApis.CustomCommandsRequest{}).Do(this.UI.Client)
@@ -90,7 +91,7 @@ func (this *controlPanel) getCustomControls() []*octoprintApis.ControlDefinition
 	return controlDefinitions
 }
 
-func (this *controlPanel) getCommands() []*octoprintApis.CommandDefinition {
+func (this *controlPanel) getCommands() []*dataModels.CommandDefinition {
 	utils.Logger.Info("Retrieving custom commands")
 	response, err := (&octoprintApis.SystemCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {

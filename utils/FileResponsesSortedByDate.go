@@ -4,10 +4,13 @@ import (
 	// "fmt"
 	// "sort"
 
-	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
 
-type FileResponsesSortedByDate []*octoprintApis.FileResponse
+
+type FileResponsesSortedByDate []*dataModels.FileResponse
 
 func (this FileResponsesSortedByDate) Len() int {
 	 return len(this)

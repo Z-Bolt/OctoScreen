@@ -2,11 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"strings"
 	"strconv"
+	"strings"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
 var cachedToolheadCount = -1
@@ -18,18 +19,18 @@ func GetToolheadCount(client *octoprintApis.Client) int {
 
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(client)
 	if err != nil {
-		LogError("toolhaad.GetToolheadCount()", "Do(ConnectionRequest)", err)
+		LogError("Tools.GetToolheadCount()", "version.Get()", err)
 		return 0
 	}
 
 	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(client)
 	if err != nil {
-		LogError("toolhaad.GetToolheadCount()", "Do(PrinterProfilesRequest)", err)
+		LogError("Tools.GetToolheadCount()", "Do(PrinterProfilesRequest)", err)
 		return 0
 	}
 
 	cachedToolheadCount = printerProfile.Extruder.Count
-	if printerProfile.Extruder.SharedNozzle {
+	if printerProfile.Extruder.HasSharedNozzle {
 		cachedToolheadCount = 1
 	} else if cachedToolheadCount > 4 {
 		cachedToolheadCount = 4
@@ -49,18 +50,18 @@ func GetToolheadCount(client *octoprintApis.Client) int {
 func GetDisplayNameForTool(toolName string) string {
 	// Since this is such a hack, lets add some bounds checking
 	if toolName == "" {
-		Logger.Error("toolhaad.GetDisplayNameForTool() - toolName is empty")
+		Logger.Error("Tools..GetDisplayNameForTool() - toolName is empty")
 		return ""
 	}
 
 	lowerCaseName := strings.ToLower(toolName)
 	if strings.LastIndex(lowerCaseName, "tool") != 0 {
-		Logger.Errorf("toolhaad.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
+		Logger.Errorf("Tools.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
 		return ""
 	}
 
 	if len(toolName) != 5 {
-		Logger.Errorf("toolhaad.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
+		Logger.Errorf("Tools.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
 		return ""
 	}
 
@@ -76,7 +77,7 @@ func GetToolTarget(client *octoprintApis.Client, tool string) (float64, error) {
 	Logger.Debug("entering Tools.GetToolTarget()")
 
 
-	fullStateRequest, err := (&octoprintApis.FullStateRequest{
+	fullStateRespone, err := (&octoprintApis.FullStateRequest{
 		Exclude: []string{"sd", "state"},
 	}).Do(client)
 
@@ -87,7 +88,7 @@ func GetToolTarget(client *octoprintApis.Client, tool string) (float64, error) {
 		return -1, err
 	}
 
-	currentTemperatureData, ok := fullStateRequest.Temperature.CurrentTemperatureData[tool]
+	currentTemperatureData, ok := fullStateRespone.Temperature.CurrentTemperatureData[tool]
 	if !ok {
 		Logger.Debug("leaving Tools.GetToolTarget()")
 		return -1, fmt.Errorf("unable to find tool %q", tool)
@@ -115,7 +116,7 @@ func SetToolTarget(client *octoprintApis.Client, tool string, target float64) er
 }
 
 
-func GetCurrentTemperatureData(client *octoprintApis.Client) (map[string]octoprintApis.TemperatureData, error) {
+func GetCurrentTemperatureData(client *octoprintApis.Client) (map[string]dataModels.TemperatureData, error) {
 	Logger.Debug("entering Tools.GetCurrentTemperatureData()")
 
 	temperatureDataResponse, err := (&octoprintApis.TemperatureDataRequest{}).Do(client)
@@ -147,7 +148,7 @@ func GetCurrentTemperatureData(client *octoprintApis.Client) (map[string]octopri
 }
 
 
-func CurrentHotendTemperatureIsTooLow(client *octoprintApis.Client, extruderId, action string, parentWindow *gtk.Window) bool {
+func CheckIfHotendTemperatureIsTooLow(client *octoprintApis.Client, extruderId, action string, parentWindow *gtk.Window) bool {
 	currentTemperatureData, err := GetCurrentTemperatureData(client)
 	if err != nil {
 		LogError("tools.CurrentHotendTemperatureIsTooLow()", "GetCurrentTemperatureData()", err)
@@ -156,14 +157,20 @@ func CurrentHotendTemperatureIsTooLow(client *octoprintApis.Client, extruderId, 
 
 	temperatureData := currentTemperatureData[extruderId]
 
+	// If the temperature of the hotend is too low, display an error.
 	if HotendTemperatureIsTooLow(temperatureData, action, parentWindow) {
-		LogError("tools.CurrentHotendTemperatureIsTooLow()", "HotendTemperatureIsTooLow()", err)
+		errorMessage := fmt.Sprintf(
+			"The temperature of the hotend is too low to %s.\n(the current temperature is only %.0f°C)\n\nPlease increase the temperature and try again.",
+			action,
+			temperatureData.Actual,
+		)
+		ErrorMessageDialogBox(parentWindow, errorMessage)
+
 		return true
 	}
 
 	return false
 }
-
 
 func GetToolheadFileName(hotendIndex, hotendCount int) string {
 	strImageFileName := ""
@@ -198,6 +205,29 @@ func GetNozzleFileName(hotendIndex, hotendCount int) string {
 	return strImageFileName
 }
 
-func GetTemperatureDataString(temperatureData octoprintApis.TemperatureData) string {
+func GetTemperatureDataString(temperatureData dataModels.TemperatureData) string {
 	return fmt.Sprintf("%.0f°C / %.0f°C", temperatureData.Actual, temperatureData.Target)
+}
+
+
+// TODO: maybe move HotendTemperatureIsTooLow into a hotend utils file?
+
+const MIN_HOTEND_TEMPERATURE = 150.0
+
+func HotendTemperatureIsTooLow(
+	temperatureData			dataModels.TemperatureData,
+	action					string,
+	parentWindow			*gtk.Window,
+) bool {
+	targetTemperature := temperatureData.Target
+	Logger.Infof("tools.HotendTemperatureIsTooLow() - targetTemperature is %.2f", targetTemperature)
+
+	actualTemperature := temperatureData.Actual
+	Logger.Infof("tools.HotendTemperatureIsTooLow() - actualTemperature is %.2f", actualTemperature)
+
+	if targetTemperature <= MIN_HOTEND_TEMPERATURE || actualTemperature <= MIN_HOTEND_TEMPERATURE {
+		return true
+	}
+
+	return false
 }

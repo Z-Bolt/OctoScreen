@@ -6,6 +6,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -106,17 +107,17 @@ func (this *bedLevelPanel) addBedLevelCornerButton(isLeft, isTop bool) {
 func (this *bedLevelPanel) defineLevelingPoints() {
 	utils.Logger.Debug("entering BedLevelPanel.verifyConnection()")
 
-	connectionRequest, err := (&octoprintApis.ConnectionRequest{}).Do(this.UI.Client)
+	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(ConnectionRequest)", err)
+		utils.LogError("BedLevelPanel.defineLevelingPoints()", "version.Get()", err)
 
 		utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
 		return
 	}
 
-	utils.Logger.Info(connectionRequest.Current.PrinterProfile)
+	utils.Logger.Info(connectionResponse.Current.PrinterProfile)
 
-	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionRequest.Current.PrinterProfile}).Do(this.UI.Client)
+	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(PrinterProfilesRequest)", err)
 

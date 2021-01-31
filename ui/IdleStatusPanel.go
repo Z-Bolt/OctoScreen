@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -41,7 +42,7 @@ func (this *idleStatusPanel) initialize() {
 
 	utils.Logger.Info(this.UI.Settings)
 
-	var menuItems []octoprintApis.MenuItem
+	var menuItems []dataModels.MenuItem
 	if this.UI.Settings == nil || this.UI.Settings.MenuStructure == nil || len(this.UI.Settings.MenuStructure) < 1 {
 		utils.Logger.Info("Loading default menu")
 		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)

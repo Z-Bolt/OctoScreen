@@ -5,13 +5,15 @@ import (
 
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 func getPanel(
 	ui				*UI,
 	parentPanel		interfaces.IPanel,
-	menuItem		octoprintApis.MenuItem,
+	menuItem		dataModels.MenuItem,
 ) interfaces.IPanel {
 	switch menuItem.Panel {
 		// The standard "top four" panels that are in the idleStatus panel
@@ -98,7 +100,7 @@ func getPanel(
 	}
 }
 
-func getDefaultMenuItems(client *octoprintApis.Client) []octoprintApis.MenuItem {
+func getDefaultMenuItems(client *octoprintApis.Client) []dataModels.MenuItem {
 	defaultMenuItemsForSingleToolhead := `[
 		{
 			"name": "Home",
@@ -205,7 +207,7 @@ func getDefaultMenuItems(client *octoprintApis.Client) []octoprintApis.MenuItem 
 	]`
 
 
-	var menuItems []octoprintApis.MenuItem
+	var menuItems []dataModels.MenuItem
 	var err error
 
 	toolheadCount := utils.GetToolheadCount(client)

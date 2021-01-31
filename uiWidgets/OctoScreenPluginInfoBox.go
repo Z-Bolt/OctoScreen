@@ -4,6 +4,7 @@ import (
 	// "fmt"
 
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -20,14 +21,14 @@ func CreateOctoScreenPluginInfoBox(
 
 	str2 := ""
 	if octoPrintPluginIsInstalled {
-		getPluginManagerInfoResponse, err := (&octoprintApis.GetPluginManagerInfoRequest{}).Do(client)
+		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client)
 		if err != nil {
 			panic(err)
 		}
 
 		found := false
-		for i := 0; i < len(getPluginManagerInfoResponse.Plugins) && !found; i++ {
-			plugin := getPluginManagerInfoResponse.Plugins[i]
+		for i := 0; i < len(pluginManagerInfoResponse.Plugins) && !found; i++ {
+			plugin := pluginManagerInfoResponse.Plugins[i]
 			if plugin.Key == "zbolt_octoscreen" {
 				found = true
 				str2 = plugin.Version

@@ -3,6 +3,7 @@ package uiWidgets
 import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -33,10 +34,10 @@ func (this *HomeAllButton) handleClicked() {
 	utils.Logger.Infof("Homing the print head")
 
 	// Version A:
-	axes := []octoprintApis.Axis {
-		octoprintApis.XAxis,
-		octoprintApis.YAxis,
-		octoprintApis.ZAxis,
+	axes := []dataModels.Axis {
+		dataModels.XAxis,
+		dataModels.YAxis,
+		dataModels.ZAxis,
 	}
 	cmd := &octoprintApis.PrintHeadHomeRequest{Axes: axes}
 	err := cmd.Do(this.client);
@@ -47,7 +48,7 @@ func (this *HomeAllButton) handleClicked() {
 
 	/*
 	// If there are issues with version A, there's also version B:
-	cmd := &octoprintApis.CommandRequest{}
+	cmd := &octoprint.CommandRequest{}
 	cmd.Commands = []string{
 		"G28 Z",
 		"G28 X",

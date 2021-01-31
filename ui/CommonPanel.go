@@ -11,11 +11,12 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 // OctoScreenVersion - set at compilation time.
-var OctoScreenVersion = "2.6.1"
+var OctoScreenVersion = "2.7.0"
 
 type CommonPanel struct {
 	UI					*UI
@@ -106,7 +107,7 @@ func (this *CommonPanel) Scaled(s int) int {
 
 func (this *CommonPanel) arrangeMenuItems(
 	grid			*gtk.Grid,
-	items			[]octoprintApis.MenuItem,
+	items			[]dataModels.MenuItem,
 	cols			int,
 ) {
 	for i, item := range items {

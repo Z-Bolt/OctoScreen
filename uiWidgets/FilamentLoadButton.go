@@ -1,25 +1,33 @@
 package uiWidgets
 
 import (
+	// "fmt"
+
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 type FilamentLoadButton struct {
 	*gtk.Button
 
 	parentWindow				*gtk.Window
 	client						*octoprintApis.Client
+	flowRateStepButton			*FlowRateStepButton // The flow rate step button is optional.
 	selectToolStepButton		*SelectToolStepButton
 	isForward					bool
+	length						int
 }
 
 func CreateFilamentLoadButton(
 	parentWindow				*gtk.Window,
 	client						*octoprintApis.Client,
+	flowRateStepButton			*FlowRateStepButton, // The flow rate step button is optional.
 	selectToolStepButton		*SelectToolStepButton,
 	isForward					bool,
+	length						int,
 ) *FilamentLoadButton {
 	var base *gtk.Button
 	if isForward {
@@ -32,8 +40,10 @@ func CreateFilamentLoadButton(
 		Button:						base,
 		parentWindow:				parentWindow,
 		client:						client,
+		flowRateStepButton:			flowRateStepButton,
 		selectToolStepButton:		selectToolStepButton,
 		isForward:					isForward,
+		length:						length,
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
@@ -49,28 +59,18 @@ func (this *FilamentLoadButton) handleClicked() {
 
 func (this *FilamentLoadButton) sendLoadCommand() {
 	extruderId := this.selectToolStepButton.Value()
-	var action string
-	if this.isForward {
-		action = "load"
-	} else {
-		action = "unload"
-	}
-	if utils.CurrentHotendTemperatureIsTooLow(this.client, extruderId, action, this.parentWindow) {
-		utils.Logger.Error("FilamentLoadButton.sendLoadCommand() -  temperature is too low")
-		return
+
+	flowRatePercentage := 100
+	if this.flowRateStepButton != nil {
+		flowRatePercentage = this.flowRateStepButton.Value()
 	}
 
-	// BUG: This does not work.  At least not on a Prusa i3.  Need to get this working with all printers.
-	cmd := &octoprintApis.CommandRequest{}
-	if this.isForward {
-		cmd.Commands = []string{"G91", "G0 E600 F5000", "G0 E120 F500", "G90"}
-	} else {
-		cmd.Commands = []string{"G91", "G0 E-800 F5000", "G90"}
-	}
-
-	utils.Logger.Info("FilamentLoadButton.sendLoadCommand() - sending filament load request")
-	if err := cmd.Do(this.client); err != nil {
-		utils.LogError("FilamentLoadButton.sendLoadCommand()", "Do(CommandRequest)", err)
-		return
-	}
+	utils.Extrude(
+		this.client,
+		this.isForward,
+		extruderId,
+		this.parentWindow,
+		flowRatePercentage,
+		this.length,
+	)
 }

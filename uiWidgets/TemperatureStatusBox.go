@@ -6,6 +6,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -44,7 +45,7 @@ func CreateTemperatureStatusBox(
 	instance.SetVAlign(gtk.ALIGN_CENTER)
 	instance.SetHAlign(gtk.ALIGN_CENTER)
 
-	var bedTemperatureData *octoprintApis.TemperatureData = nil
+	var bedTemperatureData *dataModels.TemperatureData = nil
 	var hotendIndex int = 0
 	var hotendCount int = utils.GetToolheadCount(client)
 	for key, temperatureData := range currentTemperatureData {
@@ -80,7 +81,7 @@ func CreateTemperatureStatusBox(
 }
 
 // interfaces.ITemperatureDataDisplay
-func (this *TemperatureStatusBox) UpdateTemperatureData(currentTemperatureData map[string]octoprintApis.TemperatureData) {
+func (this *TemperatureStatusBox) UpdateTemperatureData(currentTemperatureData map[string]dataModels.TemperatureData) {
 	for key, temperatureData := range currentTemperatureData {
 		if labelWithImage, ok := this.labelWithImages[key]; ok {
 			temperatureDataString := utils.GetTemperatureDataString(temperatureData)

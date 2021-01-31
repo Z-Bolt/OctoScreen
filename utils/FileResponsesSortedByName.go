@@ -5,10 +5,13 @@ import (
 	// "sort"
 	// "strings"
 
-	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
 
-type FileResponsesSortedByName []*octoprintApis.FileResponse
+
+type FileResponsesSortedByName []*dataModels.FileResponse
 
 func (this FileResponsesSortedByName) Len() int {
 	 return len(this)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -24,7 +25,7 @@ func CreateSystemCommandButton(
 		panic(err)
 	}
 
-	var cmd *octoprintApis.CommandDefinition
+	var cmd *dataModels.CommandDefinition
 	var cb func()
 
 	for _, commandDefinition := range systemCommandsResponse.Core {
@@ -36,7 +37,7 @@ func CreateSystemCommandButton(
 	if cmd != nil {
 		do := func() {
 			systemExecuteCommandRequest := &octoprintApis.SystemExecuteCommandRequest{
-				Source: octoprintApis.Core,
+				Source: dataModels.Core,
 				Action: cmd.Action,
 			}
 

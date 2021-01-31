@@ -86,8 +86,10 @@ func (this *filamentPanel) initialize() {
 	this.filamentLoadButton = uiWidgets.CreateFilamentLoadButton(
 		this.UI.window,
 		this.UI.Client,
+		this.flowRateStepButton,
 		this.selectToolStepButton,
 		true,
+		int(this.UI.Settings.FilamentInLength),  // jab revisit
 	)
 	this.Grid().Attach(this.filamentLoadButton,			0, 1, 1, 1)
 
@@ -97,8 +99,10 @@ func (this *filamentPanel) initialize() {
 	this.filamentUnloadButton = uiWidgets.CreateFilamentLoadButton(
 		this.UI.window,
 		this.UI.Client,
+		this.flowRateStepButton,
 		this.selectToolStepButton,
 		false,
+		int(this.UI.Settings.FilamentOutLength), // jab revisit
 	)
 	this.Grid().Attach(this.filamentUnloadButton,		3, 1, 1, 1)
 

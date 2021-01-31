@@ -6,9 +6,9 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
-
 
 
 func ToolImageFileName(
@@ -78,7 +78,7 @@ func (this *ToolButton) UpdateStatus(heating bool) {
 	this.isHeating = heating
 }
 
-func (this *ToolButton) SetTemperatures(temperatureData octoprintApis.TemperatureData) {
+func (this *ToolButton) SetTemperatures(temperatureData dataModels.TemperatureData) {
 	text := utils.GetTemperatureDataString(temperatureData)
 	this.SetLabel(text)
 	this.UpdateStatus(temperatureData.Target > 0)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,13 +14,13 @@ type ControlButton struct {
 
 	client				*octoprintApis.Client
 	parentWindow		*gtk.Window
-	controlDefinition	*octoprintApis.ControlDefinition
+	controlDefinition	*dataModels.ControlDefinition
 }
 
 func CreateControlButton(
 	client				*octoprintApis.Client,
 	parentWindow		*gtk.Window,
-	controlDefinition	*octoprintApis.ControlDefinition,
+	controlDefinition	*dataModels.ControlDefinition,
 	iconName			string,
 ) *ControlButton {
 	base := utils.MustButtonImage(utils.StrEllipsisLen(controlDefinition.Name, 16), iconName + ".svg", nil)

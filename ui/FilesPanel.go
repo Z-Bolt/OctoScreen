@@ -10,6 +10,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -29,7 +30,7 @@ func FilesPanel(
 ) *filesPanel {
 	if filesPanelInstance == nil {
 		locationHistory := utils.LocationHistory {
-			Locations: []octoprintApis.Location{},
+			Locations: []dataModels.Location{},
 		}
 
 		instance := &filesPanel {
@@ -106,8 +107,8 @@ func (this *filesPanel) doLoadFiles() {
 	this.listBox.ShowAll()
 }
 
-func (this *filesPanel) getSortedFiles() []*octoprintApis.FileResponse {
-	var files []*octoprintApis.FileResponse
+func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
+	var files []*dataModels.FileResponse
 
 	length := this.locationHistory.Length()
 	if length < 1 {
@@ -124,12 +125,12 @@ func (this *filesPanel) getSortedFiles() []*octoprintApis.FileResponse {
 	filesResponse, err := filesRequest.Do(this.UI.Client)
 	if err != nil {
 		utils.LogError("files.getSortedFiles()", "Do(FilesRequest)", err)
-		files = []*octoprintApis.FileResponse{}
+		files = []*dataModels.FileResponse{}
 	} else {
 		files = filesResponse.Files
 	}
 
-	var filteredFiles []*octoprintApis.FileResponse
+	var filteredFiles []*dataModels.FileResponse
 	for i := range files {
 		if !strings.HasPrefix(files[i].Path, "trash") {
 			filteredFiles = append(filteredFiles, files[i])
@@ -145,8 +146,8 @@ func (this *filesPanel) getSortedFiles() []*octoprintApis.FileResponse {
 
 func (this *filesPanel) addRootLocations() {
 	this.addMessage("Select source location:")
-	this.addRootLocation(octoprintApis.Local, 0)
-	this.addRootLocation(octoprintApis.SDCard, 1)
+	this.addRootLocation(dataModels.Local, 0)
+	this.addRootLocation(dataModels.SDCard, 1)
 }
 
 func (this *filesPanel) addMessage(message string) {
@@ -165,9 +166,9 @@ func (this *filesPanel) addMessage(message string) {
 	this.listBox.Add(listItemFrame)
 }
 
-func (this *filesPanel) addRootLocation(location octoprintApis.Location, index int) {
+func (this *filesPanel) addRootLocation(location dataModels.Location, index int) {
 	var itemImage *gtk.Image
-	if location == octoprintApis.Local {
+	if location == dataModels.Local {
 		itemImage = utils.MustImageFromFileWithSize("octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
 	} else {
 		itemImage = utils.MustImageFromFileWithSize("sd.svg", this.Scaled(35), this.Scaled(35))
@@ -177,7 +178,7 @@ func (this *filesPanel) addRootLocation(location octoprintApis.Location, index i
 	topBox.Add(itemImage)
 
 	name := ""
-	if location == octoprintApis.Local {
+	if location == dataModels.Local {
 		name = "  OctoPrint"
 	} else {
 		name = "  SD Card"
@@ -193,7 +194,7 @@ func (this *filesPanel) addRootLocation(location octoprintApis.Location, index i
 
 
 	var itemButton *gtk.Button
-	if location == octoprintApis.Local {
+	if location == dataModels.Local {
 		itemButton = this.createOpenLocationButton(location)
 	} else {
 		itemButton = this.createOpenLocationButton(location)
@@ -212,7 +213,7 @@ func (this *filesPanel) addRootLocation(location octoprintApis.Location, index i
 	this.listBox.Add(listItemFrame)
 }
 
-func (this *filesPanel) addSortedFiles(sortedFiles []*octoprintApis.FileResponse) {
+func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
 	var index int = 0
 
 	for _, fileResponse := range sortedFiles {
@@ -231,7 +232,7 @@ func (this *filesPanel) addSortedFiles(sortedFiles []*octoprintApis.FileResponse
 }
 
 
-func (this *filesPanel) addItem(fileResponse *octoprintApis.FileResponse, index int) {
+func (this *filesPanel) addItem(fileResponse *dataModels.FileResponse, index int) {
 	isFolder := fileResponse.IsFolder()
 
 	var itemImage *gtk.Image
@@ -332,7 +333,7 @@ func (this *filesPanel) createListItemBox() *gtk.Box {
 	return listItemBox
 }
 
-func (this *filesPanel) addThumbnail(fileResponse *octoprintApis.FileResponse, listItemBox *gtk.Box) {
+func (this *filesPanel) addThumbnail(fileResponse *dataModels.FileResponse, listItemBox *gtk.Box) {
 	if fileResponse.Thumbnail != "" {
 		utils.Logger.Infof("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
 
@@ -365,11 +366,11 @@ func (this *filesPanel) addThumbnail(fileResponse *octoprintApis.FileResponse, l
 }
 
 
-func (this *filesPanel) createOpenLocationButton(location octoprintApis.Location) *gtk.Button {
+func (this *filesPanel) createOpenLocationButton(location dataModels.Location) *gtk.Button {
 	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
 	button := utils.MustButton(image, func() {
 		this.locationHistory = utils.LocationHistory {
-			Locations: []octoprintApis.Location{location},
+			Locations: []dataModels.Location{location},
 		}
 
 		this.doLoadFiles()
@@ -382,7 +383,7 @@ func (this *filesPanel) createOpenLocationButton(location octoprintApis.Location
 	return button
 }
 
-func (this *filesPanel) createOpenFolderButton(fileResponse *octoprintApis.FileResponse) *gtk.Button {
+func (this *filesPanel) createOpenFolderButton(fileResponse *dataModels.FileResponse) *gtk.Button {
 	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
 	button := utils.MustButton(image, func() {
 		this.locationHistory.GoForward(fileResponse.Name)
@@ -396,7 +397,7 @@ func (this *filesPanel) createOpenFolderButton(fileResponse *octoprintApis.FileR
 	return button
 }
 
-func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileResponse *octoprintApis.FileResponse) *gtk.Button {
+func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileResponse *dataModels.FileResponse) *gtk.Button {
 	button := utils.MustButton(
 		utils.MustImageFromFileWithSize(imageFileName, this.Scaled(40), this.Scaled(40)),
 		utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
@@ -425,7 +426,7 @@ func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileRespo
 
 /*
 func (this *filesPanel) isReady() bool {
-	state, err := (&octoprintApis.SDStateRequest{}).Do(this.UI.Client)
+	state, err := (&octoprint.SDStateRequest{}).Do(this.UI.Client)
 	if err != nil {
 		Logger.Error(err)
 		return false

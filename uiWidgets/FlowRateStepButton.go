@@ -2,6 +2,7 @@ package uiWidgets
 
 import (
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -36,14 +37,5 @@ func (this *FlowRateStepButton) Value() int {
 }
 
 func (this *FlowRateStepButton) SendChangeFlowRate() error {
-	cmd := &octoprintApis.ToolFlowRateRequest{}
-	cmd.Factor = this.Value()
-
-	utils.Logger.Infof("FlowRateStepButton.SendChangeFlowRate() - changing flow rate to %d%%", cmd.Factor)
-	if err := cmd.Do(this.client); err != nil {
-		utils.LogError("FlowRateStepButton.SendChangeFlowRate()", "Go(ToolFlowRateRequest)", err)
-		return err
-	}
-
-	return nil
+	return utils.SetFlowRate(this.client, this.Value())
 }

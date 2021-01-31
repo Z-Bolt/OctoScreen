@@ -5,6 +5,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,13 +14,13 @@ type CommandButton struct {
 
 	client				*octoprintApis.Client
 	parentWindow		*gtk.Window
-	commandDefinition	*octoprintApis.CommandDefinition
+	commandDefinition	*dataModels.CommandDefinition
 }
 
 func CreateCommandButton(
 	client				*octoprintApis.Client,
 	parentWindow		*gtk.Window,
-	commandDefinition	*octoprintApis.CommandDefinition,
+	commandDefinition	*dataModels.CommandDefinition,
 	iconName			string,
 ) *CommandButton {
 	base := utils.MustButtonImage(utils.StrEllipsisLen(commandDefinition.Name, 16), iconName + ".svg", nil)
@@ -48,7 +49,7 @@ func (this *CommandButton) handleClicked() {
 
 func (this *CommandButton) sendCommand() {
 	commandRequest := &octoprintApis.SystemExecuteCommandRequest{
-		Source: octoprintApis.Custom,
+		Source: dataModels.Custom,
 		Action: this.commandDefinition.Action,
 	}
 

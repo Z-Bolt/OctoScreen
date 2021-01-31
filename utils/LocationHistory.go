@@ -4,18 +4,20 @@ import (
 	// "fmt"
 	// "sort"
 
-	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
 
 type LocationHistory struct {
-	Locations []octoprintApis.Location
+	Locations []dataModels.Location
 }
 
 func (this *LocationHistory) Length() int {
 	return len(this.Locations)
 }
 
-func (this *LocationHistory) CurrentLocation() octoprintApis.Location {
+func (this *LocationHistory) CurrentLocation() dataModels.Location {
 	length := this.Length()
 	if length < 1 {
 		panic("LocationHistory.current() - locations is empty")
@@ -26,7 +28,7 @@ func (this *LocationHistory) CurrentLocation() octoprintApis.Location {
 
 func (this *LocationHistory) GoForward(folder string) {
 	newLocation := string(this.CurrentLocation()) + "/" + folder
-	this.Locations = append(this.Locations, octoprintApis.Location(newLocation))
+	this.Locations = append(this.Locations, dataModels.Location(newLocation))
 }
 
 func (this *LocationHistory) GoBack() {

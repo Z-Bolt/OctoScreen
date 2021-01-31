@@ -8,6 +8,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -114,7 +115,7 @@ func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
 		time.Sleep(time.Second * 1)
 		this.command(fmt.Sprintf("G0 X%f Y%f F10000", this.cPoint.x, this.cPoint.y))
 
-		cmd := &octoprintApis.GetZOffsetRequest{Tool: this.activeTool}
+		cmd := &octoprintApis.ZOffsetRequest{Tool: this.activeTool}
 		response, err := cmd.Do(this.UI.Client)
 		if err != nil {
 			utils.LogError("z_offset_calibration.setToolheadButtonClickHandler()", "Do(GetZOffsetRequest)", err)

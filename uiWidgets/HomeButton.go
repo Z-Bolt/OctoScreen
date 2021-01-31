@@ -3,6 +3,7 @@ package uiWidgets
 import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -10,14 +11,14 @@ type HomeButton struct {
 	*gtk.Button
 
 	client				*octoprintApis.Client
-	axes				[]octoprintApis.Axis
+	axes				[]dataModels.Axis
 }
 
 func CreateHomeButton(
 	client				*octoprintApis.Client,
 	buttonLabel			string,
 	imageFileName		string,
-	axes				...octoprintApis.Axis,
+	axes				...dataModels.Axis,
 ) *HomeButton {
 	base := utils.MustButtonImageStyle(buttonLabel, imageFileName, "", nil)
 

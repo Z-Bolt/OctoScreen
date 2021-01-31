@@ -3,6 +3,7 @@ package uiWidgets
 import (
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -12,7 +13,7 @@ type TemperaturePresetButton struct {
 	client						*octoprintApis.Client
 	selectToolStepButton		*SelectToolStepButton
 	imageFileName				string
-	temperaturePreset			*octoprintApis.TemperaturePreset
+	temperaturePreset			*dataModels.TemperaturePreset
 	callback					func()
 }
 
@@ -20,7 +21,7 @@ func CreateTemperaturePresetButton(
 	client						*octoprintApis.Client,
 	selectToolStepButton		*SelectToolStepButton,
 	imageFileName				string,
-	temperaturePreset			*octoprintApis.TemperaturePreset,
+	temperaturePreset			*dataModels.TemperaturePreset,
 	callback					func(),
 ) *TemperaturePresetButton {
 	presetName := utils.StrEllipsisLen(temperaturePreset.Name, 10)

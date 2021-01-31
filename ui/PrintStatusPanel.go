@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var printStatusPanelInstance *printStatusPanel
 
@@ -39,7 +41,7 @@ func PrintStatusPanel(ui *UI) *printStatusPanel {
 			CommonPanel: NewTopLevelCommonPanel(ui, nil),
 		}
 
-		// TODO: revisit... some set the background task and the initialize
+		// TODO: revisit... some set the background task and then initialize
 		// and others initialize and then set the background task
 		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, instance.update)
 		instance.initialize()
@@ -157,7 +159,7 @@ func (this *printStatusPanel) createPauseButton() gtk.IWidget {
 		defer this.updateTemperature()
 
 		utils.Logger.Info("Pausing/Resuming job")
-		cmd := &octoprintApis.PauseRequest{Action: octoprintApis.Toggle}
+		cmd := &octoprintApis.PauseRequest{Action: dataModels.Toggle}
 		err := cmd.Do(this.UI.Client)
 		utils.Logger.Info("Pausing/Resuming job 2, Do() was just called")
 
@@ -238,7 +240,7 @@ func (this *printStatusPanel) updateTemperature() {
 	//Logger.Printf("Now leaving print_status.updateTemperature()")
 }
 
-func (this *printStatusPanel) doUpdateState(printerState *octoprintApis.PrinterState) {
+func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterState) {
 	switch {
 		case printerState.Flags.Printing:
 			this.pauseButton.SetSensitive(true)
@@ -308,17 +310,12 @@ func (this *printStatusPanel) updateJob() {
 	if jobResponse.Job.File.Name != "" {
 		jobFileName = jobResponse.Job.File.Name
 		jobFileName = strings.Replace(jobFileName, ".gcode", "", -1)
+		jobFileName = strings.Replace(jobFileName, ".gco", "", -1)
 		jobFileName = utils.TruncateString(jobFileName, 20)
 	}
 
 	this.fileLabel.Label.SetLabel(jobFileName)
 	this.progressBar.SetFraction(jobResponse.Progress.Completion / 100)
-	// strProgress := fmd.Sprintf("%d%% L=%d/%d",
-	// 	jobResponse.Progress.Completion / 100,
-	// 	jobResponse.Progress,
-	// )
-	// this.progressBar.SetText(strProgress)
-
 
 	var timeSpent, timeLeft string
 	switch jobResponse.Progress.Completion {

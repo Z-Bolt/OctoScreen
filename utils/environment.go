@@ -83,7 +83,19 @@ func DumpEnvironmentVariables() {
 	// Required environment variables
 	Logger.Infof("Required environment variables:")
 	dumpEnvironmentVariable(EnvBaseURL)
+
+	// TODO: revisit this!
+	// 1. remove OCTOPRINT_APIKEY from option settings
+	// 2. make the octoprint config path required
+	// 3. update code... use only one path to get the api key octoprint)
+	// 4. update code... make octoprint config path required
+	// 5. update code... read api key from octoprint config
+	// 6. dump api key (obfuscated though)
+	// 7. update docs
+	// 8. make sure what's dumped to the log is correct, for both when present and when missing.
 	dumpObfuscatedEnvironmentVariable(EnvAPIKey)
+
+
 	dumpEnvironmentVariable(EnvStylePath)
 
 	// Optional environment variables
