@@ -4,10 +4,14 @@ import (
 	// "bytes"
 	"encoding/json"
 	"fmt"
-	// "io"
-	"log"
+	// "log"
 	"strings"
+
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
+
+
+const URIPrinter = "/api/printer"
 
 // FullStateRequest retrieves the current state of the printer.
 type FullStateRequest struct {
@@ -23,22 +27,8 @@ type FullStateRequest struct {
 	Exclude []string
 }
 
-// FullStateResponse contains informantion about the current state of the printer.
-type FullStateResponse struct {
-	// TemperatureStateResponse is the printer’s temperature state data.
-	Temperature TemperatureStateResponse `json:"temperature"`
-
-	// SD is the printer’s sd state data.
-	SD SDState `json:"sd"`
-
-	// State is the printer’s general state.
-	State PrinterState `json:"state"`
-}
-
-const URIPrinter = "/api/printer"
-
 // Do sends an API request and returns the API response.
-func (cmd *FullStateRequest) Do(c *Client) (*FullStateResponse, error) {
+func (cmd *FullStateRequest) Do(c *Client) (*dataModels.FullStateResponse, error) {
 	uri := fmt.Sprintf(
 		"%s?history=%t&limit=%d&exclude=%s",
 		URIPrinter,
@@ -47,7 +37,7 @@ func (cmd *FullStateRequest) Do(c *Client) (*FullStateResponse, error) {
 		strings.Join(cmd.Exclude, ","),
 	)
 
-	log.Printf("TODO-Remove: StateRequest (FullStateResponse) uri is: %s", uri)
+	// log.Printf("TODO-Remove: StateRequest (FullStateResponse) uri is: %s", uri)
 	//StateRequest uri is: %s /api/printer?history=true&limit=1&exclude=sd,state
 	/*
 		{
@@ -80,12 +70,12 @@ func (cmd *FullStateRequest) Do(c *Client) (*FullStateResponse, error) {
 	*/
 
 
-	bytes, err := c.doJSONRequest("GET", uri, nil, PrintErrors)
+	bytes, err := c.doJsonRequest("GET", uri, nil, PrintErrors)
 	if err != nil {
 		return nil, err
 	}
 
-	response := &FullStateResponse{}
+	response := &dataModels.FullStateResponse{}
 	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}

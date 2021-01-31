@@ -1,4 +1,4 @@
-package octoprintApis
+package dataModels
 
 import (
 	// "encoding/json"
@@ -6,6 +6,7 @@ import (
 	// "strings"
 	// "time"
 )
+
 
 // Progress information
 // https://docs.octoprint.org/en/master/api/datamodel.html#progress-information

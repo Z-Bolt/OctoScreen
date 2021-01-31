@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mgutz/logxi/v1"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/mgutz/logxi/v1"
 )
 
 func main() {
 	baseURL, apiKey := os.Args[1], os.Args[2]
 
-	c := octoprintApis.NewClient(baseURL, apiKey)
+	c := octoprint.NewClient(baseURL, apiKey)
 	printConnectionState(c)
 	printTemperature(c)
 }
 
-func printConnectionState(c *octoprintApis.Client) {
-	r := octoprintApis.ConnectionRequest{}
+func printConnectionState(c *octoprint.Client) {
+	r := octoprint.ConnectionRequest{}
 	s, err := r.Do(c)
 	if err != nil {
 		log.Error("error requesting connection state: %s", err)
@@ -26,8 +26,8 @@ func printConnectionState(c *octoprintApis.Client) {
 	fmt.Printf("Connection State: %q\n", s.Current.State)
 }
 
-func printTemperature(c *octoprintApis.Client) {
-	r := octoprintApis.StateRequest{}
+func printTemperature(c *octoprint.Client) {
+	r := octoprint.StateRequest{}
 	s, err := r.Do(c)
 	if err != nil {
 		log.Error("error requesting state: %s", err)

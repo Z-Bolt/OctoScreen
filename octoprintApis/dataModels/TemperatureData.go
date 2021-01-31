@@ -1,4 +1,4 @@
-package octoprintApis
+package dataModels
 
 import (
 	// "encoding/json"
@@ -6,6 +6,7 @@ import (
 	// "strings"
 	// "time"
 )
+
 
 // TemperatureData is temperature stats for a tool.
 type TemperatureData struct {

@@ -1,5 +1,6 @@
 package octoprintApis
 
+/*
 import (
 	"bytes"
 	"testing"
@@ -84,3 +85,4 @@ func xxxTestFilesRequest_DoWithLocation(t *testing.T) {
 
 	assert.Len(t, files.Files, 0)
 }
+*/

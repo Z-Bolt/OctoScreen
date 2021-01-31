@@ -1,4 +1,4 @@
-package octoprintApis
+package dataModels
 
 import (
 	// "encoding/json"
@@ -6,6 +6,7 @@ import (
 	// "strings"
 	// "time"
 )
+
 
 // Job information
 // https://docs.octoprint.org/en/master/api/datamodel.html#job-information

@@ -1,4 +1,4 @@
-package octoprintApis
+package dataModels
 
 import (
 	"encoding/json"
@@ -7,10 +7,8 @@ import (
 	// "time"
 )
 
-
 // TODO: add request
 // TODO: add Do()
-
 
 // TemperatureState is the printer’s temperature state data.
 type TemperatureStateResponse temperatureStateResponse

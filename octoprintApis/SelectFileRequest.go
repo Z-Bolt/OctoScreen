@@ -5,15 +5,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	// "mime/multipart"
+
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
+
 
 // SelectFileRequest selects a file for printing.
 type SelectFileRequest struct {
 	// Location is target location on which to send the command for is located,
 	// either local (for OctoPrint’s uploads folder) or sdcard for the
 	// printer’s SD card (if available).
-	Location Location `json:"-"`
+	Location dataModels.Location `json:"-"`
 
 	// Path  of the file for which to issue the command.
 	Path string `json:"-"`
@@ -32,8 +34,8 @@ func (cmd *SelectFileRequest) Do(c *Client) error {
 		return err
 	}
 
-	uri := fmt.Sprintf("%s/%s/%s", URIFiles, cmd.Location, cmd.Path)
-	_, err := c.doJSONRequest("POST", uri, b, FilesLocationPathPOSTErrors)
+	uri := fmt.Sprintf("%s/%s/%s", FilesApiUri, cmd.Location, cmd.Path)
+	_, err := c.doJsonRequest("POST", uri, b, FilesLocationPathPOSTErrors)
 	return err
 }
 

@@ -1,5 +1,6 @@
 package octoprintApis
 
+/*
 import (
 	"testing"
 
@@ -15,3 +16,4 @@ func TestSettingsRequest_Do(t *testing.T) {
 
 	assert.Equal(t, settings.API.Enabled, true)
 }
+*/
