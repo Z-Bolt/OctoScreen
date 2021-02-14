@@ -54,13 +54,13 @@ func (this *filesPanel) initialize() {
 
 	box := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(scroll)
-	box.Add(this.createActionBar())
+	box.Add(this.createActionFooter())
 	this.Grid().Add(box)
 
 	this.doLoadFiles()
 }
 
-func (this *filesPanel) createActionBar() gtk.IWidget {
+func (this *filesPanel) createActionFooter() gtk.IWidget {
 	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actionBar.SetHAlign(gtk.ALIGN_END)
 	actionBar.SetHExpand(true)
@@ -146,13 +146,14 @@ func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 
 func (this *filesPanel) addRootLocations() {
 	this.addMessage("Select source location:")
-	this.addRootLocation(dataModels.Local, 0)
-	this.addRootLocation(dataModels.SDCard, 1)
+	this.addRootLocation(dataModels.Local)
+	this.addRootLocation(dataModels.SDCard)
 }
 
 func (this *filesPanel) addMessage(message string) {
 	nameLabel := this.createNameLabel(message)
 	labelsBox := this.createLabelsBox(nameLabel, nil)
+	labelsBox.SetMarginStart(10)
 
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	topBox.Add(labelsBox)
@@ -166,7 +167,16 @@ func (this *filesPanel) addMessage(message string) {
 	this.listBox.Add(listItemFrame)
 }
 
-func (this *filesPanel) addRootLocation(location dataModels.Location, index int) {
+func (this *filesPanel) addRootLocation(location dataModels.Location) {
+	rootLocationButton := this.createRootLocationButton(location)
+
+	listBoxRow, _ := gtk.ListBoxRowNew()
+	listBoxRow.Add(rootLocationButton)
+
+	this.listBox.Add(listBoxRow)
+}
+
+func (this *filesPanel) createRootLocationButton(location dataModels.Location) *gtk.Button {
 	var itemImage *gtk.Image
 	if location == dataModels.Local {
 		itemImage = utils.MustImageFromFileWithSize("octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
@@ -193,24 +203,29 @@ func (this *filesPanel) addRootLocation(location dataModels.Location, index int)
 	topBox.Add(labelsBox)
 
 
-	var itemButton *gtk.Button
+	var actionImage *gtk.Image
 	if location == dataModels.Local {
-		itemButton = this.createOpenLocationButton(location)
+		actionImage = this.createOpenLocationImage(0)
 	} else {
-		itemButton = this.createOpenLocationButton(location)
+		actionImage = this.createOpenLocationImage(1)
 	}
 
 	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actionBox.Add(itemButton)
+	actionBox.Add(actionImage)
 	topBox.Add(actionBox)
 
-	listItemBox := this.createListItemBox()
-	listItemBox.Add(topBox)
+	rootLocationButton, _ := gtk.ButtonNew()
+	rootLocationButton.Connect("clicked", func() {
+		this.locationHistory = utils.LocationHistory {
+			Locations: []dataModels.Location{location},
+		}
 
-	listItemFrame, _ := gtk.FrameNew("")
-	listItemFrame.Add(listItemBox)
+		this.doLoadFiles()
+	})
 
-	this.listBox.Add(listItemFrame)
+	rootLocationButton.Add(topBox)
+
+	return rootLocationButton
 }
 
 func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
@@ -231,20 +246,65 @@ func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
 	}
 }
 
+func (this *filesPanel) addItem(
+	fileResponse *dataModels.FileResponse,
+	index int,
+) {
+	/*
+		Object hierarchy:
 
-func (this *filesPanel) addItem(fileResponse *dataModels.FileResponse, index int) {
+		listBox
+			listBoxRow
+				listItemButton (to handle to click for the entire item amd all of the child controls)
+					listItemBox (to layout the objects, in this case the two rows within the button)
+						infoAndActionRow (a Box)
+						previewRow (a Box)
+	*/
+
+
+	listItemBox := this.createListItemBox()
+
 	isFolder := fileResponse.IsFolder()
+	infoAndActionRow := this.createInfoAndActionRow(fileResponse, index, isFolder)
+	listItemBox.Add(infoAndActionRow)
+	if !isFolder {
+		previewRow := this.createPreviewRow(fileResponse)
+		listItemBox.Add(previewRow)
+	}
 
+	listItemButton := this.createListItemButton(fileResponse, index, isFolder)
+	listItemButton.Add(listItemBox)
+
+	listBoxRow, _ := gtk.ListBoxRowNew()
+	listBoxRowStyleContext, _ := listBoxRow.GetStyleContext()
+	listBoxRowStyleContext.AddClass("list-box-row")
+	if index % 2 != 0 {
+		listBoxRowStyleContext.AddClass("list-item-nth-child-even")
+	}
+	listBoxRow.Add(listItemButton)
+
+	this.listBox.Add(listBoxRow)
+}
+
+func (this *filesPanel) createInfoAndActionRow(
+	fileResponse *dataModels.FileResponse,
+	index int,
+	isFolder bool,
+) *gtk.Box {
+	infoAndActionRow := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+
+
+	// Column 1: Folder or File icon
 	var itemImage *gtk.Image
 	if isFolder {
 		itemImage = utils.MustImageFromFileWithSize("folder.svg", this.Scaled(35), this.Scaled(35))
 	} else {
 		itemImage = utils.MustImageFromFileWithSize("file-gcode.svg", this.Scaled(35), this.Scaled(35))
 	}
+	infoAndActionRow.Add(itemImage)
 
-	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	topBox.Add(itemImage)
 
+	// Column 2: File name and file info
 	name := fileResponse.Name
 	nameLabel := this.createNameLabel(name)
 
@@ -261,42 +321,74 @@ func (this *filesPanel) addItem(fileResponse *dataModels.FileResponse, index int
 	}
 
 	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
-	topBox.Add(labelsBox)
+	infoAndActionRow.Add(labelsBox)
 
-	var itemButton *gtk.Button
+
+	// Column 3: printer image
+	var actionImage *gtk.Image
 	if isFolder {
-		itemButton = this.createOpenFolderButton(fileResponse)
+		actionImage = this.createOpenLocationImage(index)
 	} else {
-		itemButton = this.createLoadAndPrintButton("print.svg", fileResponse)
+		actionImage = this.createPrintImage()
 	}
 
 	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actionBox.Add(itemButton)
-	topBox.Add(actionBox)
+	actionBox.Add(actionImage)
 
-	listItemBox := this.createListItemBox()
-	listItemBox.Add(topBox)
+	infoAndActionRow.Add(actionBox)
 
-	if !isFolder {
-		this.addThumbnail(fileResponse, listItemBox)
-	}
-
-	listItemFrame, _ := gtk.FrameNew("")
-	listItemFrame.Add(listItemBox)
-
-	itemButtonStyleContext, _ := itemButton.GetStyleContext()
-	listItemBoxStyleContext, _:= listItemBox.GetStyleContext()
-	listItemFrameStyleContext, _ := listItemFrame.GetStyleContext()
-	if index % 2 != 0 {
-		itemButtonStyleContext.AddClass("list-item-nth-child-even")
-		listItemBoxStyleContext.AddClass("list-item-nth-child-even")
-		listItemFrameStyleContext.AddClass("list-item-nth-child-even")
-	}
-
-	this.listBox.Add(listItemFrame)
+	return infoAndActionRow
 }
 
-func (this *filesPanel) createLabelsBox(nameLabel, infoLabel *gtk.Label) *gtk.Box {
+func (this *filesPanel) createPreviewRow(fileResponse *dataModels.FileResponse) *gtk.Box {
+	previewRow := this.createListItemBox()
+	this.addThumbnail(fileResponse, previewRow)
+
+	return previewRow
+}
+
+func (this *filesPanel) createListItemButton(
+	fileResponse *dataModels.FileResponse,
+	index int,
+	isFolder bool,
+) *gtk.Button {
+	listItemButton, _ := gtk.ButtonNew()
+	listItemButtonStyleContext, _ := listItemButton.GetStyleContext()
+	listItemButtonStyleContext.AddClass("list-item-button")
+	if index % 2 != 0 {
+		listItemButtonStyleContext.AddClass("list-item-nth-child-even")
+	}
+
+	if isFolder {
+		listItemButton.Connect("clicked", func() {
+			this.locationHistory.GoForward(fileResponse.Name)
+			this.doLoadFiles()
+		})
+	} else {
+		listItemButton.Connect("clicked", utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
+			selectFileRequest := &octoprintApis.SelectFileRequest{}
+
+			// Set the location to "local" or "sdcard"
+			selectFileRequest.Location = this.locationHistory.Locations[0]
+
+			selectFileRequest.Path = fileResponse.Path
+			selectFileRequest.Print = true
+
+			utils.Logger.Infof("Loading file %q", fileResponse.Name)
+			if err := selectFileRequest.Do(this.UI.Client); err != nil {
+				utils.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
+				return
+			}
+		}))
+	}
+
+	return listItemButton
+}
+
+func (this *filesPanel) createLabelsBox(
+	nameLabel *gtk.Label,
+	infoLabel *gtk.Label,
+) *gtk.Box {
 	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	if nameLabel != nil {
 		labelsBox.Add(nameLabel)
@@ -323,17 +415,19 @@ func (this *filesPanel) createNameLabel(name string) *gtk.Label {
 }
 
 func (this *filesPanel) createListItemBox() *gtk.Box {
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	listItemBox.SetMarginTop(1)
-	listItemBox.SetMarginBottom(1)
-	listItemBox.SetMarginStart(15)
-	listItemBox.SetMarginEnd(15)
-	listItemBox.SetHExpand(true)
+	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	listItemBox.SetMarginTop(0)
+	listItemBox.SetMarginBottom(0)
+	listItemBox.SetMarginStart(0)
+	listItemBox.SetMarginEnd(0)
 
 	return listItemBox
 }
 
-func (this *filesPanel) addThumbnail(fileResponse *dataModels.FileResponse, listItemBox *gtk.Box) {
+func (this *filesPanel) addThumbnail(
+	fileResponse *dataModels.FileResponse,
+	listItemBox *gtk.Box,
+) {
 	if fileResponse.Thumbnail != "" {
 		utils.Logger.Infof("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
 
@@ -365,64 +459,33 @@ func (this *filesPanel) addThumbnail(fileResponse *dataModels.FileResponse, list
 	}
 }
 
+func (this *filesPanel) createOpenLocationImage(index int) *gtk.Image {
+	colorClass := fmt.Sprintf("color%d", (index % 4) + 1)
 
-func (this *filesPanel) createOpenLocationButton(location dataModels.Location) *gtk.Button {
-	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
-	button := utils.MustButton(image, func() {
-		this.locationHistory = utils.LocationHistory {
-			Locations: []dataModels.Location{location},
-		}
-
-		this.doLoadFiles()
-	})
-
-	ctx, _ := button.GetStyleContext()
-	ctx.AddClass("color1")
-	ctx.AddClass("file-list")
-
-	return button
+	return this.createActionImage("open.svg", colorClass)
 }
 
-func (this *filesPanel) createOpenFolderButton(fileResponse *dataModels.FileResponse) *gtk.Button {
-	image := utils.MustImageFromFileWithSize("open.svg", this.Scaled(40), this.Scaled(40))
-	button := utils.MustButton(image, func() {
-		this.locationHistory.GoForward(fileResponse.Name)
-		this.doLoadFiles()
-	})
-
-	ctx, _ := button.GetStyleContext()
-	ctx.AddClass("color1")
-	ctx.AddClass("file-list")
-
-	return button
+func (this *filesPanel) createPrintImage() *gtk.Image {
+	return this.createActionImage("print.svg", "color-warning-sign-yellow")
 }
 
-func (this *filesPanel) createLoadAndPrintButton(imageFileName string, fileResponse *dataModels.FileResponse) *gtk.Button {
-	button := utils.MustButton(
-		utils.MustImageFromFileWithSize(imageFileName, this.Scaled(40), this.Scaled(40)),
-		utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
-			selectFileRequest := &octoprintApis.SelectFileRequest{}
-
-			// Set the location to "local" or "sdcard"
-			selectFileRequest.Location = this.locationHistory.Locations[0]
-
-			selectFileRequest.Path = fileResponse.Path
-			selectFileRequest.Print = true
-
-			utils.Logger.Infof("Loading file %q", fileResponse.Name)
-			if err := selectFileRequest.Do(this.UI.Client); err != nil {
-				utils.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
-				return
-			}
-		}),
+func (this *filesPanel) createActionImage(
+	imageFileName string,
+	colorClass string,
+) *gtk.Image {
+	image := utils.MustImageFromFileWithSize(
+		imageFileName,
+		this.Scaled(40),
+		this.Scaled(40),
 	)
 
-	ctx, _ := button.GetStyleContext()
-	ctx.AddClass("color-warning-sign-yellow")
-	ctx.AddClass("file-list")
+	imageStyleContext, _ := image.GetStyleContext()
+	imageStyleContext.AddClass(colorClass)
 
-	return button
+	return image
 }
+
+
 
 /*
 func (this *filesPanel) isReady() bool {

@@ -50,6 +50,20 @@ progress {
 }
 
 
+.list-box-row {
+	margin: 0;
+	border: 0;
+	padding: 0;
+}
+
+.list-item-button {
+	margin: 0;
+	border: 0;
+	padding: 0 0 0 6px;
+}
+
+
+
 
 /* Button styles *********************************************************** */
 button {
@@ -71,23 +85,23 @@ button.color-none {
 	border-bottom: 8px solid black;
 }
 
-button.color1 {
+.color1 {
 	border-bottom: 8px solid #ED6500;
 }
 
-button.color2 {
+.color2 {
 	border-bottom: 8px solid #B10080;
 }
 
-button.color3 {
+.color3 {
 	border-bottom: 8px solid #009384;
 }
 
-button.color4 {
+.color4 {
 	border-bottom: 8px solid #A7E100;
 }
 
-button.color-dash-1 {
+.color-dash-1 {
 	background-image: linear-gradient(to right, #560FD1 60%, rgba(255, 255, 255, 0) 20%);
 
 	background-position: bottom;
@@ -95,7 +109,7 @@ button.color-dash-1 {
 	background-repeat: repeat-x;
 }
 
-button.color-dash-2 {
+.color-dash-2 {
 	background-image: linear-gradient(to right, #C8ADF8 60%, rgba(255, 255, 255, 0) 20%);
 
 	background-position: bottom;
@@ -103,11 +117,11 @@ button.color-dash-2 {
 	background-repeat: repeat-x;
 }
 
-button.color-warning-sign-yellow {
+.color-warning-sign-yellow {
 	border-bottom: 8px solid #FFE700;
 }
 
-button.color-warning-sign-yellow-dark {
+.color-warning-sign-yellow-dark {
 	border-bottom: 8px solid #E6D300;
 }
 
@@ -118,9 +132,6 @@ button.active {
 	background-color: #20303D;
 }
 
-button.file-list {
-	margin: 0px;
-}
 
 
 entry {
@@ -348,6 +359,15 @@ Do not use any of these in production.
 .orange-background {
 	background-color: orange;
 }
+
+.purple-background {
+	background-color: purple;
+}
+
+.cyan-background {
+	background-color: cyan;
+}
+
 
 .red-foreground {
 	color: red
