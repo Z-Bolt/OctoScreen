@@ -365,7 +365,16 @@ func (this *filesPanel) createListItemButton(
 			this.doLoadFiles()
 		})
 	} else {
-		listItemButton.Connect("clicked", utils.MustConfirmDialogBox(this.UI.window, "Do you wish to proceed?", func() {
+		message := ""
+		strLen := len(fileResponse.Name)
+		if strLen <= 20 {
+			message = fmt.Sprintf("Do you wish to print %s?", fileResponse.Name)
+		} else {
+			truncatedFileName := utils.TruncateString(fileResponse.Name, 40)
+			message = fmt.Sprintf("Do you wish to print\n%s?", truncatedFileName)
+		}
+
+		listItemButton.Connect("clicked", utils.MustConfirmDialogBox(this.UI.window, message, func() {
 			selectFileRequest := &octoprintApis.SelectFileRequest{}
 
 			// Set the location to "local" or "sdcard"
