@@ -1,4 +1,3 @@
-
 package utils
 
 import (
@@ -55,19 +54,22 @@ func StrEllipsisLen(name string, length int) string {
 	return name
 }
 
-func TruncateString(str string, length int) string {
-	if length < 3 {
-		length = 3
+func TruncateString(str string, maxLength int) string {
+	if maxLength < 3 {
+		maxLength = 3
+	}
+
+	strLen := len(str)
+	if strLen <= maxLength {
+		return str
 	}
 
 	truncateString := str
-	if len(str) > length {
-		if length > 3 {
-			length -= 3
-		}
-
-		truncateString = str[0:length] + "..."
+	if maxLength > 3 {
+		maxLength -= 3
 	}
+
+	truncateString = str[0:maxLength] + "..."
 
 	return truncateString
 }
