@@ -3,11 +3,10 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="60px" height="60px" viewBox="0 0 60 60" enable-background="new 0 0 60 60" xml:space="preserve">
-<g id="Page-1">
-	
+	<g id="Page-1">
 		<g id="load" transform="translate(29.000000, 30.000000) rotate(90.000000) translate(-29.000000, -30.000000) translate(10.000000, 9.000000)">
-		<polygon id="path7561-4-3" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" points="36.746,18.202 
-			19.161,0.432 1.391,18.018 8.426,25.126 14.119,19.491 13.883,40.23 23.882,40.344 24.118,19.658 29.639,25.237 		"/>
+			<polygon id="path7561-4-3" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" points="36.746,18.202 
+				19.161,0.432 1.391,18.018 8.426,25.126 14.119,19.491 13.883,40.23 23.882,40.344 24.118,19.658 29.639,25.237 		"/>
+		</g>
 	</g>
-</g>
 </svg>
