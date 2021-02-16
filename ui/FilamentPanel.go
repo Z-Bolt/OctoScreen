@@ -29,7 +29,7 @@ type filamentPanel struct {
 
 	// Third row
 	temperatureButton			*gtk.Button
-	selectToolStepButton		*uiWidgets.SelectToolStepButton
+	selectExtruderStepButton	*uiWidgets.SelectToolStepButton
 }
 
 func FilamentPanel(
@@ -53,7 +53,7 @@ func (this *filamentPanel) initialize() {
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Client)
 	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, false)
+	this.selectExtruderStepButton = uiWidgets.CreateSelectExtruderStepButton(this.UI.Client, false)
 
 
 	// First row
@@ -62,7 +62,7 @@ func (this *filamentPanel) initialize() {
 		this.UI.Client,
 		this.amountToExtrudeStepButton,
 		this.flowRateStepButton,
-		this.selectToolStepButton,
+		this.selectExtruderStepButton,
 		true,
 	)
 	this.Grid().Attach(this.filamentExtrudeButton,		0, 0, 1, 1)
@@ -76,7 +76,7 @@ func (this *filamentPanel) initialize() {
 		this.UI.Client,
 		this.amountToExtrudeStepButton,
 		this.flowRateStepButton,
-		this.selectToolStepButton,
+		this.selectExtruderStepButton,
 		false,
 	)
 	this.Grid().Attach(this.filamentRetractButton,		3, 0, 1, 1)
@@ -87,7 +87,7 @@ func (this *filamentPanel) initialize() {
 		this.UI.window,
 		this.UI.Client,
 		this.flowRateStepButton,
-		this.selectToolStepButton,
+		this.selectExtruderStepButton,
 		true,
 		int(this.UI.Settings.FilamentInLength),
 	)
@@ -100,7 +100,7 @@ func (this *filamentPanel) initialize() {
 		this.UI.window,
 		this.UI.Client,
 		this.flowRateStepButton,
-		this.selectToolStepButton,
+		this.selectExtruderStepButton,
 		false,
 		int(this.UI.Settings.FilamentOutLength),
 	)
@@ -112,10 +112,10 @@ func (this *filamentPanel) initialize() {
 	this.Grid().Attach(this.temperatureButton, 0, 2, 1, 1)
 
 	// The select tool step button is needed by some of the other controls (to get the name/ID of the tool
-	// to send the command to), but only display it if multiple hotends are present.
-	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-	if toolheadCount > 1 {
-		this.Grid().Attach(this.selectToolStepButton, 1, 2, 1, 1)
+	// to send the command to), but only display it if multiple extruders are present.
+	extruderCount := utils.GetExtruderCount(this.UI.Client)
+	if extruderCount > 1 {
+		this.Grid().Attach(this.selectExtruderStepButton, 1, 2, 1, 1)
 	}
 }
 

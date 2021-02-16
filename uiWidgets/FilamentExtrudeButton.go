@@ -14,7 +14,7 @@ type FilamentExtrudeButton struct {
 	client						*octoprintApis.Client
 	amountToExtrudeStepButton	*AmountToExtrudeStepButton
 	flowRateStepButton			*FlowRateStepButton // The flow rate step button is optional.
-	selectToolStepButton		*SelectToolStepButton
+	selectExtruderStepButton	*SelectToolStepButton
 	isForward					bool
 }
 
@@ -23,7 +23,7 @@ func CreateFilamentExtrudeButton(
 	client						*octoprintApis.Client,
 	amountToExtrudeStepButton	*AmountToExtrudeStepButton,
 	flowRateStepButton			*FlowRateStepButton, // The flow rate step button is optional.
-	selectToolStepButton		*SelectToolStepButton,
+	selectExtruderStepButton	*SelectToolStepButton,
 	isForward					bool,
 ) *FilamentExtrudeButton {
 	var base *gtk.Button
@@ -39,7 +39,7 @@ func CreateFilamentExtrudeButton(
 		client:						client,
 		amountToExtrudeStepButton:	amountToExtrudeStepButton,
 		flowRateStepButton:			flowRateStepButton,
-		selectToolStepButton:		selectToolStepButton,
+		selectExtruderStepButton:	selectExtruderStepButton,
 		isForward:					isForward,
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
@@ -55,7 +55,7 @@ func (this *FilamentExtrudeButton) handleClicked() {
 }
 
 func (this *FilamentExtrudeButton) sendExtrudeCommand(length int) {
-	extruderId := this.selectToolStepButton.Value()
+	extruderId := this.selectExtruderStepButton.Value()
 
 	flowRatePercentage := 100
 	if this.flowRateStepButton != nil {

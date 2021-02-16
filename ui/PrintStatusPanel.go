@@ -71,8 +71,8 @@ func (this *printStatusPanel) showTools() {
 	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
 	// PrintStatusPanel look similar, but there are subtle differences between the two
 	// and they can't be reused.
-	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-	if toolheadCount == 1 {
+	hotendCount := utils.GetHotendCount(this.UI.Client)
+	if hotendCount == 1 {
 		this.tool0Button = uiWidgets.CreateToolPrintingButton(0)
 	} else {
 		this.tool0Button = uiWidgets.CreateToolPrintingButton(1)
@@ -82,7 +82,7 @@ func (this *printStatusPanel) showTools() {
 	this.tool3Button = uiWidgets.CreateToolPrintingButton( 4)
 	this.bedButton   = uiWidgets.CreateToolPrintingButton(-1)
 
-	switch toolheadCount {
+	switch hotendCount {
 		case 1:
 			this.Grid().Attach(this.tool0Button, 0, 0, 2, 1)
 			this.Grid().Attach(this.bedButton,   0, 1, 2, 1)

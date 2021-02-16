@@ -14,6 +14,7 @@ type OctoScreenPluginInfoBox struct {
 
 func CreateOctoScreenPluginInfoBox(
 	client							*octoprintApis.Client,
+	uiState							string,
 	octoPrintPluginIsInstalled		bool,
 ) *OctoScreenPluginInfoBox {
 	logoImage := utils.MustImageFromFile("logos/puzzle-piece.png")
@@ -21,7 +22,7 @@ func CreateOctoScreenPluginInfoBox(
 
 	str2 := ""
 	if octoPrintPluginIsInstalled {
-		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client)
+		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client, uiState)
 		if err != nil {
 			panic(err)
 		}

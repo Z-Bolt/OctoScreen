@@ -29,7 +29,7 @@ type zOffsetCalibrationPanel struct {
 	zOffset							float64
 
 	// First row
-	selectToolStepButton			*uiWidgets.SelectToolStepButton
+	selectHotendStepButton			*uiWidgets.SelectToolStepButton
 	decreaseZOffsetButton			*uiWidgets.IncreaseZOffsetButton
 	increaseZOffsetButton			*uiWidgets.IncreaseZOffsetButton
 
@@ -89,21 +89,21 @@ func (this *zOffsetCalibrationPanel) initialize() {
 
 // First row
 func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, false)
-	_, err := this.selectToolStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
+	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, false)
+	_, err := this.selectHotendStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 	if err != nil {
 		panic(err)
 	}
 
-	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-	if toolheadCount > 1 {
+	hotendCount := utils.GetHotendCount(this.UI.Client)
+	if hotendCount > 1 {
 		// Only display the select tool button if there are multiple toolheads.
-		this.Grid().Attach(this.selectToolStepButton, 0, 0, 1, 1)
+		this.Grid().Attach(this.selectHotendStepButton, 0, 0, 1, 1)
 	}
 }
 
 func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
-	toolheadIndex := this.selectToolStepButton.Index()
+	toolheadIndex := this.selectHotendStepButton.Index()
 	utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 	gcode := fmt.Sprintf("T%d", toolheadIndex)

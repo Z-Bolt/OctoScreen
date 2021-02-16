@@ -12,18 +12,20 @@ var temperaturePresetsPanelInstance *temperaturePresetsPanel
 
 type temperaturePresetsPanel struct {
 	CommonPanel
-	selectToolStepButton	*uiWidgets.SelectToolStepButton
+
+	selectHotendStepButton	*uiWidgets.SelectToolStepButton
+
 }
 
 func TemperaturePresetsPanel(
 	ui						*UI,
 	parentPanel				interfaces.IPanel,
-	selectToolStepButton	*uiWidgets.SelectToolStepButton,
+	selectHotendStepButton	*uiWidgets.SelectToolStepButton,
 ) *temperaturePresetsPanel {
 	if temperaturePresetsPanelInstance == nil {
 		instance := &temperaturePresetsPanel {
 			CommonPanel:			NewCommonPanel(ui, parentPanel),
-			selectToolStepButton:	selectToolStepButton,
+			selectHotendStepButton:	selectHotendStepButton,
 		}
 		instance.initialize()
 		temperaturePresetsPanelInstance = instance
@@ -44,12 +46,14 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 		return
 	}
 
+	this.createAllOffButton()
+
 	count := 0
 	for _, temperaturePreset := range settings.Temperature.TemperaturePresets {
 		if count < 10 {
 			temperaturePresetButton := uiWidgets.CreateTemperaturePresetButton(
 				this.UI.Client,
-				this.selectToolStepButton,
+				this.selectHotendStepButton,
 				"heat-up.svg",
 				temperaturePreset,
 				this.UI.GoToPreviousPanel,
@@ -59,7 +63,6 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 		}
 	}
 
-	this.createAllOffButton()
 }
 
 func (this *temperaturePresetsPanel) createAllOffButton() {

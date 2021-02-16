@@ -210,8 +210,8 @@ func getDefaultMenuItems(client *octoprintApis.Client) []dataModels.MenuItem {
 	var menuItems []dataModels.MenuItem
 	var err error
 
-	toolheadCount := utils.GetToolheadCount(client)
-	if toolheadCount > 1 {
+	hotendCount := utils.GetHotendCount(client)
+	if hotendCount > 1 {
 		err = json.Unmarshal([]byte(defaultMenuItemsForMultipleToolheads), &menuItems)
 	} else {
 		err = json.Unmarshal([]byte(defaultMenuItemsForSingleToolhead), &menuItems)

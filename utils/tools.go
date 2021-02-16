@@ -10,41 +10,70 @@ import (
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
-var cachedToolheadCount = -1
+var cachedExtruderCount = -1
+var cachedHasSharedNozzle = false
 
-func GetToolheadCount(client *octoprintApis.Client) int {
-	if cachedToolheadCount != -1 {
-		return cachedToolheadCount
+func getCachedPrinterProfileData(client *octoprintApis.Client) {
+	if cachedExtruderCount != -1 {
+		return
 	}
 
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(client)
 	if err != nil {
-		LogError("Tools.GetToolheadCount()", "version.Get()", err)
-		return 0
+		LogError("Tools.setCachedPrinterProfileData()", "version.Get()", err)
+		return
 	}
 
 	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(client)
 	if err != nil {
-		LogError("Tools.GetToolheadCount()", "Do(PrinterProfilesRequest)", err)
-		return 0
+		LogError("Tools.setCachedPrinterProfileData()", "Do(PrinterProfilesRequest)", err)
+		return
 	}
 
-	cachedToolheadCount = printerProfile.Extruder.Count
-	if printerProfile.Extruder.HasSharedNozzle {
-		cachedToolheadCount = 1
-	} else if cachedToolheadCount > 4 {
-		cachedToolheadCount = 4
+	cachedExtruderCount = printerProfile.Extruder.Count
+	if cachedExtruderCount > 4 {
+		cachedExtruderCount = 4
 	}
 
-
-	// TESTING: uncomment to force all toolheads to display and use for testing
-	// cachedToolheadCount = 2
-	// cachedToolheadCount = 3
-	// cachedToolheadCount = 4
-
-
-	return cachedToolheadCount
+	cachedHasSharedNozzle = printerProfile.Extruder.HasSharedNozzle
 }
+
+
+func GetExtruderCount(client *octoprintApis.Client) int {
+	if cachedExtruderCount == -1 {
+		getCachedPrinterProfileData(client)
+	}
+
+	return cachedExtruderCount
+}
+
+func GetHotendCount(client *octoprintApis.Client) int {
+	if cachedExtruderCount == -1 {
+		getCachedPrinterProfileData(client)
+	}
+
+	if cachedHasSharedNozzle {
+		return 1
+	} else if cachedExtruderCount > 4 {
+		return 4
+	}
+
+	return cachedExtruderCount
+}
+
+func GetHasSharedNozzle(client *octoprintApis.Client) bool {
+	if cachedExtruderCount == -1 {
+		getCachedPrinterProfileData(client)
+	}
+
+	return cachedHasSharedNozzle
+}
+
+
+
+
+
+
 
 
 func GetDisplayNameForTool(toolName string) string {
@@ -183,6 +212,18 @@ func GetToolheadFileName(hotendIndex, hotendCount int) string {
 	return strImageFileName
 }
 
+
+func GetExtruderFileName(hotendIndex, hotendCount int) string {
+	strImageFileName := ""
+	if hotendIndex == 1 && hotendCount == 1 {
+		strImageFileName = "extruder-typeB.svg"
+	} else {
+		strImageFileName = fmt.Sprintf("extruder-typeB-%d.svg", hotendIndex)
+	}
+
+	return strImageFileName
+}
+
 func GetHotendFileName(hotendIndex, hotendCount int) string {
 	strImageFileName := ""
 	if hotendIndex == 1 && hotendCount == 1 {
@@ -193,6 +234,10 @@ func GetHotendFileName(hotendIndex, hotendCount int) string {
 
 	return strImageFileName
 }
+
+
+
+
 
 func GetNozzleFileName(hotendIndex, hotendCount int) string {
 	strImageFileName := ""

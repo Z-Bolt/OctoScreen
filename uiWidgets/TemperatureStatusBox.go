@@ -47,7 +47,7 @@ func CreateTemperatureStatusBox(
 
 	var bedTemperatureData *dataModels.TemperatureData = nil
 	var hotendIndex int = 0
-	var hotendCount int = utils.GetToolheadCount(client)
+	var hotendCount int = utils.GetHotendCount(client)
 	for key, temperatureData := range currentTemperatureData {
 		if key == "bed" {
 			bedTemperatureData = &temperatureData

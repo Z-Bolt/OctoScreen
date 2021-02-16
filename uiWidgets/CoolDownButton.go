@@ -47,7 +47,9 @@ func TurnAllHeatersOff(
 	client						*octoprintApis.Client,
 ) {
 	// Set the bed's temp.
-	bedTargetRequest := &octoprintApis.BedTargetRequest{Target: 0.0}
+	bedTargetRequest := &octoprintApis.BedTargetRequest {
+		Target: 0.0,
+	}
 	err := bedTargetRequest.Do(client)
 	if err != nil {
 		utils.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
@@ -55,9 +57,13 @@ func TurnAllHeatersOff(
 	}
 
 	// Set the temp of each hotend.
-	toolheadCount := utils.GetToolheadCount(client)
-	for i := 0; i < toolheadCount; i++ {
-		var toolTargetRequest = &octoprintApis.ToolTargetRequest{Targets: map[string]float64{fmt.Sprintf("tool%d", i): 0.0}}
+	hotendCount := utils.GetHotendCount(client)
+	for i := 0; i < hotendCount; i++ {
+		var toolTargetRequest = &octoprintApis.ToolTargetRequest {
+			Targets: map[string]float64 {
+				fmt.Sprintf("tool%d", i): 0.0,
+			},
+		}
 		err = toolTargetRequest.Do(client)
 		if err != nil {
 			utils.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)

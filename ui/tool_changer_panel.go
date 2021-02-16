@@ -81,8 +81,8 @@ func (this *toolChangerPanel) createMagnetOffButton() gtk.IWidget {
 }
 
 func (this *toolChangerPanel) createToolheadButtons() {
-	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, this.Grid())
+	extruderCount := utils.GetExtruderCount(this.UI.Client)
+	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(extruderCount, this.Grid())
 	this.setToolheadButtonClickHandlers(toolheadButtons)
 }
 

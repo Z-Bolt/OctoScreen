@@ -271,7 +271,7 @@ func (this *UI) checkNotification() {
 		return
 	}
 
-	notificationRespone, err := (&octoprintApis.NotificationRequest{}).Do(this.Client)
+	notificationRespone, err := (&octoprintApis.NotificationRequest{}).Do(this.Client, this.UIState)
 	if err != nil {
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
 		utils.Logger.Debug("leaving ui.checkNotification()")
@@ -288,7 +288,7 @@ func (this *UI) checkNotification() {
 func (this *UI) loadSettings() {
 	utils.Logger.Debug("entering ui.loadSettings()")
 
-	settingsResponse, err := (&octoprintApis.OctoScreenSettingsRequest{}).Do(this.Client)
+	settingsResponse, err := (&octoprintApis.OctoScreenSettingsRequest{}).Do(this.Client, this.UIState)
 	if err != nil {
 		text := err.Error()
 		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {
@@ -370,7 +370,7 @@ func (this *UI) update() {
 		return
 	}
 
-	utils.Logger.Infoln("ui.update() - thus.UIState is: ", this.UIState)
+	utils.Logger.Infoln("ui.update() - this.UIState is: ", this.UIState)
 
 	if this.UIState == "splash" {
 		this.connectionAttempts++

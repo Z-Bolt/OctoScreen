@@ -16,7 +16,7 @@ type FilamentLoadButton struct {
 	parentWindow				*gtk.Window
 	client						*octoprintApis.Client
 	flowRateStepButton			*FlowRateStepButton // The flow rate step button is optional.
-	selectToolStepButton		*SelectToolStepButton
+	selectExtruderStepButton	*SelectToolStepButton
 	isForward					bool
 	length						int
 }
@@ -25,7 +25,7 @@ func CreateFilamentLoadButton(
 	parentWindow				*gtk.Window,
 	client						*octoprintApis.Client,
 	flowRateStepButton			*FlowRateStepButton, // The flow rate step button is optional.
-	selectToolStepButton		*SelectToolStepButton,
+	selectExtruderStepButton	*SelectToolStepButton,
 	isForward					bool,
 	length						int,
 ) *FilamentLoadButton {
@@ -41,7 +41,7 @@ func CreateFilamentLoadButton(
 		parentWindow:				parentWindow,
 		client:						client,
 		flowRateStepButton:			flowRateStepButton,
-		selectToolStepButton:		selectToolStepButton,
+		selectExtruderStepButton:	selectExtruderStepButton,
 		isForward:					isForward,
 		length:						length,
 	}
@@ -58,7 +58,7 @@ func (this *FilamentLoadButton) handleClicked() {
 }
 
 func (this *FilamentLoadButton) sendLoadCommand() {
-	extruderId := this.selectToolStepButton.Value()
+	extruderId := this.selectExtruderStepButton.Value()
 
 	flowRatePercentage := 100
 	if this.flowRateStepButton != nil {

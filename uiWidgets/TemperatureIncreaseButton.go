@@ -12,14 +12,14 @@ type TemperatureIncreaseButton struct {
 
 	client							*octoprintApis.Client
 	temperatureAmountStepButton		*TemperatureAmountStepButton
-	selectToolStepButton			*SelectToolStepButton
+	selectHotendStepButton			*SelectToolStepButton
 	isIncrease						bool
 }
 
 func CreateTemperatureIncreaseButton(
 	client							*octoprintApis.Client,
 	temperatureAmountStepButton		*TemperatureAmountStepButton,
-	selectToolStepButton			*SelectToolStepButton,
+	selectHotendStepButton			*SelectToolStepButton,
 	isIncrease						bool,
 ) *TemperatureIncreaseButton {
 	var base *gtk.Button
@@ -33,7 +33,7 @@ func CreateTemperatureIncreaseButton(
 		Button:							base,
 		client:							client,
 		temperatureAmountStepButton:	temperatureAmountStepButton,
-		selectToolStepButton:			selectToolStepButton,
+		selectHotendStepButton:			selectHotendStepButton,
 		isIncrease:						isIncrease,
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
@@ -46,7 +46,7 @@ func CreateTemperatureIncreaseButton(
 
 func (this *TemperatureIncreaseButton) handleClicked() {
 	value := this.temperatureAmountStepButton.Value()
-	tool := this.selectToolStepButton.Value()
+	tool := this.selectHotendStepButton.Value()
 	target, err := utils.GetToolTarget(this.client, tool)
 	if err != nil {
 		utils.LogError("TemperatureIncreaseButton.handleClicked()", "GetToolTarget()", err)

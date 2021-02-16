@@ -11,7 +11,7 @@ type TemperaturePresetButton struct {
 	*gtk.Button
 
 	client						*octoprintApis.Client
-	selectToolStepButton		*SelectToolStepButton
+	selectHotendStepButton		*SelectToolStepButton
 	imageFileName				string
 	temperaturePreset			*dataModels.TemperaturePreset
 	callback					func()
@@ -19,7 +19,7 @@ type TemperaturePresetButton struct {
 
 func CreateTemperaturePresetButton(
 	client						*octoprintApis.Client,
-	selectToolStepButton		*SelectToolStepButton,
+	selectHotendStepButton		*SelectToolStepButton,
 	imageFileName				string,
 	temperaturePreset			*dataModels.TemperaturePreset,
 	callback					func(),
@@ -30,7 +30,7 @@ func CreateTemperaturePresetButton(
 	instance := &TemperaturePresetButton{
 		Button:						base,
 		client:						client,
-		selectToolStepButton:		selectToolStepButton,
+		selectHotendStepButton:		selectHotendStepButton,
 		imageFileName:				imageFileName,
 		temperaturePreset:			temperaturePreset,
 		callback:					callback,
@@ -48,7 +48,7 @@ func (this *TemperaturePresetButton) handleClicked() {
 	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting hotend temperature to %.0f.", this.temperaturePreset.Extruder)
 	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting bed temperature to %.0f.", this.temperaturePreset.Bed)
 
-	currentTool := this.selectToolStepButton.Value()
+	currentTool := this.selectHotendStepButton.Value()
 	if currentTool == "" {
 		utils.Logger.Error("TemperaturePresetButton.handleClicked() - currentTool is invalid (blank), defaulting to tool0")
 		currentTool = "tool0"
@@ -64,6 +64,12 @@ func (this *TemperaturePresetButton) handleClicked() {
 
 	So, instead, the temperature of both the bed and the selected tool (or tool0 if the bed
 	is selected) are set.
+
+	NOTE: This only changes the temperature of the bed and the currently selected hotend
+	(which is passed into the TemperaturePresetsPanel, and then passed into
+	CreateTemperaturePresetButton).  The code could be changed so it sets the temperature
+	of every hotend, but this is problematic if one is using different materials with
+	different temperature characteristics.
 	*/
 
 	// Set the bed's temp.
@@ -78,9 +84,17 @@ func (this *TemperaturePresetButton) handleClicked() {
 	var toolTargetRequest *octoprintApis.ToolTargetRequest
 	if currentTool == "bed" {
 		// If current tool is set to "bed", use tool0.
-		toolTargetRequest = &octoprintApis.ToolTargetRequest{Targets: map[string]float64{"tool0": this.temperaturePreset.Extruder}}
+		toolTargetRequest = &octoprintApis.ToolTargetRequest {
+			Targets: map[string]float64 {
+				"tool0": this.temperaturePreset.Extruder,
+			},
+		}
 	} else {
-		toolTargetRequest = &octoprintApis.ToolTargetRequest{Targets: map[string]float64{currentTool: this.temperaturePreset.Extruder}}
+		toolTargetRequest = &octoprintApis.ToolTargetRequest {
+			Targets: map[string]float64 {
+				currentTool: this.temperaturePreset.Extruder,
+			},
+		}
 	}
 
 	err = toolTargetRequest.Do(this.client)
