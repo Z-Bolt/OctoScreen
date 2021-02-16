@@ -14,9 +14,13 @@ type NotificationRequest struct {
 	Command string `json:"command"`
 }
 
-func (cmd *NotificationRequest) Do(c *Client) (*dataModels.NotificationResponse, error) {
+func (this *NotificationRequest) Do(client *Client, uiState string) (*dataModels.NotificationResponse, error) {
+	if uiState != "splash" && uiState != "idle" {
+		return nil, nil
+	}
+
 	target := fmt.Sprintf("%s?command=get_notification", PluginZBoltOctoScreenApiUri)
-	bytes, err := c.doJsonRequest("GET", target, nil, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", target, nil, ConnectionErrors)
 	if err != nil {
 		return nil, err
 	}
