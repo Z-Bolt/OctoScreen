@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -72,4 +73,15 @@ func TruncateString(str string, maxLength int) string {
 	truncateString = str[0:maxLength] + "..."
 
 	return truncateString
+}
+
+
+func StructToJson(obj interface{}) (string, error) {
+	bytes, err := json.Marshal(obj)
+	if err != nil {
+		return "", err
+	} else {
+		jsonStr := string(bytes)
+		return jsonStr, nil
+	}
 }
