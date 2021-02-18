@@ -20,7 +20,8 @@ func (this *LocationHistory) Length() int {
 func (this *LocationHistory) CurrentLocation() dataModels.Location {
 	length := this.Length()
 	if length < 1 {
-		panic("LocationHistory.current() - locations is empty")
+		log.Error("CurrentLocation() - length < 1")
+		panic("PANIC!!! - LocationHistory.current() - locations is empty")
 	}
 
 	return this.Locations[length - 1]
