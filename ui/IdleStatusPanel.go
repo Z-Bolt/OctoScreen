@@ -1,6 +1,7 @@
 package ui
 
 import (
+	// "encoding/json"
 	// "fmt"
 	// "sync"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var idleStatusPanelInstance *idleStatusPanel
 
@@ -38,16 +40,34 @@ func IdleStatusPanel(ui *UI) *idleStatusPanel {
 }
 
 func (this *idleStatusPanel) initialize() {
+	utils.Logger.Debug("entering IdleStatusPanel.initialize()")
+
 	defer this.Initialize()
 
-	utils.Logger.Info(this.UI.Settings)
+	utils.Logger.Info("IdleStatusPanel.initialize() - settings are:")
+	if this.UI == nil {
+		utils.Logger.Error("IdleStatusPanel.initialize() - this.UI is nil")
+	} else if this.UI.Settings == nil {
+		utils.Logger.Error("IdleStatusPanel.initialize() - this.UI.Settings is nil")
+	} else {
+		utils.Logger.Info("struct values:")
+		utils.Logger.Info(this.UI.Settings)
+
+		jsonStr, err := utils.StructToJson(this.UI.Settings)
+		if err == nil {
+			utils.Logger.Info("JSON:")
+			utils.Logger.Info(jsonStr)
+		}
+	}
+	utils.Logger.Info("")
+	utils.Logger.Info("")
 
 	var menuItems []dataModels.MenuItem
 	if this.UI.Settings == nil || this.UI.Settings.MenuStructure == nil || len(this.UI.Settings.MenuStructure) < 1 {
-		utils.Logger.Info("Loading default menu")
+		utils.Logger.Info("IdleStatusPanel.initialize() - Loading default menu")
 		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)
 	} else {
-		utils.Logger.Info("Loading octo menu")
+		utils.Logger.Info("IdleStatusPanel.initialize() - Loading octo menu")
 	}
 
 	menuItems = this.UI.Settings.MenuStructure
@@ -62,17 +82,29 @@ func (this *idleStatusPanel) initialize() {
 	this.Grid().Attach(printButton, 2, 2, 2, 1)
 
 	this.showTools()
+
+	utils.Logger.Debug("leaving IdleStatusPanel.initialize()")
 }
 
 func (this *idleStatusPanel) showFiles() {
+	utils.Logger.Debug("entering IdleStatusPanel.showFiles()")
+
 	this.UI.GoToPanel(FilesPanel(this.UI, this))
+
+	utils.Logger.Debug("leaving IdleStatusPanel.showFiles()")
 }
 
 func (this *idleStatusPanel) update() {
+	utils.Logger.Debug("entering IdleStatusPanel.update()")
+
 	this.updateTemperature()
+
+	utils.Logger.Debug("leaving IdleStatusPanel.update()")
 }
 
 func (this *idleStatusPanel) showTools() {
+	utils.Logger.Debug("entering IdleStatusPanel.showTools()")
+
 	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
 	// PrintStatusPanel look similar, but there are subtle differences between the two
 	// and they can't be reused.
@@ -114,6 +146,8 @@ func (this *idleStatusPanel) showTools() {
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
 	}
+
+	utils.Logger.Debug("leaving IdleStatusPanel.showTools()")
 }
 
 func (this *idleStatusPanel) updateTemperature() {

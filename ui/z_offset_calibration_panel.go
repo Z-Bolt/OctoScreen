@@ -92,6 +92,7 @@ func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
 	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, false)
 	_, err := this.selectHotendStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 	if err != nil {
+		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateSelectToolStepButton()", "selectHotendStepButton.Connect()", err)
 		panic(err)
 	}
 
@@ -132,6 +133,7 @@ func (this *zOffsetCalibrationPanel) CreateDecreaseZOffsetButton() {
 	this.decreaseZOffsetButton = uiWidgets.CreateIncreaseZOffsetButton(false)
 	_, err := this.decreaseZOffsetButton.Connect("clicked", this.decreaseZOffsetButtonClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateDecreaseZOffsetButton()", "decreaseZOffsetButton.Connect()", err)
 		panic(err)
 	}
 	this.Grid().Attach(this.decreaseZOffsetButton, 1, 0, 1, 1)
@@ -149,6 +151,7 @@ func (this *zOffsetCalibrationPanel) CreateIncreaseZOffsetButton() {
 	this.increaseZOffsetButton = uiWidgets.CreateIncreaseZOffsetButton(true)
 	_, err := this.increaseZOffsetButton.Connect("clicked", this.increaseZOffsetButtonClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateIncreaseZOffsetButton()", "increaseZOffsetButton.Connect()", err)
 		panic(err)
 	}
 	this.Grid().Attach(this.increaseZOffsetButton, 2, 0, 1, 1)
@@ -182,6 +185,7 @@ func (this *zOffsetCalibrationPanel) CreateManualZCalibrationStepButton() {
 	this.manualZCalibrationStepButton = uiWidgets.CreateManualZCalibrationStepButton()
 	_, err := this.manualZCalibrationStepButton.Connect("clicked", this.manualZCalibrationStepButtonHandleClick)
 	if err != nil {
+		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateManualZCalibrationStepButton()", "manualZCalibrationStepButton.Connect()", err)
 		panic(err)
 	}
 

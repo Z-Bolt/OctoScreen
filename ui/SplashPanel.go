@@ -22,6 +22,8 @@ func NewSplashPanel(ui *UI) *SplashPanel {
 }
 
 func (this *SplashPanel) initialize() {
+	utils.Logger.Debug("entering SplashPanel.initialize()")
+
 	logo := utils.MustImageFromFile("logos/logo.png")
 	this.Label = utils.MustLabel("...")
 	this.Label.SetHExpand(true)
@@ -45,9 +47,13 @@ func (this *SplashPanel) initialize() {
 	box.Add(this.createActionBar())
 
 	this.Grid().Add(box)
+
+	utils.Logger.Debug("leaving SplashPanel.initialize()")
 }
 
 func (this *SplashPanel) createActionBar() gtk.IWidget {
+	utils.Logger.Debug("entering SplashPanel.createActionBar()")
+
 	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actionBar.SetHAlign(gtk.ALIGN_END)
 
@@ -66,29 +72,51 @@ func (this *SplashPanel) createActionBar() gtk.IWidget {
 	networkButton.SetProperty("width-request", this.Scaled(100))
 	actionBar.Add(networkButton)
 
+	utils.Logger.Debug("leaving SplashPanel.createActionBar()")
+
 	return actionBar
 }
 
 func (this *SplashPanel) putOnHold() {
+	utils.Logger.Debug("entering SplashPanel.putOnHold()")
+
 	this.RetryButton.Show()
-	ctx, _ := this.RetryButton.GetStyleContext()
-	ctx.RemoveClass("hidden")
+	ctx, err := this.RetryButton.GetStyleContext()
+	if err != nil {
+		utils.LogError("SplashPanel.putOnHold()", "RetryButton.GetStyleContext()", err)
+	} else {
+		ctx.RemoveClass("hidden")
+	}
 	this.Label.SetText("Cannot connect to the printer.  Tap \"Retry\" to try again.")
+
+	utils.Logger.Debug("leaving SplashPanel.putOnHold()")
 }
 
 func (this *SplashPanel) releaseFromHold() {
+	utils.Logger.Debug("entering SplashPanel.releaseFromHold()")
+
 	this.RetryButton.Hide()
 	ctx, _ := this.RetryButton.GetStyleContext()
 	ctx.AddClass("hidden")
 
 	this.Label.SetText("Loading...")
 	this.UI.connectionAttempts = 0
+
+	utils.Logger.Debug("leaving SplashPanel.releaseFromHold()")
 }
 
 func (this *SplashPanel) showNetwork() {
+	utils.Logger.Debug("entering SplashPanel.showNetwork()")
+
 	this.UI.GoToPanel(NetworkPanel(this.UI, this))
+
+	utils.Logger.Debug("leaving SplashPanel.showNetwork()")
 }
 
 func (this *SplashPanel) showSystem() {
+	utils.Logger.Debug("entering SplashPanel.showSystem()")
+
 	this.UI.GoToPanel(SystemPanel(this.UI, this))
+
+	utils.Logger.Debug("leaving SplashPanel.showSystem()")
 }

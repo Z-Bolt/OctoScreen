@@ -10,6 +10,7 @@ import (
 	"github.com/golang-collections/collections/stack"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
+
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
@@ -201,7 +202,7 @@ func (this *UI) verifyConnection() {
 				}
 		}
 	} else {
-		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest)", err)
+		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest) returned an error", err)
 		utils.Logger.Info("ui.verifyConnection() - now setting newUIState to 'splash'")
 		newUIState = "splash"
 
@@ -212,8 +213,11 @@ func (this *UI) verifyConnection() {
 			utils.Logger.Infof("ui.verifyConnection() - errMessage is: %q", errMessage)
 
 			if strings.Contains(strings.ToLower(errMessage), "deadline exceeded") {
-				// Use 'offline' here, but no ending period.
-				splashMessage = "Printer is OFFLINE"
+				utils.Logger.Errorf("ui.verifyConnection() - %s", errMessage)
+				splashMessage = "Printer is offline (deadline exceeded)"
+			} else if strings.Contains(strings.ToLower(errMessage), "connection reset by peer") {
+				utils.Logger.Errorf("ui.verifyConnection() - %s", errMessage)
+				splashMessage = "Printer is offline (peer connection reset)"
 			} else {
 				splashMessage = errMessage
 			}
@@ -271,15 +275,15 @@ func (this *UI) checkNotification() {
 		return
 	}
 
-	notificationRespone, err := (&octoprintApis.NotificationRequest{}).Do(this.Client, this.UIState)
+	notificationResponse, err := (&octoprintApis.NotificationRequest{}).Do(this.Client, this.UIState)
 	if err != nil {
 		utils.LogError("ui.checkNotification()", "Do(GetNotificationRequest)", err)
 		utils.Logger.Debug("leaving ui.checkNotification()")
 		return
 	}
 
-	if notificationRespone.Message != "" {
-		utils.InfoMessageDialogBox(this.window, notificationRespone.Message)
+	if notificationResponse != nil && notificationResponse.Message != "" {
+		utils.InfoMessageDialogBox(this.window, notificationResponse.Message)
 	}
 
 	utils.Logger.Debug("leaving ui.checkNotification()")
@@ -370,7 +374,7 @@ func (this *UI) update() {
 		return
 	}
 
-	utils.Logger.Infoln("ui.update() - this.UIState is: ", this.UIState)
+	utils.Logger.Infof("ui.update() - this.UIState is: %q", this.UIState)
 
 	if this.UIState == "splash" {
 		this.connectionAttempts++
@@ -494,5 +498,6 @@ func (this *UI) errToUser(err error) string {
 	}
 
 	utils.Logger.Debugf("leaving ui.errToUser() - unexpected error: %q", text)
-	return fmt.Sprintf("Unexpected error: %s", err)
+
+	return fmt.Sprintf("Unexpected Error: %s", text)
 }

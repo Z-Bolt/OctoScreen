@@ -28,7 +28,7 @@ func (cmd *SystemCommandsRequest) Do(c *Client) (*dataModels.SystemCommandsRespo
 	}
 
 	// TODO: there are 2 warnings here... the 2nd parameter into Unmarshal()
-	// is supposed to be a point.  Change x.Confirm to &x.Confirm ?
+	// is supposed to be a pointer.  Change x.Confirm to &x.Confirm ?
 	// need to verify
 
 	r := &dataModels.SystemCommandsResponse{}

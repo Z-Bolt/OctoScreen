@@ -35,12 +35,12 @@ type Client struct {
 // `Access Control` is enabled at OctoPrint configuration an apiKey should be
 // provided (http://docs.octoprint.org/en/master/api/general.html#authorization).
 func NewClient(endpoint, apiKey string) *Client {
-	return &Client{
+	return &Client {
 		Endpoint: endpoint,
 		APIKey:   apiKey,
-		httpClient: &http.Client{
+		httpClient: &http.Client {
 			Timeout: time.Second * 3,
-			Transport: &http.Transport{
+			Transport: &http.Transport {
 				DisableKeepAlives: true,
 			},
 		},
