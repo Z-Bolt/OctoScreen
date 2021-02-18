@@ -21,6 +21,7 @@ func CreateFlowRateStepButton(
 		Step{"Slow (75%)",    "speed-slow.svg",   nil,  75},
 	)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateFlowRateStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

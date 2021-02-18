@@ -24,22 +24,23 @@ func CreateOctoScreenPluginInfoBox(
 	if octoPrintPluginIsInstalled {
 		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client, uiState)
 		if err != nil {
-			panic(err)
-		}
-
-		found := false
-		for i := 0; i < len(pluginManagerInfoResponse.Plugins) && !found; i++ {
-			plugin := pluginManagerInfoResponse.Plugins[i]
-			if plugin.Key == "zbolt_octoscreen" {
-				found = true
-				str2 = plugin.Version
+			utils.LogError("CreateOctoScreenPluginInfoBox()", "PluginManagerInfoRequest.Do()", err)
+			str2 = "Error"
+		} else {
+			found := false
+			for i := 0; i < len(pluginManagerInfoResponse.Plugins) && !found; i++ {
+				plugin := pluginManagerInfoResponse.Plugins[i]
+				if plugin.Key == "zbolt_octoscreen" {
+					found = true
+					str2 = plugin.Version
+				}
 			}
-		}
 
-		if !found {
-			// OK, the plugin is there, we just can't get the info from a GET request.
-			// Default to displaying, "Present"
-			str2 = "Present"
+			if !found {
+				// OK, the plugin is there, we just can't get the info from a GET request.
+				// Default to displaying, "Present"
+				str2 = "Present"
+			}
 		}
 	} else {
 		str2 = "Not installed"

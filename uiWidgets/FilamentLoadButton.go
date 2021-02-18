@@ -47,6 +47,7 @@ func CreateFilamentLoadButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateFilamentLoadButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 

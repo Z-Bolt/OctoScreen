@@ -41,6 +41,7 @@ func CreateFanButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateFanButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 

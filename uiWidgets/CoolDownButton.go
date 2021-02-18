@@ -29,6 +29,7 @@ func CreateCoolDownButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateCoolDownButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 

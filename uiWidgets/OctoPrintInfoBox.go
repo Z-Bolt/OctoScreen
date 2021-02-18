@@ -21,18 +21,25 @@ func CreateOctoPrintInfoBox(
 	logoHeight := int(float64(logoWidth) * 1.25)
 	logoImage := utils.MustImageFromFileWithSize("logos/logo-octoprint.png", logoWidth, logoHeight)
 
+	server := ""
+	apiVersion := ""
 	versionResponse, err := (&octoprintApis.VersionRequest{}).Do(client)
 	if err != nil {
-		// TODO: should the error really trigger a panic?
-		panic(err)
+		utils.LogError("OctoPrintInfoBox.CreateOctoPrintInfoBox()", "VersionRequest.Do()", err)
+	} else if versionResponse == nil {
+		server = "Unknown?"
+		apiVersion = "Unknown?"
+	} else {
+		server = versionResponse.Server
+		apiVersion = versionResponse.API
 	}
 
 	base := CreateSystemInfoBox(
 		client,
 		logoImage,
 		"OctoPrint",
-		versionResponse.Server,
-		fmt.Sprintf("(API   %s)", versionResponse.API),   // Use 3 spaces... 1 space doesn't have enough kerning.
+		server,
+		fmt.Sprintf("(API   %s)", apiVersion),   // Use 3 spaces... 1 space doesn't have enough kerning.
 	)
 
 	instance := &OctoPrintInfoBox {

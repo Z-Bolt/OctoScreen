@@ -18,9 +18,10 @@ func MustPressedButton(
 	isReleased := make(chan bool)
 	var mutex sync.Mutex
 
-	button, error := gtk.ButtonNewWithLabel(label)
-	if error != nil {
-		panic(error)
+	button, err := gtk.ButtonNewWithLabel(label)
+	if err != nil {
+		utils.LogError("PANIC!!! - MustPressedButton()", "gtk.ButtonNewWithLabel()", err)
+		panic(err)
 	}
 
 	button.SetImage(image)

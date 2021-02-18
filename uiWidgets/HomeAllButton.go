@@ -24,6 +24,7 @@ func CreateHomeAllButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateHomeAllButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 

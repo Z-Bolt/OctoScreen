@@ -1,6 +1,7 @@
 package uiWidgets
 
 import (
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type ManualZCalibrationStepButton struct {
@@ -14,6 +15,7 @@ func CreateManualZCalibrationStepButton() *ManualZCalibrationStepButton {
 		Step{"Stop Manual\nZ Calibration",  "z-calibration.svg", nil, true},
 	)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateManualZCalibrationStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

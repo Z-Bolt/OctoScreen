@@ -26,6 +26,7 @@ type StepButton struct {
 
 func CreateStepButton(colorVariation int, steps ...Step) (*StepButton, error) {
 	if len(steps) < 1 {
+		utils.Logger.Error("PANIC!!! - CreateStepButton() - len(steps) < 1")
 		panic("StepButton.CreateStepButton() - steps is empty")
 	}
 

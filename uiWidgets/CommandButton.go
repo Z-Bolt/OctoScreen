@@ -32,6 +32,7 @@ func CreateCommandButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateCommandButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 

@@ -22,6 +22,7 @@ func CreateSystemCommandButton(
 ) *SystemCommandButton {
 	systemCommandsResponse, err := (&octoprintApis.SystemCommandsRequest{}).Do(client)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateSystemCommandButton()", "SystemCommandsRequest.Do()", err)
 		panic(err)
 	}
 

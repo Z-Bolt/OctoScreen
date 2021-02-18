@@ -51,6 +51,7 @@ func CreateSelectExtruderStepButton(
 		steps...,
 	)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateSelectExtruderStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 
@@ -98,6 +99,7 @@ func CreateSelectHotendStepButton(
 		steps...,
 	)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateSelectHotendStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

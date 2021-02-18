@@ -44,6 +44,7 @@ func CreateFilamentExtrudeButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		utils.LogError("PANIC!!! - CreateFilamentExtrudeButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
