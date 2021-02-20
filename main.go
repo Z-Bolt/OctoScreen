@@ -10,13 +10,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gotk3/gotk3/gtk"
+	"github.com/sirupsen/logrus"
 	"github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/Z-Bolt/OctoScreen/utils"
-	"github.com/gotk3/gotk3/gtk"
 	"gopkg.in/yaml.v1"
-
-	"github.com/sirupsen/logrus"
 )
+
 
 var (
 	BaseURL    string
@@ -80,6 +80,15 @@ func init() {
 
 func setLogLevel() {
 	logLevel := utils.LowerCaseLogLevel()
+
+	switch logLevel {
+		case "debug":
+			octoprintApis.EnableApiLogging = true
+
+		default:
+			octoprintApis.EnableApiLogging = false
+	}
+
 	switch logLevel {
 		case "debug":
 			utils.SetLogLevel(logrus.DebugLevel)

@@ -53,7 +53,7 @@ func New(endpoint, key string, width, height int) *UI {
 		height = utils.WindowHeight
 	}
 
-	instance := &UI{
+	instance := &UI {
 		PanelHistory:				stack.New(),
 		Client:						octoprintApis.NewClient(endpoint, key),
 		NotificationsBox:			uiWidgets.NewNotificationsBox(),
@@ -116,6 +116,7 @@ func (this *UI) initialize() {
 
 	this.window.Connect("show", this.backgroundTask.Start)
 	this.window.Connect("destroy", func() {
+		utils.Logger.Debug("window destroy callback was called, now executing MainQuit()")
 		gtk.MainQuit()
 	})
 
@@ -176,6 +177,7 @@ func (this *UI) verifyConnection() {
 				fallthrough
 			case connectionResponse.Current.State.IsOffline():
 				newUIState = "splash"
+				utils.Logger.Info("ui.verifyConnection() - new UI state is 'splash' and is about to call ConnectRequest.Do()")
 				if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
 					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
 					splashMessage = "Loading..."
@@ -413,8 +415,6 @@ func (this *UI) sdNotify(state string) {
 	_, err := daemon.SdNotify(false, state)
 	if err != nil {
 		utils.Logger.Errorf("ui.sdNotify()", "SdNotify()", err)
-		utils.Logger.Debug("leaving ui.sdNotify()")
-		return
 	}
 
 	utils.Logger.Debug("leaving ui.sdNotify()")

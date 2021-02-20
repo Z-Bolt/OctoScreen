@@ -53,7 +53,21 @@ func (this *Client) doJsonRequest(
 	body io.Reader,
 	statusMapping StatusMapping,
 ) ([]byte, error) {
-	return this.doRequest(method, target, "application/json", body, statusMapping)
+	LogMessagef("    entering Client.doJsonRequest()")
+
+	bytes, err := this.doRequest(method, target, "application/json", body, statusMapping)
+	if err != nil {
+		LogError(err, "Client.doJsonRequest(), this.doRequest() failed")
+		LogMessagef("    leaving Client.doJsonRequest()")
+		return nil, err
+	}
+
+	// Use the following for debugging.  Comment out for production.
+	json := string(bytes)
+	LogMessagef("        JSON response: %s", json)
+	LogMessagef("    leaving Client.doJsonRequest()")
+
+	return bytes, err
 }
 
 func (this *Client) doRequest(
@@ -63,8 +77,15 @@ func (this *Client) doRequest(
 	body io.Reader,
 	statusMapping StatusMapping,
 ) ([]byte, error) {
+	LogMessagef("        entering Client.doRequest()")
+	LogMessagef("            method: %s", method)
+	LogMessagef("            target: %s",target)
+
+
 	req, err := http.NewRequest(method, joinUrl(this.Endpoint, target), body)
 	if err != nil {
+		LogError(err, "Client.doRequest(), http.NewRequest() failed")
+		LogMessagef("        leaving Client.doRequest()")
 		return nil, err
 	}
 
@@ -78,10 +99,20 @@ func (this *Client) doRequest(
 	req.Header.Add("X-Api-Key", this.APIKey)
 	resp, err := this.httpClient.Do(req)
 	if err != nil {
+		LogError(err, "Client.doRequest(), this.httpClient.Do() failed")
+		LogMessagef("        leaving Client.doRequest()")
 		return nil, err
 	}
 
-	return this.handleResponse(resp, statusMapping)
+	response, err := this.handleResponse(resp, statusMapping)
+	if err != nil {
+		LogError(err, "Client.doRequest(), this.handleResponse() failed")
+		LogMessagef("        leaving Client.doRequest()")
+		return nil, err
+	}
+
+	LogMessagef("        leaving Client.doRequest()")
+	return response, err
 }
 
 func (this *Client) handleResponse(

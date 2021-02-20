@@ -15,16 +15,24 @@ import (
 type ConnectionRequest struct{}
 
 // Do sends an API request and returns the API response.
-func (cmd *ConnectionRequest) Do(c *Client) (*dataModels.ConnectionResponse, error) {
-	b, err := c.doJsonRequest("GET", ConnectionApiUri, nil, nil)
+func (cmd *ConnectionRequest) Do(client *Client) (*dataModels.ConnectionResponse, error) {
+	LogMessage("entering ConnectionRequest.Do()")
+
+	bytes, err := client.doJsonRequest("GET", ConnectionApiUri, nil, nil)
 	if err != nil {
+		LogError(err, "ConnectionRequest.go, client.doJsonRequest(GET) failed")
+		LogMessage("leaving ConnectionRequest.Do()")
 		return nil, err
 	}
 
-	r := &dataModels.ConnectionResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &dataModels.ConnectionResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
+		LogError(err, "ConnectionRequest.go, json.Unmarshal() failed")
+		LogMessage("leaving ConnectionRequest.Do()")
 		return nil, err
 	}
 
-	return r, err
+	LogMessage("leaving ConnectionRequest.Do()")
+
+	return response, err
 }

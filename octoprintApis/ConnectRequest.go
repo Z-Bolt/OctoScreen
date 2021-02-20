@@ -35,22 +35,33 @@ type ConnectRequest struct {
 }
 
 // Do sends an API request and returns an error if any.
-func (cmd *ConnectRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := cmd.encode(b); err != nil {
+func (cmd *ConnectRequest) Do(client *Client) error {
+	LogMessage("entering ConnectRequest.Do()")
+
+	bytes := bytes.NewBuffer(nil)
+	if err := cmd.encode(bytes); err != nil {
+		LogError(err, "ConnectRequest.go, cmd.encode() failed")
+		LogMessage("leaving ConnectRequest.Do()")
 		return err
 	}
 
-	_, err := c.doJsonRequest("POST", ConnectionApiUri, b, ConnectionErrors)
+	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
+	if err != nil {
+		LogError(err, "ConnectRequest.go, client.doJsonRequest(POST) failed")
+	}
+
+	LogMessage("leaving ConnectRequest.Do()")
 	return err
 }
 
 func (cmd *ConnectRequest) encode(w io.Writer) error {
-	return json.NewEncoder(w).Encode(struct {
+	payload := struct {
 		Command string `json:"command"`
 		ConnectRequest
 	}{
 		Command:        "connect",
 		ConnectRequest: *cmd,
-	})
+	}
+
+	return json.NewEncoder(w).Encode(payload)
 }
