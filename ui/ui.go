@@ -167,7 +167,7 @@ func (this *UI) verifyConnection() {
 		newUIState, splashMessage = this.getUiStateAndMessageFromConnectionResponse(connectionResponse, newUIState, splashMessage)
 	} else {
 		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest) returned an error", err)
-		newUIState, splashMessage = this.getUiStateAndMessageFromErrorResponse(err, newUIState, splashMessage)
+		newUIState, splashMessage = this.getUiStateAndMessageFromError(err, newUIState, splashMessage)
 	}
 
 	this.splashPanel.Label.SetText(splashMessage)
@@ -226,19 +226,19 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 }
 
 
-func (this *UI) getUiStateAndMessageFromErrorResponse(
+func (this *UI) getUiStateAndMessageFromError(
 	err error,
 	newUIState string,
 	splashMessage string,
 ) (string, string) {
-	utils.Logger.Info("ui.getUiStateAndMessageFromErrorResponse() - now setting newUIState to 'splash'")
+	utils.Logger.Info("ui.getUiStateAndMessageFromError() - now setting newUIState to 'splash'")
 	newUIState = "splash"
 
 	if time.Since(this.time) > errMercyPeriod {
 		errMessage := this.errToUser(err)
 
-		utils.Logger.Info("ui.getUiStateAndMessageFromErrorResponse() - printer is offline")
-		utils.Logger.Infof("ui.getUiStateAndMessageFromErrorResponse() - errMessage is: %q", errMessage)
+		utils.Logger.Info("ui.getUiStateAndMessageFromError() - printer is offline")
+		utils.Logger.Infof("ui.getUiStateAndMessageFromError() - errMessage is: %q", errMessage)
 
 		if strings.Contains(strings.ToLower(errMessage), "deadline exceeded") {
 			splashMessage = "Printer is offline (deadline exceeded), retrying to connect..."
