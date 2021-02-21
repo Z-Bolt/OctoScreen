@@ -15,7 +15,10 @@ var UpdateTemperaturesBackgroundTask *BackgroundTask = nil
 var temperatureDataDisplays []interfaces.ITemperatureDataDisplay
 var registeredClient *octoprintApis.Client = nil
 
-func CreateUpdateTemperaturesBackgroundTask(temperatureDataDisplay interfaces.ITemperatureDataDisplay, client *octoprintApis.Client) {
+func CreateUpdateTemperaturesBackgroundTask(
+	temperatureDataDisplay interfaces.ITemperatureDataDisplay,
+	client *octoprintApis.Client,
+) {
 	if UpdateTemperaturesBackgroundTask != nil {
 		Logger.Error("UpdateTemperaturesBackgroundTask.CreateUpdateTemperaturesBackgroundTask() - updateTemperaturesBackgroundTask has already been set")
 		return
@@ -32,6 +35,14 @@ func RegisterTemperatureStatusBox(temperatureDataDisplay interfaces.ITemperature
 }
 
 func updateTemperaturesCallback() {
+
+	// TODO: add guard if printer isn't connected
+	// can't do right now due to circular dependency:
+	//		TemperatureStatusBox creates the background task...
+	//		background task needs UI.UIState or UIState.connectionAttempts
+	//		UI has panel
+	//		panel has TemperatureStatusBox
+
 	currentTemperatureData, err := GetCurrentTemperatureData(registeredClient)
 	if err != nil {
 		LogError("UpdateTemperaturesBackgroundTask.updateTemperaturesCallback()", "GetCurrentTemperatureData(client)", err)
