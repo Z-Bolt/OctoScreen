@@ -163,6 +163,14 @@ func (this *UI) verifyConnection() {
 
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.Client)
 	if err == nil {
+		utils.Logger.Debug("ui.verifyConnection() - ConnectionRequest.Do() succeeded")
+		jsonResponse, err := utils.StructToJson(connectionResponse)
+		if err != nil {
+			utils.Logger.Debug("ui.verifyConnection() - utils.StructToJson() failed")
+		} else {
+			utils.Logger.Debug("ui.verifyConnection() - connectionResponse is: %s", jsonResponse)
+		}
+
 		this.ConnectionState = connectionResponse.Current.State
 		newUIState, splashMessage = this.getUiStateAndMessageFromConnectionResponse(connectionResponse, newUIState, splashMessage)
 	} else {
@@ -185,20 +193,27 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 	newUIState string,
 	splashMessage string,
 ) (string, string) {
+	utils.Logger.Debug("entering ui.getUiStateAndMessageFromConnectionResponse()")
+
 	strCurrentState := string(connectionResponse.Current.State)
+	utils.Logger.Debugf("ui.getUiStateAndMessageFromConnectionResponse() - strCurrentState is %s", strCurrentState)
 
 	switch {
 		case connectionResponse.Current.State.IsOperational():
+			utils.Logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - new state is idle")
 			newUIState = "idle"
 			splashMessage = "Initializing..."
 
 		case connectionResponse.Current.State.IsPrinting():
+			utils.Logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - new state is printing")
 			newUIState = "printing"
 			splashMessage = "Printing..."
 
 		case connectionResponse.Current.State.IsError():
+			utils.Logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - the state has an error")
 			fallthrough
 		case connectionResponse.Current.State.IsOffline():
+			utils.Logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - the state is now offline and displaying the splash panel")
 			newUIState = "splash"
 			utils.Logger.Info("ui.getUiStateAndMessageFromConnectionResponse() - new UI state is 'splash' and is about to call ConnectRequest.Do()")
 			if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
@@ -209,10 +224,12 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 			}
 
 		case connectionResponse.Current.State.IsConnecting():
+			utils.Logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - new state is splash (from IsConnecting)")
 			newUIState = "splash"
 			splashMessage = strCurrentState
 
 		default:
+			utils.Logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - the default case was hit")
 			switch strCurrentState {
 				case "Cancelling":
 					newUIState = "idle"
@@ -221,6 +238,8 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 					utils.Logger.Errorf("ui.getUiStateAndMessageFromConnectionResponse() - unknown CurrentState: %q", strCurrentState)
 			}
 	}
+
+	utils.Logger.Debug("leaving ui.getUiStateAndMessageFromConnectionResponse()")
 
 	return newUIState, splashMessage
 }
@@ -231,6 +250,8 @@ func (this *UI) getUiStateAndMessageFromError(
 	newUIState string,
 	splashMessage string,
 ) (string, string) {
+	utils.Logger.Debug("entering ui.getUiStateAndMessageFromError()")
+
 	utils.Logger.Info("ui.getUiStateAndMessageFromError() - now setting newUIState to 'splash'")
 	newUIState = "splash"
 
@@ -252,6 +273,8 @@ func (this *UI) getUiStateAndMessageFromError(
 	} else {
 		splashMessage = "Printer is offline! (retrying to connect...)"
 	}
+
+	utils.Logger.Debug("leaving ui.getUiStateAndMessageFromError()")
 
 	return newUIState, splashMessage
 }
