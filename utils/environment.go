@@ -6,6 +6,10 @@ import (
 	//"strings"
 )
 
+
+const MISSING_ENV_TOKEN = ">>MISSING<<"
+const INVALID_ENV_TOKEN = "!!!INVALID!!!"
+
 // Required environment variables
 const (
 	EnvStylePath   = "OCTOSCREEN_STYLE_PATH"
@@ -115,7 +119,7 @@ func DumpEnvironmentVariables() {
 func dumpEnvironmentVariable(key string) {
 	value := os.Getenv(key)
 	if value == "" {
-		value = ">>MISSING<<"
+		value = MISSING_ENV_TOKEN
 	}
 
 	Logger.Infof("key: %q, value: %q", key, value)
@@ -124,7 +128,7 @@ func dumpEnvironmentVariable(key string) {
 func dumpObfuscatedEnvironmentVariable(key string) {
 	value := os.Getenv(key)
 	if value == "" {
-		value = ">>MISSING<<"
+		value = MISSING_ENV_TOKEN
 	} else {
 		value = GetObfuscatedValue(value)
 	}
@@ -137,16 +141,20 @@ func GetObfuscatedValue(value string) string {
 
 	obfuscatedValue := ""
 	if length < 6 {
-		obfuscatedValue = "!!!INVALID!!!"
+		obfuscatedValue = INVALID_ENV_TOKEN
 	} else {
-		obfuscatedValue = fmt.Sprintf("%c%c%c---%c%c%c",
-			value[0],
-			value[1],
-			value[2],
-			value[length - 3],
-			value[length - 2],
-			value[length - 1],
-		)
+		if value == MISSING_ENV_TOKEN {
+			return value
+		} else {
+			obfuscatedValue = fmt.Sprintf("%c%c%c---%c%c%c",
+				value[0],
+				value[1],
+				value[2],
+				value[length - 3],
+				value[length - 2],
+				value[length - 1],
+			)
+		}
 	}
 
 	return obfuscatedValue
