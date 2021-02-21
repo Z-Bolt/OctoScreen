@@ -60,6 +60,8 @@ func New(endpoint, key string, width, height int) *UI {
 		OctoPrintPluginIsAvailable:	true,
 		Settings:					nil,
 
+		UIState:					"__uninitialized__",
+
 		window:						utils.MustWindow(gtk.WINDOW_TOPLEVEL),
 		time:						time.Now(),
 
@@ -162,111 +164,137 @@ func (this *UI) verifyConnection() {
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.Client)
 	if err == nil {
 		this.ConnectionState = connectionResponse.Current.State
-		strCurrentState := string(connectionResponse.Current.State)
-
-		switch {
-			case connectionResponse.Current.State.IsOperational():
-				newUIState = "idle"
-				splashMessage = "Initializing..."
-
-			case connectionResponse.Current.State.IsPrinting():
-				newUIState = "printing"
-				splashMessage = "Printing..."
-
-			case connectionResponse.Current.State.IsError():
-				fallthrough
-			case connectionResponse.Current.State.IsOffline():
-				newUIState = "splash"
-				utils.Logger.Info("ui.verifyConnection() - new UI state is 'splash' and is about to call ConnectRequest.Do()")
-				if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
-					utils.LogError("ui.verifyConnection()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
-					splashMessage = "Loading..."
-				} else {
-					// Use 'Offline.' here and 'offline!' later.  Having different variations may help in
-					// troubleshooting any issues around this state.
-					splashMessage = "Printer is Offline."
-				}
-
-			case connectionResponse.Current.State.IsConnecting():
-				newUIState = "splash"
-				splashMessage = strCurrentState
-
-			default:
-				switch strCurrentState {
-					case "Cancelling":
-						newUIState = "idle"
-
-					default:
-						logLevel := utils.LowerCaseLogLevel()
-						if logLevel == "debug" {
-							utils.Logger.Fatalf("menu.getPanel() - unknown CurrentState: %q", strCurrentState)
-						}
-				}
-		}
+		newUIState, splashMessage = this.getUiStateAndMessageFromConnectionResponse(connectionResponse, newUIState, splashMessage)
 	} else {
 		utils.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest) returned an error", err)
-		utils.Logger.Info("ui.verifyConnection() - now setting newUIState to 'splash'")
-		newUIState = "splash"
-
-		if time.Since(this.time) > errMercyPeriod {
-			errMessage := this.errToUser(err)
-
-			utils.Logger.Info("ui.verifyConnection() - printer is offline")
-			utils.Logger.Infof("ui.verifyConnection() - errMessage is: %q", errMessage)
-
-			if strings.Contains(strings.ToLower(errMessage), "deadline exceeded") {
-				utils.Logger.Errorf("ui.verifyConnection() - %s", errMessage)
-				splashMessage = "Printer is offline (deadline exceeded)"
-			} else if strings.Contains(strings.ToLower(errMessage), "connection reset by peer") {
-				utils.Logger.Errorf("ui.verifyConnection() - %s", errMessage)
-				splashMessage = "Printer is offline (peer connection reset)"
-			} else {
-				splashMessage = errMessage
-			}
-		} else {
-			// Use 'offline!' here and 'OFFLINE' above.  Having different variations may help in
-			// troubleshooting any issues around this state.
-			splashMessage = "Printer is offline!"
-		}
+		newUIState, splashMessage = this.getUiStateAndMessageFromErrorResponse(err, newUIState, splashMessage)
 	}
-
-	defer func() {
-		this.UIState = newUIState
-	}()
 
 	this.splashPanel.Label.SetText(splashMessage)
 
-	if newUIState == this.UIState {
-		utils.Logger.Infof("ui.verifyConnection() - newUIState equals ui.UIState and is: %q", this.UIState)
-		utils.Logger.Debug("leaving ui.verifyConnection()")
+	defer func() {
+		this.setUiState(newUIState, splashMessage)
+	}()
+
+	utils.Logger.Debug("leaving ui.verifyConnection()")
+}
+
+
+func (this *UI) getUiStateAndMessageFromConnectionResponse(
+	connectionResponse *dataModels.ConnectionResponse,
+	newUIState string,
+	splashMessage string,
+) (string, string) {
+	strCurrentState := string(connectionResponse.Current.State)
+
+	switch {
+		case connectionResponse.Current.State.IsOperational():
+			newUIState = "idle"
+			splashMessage = "Initializing..."
+
+		case connectionResponse.Current.State.IsPrinting():
+			newUIState = "printing"
+			splashMessage = "Printing..."
+
+		case connectionResponse.Current.State.IsError():
+			fallthrough
+		case connectionResponse.Current.State.IsOffline():
+			newUIState = "splash"
+			utils.Logger.Info("ui.getUiStateAndMessageFromConnectionResponse() - new UI state is 'splash' and is about to call ConnectRequest.Do()")
+			if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
+				utils.LogError("ui.getUiStateAndMessageFromConnectionResponse()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
+				splashMessage = "Loading..."
+			} else {
+				splashMessage = "Printer is offline, now trying to connect..."
+			}
+
+		case connectionResponse.Current.State.IsConnecting():
+			newUIState = "splash"
+			splashMessage = strCurrentState
+
+		default:
+			switch strCurrentState {
+				case "Cancelling":
+					newUIState = "idle"
+
+				default:
+					utils.Logger.Errorf("ui.getUiStateAndMessageFromConnectionResponse() - unknown CurrentState: %q", strCurrentState)
+			}
+	}
+
+	return newUIState, splashMessage
+}
+
+
+func (this *UI) getUiStateAndMessageFromErrorResponse(
+	err error,
+	newUIState string,
+	splashMessage string,
+) (string, string) {
+	utils.Logger.Info("ui.getUiStateAndMessageFromErrorResponse() - now setting newUIState to 'splash'")
+	newUIState = "splash"
+
+	if time.Since(this.time) > errMercyPeriod {
+		errMessage := this.errToUser(err)
+
+		utils.Logger.Info("ui.getUiStateAndMessageFromErrorResponse() - printer is offline")
+		utils.Logger.Infof("ui.getUiStateAndMessageFromErrorResponse() - errMessage is: %q", errMessage)
+
+		if strings.Contains(strings.ToLower(errMessage), "deadline exceeded") {
+			splashMessage = "Printer is offline (deadline exceeded), retrying to connect..."
+		} else if strings.Contains(strings.ToLower(errMessage), "connection reset by peer") {
+			splashMessage = "Printer is offline (peer connection reset), retrying to connect..."
+		} else if strings.Contains(strings.ToLower(errMessage), "unexpected status code: 403") {
+			splashMessage = "Printer is offline (403), retrying to connect..."
+		} else {
+			splashMessage = errMessage
+		}
+	} else {
+		splashMessage = "Printer is offline! (retrying to connect...)"
+	}
+
+	return newUIState, splashMessage
+}
+
+
+func (this *UI) setUiState(
+	newUiState string,
+	splashMessage string,
+) {
+	utils.Logger.Debug("entering ui.setUiState()")
+
+	this.splashPanel.Label.SetText(splashMessage)
+
+	if newUiState == this.UIState {
+		utils.Logger.Infof("ui.setUiState() - newUiState and ui.UIState are the same (%q)", this.UIState)
+		utils.Logger.Debug("leaving ui.setUiState()")
 		return
 	}
 
-	utils.Logger.Info("ui.verifyConnection() - newUIState does not equals ui.UIState")
-	utils.Logger.Infof("ui.verifyConnection() - ui.UIState is: %q", this.UIState)
-	utils.Logger.Infof("ui.verifyConnection() - newUIState is: %q", newUIState)
+	utils.Logger.Info("ui.setUiState() - newUiState does not equal ui.UIState")
+	utils.Logger.Infof("ui.setUiState() - ui.UIState is: %q", this.UIState)
+	utils.Logger.Infof("ui.setUiState() - newUiState is: %q", newUiState)
+	this.UIState = newUiState
 
-	switch newUIState {
+	switch newUiState {
 		case "idle":
-			utils.Logger.Info("ui.verifyConnection() - printer is ready")
+			utils.Logger.Info("ui.setUiState() - printer is ready")
 			this.GoToPanel(IdleStatusPanel(this))
 
 		case "printing":
-			utils.Logger.Info("ui.verifyConnection() - printing a job")
+			utils.Logger.Info("ui.setUiState() - printing a job")
 			this.GoToPanel(PrintStatusPanel(this))
 
 		case "splash":
 			this.GoToPanel(this.splashPanel)
 
 		default:
-			logLevel := utils.LowerCaseLogLevel()
-			if logLevel == "debug" {
-				utils.Logger.Fatalf("ui.verifyConnection() - unknown switch of newUIState: %q", newUIState)
-			}
+			utils.Logger.Errorf("ERROR: ui.setUiState() - unknown newUiState case: %q", newUiState)
 	}
 
-	utils.Logger.Debug("leaving ui.verifyConnection()")
+	utils.Logger.Debug("leaving ui.setUiState()")
 }
+
 
 func (this *UI) checkNotification() {
 	utils.Logger.Debug("entering ui.checkNotification()")
