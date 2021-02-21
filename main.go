@@ -12,6 +12,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/Z-Bolt/OctoScreen/utils"
 	"gopkg.in/yaml.v1"
