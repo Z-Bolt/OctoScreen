@@ -168,7 +168,7 @@ func (this *UI) verifyConnection() {
 		if err != nil {
 			utils.Logger.Debug("ui.verifyConnection() - utils.StructToJson() failed")
 		} else {
-			utils.Logger.Debug("ui.verifyConnection() - connectionResponse is: %s", jsonResponse)
+			utils.Logger.Debugf("ui.verifyConnection() - connectionResponse is: %s", jsonResponse)
 		}
 
 		this.ConnectionState = connectionResponse.Current.State
@@ -422,6 +422,7 @@ func (this *UI) update() {
 
 	if this.connectionAttempts > 8 {
 		this.splashPanel.putOnHold()
+		this.sdNotify("WATCHDOG=1")
 
 		utils.Logger.Debug("leaving ui.update() - connectionAttempts > 8")
 		return
