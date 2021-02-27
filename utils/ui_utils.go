@@ -75,7 +75,7 @@ func AttachToolheadButtonsToGrid(toolheadButtons []*gtk.Button, grid *gtk.Grid) 
 
 
 // ****************************************************************************
-// DislogBox Routines
+// DialogBox Routines
 func MustConfirmDialogBox(parent *gtk.Window, msg string, cb func()) func() {
 	return func() {
 		win := gtk.MessageDialogNewWithMarkup(
