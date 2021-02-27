@@ -3,6 +3,7 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -22,7 +23,7 @@ func NewSplashPanel(ui *UI) *SplashPanel {
 }
 
 func (this *SplashPanel) initialize() {
-	utils.Logger.Debug("entering SplashPanel.initialize()")
+	logger.TraceEnter("SplashPanel.initialize()")
 
 	logo := utils.MustImageFromFile("logos/logo.png")
 	this.Label = utils.MustLabel("...")
@@ -48,11 +49,11 @@ func (this *SplashPanel) initialize() {
 
 	this.Grid().Add(box)
 
-	utils.Logger.Debug("leaving SplashPanel.initialize()")
+	logger.TraceLeave("SplashPanel.initialize()")
 }
 
 func (this *SplashPanel) createActionBar() gtk.IWidget {
-	utils.Logger.Debug("entering SplashPanel.createActionBar()")
+	logger.TraceEnter("SplashPanel.createActionBar()")
 
 	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actionBar.SetHAlign(gtk.ALIGN_END)
@@ -72,28 +73,27 @@ func (this *SplashPanel) createActionBar() gtk.IWidget {
 	networkButton.SetProperty("width-request", this.Scaled(100))
 	actionBar.Add(networkButton)
 
-	utils.Logger.Debug("leaving SplashPanel.createActionBar()")
-
+	logger.TraceLeave("SplashPanel.createActionBar()")
 	return actionBar
 }
 
 func (this *SplashPanel) putOnHold() {
-	utils.Logger.Debug("entering SplashPanel.putOnHold()")
+	logger.TraceEnter("SplashPanel.putOnHold()")
 
 	this.RetryButton.Show()
 	ctx, err := this.RetryButton.GetStyleContext()
 	if err != nil {
-		utils.LogError("SplashPanel.putOnHold()", "RetryButton.GetStyleContext()", err)
+		logger.LogError("SplashPanel.putOnHold()", "RetryButton.GetStyleContext()", err)
 	} else {
 		ctx.RemoveClass("hidden")
 	}
 	this.Label.SetText("Cannot connect to the printer.  Tap \"Retry\" to try again.")
 
-	utils.Logger.Debug("leaving SplashPanel.putOnHold()")
+	logger.TraceLeave("SplashPanel.putOnHold()")
 }
 
 func (this *SplashPanel) releaseFromHold() {
-	utils.Logger.Debug("entering SplashPanel.releaseFromHold()")
+	logger.TraceEnter("SplashPanel.releaseFromHold()")
 
 	this.RetryButton.Hide()
 	ctx, _ := this.RetryButton.GetStyleContext()
@@ -102,21 +102,21 @@ func (this *SplashPanel) releaseFromHold() {
 	this.Label.SetText("Loading...")
 	this.UI.connectionAttempts = 0
 
-	utils.Logger.Debug("leaving SplashPanel.releaseFromHold()")
+	logger.TraceLeave("SplashPanel.releaseFromHold()")
 }
 
 func (this *SplashPanel) showNetwork() {
-	utils.Logger.Debug("entering SplashPanel.showNetwork()")
+	logger.TraceEnter("SplashPanel.showNetwork()")
 
 	this.UI.GoToPanel(NetworkPanel(this.UI, this))
 
-	utils.Logger.Debug("leaving SplashPanel.showNetwork()")
+	logger.TraceLeave("SplashPanel.showNetwork()")
 }
 
 func (this *SplashPanel) showSystem() {
-	utils.Logger.Debug("entering SplashPanel.showSystem()")
+	logger.TraceEnter("SplashPanel.showSystem()")
 
 	this.UI.GoToPanel(SystemPanel(this.UI, this))
 
-	utils.Logger.Debug("leaving SplashPanel.showSystem()")
+	logger.TraceLeave("SplashPanel.showSystem()")
 }

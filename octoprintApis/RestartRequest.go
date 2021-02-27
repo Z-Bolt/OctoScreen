@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	// "io"
-	// "log"
 
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )

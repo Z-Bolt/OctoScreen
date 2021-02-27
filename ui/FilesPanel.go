@@ -9,6 +9,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
@@ -116,7 +117,7 @@ func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 	}
 
 	current := this.locationHistory.CurrentLocation()
-	utils.Logger.Info("Loading list of files from: ", string(current))
+	logger.Infof("Loading list of files from: %s", string(current))
 
 	filesRequest := &octoprintApis.FilesRequest {
 		Location: current,
@@ -124,7 +125,7 @@ func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 	}
 	filesResponse, err := filesRequest.Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("files.getSortedFiles()", "Do(FilesRequest)", err)
+		logger.LogError("files.getSortedFiles()", "Do(FilesRequest)", err)
 		files = []*dataModels.FileResponse{}
 	} else {
 		files = filesResponse.Files
@@ -383,9 +384,9 @@ func (this *filesPanel) createListItemButton(
 			selectFileRequest.Path = fileResponse.Path
 			selectFileRequest.Print = true
 
-			utils.Logger.Infof("Loading file %q", fileResponse.Name)
+			logger.Infof("Loading file %q", fileResponse.Name)
 			if err := selectFileRequest.Do(this.UI.Client); err != nil {
-				utils.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
+				logger.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return
 			}
 		}))
@@ -438,14 +439,14 @@ func (this *filesPanel) addThumbnail(
 	listItemBox *gtk.Box,
 ) {
 	if fileResponse.Thumbnail != "" {
-		utils.Logger.Infof("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
+		logger.Infof("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
 
 		thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileResponse.Thumbnail)
-		utils.Logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
+		logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
 
 		previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
 		if imageFromUrlErr == nil {
-			utils.Logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
+			logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
 
 			bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
 

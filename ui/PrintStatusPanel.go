@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
@@ -158,17 +159,17 @@ func (this *printStatusPanel) createPauseButton() gtk.IWidget {
 	this.pauseButton = utils.MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
 		defer this.updateTemperature()
 
-		utils.Logger.Info("Pausing/Resuming job")
+		logger.Info("Pausing/Resuming job")
 		cmd := &octoprintApis.PauseRequest{Action: dataModels.Toggle}
 		err := cmd.Do(this.UI.Client)
-		utils.Logger.Info("Pausing/Resuming job 2, Do() was just called")
+		logger.Info("Pausing/Resuming job 2, Do() was just called")
 
 		if err != nil {
-			utils.LogError("print_status.createPauseButton()", "Do(PauseRequest)", err)
+			logger.LogError("print_status.createPauseButton()", "Do(PauseRequest)", err)
 			return
 		}
 
-		utils.Logger.Info("Pausing/Resuming job 2c")
+		logger.Info("Pausing/Resuming job 2c")
 	})
 
 	return this.pauseButton
@@ -198,20 +199,21 @@ func (this *printStatusPanel) createControlButton() gtk.IWidget {
 }
 
 func (this *printStatusPanel) update() {
-	//Logger.Printf("Now in print_status.update()")
+	logger.TraceEnter("printStatusPanel.update()")
 
 	this.updateTemperature()
 	this.updateJob()
 
-	//Logger.Printf("Now leaving print_status.update()")
+	logger.TraceLeave("printStatusPanel.update()")
 }
 
 func (this *printStatusPanel) updateTemperature() {
-	//Logger.Printf("Now in print_status.updateTemperature()")
+	logger.TraceEnter("printStatusPanel.updateTemperature()")
 
 	fullStateResponse, err := (&octoprintApis.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("print_status.updateTemperature()", "Do(StateRequest)", err)
+		logger.LogError("print_status.updateTemperature()", "Do(StateRequest)", err)
+		logger.TraceLeave("printStatusPanel.updateTemperature()")
 		return
 	}
 
@@ -237,7 +239,7 @@ func (this *printStatusPanel) updateTemperature() {
 		}
 	}
 
-	//Logger.Printf("Now leaving print_status.updateTemperature()")
+	logger.TraceLeave("printStatusPanel.updateTemperature()")
 }
 
 func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterState) {
@@ -283,9 +285,9 @@ func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterStat
 			this.completeButton.Show()
 
 		default:
-			logLevel := utils.LowerCaseLogLevel()
+			logLevel := logger.LogLevel()
 			if logLevel == "debug" {
-				utils.Logger.Fatalf("PrintStatusPanel.doUpdateState() - unknown printerState.Flags")
+				logger.Fatalf("PrintStatusPanel.doUpdateState() - unknown printerState.Flags")
 			}
 
 			this.pauseButton.SetSensitive(false)
@@ -298,11 +300,12 @@ func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterStat
 }
 
 func (this *printStatusPanel) updateJob() {
-	//Logger.Printf("Now in print_status.updateJob()")
+	logger.TraceEnter("printStatusPanel.updateJob()")
 
 	jobResponse, err := (&octoprintApis.JobRequest{}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("print_status.updateJob()", "Do(JobRequest)", err)
+		logger.LogError("print_status.updateJob()", "Do(JobRequest)", err)
+		logger.TraceLeave("printStatusPanel.updateJob()")
 		return
 	}
 
@@ -328,7 +331,7 @@ func (this *printStatusPanel) updateJob() {
 			timeLeft = ""
 
 		default:
-			utils.Logger.Info(jobResponse.Progress.PrintTime)
+			logger.Info(jobResponse.Progress.PrintTime)
 			printTime := time.Duration(int64(jobResponse.Progress.PrintTime) * 1e9)
 			printTimeLeft := time.Duration(int64(jobResponse.Progress.PrintTimeLeft) * 1e9)
 			timeSpent = fmt.Sprintf("Time: %s", printTime)
@@ -338,7 +341,7 @@ func (this *printStatusPanel) updateJob() {
 	this.timeLabel.Label.SetLabel(timeSpent)
 	this.timeLeftLabel.Label.SetLabel(timeLeft)
 
-	//Logger.Printf("Now leaving print_status.updateJob()")
+	logger.TraceLeave("printStatusPanel.updateJob()")
 }
 
 func confirmStopDialogBox(
@@ -369,9 +372,9 @@ func confirmStopDialogBox(
 
 		userResponse := dialogBox.Run()
 		if userResponse == int(gtk.RESPONSE_YES) {
-			utils.Logger.Warning("Stopping job")
+			logger.Warn("Stopping job")
 			if err := (&octoprintApis.CancelRequest{}).Do(printStatusPanel.UI.Client); err != nil {
-				utils.LogError("print_status.confirmStopDialogBox()", "Do(CancelRequest)", err)
+				logger.LogError("print_status.confirmStopDialogBox()", "Do(CancelRequest)", err)
 				return
 			}
 		}

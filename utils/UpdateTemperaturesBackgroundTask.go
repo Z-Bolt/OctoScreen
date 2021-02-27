@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
@@ -20,7 +21,7 @@ func CreateUpdateTemperaturesBackgroundTask(
 	client *octoprintApis.Client,
 ) {
 	if UpdateTemperaturesBackgroundTask != nil {
-		Logger.Error("UpdateTemperaturesBackgroundTask.CreateUpdateTemperaturesBackgroundTask() - updateTemperaturesBackgroundTask has already been set")
+		logger.Error("UpdateTemperaturesBackgroundTask.CreateUpdateTemperaturesBackgroundTask() - updateTemperaturesBackgroundTask has already been set")
 		return
 	}
 
@@ -35,6 +36,7 @@ func RegisterTemperatureStatusBox(temperatureDataDisplay interfaces.ITemperature
 }
 
 func updateTemperaturesCallback() {
+	logger.TraceEnter("UpdateTemperaturesBackgroundTask.updateTemperaturesCallback()")
 
 	// TODO: add guard if printer isn't connected
 	// can't do right now due to circular dependency:
@@ -45,11 +47,12 @@ func updateTemperaturesCallback() {
 
 	currentTemperatureData, err := GetCurrentTemperatureData(registeredClient)
 	if err != nil {
-		LogError("UpdateTemperaturesBackgroundTask.updateTemperaturesCallback()", "GetCurrentTemperatureData(client)", err)
-		return
+		logger.LogError("UpdateTemperaturesBackgroundTask.updateTemperaturesCallback()", "GetCurrentTemperatureData(client)", err)
+	} else {
+		for _, temperatureDataDisplay := range temperatureDataDisplays {
+			temperatureDataDisplay.UpdateTemperatureData(currentTemperatureData)
+		}
 	}
 
-	for _, temperatureDataDisplay := range temperatureDataDisplays {
-		temperatureDataDisplay.UpdateTemperatureData(currentTemperatureData)
-	}
+	logger.TraceLeave("UpdateTemperaturesBackgroundTask.updateTemperaturesCallback()")
 }

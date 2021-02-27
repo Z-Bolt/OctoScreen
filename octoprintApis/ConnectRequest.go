@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -36,21 +37,21 @@ type ConnectRequest struct {
 
 // Do sends an API request and returns an error if any.
 func (cmd *ConnectRequest) Do(client *Client) error {
-	LogMessage("entering ConnectRequest.Do()")
+	logger.TraceEnter("ConnectRequest.Do()")
 
 	bytes := bytes.NewBuffer(nil)
 	if err := cmd.encode(bytes); err != nil {
-		LogError(err, "ConnectRequest.go, cmd.encode() failed")
-		LogMessage("leaving ConnectRequest.Do()")
+		logger.LogError("ConnectRequest.Do()", "cmd.encode()", err)
+		logger.TraceLeave("ConnectRequest.Do()")
 		return err
 	}
 
 	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
 	if err != nil {
-		LogError(err, "ConnectRequest.go, client.doJsonRequest(POST) failed")
+		logger.LogError("ConnectRequest.go()", "client.doJsonRequest(POST)", err)
 	}
 
-	LogMessage("leaving ConnectRequest.Do()")
+	logger.TraceLeave("ConnectRequest.Do()")
 	return err
 }
 

@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -51,7 +52,7 @@ func CreateSelectExtruderStepButton(
 		steps...,
 	)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateSelectExtruderStepButton()", "CreateStepButton()", err)
+		logger.LogError("PANIC!!! - CreateSelectExtruderStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 
@@ -99,7 +100,7 @@ func CreateSelectHotendStepButton(
 		steps...,
 	)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateSelectHotendStepButton()", "CreateStepButton()", err)
+		logger.LogError("PANIC!!! - CreateSelectHotendStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

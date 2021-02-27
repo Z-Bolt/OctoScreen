@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -22,7 +23,7 @@ func CreateSystemCommandButton(
 ) *SystemCommandButton {
 	systemCommandsResponse, err := (&octoprintApis.SystemCommandsRequest{}).Do(client)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateSystemCommandButton()", "SystemCommandsRequest.Do()", err)
+		logger.LogError("PANIC!!! - CreateSystemCommandButton()", "SystemCommandsRequest.Do()", err)
 		panic(err)
 	}
 
@@ -43,7 +44,7 @@ func CreateSystemCommandButton(
 			}
 
 			if err := systemExecuteCommandRequest.Do(client); err != nil {
-				utils.LogError("system.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
+				logger.LogError("system.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
 				return
 			}
 		}

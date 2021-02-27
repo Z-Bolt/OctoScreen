@@ -4,6 +4,7 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -47,7 +48,7 @@ func CreateFilamentLoadButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateFilamentLoadButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateFilamentLoadButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 

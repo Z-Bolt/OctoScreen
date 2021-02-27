@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gotk3/gotk3/glib"
+	"github.com/Z-Bolt/OctoScreen/logger"
 )
 
 
@@ -35,7 +36,7 @@ func (this *BackgroundTask) Start() {
 	this.Lock()
 	defer this.Unlock()
 
-	Logger.Info("New background task started")
+	logger.Info("New background task started")
 	go this.loop()
 
 	this.isRunning = true
@@ -63,7 +64,7 @@ func (this *BackgroundTask) loop() {
 				this.execute()
 
 			case <-this.close:
-				Logger.Info("Background task closed")
+				logger.Info("Background task closed")
 				return
 		}
 	}
@@ -72,6 +73,6 @@ func (this *BackgroundTask) loop() {
 func (this *BackgroundTask) execute() {
 	_, err := glib.IdleAdd(this.task)
 	if err != nil {
-		LogFatalError("common.execute()", "IdleAdd()", err)
+		logger.LogFatalError("common.execute()", "IdleAdd()", err)
 	}
 }

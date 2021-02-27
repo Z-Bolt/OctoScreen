@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	// "sort"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
@@ -20,7 +21,7 @@ func (this *LocationHistory) Length() int {
 func (this *LocationHistory) CurrentLocation() dataModels.Location {
 	length := this.Length()
 	if length < 1 {
-		log.Error("CurrentLocation() - length < 1")
+		logger.Error("CurrentLocation() - length < 1")
 		panic("PANIC!!! - LocationHistory.current() - locations is empty")
 	}
 

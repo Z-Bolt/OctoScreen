@@ -2,10 +2,11 @@ package ui
 
 import (
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var temperaturePresetsPanelInstance *temperaturePresetsPanel
@@ -42,7 +43,7 @@ func (this *temperaturePresetsPanel) initialize() {
 func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 	settings, err := (&octoprintApis.SettingsRequest{}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("TemperaturePresetsPanel.getTemperaturePresets()", "Do(SettingsRequest)", err)
+		logger.LogError("TemperaturePresetsPanel.getTemperaturePresets()", "Do(SettingsRequest)", err)
 		return
 	}
 

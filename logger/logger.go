@@ -1,98 +1,154 @@
-package utils
+package logger
 
 import (
+	"fmt"
 	"io"
 	standardLog "log"
 	"os"
-	"path"
-	"runtime"
+	// "path"
+	// "runtime"
 	"strings"
 	// "time"
 
 	"github.com/sirupsen/logrus"
 )
 
-type ContextHook struct{}
 
-func (hook ContextHook) Levels() []logrus.Level {
-	return logrus.AllLevels
-}
+var _indentLevel int
+var _indentation string
+const INDENTATION_TOKEN = "    "
+const INDENTATION_TOKEN_LENGTH = 4
 
-func (hook ContextHook) Fire(entry *logrus.Entry) error {
-	pc := make([]uintptr, 3, 3)
-	cnt := runtime.Callers(6, pc)
-
-	for i := 0; i < cnt; i++ {
-		fu := runtime.FuncForPC(pc[i] - 1)
-		name := fu.Name()
-		if !strings.Contains(strings.ToLower(name), "github.com/sirupsen/logrus") {
-			file, line := fu.FileLine(pc[i] - 1)
-			entry.Data["file"] = path.Base(file)
-			entry.Data["func"] = path.Base(name)
-			entry.Data["line"] = line
-			break
-		}
-	}
-	return nil
-}
-
-
-var log *logrus.Logger
-var Logger *logrus.Entry
-
-func SetLogLevel(level logrus.Level) {
-	log.SetLevel(level)
-	standardLog.Printf("logger.SetLogLevel() - the log level is now set to: %q", level)
-}
-
-func LowerCaseLogLevel() string {
-	logLevel := os.Getenv(EnvLogLevel)
-	return strings.ToLower(logLevel)
-}
+var _logrusLogger *logrus.Logger
+var _logrusEntry *logrus.Entry
+var _logLevel logrus.Level
+var _strLogLevel string
 
 
 func init() {
-	log = logrus.New()
-	log.AddHook(ContextHook{})
+	_indentLevel = 0
+	_indentation = ""
 
-	// Start off with the logging level set to debug until we get a chance to read the configuration settings.
-	SetLogLevel(logrus.DebugLevel)
+	_logrusLogger = logrus.New()
+	_logrusLogger.AddHook(ContextHook{})
 
+	//
+	// TODO: ...(maybe?) it would be nice it this could be made generic,
+	// but this is getting set in init().
 	var logFilePath = os.Getenv("OCTOSCREEN_LOG_FILE_PATH")
+	//
 
 	if logFilePath == "" {
-		log.Infof("logger.init() - logFilePath is was not defined.  Now using just the standard console output.")
-		log.Out = os.Stdout
+		standardLog.Print("logger.init() - logFilePath is was not defined.  Now using just the standard console output.")
+		_logrusLogger.Out = os.Stdout
 	} else {
-		log.Infof("logger.init() - logFilePath is: %q", logFilePath)
+		standardLog.Printf("logger.init() - logFilePath is: %s", logFilePath)
 		file, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err == nil {
-			log.Infof("logger.init() - OpenFile() succeeded and now setting log.Out to %s", logFilePath)
-			log.Out = file
+			standardLog.Printf("logger.init() - OpenFile() succeeded and now setting log.Out to %s", logFilePath)
+			_logrusLogger.Out = file
 
-			log.Out = io.MultiWriter(os.Stdout, file)
-			logrus.SetOutput(log.Out)
+			_logrusLogger.Out = io.MultiWriter(os.Stdout, file)
+			logrus.SetOutput(_logrusLogger.Out)
 		} else {
-			log.Errorf("logger.init() - OpenFile() FAILED!  err is: %q", err)
-			log.Error("Failed to log to file, using default stderr")
+			standardLog.Printf("logger.init() - OpenFile() FAILED!  err is: %s", err.Error)
+			standardLog.Print("Failed to open the log file, defaulting to use the standard console output.")
+			_logrusLogger.Out = os.Stdout
 		}
 	}
 
-	Logger = log.WithFields(logrus.Fields{})
+	_logrusEntry = _logrusLogger.WithFields(logrus.Fields{})
+
+	// Start off with the logging level set to debug until we get a chance to read the configuration settings.
+	SetLogLevel(logrus.DebugLevel)
 }
 
-func LogError(currentFunctionName, functionNameCalled string, err error) {
+func SetLogLevel(newLevel logrus.Level) {
+	_logLevel = newLevel
+	_strLogLevel = strings.ToLower(_logLevel.String())
+
+	_logrusLogger.SetLevel(_logLevel)
+	standardLog.Printf("logger.SetLogLevel() - the log level is now set to: %s", _strLogLevel)
+}
+
+func LogLevel() string {
+	// Returns a lower case string.
+	return _strLogLevel
+}
+
+
+func TraceEnter(functionName string) {
+	message := fmt.Sprintf("%sentering %s", _indentation, functionName)
+	_logrusEntry.Debug(message)
+	_indentLevel++
+	_indentation += INDENTATION_TOKEN
+}
+
+func TraceLeave(functionName string) {
+	_indentLevel--
+	_indentation = _indentation[:(_indentLevel * INDENTATION_TOKEN_LENGTH)]
+	message := fmt.Sprintf("%sleaving %s", _indentation, functionName)
+	_logrusEntry.Debug(message)
+}
+
+
+func LogError(currentFunctionName, functionCalledName string, err error) {
 	if err != nil {
-		Logger.Errorf("%s - %s returned an error: %q", currentFunctionName, functionNameCalled, err)
+		_logrusEntry.Errorf("%s%s - %s returned an error: %q", _indentation, currentFunctionName, functionCalledName, err)
 	} else {
-		Logger.Errorf("%s - %s returned an error", currentFunctionName, functionNameCalled)
+		_logrusEntry.Errorf("%s%s - %s returned an error", _indentation, currentFunctionName, functionCalledName)
 	}
 }
 
-func LogFatalError(currentFunctionName, functionNameCalled string, err error) {
+func LogFatalError(currentFunctionName, functionCalledName string, err error) {
 	if err != nil {
-		Logger.Fatalf("%s - %s returned an error: %q", currentFunctionName, functionNameCalled, err)
+		_logrusEntry.Fatalf("%s%s - %s returned an error: %q", _indentation, currentFunctionName, functionCalledName, err)
 	} else {
-		Logger.Fatalf("%s - %s returned an error", currentFunctionName, functionNameCalled)
+		_logrusEntry.Fatalf("%s%s - %s returned an error", _indentation, currentFunctionName, functionCalledName)
 	}
+}
+
+
+func Debug(args ...interface{}) {
+	_logrusEntry.Debug(_indentation + fmt.Sprint(args...))
+}
+
+func Debugf(format string, args ...interface{}) {
+	_logrusEntry.Debugf(_indentation + format, args...)
+}
+
+
+func Info(args ...interface{}) {
+	_logrusEntry.Info(_indentation + fmt.Sprint(args...))
+}
+
+func Infof(format string, args ...interface{}) {
+	_logrusEntry.Infof(_indentation + format, args...)
+}
+
+
+func Warn(args ...interface{}) {
+	_logrusEntry.Warn(_indentation + fmt.Sprint(args...))
+}
+
+func Warnf(format string, args ...interface{}) {
+	_logrusEntry.Warnf(_indentation + format, args...)
+}
+
+
+func Error(args ...interface{}) {
+	_logrusEntry.Error(_indentation + fmt.Sprint(args...))
+}
+
+func Errorf(format string, args ...interface{}) {
+	_logrusEntry.Errorf(_indentation + format, args...)
+}
+
+
+func Fatal(args ...interface{}) {
+	_logrusEntry.Fatal(_indentation + fmt.Sprint(args...))
+}
+
+func Fatalf(format string, args ...interface{}) {
+	_logrusEntry.Fatalf(_indentation + format, args...)
 }

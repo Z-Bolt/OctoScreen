@@ -8,6 +8,7 @@ import (
 
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -40,34 +41,32 @@ func IdleStatusPanel(ui *UI) *idleStatusPanel {
 }
 
 func (this *idleStatusPanel) initialize() {
-	utils.Logger.Debug("entering IdleStatusPanel.initialize()")
+	logger.TraceEnter("IdleStatusPanel.initialize()")
 
 	defer this.Initialize()
 
-	utils.Logger.Info("IdleStatusPanel.initialize() - settings are:")
+	logger.Info("IdleStatusPanel.initialize() - settings are:")
 	if this.UI == nil {
-		utils.Logger.Error("IdleStatusPanel.initialize() - this.UI is nil")
+		logger.Error("IdleStatusPanel.initialize() - this.UI is nil")
 	} else if this.UI.Settings == nil {
-		utils.Logger.Error("IdleStatusPanel.initialize() - this.UI.Settings is nil")
+		logger.Error("IdleStatusPanel.initialize() - this.UI.Settings is nil")
 	} else {
-		utils.Logger.Info("struct values:")
-		utils.Logger.Info(this.UI.Settings)
+		logger.Info("struct values:")
+		logger.Info(this.UI.Settings)
 
 		jsonStr, err := utils.StructToJson(this.UI.Settings)
 		if err == nil {
-			utils.Logger.Info("JSON:")
-			utils.Logger.Info(jsonStr)
+			logger.Info("JSON:")
+			logger.Info(jsonStr)
 		}
 	}
-	utils.Logger.Info("")
-	utils.Logger.Info("")
 
 	var menuItems []dataModels.MenuItem
 	if this.UI.Settings == nil || this.UI.Settings.MenuStructure == nil || len(this.UI.Settings.MenuStructure) < 1 {
-		utils.Logger.Info("IdleStatusPanel.initialize() - Loading default menu")
+		logger.Info("IdleStatusPanel.initialize() - Loading default menu")
 		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)
 	} else {
-		utils.Logger.Info("IdleStatusPanel.initialize() - Loading octo menu")
+		logger.Info("IdleStatusPanel.initialize() - Loading octo menu")
 	}
 
 	menuItems = this.UI.Settings.MenuStructure
@@ -83,27 +82,27 @@ func (this *idleStatusPanel) initialize() {
 
 	this.showTools()
 
-	utils.Logger.Debug("leaving IdleStatusPanel.initialize()")
+	logger.TraceLeave("IdleStatusPanel.initialize()")
 }
 
 func (this *idleStatusPanel) showFiles() {
-	utils.Logger.Debug("entering IdleStatusPanel.showFiles()")
+	logger.TraceEnter("IdleStatusPanel.showFiles()")
 
 	this.UI.GoToPanel(FilesPanel(this.UI, this))
 
-	utils.Logger.Debug("leaving IdleStatusPanel.showFiles()")
+	logger.TraceLeave("IdleStatusPanel.showFiles()")
 }
 
 func (this *idleStatusPanel) update() {
-	utils.Logger.Debug("entering IdleStatusPanel.update()")
+	logger.TraceEnter("IdleStatusPanel.update()")
 
 	this.updateTemperature()
 
-	utils.Logger.Debug("leaving IdleStatusPanel.update()")
+	logger.TraceLeave("IdleStatusPanel.update()")
 }
 
 func (this *idleStatusPanel) showTools() {
-	utils.Logger.Debug("entering IdleStatusPanel.showTools()")
+	logger.TraceEnter("IdleStatusPanel.showTools()")
 
 	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
 	// PrintStatusPanel look similar, but there are subtle differences between the two
@@ -147,17 +146,16 @@ func (this *idleStatusPanel) showTools() {
 			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
 	}
 
-	utils.Logger.Debug("leaving IdleStatusPanel.showTools()")
+	logger.TraceLeave("IdleStatusPanel.showTools()")
 }
 
 func (this *idleStatusPanel) updateTemperature() {
-	utils.Logger.Debug("entering IdleStatusPanel.updateTemperature()")
+	logger.TraceEnter("IdleStatusPanel.updateTemperature()")
 
 	fullStateResponse, err := (&octoprintApis.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("IdleStatusPanel.updateTemperature()", "Do(StateRequest)", err)
-
-		utils.Logger.Debug("leaving IdleStatusPanel.updateTemperature()")
+		logger.LogError("IdleStatusPanel.updateTemperature()", "Do(StateRequest)", err)
+		logger.TraceLeave("IdleStatusPanel.updateTemperature()")
 		return
 	}
 
@@ -180,5 +178,5 @@ func (this *idleStatusPanel) updateTemperature() {
 		}
 	}
 
-	utils.Logger.Debug("leaving IdleStatusPanel.updateTemperature()")
+	logger.TraceLeave("IdleStatusPanel.updateTemperature()")
 }

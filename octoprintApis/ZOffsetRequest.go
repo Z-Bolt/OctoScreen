@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	// "fmt"
-	"log"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -15,29 +15,29 @@ type ZOffsetRequest struct {
 	Tool    int    `json:"tool"`
 }
 
-func (cmd *ZOffsetRequest) Do(c *Client) (*dataModels.ZOffsetResponse, error) {
-	cmd.Command = "get_z_offset"
+func (this *ZOffsetRequest) Do(client *Client) (*dataModels.ZOffsetResponse, error) {
+	this.Command = "get_z_offset"
 
 	params := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(params).Encode(cmd); err != nil {
-		log.Println("zbolt.Do() 3 - Encode() failed")
+	if err := json.NewEncoder(params).Encode(this); err != nil {
+		logger.LogError("ZOffsetRequest.Do()", "json.NewEncoder(params).Encode(this)", err)
 		return nil, err
 	}
 
-	// b, err := c.doJsonRequest("POST", URIZBoltRequest, params, ConnectionErrors)
-	b, err := c.doJsonRequest("GET", PluginZBoltApiUri, params, ConnectionErrors)
+	// b, err := client.doJsonRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", PluginZBoltApiUri, params, ConnectionErrors)
 	if err != nil {
-		log.Println("zbolt.Do() 3 - doJsonRequest() failed")
+		logger.LogError("ZOffsetRequest.Do()", "client.doJsonRequest()", err)
 		return nil, err
 	}
 
-	r := &dataModels.ZOffsetResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
-		log.Println("zbolt.Do() 3 - Unmarshal() failed")
+	response := &dataModels.ZOffsetResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
+		logger.LogError("ZOffsetRequest.Do()", "json.Unmarshal()", err)
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
 
 
@@ -50,15 +50,15 @@ type SetZOffsetRequest struct {
 	Value   float64 `json:"value"`
 }
 
-func (cmd *SetZOffsetRequest) Do(c *Client) error {
-	cmd.Command = "set_z_offset"
+func (this *SetZOffsetRequest) Do(client *Client) error {
+	this.Command = "set_z_offset"
 
-	b := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(b).Encode(cmd); err != nil {
-		log.Println("zbolt.Do() 2 - Encode() failed")
+	bytes := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(bytes).Encode(this); err != nil {
+		logger.LogError("SetZOffsetRequest.Do()", "json.NewEncoder(params).Encode(this)", err)
 		return err
 	}
 
-	_, err := c.doJsonRequest("POST", PluginZBoltApiUri, b, ConnectionErrors)
+	_, err := client.doJsonRequest("POST", PluginZBoltApiUri, bytes, ConnectionErrors)
 	return err
 }

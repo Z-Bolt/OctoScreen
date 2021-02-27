@@ -3,6 +3,7 @@ package uiWidgets
 import (
 	// "fmt"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -24,7 +25,7 @@ func CreateOctoScreenPluginInfoBox(
 	if octoPrintPluginIsInstalled {
 		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client, uiState)
 		if err != nil {
-			utils.LogError("CreateOctoScreenPluginInfoBox()", "PluginManagerInfoRequest.Do()", err)
+			logger.LogError("CreateOctoScreenPluginInfoBox()", "PluginManagerInfoRequest.Do()", err)
 			str2 = "Error"
 		} else {
 			found := false

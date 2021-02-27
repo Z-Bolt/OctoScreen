@@ -2,6 +2,7 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -37,7 +38,7 @@ func CreateTemperaturePresetButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateTemperaturePresetButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateTemperaturePresetButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -45,13 +46,13 @@ func CreateTemperaturePresetButton(
 }
 
 func (this *TemperaturePresetButton) handleClicked() {
-	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting temperature to preset %s.", this.temperaturePreset.Name)
-	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting hotend temperature to %.0f.", this.temperaturePreset.Extruder)
-	utils.Logger.Infof("TemperaturePresetButton.handleClicked() - setting bed temperature to %.0f.", this.temperaturePreset.Bed)
+	logger.Infof("TemperaturePresetButton.handleClicked() - setting temperature to preset %s.", this.temperaturePreset.Name)
+	logger.Infof("TemperaturePresetButton.handleClicked() - setting hotend temperature to %.0f.", this.temperaturePreset.Extruder)
+	logger.Infof("TemperaturePresetButton.handleClicked() - setting bed temperature to %.0f.", this.temperaturePreset.Bed)
 
 	currentTool := this.selectHotendStepButton.Value()
 	if currentTool == "" {
-		utils.Logger.Error("TemperaturePresetButton.handleClicked() - currentTool is invalid (blank), defaulting to tool0")
+		logger.Error("TemperaturePresetButton.handleClicked() - currentTool is invalid (blank), defaulting to tool0")
 		currentTool = "tool0"
 	}
 
@@ -77,7 +78,7 @@ func (this *TemperaturePresetButton) handleClicked() {
 	bedTargetRequest := &octoprintApis.BedTargetRequest{Target: this.temperaturePreset.Bed}
 	err := bedTargetRequest.Do(this.client)
 	if err != nil {
-		utils.LogError("TemperaturePresetButton.handleClicked()", "Do(BedTargetRequest)", err)
+		logger.LogError("TemperaturePresetButton.handleClicked()", "Do(BedTargetRequest)", err)
 		return
 	}
 
@@ -100,7 +101,7 @@ func (this *TemperaturePresetButton) handleClicked() {
 
 	err = toolTargetRequest.Do(this.client)
 	if err != nil {
-		utils.LogError("TemperaturePresetButton.handleClicked()", "Do(ToolTargetRequest)", err)
+		logger.LogError("TemperaturePresetButton.handleClicked()", "Do(ToolTargetRequest)", err)
 	}
 
 	if this.callback != nil {

@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -61,7 +62,7 @@ func CreateToolButton(
 
 	_, err := instance.Connect("clicked", instance.clicked)
 	if err != nil {
-		utils.LogError("ToolButton.CreateToolButton()", "t.Connect('clicked', t.clicked)", err)
+		logger.LogError("ToolButton.CreateToolButton()", "t.Connect('clicked', t.clicked)", err)
 	}
 
 	return instance
@@ -89,7 +90,7 @@ func (this *ToolButton) GetProfileTemperature() float64 {
 
 	settingsResponse, err := (&octoprintApis.SettingsRequest{}).Do(this.printer)
 	if err != nil {
-		utils.LogError("ToolButton.GetProfileTemperature()", "Do(SettingsRequest)", err)
+		logger.LogError("ToolButton.GetProfileTemperature()", "Do(SettingsRequest)", err)
 		return 0
 	}
 
@@ -130,13 +131,13 @@ func (this *ToolButton) clicked() {
 		cmd := &octoprintApis.BedTargetRequest{Target: target}
 		err = cmd.Do(this.printer)
 		if err != nil {
-			utils.LogError("ToolButton.clicked()", "Do(BedTargetRequest)", err)
+			logger.LogError("ToolButton.clicked()", "Do(BedTargetRequest)", err)
 		}
 	} else {
 		cmd := &octoprintApis.ToolTargetRequest{Targets: map[string]float64{this.tool: target}}
 		err = cmd.Do(this.printer)
 		if err != nil {
-			utils.LogError("ToolButton.clicked()", "Do(ToolTargetRequest)", err)
+			logger.LogError("ToolButton.clicked()", "Do(ToolTargetRequest)", err)
 		}
 	}
 }

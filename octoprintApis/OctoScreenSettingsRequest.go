@@ -3,7 +3,6 @@ package octoprintApis
 import (
 	"encoding/json"
 	"fmt"
-	//"log"
 
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )

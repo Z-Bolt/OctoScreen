@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	// "log"
 	"net/http"
 	"net/url"
 	"time"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -53,20 +53,22 @@ func (this *Client) doJsonRequest(
 	body io.Reader,
 	statusMapping StatusMapping,
 ) ([]byte, error) {
-	LogMessagef("    entering Client.doJsonRequest()")
+	logger.TraceEnter("Client.doJsonRequest()")
 
 	bytes, err := this.doRequest(method, target, "application/json", body, statusMapping)
 	if err != nil {
-		LogError(err, "Client.doJsonRequest(), this.doRequest() failed")
-		LogMessagef("    leaving Client.doJsonRequest()")
+		logger.LogError("Client.doJsonRequest()", "this.doRequest()", err)
+		logger.TraceLeave("Client.doJsonRequest()")
 		return nil, err
 	}
 
-	// Use the following for debugging.  Comment out for production.
-	json := string(bytes)
-	LogMessagef("        JSON response: %s", json)
-	LogMessagef("    leaving Client.doJsonRequest()")
+	// Use the following only for debugging.
+	if logger.LogLevel() == "debug" {
+		json := string(bytes)
+		logger.Debugf("JSON response: %s", json)
+	}
 
+	logger.TraceLeave("Client.doJsonRequest()")
 	return bytes, err
 }
 
@@ -77,15 +79,15 @@ func (this *Client) doRequest(
 	body io.Reader,
 	statusMapping StatusMapping,
 ) ([]byte, error) {
-	LogMessagef("        entering Client.doRequest()")
-	LogMessagef("            method: %s", method)
-	LogMessagef("            target: %s",target)
+	logger.TraceEnter("Client.doRequest()")
+	logger.Debugf("method: %s", method)
+	logger.Debugf("target: %s",target)
 
 
 	req, err := http.NewRequest(method, joinUrl(this.Endpoint, target), body)
 	if err != nil {
-		LogError(err, "Client.doRequest(), http.NewRequest() failed")
-		LogMessagef("        leaving Client.doRequest()")
+		logger.LogError("Client.doRequest()", "http.NewRequest()", err)
+		logger.TraceLeave("Client.doRequest()")
 		return nil, err
 	}
 
@@ -99,21 +101,22 @@ func (this *Client) doRequest(
 	req.Header.Add("X-Api-Key", this.APIKey)
 	resp, err := this.httpClient.Do(req)
 	if err != nil {
-		LogError(err, "Client.doRequest(), this.httpClient.Do() failed")
-		LogMessagef("        leaving Client.doRequest()")
+		logger.LogError("Client.doRequest()", "this.httpClient.Do()", err)
+		logger.TraceLeave("Client.doRequest()")
 		return nil, err
 	}
 
 	response, err := this.handleResponse(resp, statusMapping)
 	if err != nil {
-		LogError(err, "Client.doRequest(), this.handleResponse() failed")
-		LogMessagef("        leaving Client.doRequest()")
+		logger.LogError("Client.doRequest()", "this.handleResponse()", err)
+		logger.TraceLeave("Client.doRequest()")
 		return nil, err
 	}
 
-	LogMessagef("        leaving Client.doRequest()")
+	logger.TraceLeave("Client.doRequest()")
 	return response, err
 }
+
 
 func (this *Client) handleResponse(
 	httpResponse *http.Response,

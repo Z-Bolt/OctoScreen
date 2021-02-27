@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	// "fmt"
 	"io"
-	// "log"
 	// "strings"
 
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"

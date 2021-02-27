@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -20,7 +21,7 @@ func MustPressedButton(
 
 	button, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
-		utils.LogError("PANIC!!! - MustPressedButton()", "gtk.ButtonNewWithLabel()", err)
+		logger.LogError("PANIC!!! - MustPressedButton()", "gtk.ButtonNewWithLabel()", err)
 		panic(err)
 	}
 

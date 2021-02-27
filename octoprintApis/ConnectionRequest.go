@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	// "io"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -16,23 +17,22 @@ type ConnectionRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *ConnectionRequest) Do(client *Client) (*dataModels.ConnectionResponse, error) {
-	LogMessage("entering ConnectionRequest.Do()")
+	logger.TraceEnter("ConnectionRequest.Do()")
 
 	bytes, err := client.doJsonRequest("GET", ConnectionApiUri, nil, nil)
 	if err != nil {
-		LogError(err, "ConnectionRequest.go, client.doJsonRequest(GET) failed")
-		LogMessage("leaving ConnectionRequest.Do()")
+		logger.LogError("ConnectionRequest.Do()", "client.doJsonRequest(GET)", err)
+		logger.TraceLeave("ConnectionRequest.Do()")
 		return nil, err
 	}
 
 	response := &dataModels.ConnectionResponse{}
 	if err := json.Unmarshal(bytes, response); err != nil {
-		LogError(err, "ConnectionRequest.go, json.Unmarshal() failed")
-		LogMessage("leaving ConnectionRequest.Do()")
+		logger.LogError("ConnectionRequest.Do()", "json.Unmarshal()", err)
+		logger.TraceLeave("ConnectionRequest.Do()")
 		return nil, err
 	}
 
-	LogMessage("leaving ConnectionRequest.Do()")
-
+	logger.TraceLeave("ConnectionRequest.Do()")
 	return response, err
 }

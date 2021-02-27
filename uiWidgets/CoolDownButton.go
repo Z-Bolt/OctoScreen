@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -29,7 +30,7 @@ func CreateCoolDownButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateCoolDownButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateCoolDownButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -53,7 +54,7 @@ func TurnAllHeatersOff(
 	}
 	err := bedTargetRequest.Do(client)
 	if err != nil {
-		utils.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
+		logger.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
 		return
 	}
 
@@ -67,7 +68,7 @@ func TurnAllHeatersOff(
 		}
 		err = toolTargetRequest.Do(client)
 		if err != nil {
-			utils.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
+			logger.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
 		}
 	}
 }

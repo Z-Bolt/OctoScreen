@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -41,7 +42,7 @@ func CreateFanButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateFanButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateFanButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -56,6 +57,6 @@ func (this *FanButton) handleClicked() {
 
 	err := cmd.Do(this.client)
 	if err != nil {
-		utils.LogError("FanButton.handleClicked()", "Do(CommandRequest)", err)
+		logger.LogError("FanButton.handleClicked()", "Do(CommandRequest)", err)
 	}
 }

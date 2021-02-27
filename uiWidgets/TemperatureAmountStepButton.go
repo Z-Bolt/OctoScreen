@@ -1,7 +1,7 @@
 package uiWidgets
 
 import (
-	"github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/logger"
 )
 
 type TemperatureAmountStepButton struct {
@@ -18,7 +18,7 @@ func CreateTemperatureAmountStepButton() *TemperatureAmountStepButton {
 		Step{" 5°C", "move-step.svg", nil,  5.0},
 	)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateTemperatureAmountStepButton()", "CreateStepButton()", err)
+		logger.LogError("PANIC!!! - CreateTemperatureAmountStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

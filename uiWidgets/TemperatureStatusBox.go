@@ -5,6 +5,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -24,13 +25,13 @@ func CreateTemperatureStatusBox(
 	includeBed					bool,
 ) *TemperatureStatusBox {
 	if !includeHotends && !includeBed {
-		utils.Logger.Error("TemperatureStatusBox.CreateTemperatureStatusBox() - both includeToolheads and includeBed are false, but at least one needs to be true")
+		logger.Error("TemperatureStatusBox.CreateTemperatureStatusBox() - both includeToolheads and includeBed are false, but at least one needs to be true")
 		return nil
 	}
 
 	currentTemperatureData, err := utils.GetCurrentTemperatureData(client)
 	if err != nil {
-		utils.LogError("TemperatureStatusBox.CreateTemperatureStatusBox()", "GetCurrentTemperatureData(client)", err)
+		logger.LogError("TemperatureStatusBox.CreateTemperatureStatusBox()", "GetCurrentTemperatureData(client)", err)
 		return nil
 	}
 

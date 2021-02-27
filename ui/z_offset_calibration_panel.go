@@ -7,6 +7,7 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
@@ -92,7 +93,7 @@ func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
 	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, false)
 	_, err := this.selectHotendStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 	if err != nil {
-		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateSelectToolStepButton()", "selectHotendStepButton.Connect()", err)
+		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateSelectToolStepButton()", "selectHotendStepButton.Connect()", err)
 		panic(err)
 	}
 
@@ -105,7 +106,7 @@ func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
 
 func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
 	toolheadIndex := this.selectHotendStepButton.Index()
-	utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
+	logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 	gcode := fmt.Sprintf("T%d", toolheadIndex)
 
@@ -119,7 +120,7 @@ func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
 		cmd := &octoprintApis.ZOffsetRequest{Tool: this.activeTool}
 		response, err := cmd.Do(this.UI.Client)
 		if err != nil {
-			utils.LogError("z_offset_calibration.setToolheadButtonClickHandler()", "Do(GetZOffsetRequest)", err)
+			logger.LogError("z_offset_calibration.setToolheadButtonClickHandler()", "Do(GetZOffsetRequest)", err)
 			return
 		}
 
@@ -133,7 +134,7 @@ func (this *zOffsetCalibrationPanel) CreateDecreaseZOffsetButton() {
 	this.decreaseZOffsetButton = uiWidgets.CreateIncreaseZOffsetButton(false)
 	_, err := this.decreaseZOffsetButton.Connect("clicked", this.decreaseZOffsetButtonClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateDecreaseZOffsetButton()", "decreaseZOffsetButton.Connect()", err)
+		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateDecreaseZOffsetButton()", "decreaseZOffsetButton.Connect()", err)
 		panic(err)
 	}
 	this.Grid().Attach(this.decreaseZOffsetButton, 1, 0, 1, 1)
@@ -151,7 +152,7 @@ func (this *zOffsetCalibrationPanel) CreateIncreaseZOffsetButton() {
 	this.increaseZOffsetButton = uiWidgets.CreateIncreaseZOffsetButton(true)
 	_, err := this.increaseZOffsetButton.Connect("clicked", this.increaseZOffsetButtonClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateIncreaseZOffsetButton()", "increaseZOffsetButton.Connect()", err)
+		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateIncreaseZOffsetButton()", "increaseZOffsetButton.Connect()", err)
 		panic(err)
 	}
 	this.Grid().Attach(this.increaseZOffsetButton, 2, 0, 1, 1)
@@ -185,7 +186,7 @@ func (this *zOffsetCalibrationPanel) CreateManualZCalibrationStepButton() {
 	this.manualZCalibrationStepButton = uiWidgets.CreateManualZCalibrationStepButton()
 	_, err := this.manualZCalibrationStepButton.Connect("clicked", this.manualZCalibrationStepButtonHandleClick)
 	if err != nil {
-		utils.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateManualZCalibrationStepButton()", "manualZCalibrationStepButton.Connect()", err)
+		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateManualZCalibrationStepButton()", "manualZCalibrationStepButton.Connect()", err)
 		panic(err)
 	}
 
@@ -221,7 +222,7 @@ func (this *zOffsetCalibrationPanel) CreateAutoZCalibrationButton() gtk.IWidget 
 		// when RunZOffsetCalibrationRequest is called, it's returning a 404.
 		cmd := &octoprintApis.RunZOffsetCalibrationRequest{}
 		if err := cmd.Do(this.UI.Client); err != nil {
-			utils.LogError("z_offset_calibration.createAutoZCalibrationButton()", "Do(RunZOffsetCalibrationRequest)", err)
+			logger.LogError("z_offset_calibration.createAutoZCalibrationButton()", "Do(RunZOffsetCalibrationRequest)", err)
 		}
 	})
 }
@@ -239,7 +240,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 		"G0 Z0 F100",
 	}
 	if err := cmd.Do(this.UI.Client); err != nil {
-		utils.LogError("z_offset_calibration.updateZOffset()", "Do(CommandRequest)", err)
+		logger.LogError("z_offset_calibration.updateZOffset()", "Do(CommandRequest)", err)
 	}
 
 	cmd2 := &octoprintApis.SetZOffsetRequest {
@@ -247,7 +248,7 @@ func (this *zOffsetCalibrationPanel) updateZOffset(value float64) {
 		Tool: this.activeTool,
 	}
 	if err := cmd2.Do(this.UI.Client); err != nil {
-		utils.LogError("z_offset_calibration.updateZOffset()", "Do(SetZOffsetRequest)", err)
+		logger.LogError("z_offset_calibration.updateZOffset()", "Do(SetZOffsetRequest)", err)
 	}
 }
 

@@ -1,6 +1,7 @@
 package uiWidgets
 
 import (
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -21,7 +22,7 @@ func CreateFlowRateStepButton(
 		Step{"Slow (75%)",    "speed-slow.svg",   nil,  75},
 	)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateFlowRateStepButton()", "CreateStepButton()", err)
+		logger.LogError("PANIC!!! - CreateFlowRateStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

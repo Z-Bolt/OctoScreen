@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
@@ -72,28 +73,27 @@ func getPanel(
 		case "extrude_multitool":
 			fallthrough
 		case "extruder":
-			utils.Logger.Warnf("WARNING! the '%s' panel has been deprecated.  Please use the 'filament' panel instead.", menuItem.Panel)
-			utils.Logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
-			utils.Logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
+			logger.Warnf("WARNING! the '%s' panel has been deprecated.  Please use the 'filament' panel instead.", menuItem.Panel)
+			logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
+			logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
 			return FilamentPanel(ui, parentPanel)
 
 		case "toolchanger":
-			utils.Logger.Warn("WARNING! the 'toolchanger' panel has been renamed to 'tool-changer'.  Please use the 'tool-changer' panel instead.")
-			utils.Logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
-			utils.Logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
+			logger.Warn("WARNING! the 'toolchanger' panel has been renamed to 'tool-changer'.  Please use the 'tool-changer' panel instead.")
+			logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
+			logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
 			return ToolChangerPanel(ui, parentPanel)
 
 		case "nozzle-calibration":
-			utils.Logger.Warn("WARNING! the 'nozzle-calibration' panel has been deprecated.  Please use the 'z-offset-calibration' panel instead.")
-			utils.Logger.Warn("Support for the nozzle-calibration panel remains in this release, but will be removed in a future.")
-			utils.Logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
+			logger.Warn("WARNING! the 'nozzle-calibration' panel has been deprecated.  Please use the 'z-offset-calibration' panel instead.")
+			logger.Warn("Support for the nozzle-calibration panel remains in this release, but will be removed in a future.")
+			logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
 			return ZOffsetCalibrationPanel(ui, parentPanel)
 
-
 		default:
-			logLevel := utils.LowerCaseLogLevel()
+			logLevel := logger.LogLevel()
 			if logLevel == "debug" {
-				utils.Logger.Fatalf("menu.getPanel() - unknown menuItem.Panel: %q", menuItem.Panel)
+				logger.Fatalf("menu.getPanel() - unknown menuItem.Panel: %q", menuItem.Panel)
 			}
 
 			return nil
@@ -218,7 +218,7 @@ func getDefaultMenuItems(client *octoprintApis.Client) []dataModels.MenuItem {
 	}
 
 	if err != nil {
-		utils.LogError("menu.getDefaultMenuItems()", "json.Unmarshal()", err)
+		logger.LogError("menu.getDefaultMenuItems()", "json.Unmarshal()", err)
 	}
 
 	return menuItems

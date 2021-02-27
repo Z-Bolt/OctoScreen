@@ -3,8 +3,8 @@ package octoprintApis
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -22,21 +22,21 @@ func (this *PluginManagerInfoRequest) Do(client *Client, uiState string) (*dataM
 
 	params := bytes.NewBuffer(nil)
 	if err := json.NewEncoder(params).Encode(this); err != nil {
-		log.Println("plugin_manager.Do() - Encode() failed")
+		logger.LogError("PluginManagerInfoRequest.Do()", "json.NewEncoder(params).Encode(this)", err)
 		return nil, err
 	}
 
-	b, err := client.doJsonRequest("GET", pluginManagerRequestURI, params, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", pluginManagerRequestURI, params, ConnectionErrors)
 	if err != nil {
-		log.Println("plugin_manager.Do() - doJsonRequest() failed")
+		logger.LogError("PluginManagerInfoRequest.Do()", "client.doJsonRequest()", err)
 		return nil, err
 	}
 
-	r := &dataModels.PluginManagerInfoResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
-		log.Println("plugin_manager.Do() - Unmarshal() failed")
+	response := &dataModels.PluginManagerInfoResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
+		logger.LogError("PluginManagerInfoRequest.Do()", "json.Unmarshal()", err)
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

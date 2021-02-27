@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -15,22 +16,22 @@ import (
 type DisconnectRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *DisconnectRequest) Do(client *Client) error {
-	LogMessage("entering DisconnectRequest.Do()")
+func (this *DisconnectRequest) Do(client *Client) error {
+	logger.TraceEnter("DisconnectRequest.Do()")
 
 	bytes := bytes.NewBuffer(nil)
-	if err := cmd.encode(bytes); err != nil {
-		LogError(err, "DisconnectRequest.go, cmd.encode() failed")
-		LogMessage("leaving DisconnectRequest.Do()")
+	if err := this.encode(bytes); err != nil {
+		logger.LogError("DisconnectRequest.Do()", "this.encode(bytes)", err)
+		logger.TraceLeave("DisconnectRequest.Do()")
 		return err
 	}
 
 	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
 	if err != nil {
-		LogError(err, "DisconnectRequest.go, client.doJsonRequest(POST) failed")
+		logger.LogError("DisconnectRequest.Do()", "client.doJsonRequest(POST)", err)
 	}
 
-	LogMessage("leaving DisconnectRequest.Do()")
+	logger.TraceLeave("DisconnectRequest.Do()")
 	return err
 }
 

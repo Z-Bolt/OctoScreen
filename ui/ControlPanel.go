@@ -5,10 +5,11 @@ import (
 
 	// "github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var controlPanelInstance *controlPanel
@@ -73,10 +74,10 @@ func (this *controlPanel) getDefaultControls() []*dataModels.ControlDefinition {
 func (this *controlPanel) getCustomControls() []*dataModels.ControlDefinition {
 	controlDefinitions := []*dataModels.ControlDefinition{}
 
-	utils.Logger.Info("control.getCustomControl() - Retrieving custom controls")
+	logger.Info("control.getCustomControl() - Retrieving custom controls")
 	response, err := (&octoprintApis.CustomCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
+		logger.LogError("control.getCustomControl()", "Do(ControlDefinition)", err)
 		return controlDefinitions
 	}
 
@@ -92,10 +93,10 @@ func (this *controlPanel) getCustomControls() []*dataModels.ControlDefinition {
 }
 
 func (this *controlPanel) getCommands() []*dataModels.CommandDefinition {
-	utils.Logger.Info("Retrieving custom commands")
+	logger.Info("Retrieving custom commands")
 	response, err := (&octoprintApis.SystemCommandsRequest{}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
+		logger.LogError("control.getCommands()", "Do(SystemCommandsRequest)", err)
 		return nil
 	}
 

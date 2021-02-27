@@ -4,6 +4,7 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -32,7 +33,7 @@ func CreateControlButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateControlButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateControlButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -57,9 +58,9 @@ func (this *ControlButton) sendCommand() {
 		commandRequest.Commands = []string{this.controlDefinition.Command}
 	}
 
-	utils.Logger.Infof("Executing command %q", this.controlDefinition.Name)
+	logger.Infof("Executing command %q", this.controlDefinition.Name)
 	err := commandRequest.Do(this.client)
 	if err != nil {
-		utils.LogError("ControlButton.sendCommand()", "Do(CommandRequest)", err)
+		logger.LogError("ControlButton.sendCommand()", "Do(CommandRequest)", err)
 	}
 }

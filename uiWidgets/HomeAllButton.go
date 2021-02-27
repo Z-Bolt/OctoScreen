@@ -2,6 +2,7 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -24,7 +25,7 @@ func CreateHomeAllButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateHomeAllButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateHomeAllButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -32,7 +33,7 @@ func CreateHomeAllButton(
 }
 
 func (this *HomeAllButton) handleClicked() {
-	utils.Logger.Infof("Homing the print head")
+	logger.Infof("Homing the print head")
 
 	// Version A:
 	axes := []dataModels.Axis {
@@ -43,7 +44,7 @@ func (this *HomeAllButton) handleClicked() {
 	cmd := &octoprintApis.PrintHeadHomeRequest{Axes: axes}
 	err := cmd.Do(this.client);
 	if err != nil {
-		utils.LogError("HomeAllButton.handleClicked()", "Do(PrintHeadHomeRequest)", err)
+		logger.LogError("HomeAllButton.handleClicked()", "Do(PrintHeadHomeRequest)", err)
 	}
 
 
@@ -57,7 +58,7 @@ func (this *HomeAllButton) handleClicked() {
 	}
 
 	if err := cmd.Do(m.UI.Client); err != nil {
-		utils.LogError("HomeAllButton.handleClicked()", "Do(CommandRequest)", err)
+		logger.LogError("HomeAllButton.handleClicked()", "Do(CommandRequest)", err)
 	}
 	*/
 }

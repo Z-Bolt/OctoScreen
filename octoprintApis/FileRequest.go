@@ -4,7 +4,6 @@ package octoprintApis
 import (
 	"encoding/json"
 	"fmt"
-	// "log"
 	// "strconv"
 	// "strings"
 	// "time"

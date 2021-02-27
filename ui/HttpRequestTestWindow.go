@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	// "io/ioutil"
-	// standardLog "log"
 	// "os"
 	// "os/user"
 	// "path/filepath"
@@ -13,11 +12,11 @@ import (
 
 	"github.com/coreos/go-systemd/daemon"
 	"github.com/gotk3/gotk3/gtk"
-	// "github.com/sirupsen/logrus"
-	// "github.com/Z-Bolt/OctoScreen/ui"
+
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/Z-Bolt/OctoScreen/utils"
-	// "gopkg.in/yaml.v1"
 )
 
 
@@ -36,7 +35,7 @@ func CreateHttpRequestTestWindow(
 	width int,
 	height int,
 ) *HttpRequestTestWindow {
-	utils.Logger.Debug("entering CreateHttpRequestTestWindow()")
+	logger.TraceEnter("CreateHttpRequestTestWindow()")
 
 
 	instance := &HttpRequestTestWindow {
@@ -53,13 +52,9 @@ func CreateHttpRequestTestWindow(
 	instance.addControls()
 	defer instance.Window.ShowAll()
 
+	instance.sdNotify(daemon.SdNotifyReady)
 
-	instance.sdNotify("READY=1")
-	//instance.sdNotify(daemon.SdNotifyReady)
-
-
-	utils.Logger.Debug("leaving CreateHttpRequestTestWindow()")
-
+	logger.TraceLeave("CreateHttpRequestTestWindow()")
 	return instance
 }
 
@@ -70,7 +65,7 @@ func (this *HttpRequestTestWindow) createWindow(
 ) {
 	window, err := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if err != nil {
-		utils.LogFatalError("createWindow()", "WindowNew()", err)
+		logger.LogFatalError("createWindow()", "WindowNew()", err)
 	}
 
 	this.Window = window
@@ -81,7 +76,7 @@ func (this *HttpRequestTestWindow) createWindow(
 	this.Window.Connect("show", this.BackgroundTask.Start)
 
 	this.Window.Connect("destroy", func() {
-		utils.Logger.Debug("destroy() callback was called")
+		logger.Debug("destroy() callback was called")
 		gtk.MainQuit()
 	})
 }
@@ -91,7 +86,7 @@ func (this *HttpRequestTestWindow) addControls() {
 	// Create a new label widget to show in the window.
 	label, err := gtk.LabelNew("")
 	if err != nil {
-		utils.LogFatalError("CreateHttpRequestTestWindow()", "LabelNew()", err)
+		logger.LogFatalError("CreateHttpRequestTestWindow()", "LabelNew()", err)
 	}
 
 	this.Label = label
@@ -102,50 +97,48 @@ func (this *HttpRequestTestWindow) addControls() {
 
 
 func (this *HttpRequestTestWindow) updateTestWindow() {
-	utils.Logger.Debug("entering updateTestWindow()")
-
+	logger.TraceEnter("updateTestWindow()")
 
 	this.UpdateCount++
 	strUpdateCount := fmt.Sprintf("UpdateCount: %d", this.UpdateCount)
-	utils.Logger.Debug(strUpdateCount)
+	logger.Debug(strUpdateCount)
 	this.Label.SetLabel(strUpdateCount)
 
 
 	//this.checkNotification()
 	this.verifyConnection()
 
-	utils.Logger.Debug("leaving updateTestWindow()")
+	logger.TraceLeave("updateTestWindow()")
 }
 
 
 func (this *HttpRequestTestWindow) verifyConnection() {
-	utils.Logger.Debug("entering verifyConnection()")
+	logger.TraceEnter("verifyConnection()")
 
-	this.sdNotify("WATCHDOG=1")
-	//this.sdNotify(daemon.SdNotifyWatchdog)
+	this.sdNotify(daemon.SdNotifyWatchdog)
 
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.Client)
 	if err != nil {
-		utils.LogError("verifyConnection()", "ConnectionRequest.Do()", err)
+		logger.LogError("verifyConnection()", "ConnectionRequest.Do()", err)
 	} else {
 		strCurrentState := string(connectionResponse.Current.State)
-		utils.Logger.Debugf("    verifyConnection() succeeded")
-		utils.Logger.Debugf("    connectionResponse.Current.State is %q", strCurrentState)
+		logger.Debugf("verifyConnection() succeeded")
+		logger.Debugf("connectionResponse.Current.State is %q", strCurrentState)
 	}
 
-	utils.Logger.Debug("leaving verifyConnection()")
+	logger.TraceLeave("verifyConnection()")
 }
 
 
 func (this *HttpRequestTestWindow) sdNotify(state string) {
-	utils.Logger.Debug("entering sdNotify()")
+	logger.TraceEnter("sdNotify()")
 
 	_, err := daemon.SdNotify(false, state)
 	if err != nil {
-		utils.Logger.Errorf("sdNotify()", "SdNotify()", err)
-		utils.Logger.Debug("leaving sdNotify()")
+		logger.Errorf("sdNotify()", "SdNotify()", err)
+		logger.TraceLeave("sdNotify()")
 		return
 	}
 
-	utils.Logger.Debug("leaving sdNotify()")
+	logger.TraceLeave("sdNotify()")
 }

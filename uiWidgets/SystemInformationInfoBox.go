@@ -8,6 +8,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/shirou/gopsutil/mem"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -41,7 +42,7 @@ func CreateSystemInformationInfoBox(
 	instance := &SystemInformationInfoBox {
 		Box:						base,
 		parentWindow:				parentWindow,
-		logLevel:					utils.LowerCaseLogLevel(),
+		logLevel:					logger.LogLevel(),
 		uiScaleFactor:				uiScaleFactor,
 		memoryLabel:				createStyledLabel(),
 		// loadAverageLabel:			createStyledLabel(),

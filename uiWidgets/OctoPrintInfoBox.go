@@ -2,8 +2,8 @@ package uiWidgets
 
 import (
 	"fmt"
-	// "log"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -25,7 +25,7 @@ func CreateOctoPrintInfoBox(
 	apiVersion := ""
 	versionResponse, err := (&octoprintApis.VersionRequest{}).Do(client)
 	if err != nil {
-		utils.LogError("OctoPrintInfoBox.CreateOctoPrintInfoBox()", "VersionRequest.Do()", err)
+		logger.LogError("OctoPrintInfoBox.CreateOctoPrintInfoBox()", "VersionRequest.Do()", err)
 	} else if versionResponse == nil {
 		server = "Unknown?"
 		apiVersion = "Unknown?"

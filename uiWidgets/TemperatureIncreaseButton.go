@@ -2,6 +2,7 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
@@ -38,7 +39,7 @@ func CreateTemperatureIncreaseButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
-		utils.LogError("PANIC!!! - CreateTemperatureIncreaseButton()", "instance.Button.Connect()", err)
+		logger.LogError("PANIC!!! - CreateTemperatureIncreaseButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -50,7 +51,7 @@ func (this *TemperatureIncreaseButton) handleClicked() {
 	tool := this.selectHotendStepButton.Value()
 	target, err := utils.GetToolTarget(this.client, tool)
 	if err != nil {
-		utils.LogError("TemperatureIncreaseButton.handleClicked()", "GetToolTarget()", err)
+		logger.LogError("TemperatureIncreaseButton.handleClicked()", "GetToolTarget()", err)
 		return
 	}
 
@@ -67,10 +68,10 @@ func (this *TemperatureIncreaseButton) handleClicked() {
 	// TODO: should the target be checked for a max temp?
 	// If so, how to calculate what the max should be?
 
-	utils.Logger.Infof("TemperatureIncreaseButton.handleClicked() - setting target temperature for %s to %1.f°C.", tool, target)
+	logger.Infof("TemperatureIncreaseButton.handleClicked() - setting target temperature for %s to %1.f°C.", tool, target)
 
 	err = utils.SetToolTarget(this.client, tool, target)
 	if err != nil {
-		utils.LogError("TemperatureIncreaseButton.handleClicked()", "GetToolTarget()", err)
+		logger.LogError("TemperatureIncreaseButton.handleClicked()", "GetToolTarget()", err)
 	}
 }

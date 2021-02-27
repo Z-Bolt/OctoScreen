@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
+	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
@@ -19,22 +20,23 @@ import (
 type FakesAckRequest struct{}
 
 // Do sends an API request and returns an error if any.
-func (cmd *FakesAckRequest) Do(client *Client) error {
-	LogMessage("entering FakesAckRequest.Do()")
+func (this *FakesAckRequest) Do(client *Client) error {
+	logger.TraceEnter("FakesAckRequest.Do()")
 
 	bytes := bytes.NewBuffer(nil)
-	if err := cmd.encode(bytes); err != nil {
-		LogError(err, "FakesAckRequest.go, cmd.encode() failed")
-		LogMessage("leaving FakesAckRequest.Do()")
+	if err := this.encode(bytes); err != nil {
+		logger.LogError("FakesAckRequest.Do()", "this.encode(bytes)", err)
+		logger.TraceLeave("FakesAckRequest.Do()")
 		return err
 	}
 
 	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
 	if err != nil {
-		LogError(err, "FakesAckRequest.go, client.doJsonRequest(POST) failed")
+		logger.LogError("FakesAckRequest.Do()", "client.doJsonRequest(POST)", err)
+		logger.LogError("main.findConfigFile()", "Current()", err)
 	}
 
-	LogMessage("leaving FakesAckRequest.Do()")
+	logger.TraceLeave("FakesAckRequest.Do()")
 	return err
 }
 

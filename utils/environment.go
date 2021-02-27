@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	//"strings"
+
+
+	"github.com/Z-Bolt/OctoScreen/logger"
 )
 
 
@@ -80,12 +83,10 @@ func NameOfMissingRequiredEnvironmentVariable(apiKey string) string {
 }
 
 func DumpEnvironmentVariables() {
-	Logger.Info("")
-	Logger.Info("")
-	Logger.Info("Environment variables...")
+	logger.Info("Environment variables...")
 
 	// Required environment variables
-	Logger.Infof("Required environment variables:")
+	logger.Info("Required environment variables:")
 	dumpEnvironmentVariable(EnvBaseURL)
 
 	// TODO: revisit this!
@@ -103,17 +104,14 @@ func DumpEnvironmentVariables() {
 	dumpEnvironmentVariable(EnvStylePath)
 
 	// Optional environment variables
-	Logger.Info("")
-	Logger.Infof("Optional environment variables:")
+	logger.Info("")
+	logger.Info("Optional environment variables:")
 	dumpEnvironmentVariable(EnvConfigFile)
 	dumpEnvironmentVariable(EnvLogFilePath)
 	dumpEnvironmentVariable(EnvLogLevel)
 	dumpEnvironmentVariable(EnvResolution)
 	// EnvResolution is optional.  If not set, the window size will
 	// default to the values defined in globalVars.go.
-
-	Logger.Info("")
-	Logger.Info("")
 }
 
 func dumpEnvironmentVariable(key string) {
@@ -122,7 +120,7 @@ func dumpEnvironmentVariable(key string) {
 		value = MISSING_ENV_TOKEN
 	}
 
-	Logger.Infof("key: %q, value: %q", key, value)
+	logger.Infof("key: %q, value: %q", key, value)
 }
 
 func dumpObfuscatedEnvironmentVariable(key string) {
@@ -133,7 +131,7 @@ func dumpObfuscatedEnvironmentVariable(key string) {
 		value = GetObfuscatedValue(value)
 	}
 
-	Logger.Infof("key: %q, value: %q", key, value)
+	logger.Infof("key: %q, value: %q", key, value)
 }
 
 func GetObfuscatedValue(value string) string {

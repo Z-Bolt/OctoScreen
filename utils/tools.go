@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
@@ -20,13 +21,13 @@ func getCachedPrinterProfileData(client *octoprintApis.Client) {
 
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(client)
 	if err != nil {
-		LogError("Tools.setCachedPrinterProfileData()", "version.Get()", err)
+		logger.LogError("Tools.setCachedPrinterProfileData()", "version.Get()", err)
 		return
 	}
 
 	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(client)
 	if err != nil {
-		LogError("Tools.setCachedPrinterProfileData()", "Do(PrinterProfilesRequest)", err)
+		logger.LogError("Tools.setCachedPrinterProfileData()", "Do(PrinterProfilesRequest)", err)
 		return
 	}
 
@@ -79,18 +80,18 @@ func GetHasSharedNozzle(client *octoprintApis.Client) bool {
 func GetDisplayNameForTool(toolName string) string {
 	// Since this is such a hack, lets add some bounds checking
 	if toolName == "" {
-		Logger.Error("Tools..GetDisplayNameForTool() - toolName is empty")
+		logger.Error("Tools..GetDisplayNameForTool() - toolName is empty")
 		return ""
 	}
 
 	lowerCaseName := strings.ToLower(toolName)
 	if strings.LastIndex(lowerCaseName, "tool") != 0 {
-		Logger.Errorf("Tools.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
+		logger.Errorf("Tools.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
 		return ""
 	}
 
 	if len(toolName) != 5 {
-		Logger.Errorf("Tools.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
+		logger.Errorf("Tools.GetDisplayNameForTool() - toolName is invalid, value passed in was: %q", toolName)
 		return ""
 	}
 
@@ -103,84 +104,80 @@ func GetDisplayNameForTool(toolName string) string {
 
 
 func GetToolTarget(client *octoprintApis.Client, tool string) (float64, error) {
-	Logger.Debug("entering Tools.GetToolTarget()")
-
+	logger.TraceEnter("Tools.GetToolTarget()")
 
 	fullStateRespone, err := (&octoprintApis.FullStateRequest{
 		Exclude: []string{"sd", "state"},
 	}).Do(client)
 
 	if err != nil {
-		LogError("tools.GetToolTarget()", "Do(StateRequest)", err)
-
-		Logger.Debug("leaving Tools.GetToolTarget()")
+		logger.LogError("tools.GetToolTarget()", "Do(StateRequest)", err)
+		logger.TraceLeave("Tools.GetToolTarget()")
 		return -1, err
 	}
 
 	currentTemperatureData, ok := fullStateRespone.Temperature.CurrentTemperatureData[tool]
 	if !ok {
-		Logger.Debug("leaving Tools.GetToolTarget()")
+		logger.TraceLeave("Tools.GetToolTarget()")
 		return -1, fmt.Errorf("unable to find tool %q", tool)
 	}
 
-	Logger.Debug("leaving Tools.GetToolTarget()")
+	logger.TraceLeave("Tools.GetToolTarget()")
 	return currentTemperatureData.Target, nil
 }
 
 
 func SetToolTarget(client *octoprintApis.Client, tool string, target float64) error {
-	Logger.Debug("entering Tools.SetToolTarget()")
+	logger.TraceEnter("Tools.SetToolTarget()")
 
 	if tool == "bed" {
 		cmd := &octoprintApis.BedTargetRequest{Target: target}
-
-		Logger.Debug("leaving Tools.SetToolTarget()")
+		logger.TraceLeave("Tools.SetToolTarget()")
 		return cmd.Do(client)
 	}
 
 	cmd := &octoprintApis.ToolTargetRequest{Targets: map[string]float64{tool: target}}
-
-	Logger.Debug("leaving Tools.SetToolTarget()")
+	logger.TraceLeave("Tools.SetToolTarget()")
 	return cmd.Do(client)
 }
 
 
 func GetCurrentTemperatureData(client *octoprintApis.Client) (map[string]dataModels.TemperatureData, error) {
-	Logger.Debug("entering Tools.GetCurrentTemperatureData()")
+	logger.TraceEnter("Tools.GetCurrentTemperatureData()")
 
 	temperatureDataResponse, err := (&octoprintApis.TemperatureDataRequest{}).Do(client)
 	if err != nil {
-		LogError("tools.GetCurrentTemperatureData()", "Do(TemperatureDataRequest)", err)
-
-		Logger.Debug("leaving Tools.GetCurrentTemperatureData()")
+		logger.LogError("tools.GetCurrentTemperatureData()", "Do(TemperatureDataRequest)", err)
+		logger.TraceLeave("Tools.GetCurrentTemperatureData()")
 		return nil, err
 	}
 
 	if temperatureDataResponse == nil {
-		Logger.Error("tools.GetCurrentTemperatureData() - temperatureDataResponse is nil")
-
-		Logger.Debug("leaving Tools.GetCurrentTemperatureData()")
+		logger.Error("tools.GetCurrentTemperatureData() - temperatureDataResponse is nil")
+		logger.TraceLeave("Tools.GetCurrentTemperatureData()")
 		return nil, err
 	}
 
 	// Can't test for temperatureDataResponse.TemperatureStateResponse == nil (type mismatch)
 
 	if temperatureDataResponse.TemperatureStateResponse.CurrentTemperatureData == nil {
-		Logger.Error("tools.GetCurrentTemperatureData() - temperatureDataResponse.TemperatureStateResponse.CurrentTemperatureData is nil")
-
-		Logger.Debug("leaving Tools.GetCurrentTemperatureData()")
+		logger.Error("tools.GetCurrentTemperatureData() - temperatureDataResponse.TemperatureStateResponse.CurrentTemperatureData is nil")
+		logger.TraceLeave("Tools.GetCurrentTemperatureData()")
 		return nil, err
 	}
 
-	Logger.Debug("leaving Tools.GetCurrentTemperatureData()")
+	logger.TraceLeave("Tools.GetCurrentTemperatureData()")
 	return temperatureDataResponse.TemperatureStateResponse.CurrentTemperatureData, nil
 }
 
 
 func CheckIfHotendTemperatureIsTooLow(client *octoprintApis.Client, extruderId, action string, parentWindow *gtk.Window) bool {
+	logger.TraceEnter("Tools.CheckIfHotendTemperatureIsTooLow()")
+
 	currentTemperatureData, err := GetCurrentTemperatureData(client)
 	if err != nil {
-		LogError("tools.CurrentHotendTemperatureIsTooLow()", "GetCurrentTemperatureData()", err)
+		logger.LogError("tools.CurrentHotendTemperatureIsTooLow()", "GetCurrentTemperatureData()", err)
+		logger.TraceLeave("Tools.CheckIfHotendTemperatureIsTooLow()")
 		return true
 	}
 
@@ -195,9 +192,11 @@ func CheckIfHotendTemperatureIsTooLow(client *octoprintApis.Client, extruderId, 
 		)
 		ErrorMessageDialogBox(parentWindow, errorMessage)
 
+		logger.TraceLeave("Tools.CheckIfHotendTemperatureIsTooLow()")
 		return true
 	}
 
+	logger.TraceLeave("Tools.CheckIfHotendTemperatureIsTooLow()")
 	return false
 }
 
@@ -237,8 +236,6 @@ func GetHotendFileName(hotendIndex, hotendCount int) string {
 
 
 
-
-
 func GetNozzleFileName(hotendIndex, hotendCount int) string {
 	strImageFileName := ""
 	if hotendIndex == 1 && hotendCount == 1 {
@@ -265,10 +262,10 @@ func HotendTemperatureIsTooLow(
 	parentWindow			*gtk.Window,
 ) bool {
 	targetTemperature := temperatureData.Target
-	Logger.Infof("tools.HotendTemperatureIsTooLow() - targetTemperature is %.2f", targetTemperature)
+	logger.Infof("tools.HotendTemperatureIsTooLow() - targetTemperature is %.2f", targetTemperature)
 
 	actualTemperature := temperatureData.Actual
-	Logger.Infof("tools.HotendTemperatureIsTooLow() - actualTemperature is %.2f", actualTemperature)
+	logger.Infof("tools.HotendTemperatureIsTooLow() - actualTemperature is %.2f", actualTemperature)
 
 	if targetTemperature <= MIN_HOTEND_TEMPERATURE || actualTemperature <= MIN_HOTEND_TEMPERATURE {
 		return true
