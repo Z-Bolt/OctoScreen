@@ -12,9 +12,12 @@ import (
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
-	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+
+	"github.com/Z-Bolt/OctoScreen/logger"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/Z-Bolt/OctoScreen/utils"
+
 	"gopkg.in/yaml.v1"
 )
 
@@ -26,8 +29,45 @@ var (
 	Resolution string
 )
 
+
+func init() {
+	logger.Debug("-")
+	logger.Debug("-")
+	// logger.Debug("OctoScreen - entering main.init()")
+	logger.TraceEnter("OctoScreen - main.init()")
+
+	ConfigFile = os.Getenv(utils.EnvConfigFile)
+	if ConfigFile == "" {
+		ConfigFile = findConfigFile()
+	}
+
+	cfg := readConfig(ConfigFile)
+	setApiKey(cfg)
+
+	if !utils.RequiredEnvironmentVariablesAreSet(APIKey) {
+		logger.Error("OctoScreen - main.init() - RequiredEnvironmentVariablesAreSet() returned false")
+		// logger.Debug("OctoScreen - leaving main.init()")
+		logger.TraceLeave("OctoScreen - main.init()")
+		return
+	}
+
+	setLogLevel()
+
+	utils.StylePath = os.Getenv(utils.EnvStylePath)
+	Resolution = os.Getenv(utils.EnvResolution)
+	setBaseUrl(cfg)
+
+	// logger.Debug("OctoScreen - leaving main.init()")
+	logger.TraceLeave("OctoScreen - main.init()")
+	logger.Debug("-")
+	logger.Debug("-")
+}
+
+
 func main() {
-	utils.Logger.Debug("OctoScreen - entering main.main()")
+	logger.Debug("+")
+	logger.Debug("+")
+	logger.TraceEnter("OctoScreen - main.main()")
 
 	gtk.Init(nil)
 	settings, _ := gtk.SettingsGetDefault()
@@ -48,68 +88,35 @@ func main() {
 
 	gtk.Main()
 
-	utils.Logger.Debug("OctoScreen - leaving main.main()")
+	logger.TraceLeave("OctoScreen - main.main()")
+	logger.Debug("+")
+	logger.Debug("+")
 }
 
-
-func init() {
-	utils.Logger.Debug("OctoScreen - entering main.init()")
-
-	ConfigFile = os.Getenv(utils.EnvConfigFile)
-	if ConfigFile == "" {
-		ConfigFile = findConfigFile()
-	}
-
-	cfg := readConfig(ConfigFile)
-	setApiKey(cfg)
-
-	if !utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-		utils.Logger.Error("OctoScreen - main.init() - RequiredEnvironmentVariablesAreSet() returned false")
-
-		utils.Logger.Debug("OctoScreen - leaving main.init()")
-		return
-	}
-
-	setLogLevel()
-
-	utils.StylePath = os.Getenv(utils.EnvStylePath)
-	Resolution = os.Getenv(utils.EnvResolution)
-	setBaseUrl(cfg)
-
-	utils.Logger.Debug("OctoScreen - leaving main.init()")
-}
 
 func setLogLevel() {
-	logLevel := utils.LowerCaseLogLevel()
+	logLevel := logger.LogLevel()
 
 	switch logLevel {
 		case "debug":
-			octoprintApis.EnableApiLogging = true
-
-		default:
-			octoprintApis.EnableApiLogging = false
-	}
-
-	switch logLevel {
-		case "debug":
-			utils.SetLogLevel(logrus.DebugLevel)
+			logger.SetLogLevel(logrus.DebugLevel)
 
 		case "info":
-			utils.SetLogLevel(logrus.InfoLevel)
+			logger.SetLogLevel(logrus.InfoLevel)
 
 		case "warn":
-			utils.SetLogLevel(logrus.WarnLevel)
+			logger.SetLogLevel(logrus.WarnLevel)
 
 		case "":
 			logLevel = "error"
 			os.Setenv(utils.EnvLogLevel, "error")
 			fallthrough
 		case "error":
-			utils.SetLogLevel(logrus.ErrorLevel)
+			logger.SetLogLevel(logrus.ErrorLevel)
 
 		default:
 			// unknown log level, so exit
-			utils.Logger.Fatalf("main.setLogLevel() - unknown logLevel: %q", logLevel)
+			logger.Fatalf("main.setLogLevel() - unknown logLevel: %q", logLevel)
 	}
 
 	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
@@ -126,32 +133,31 @@ func setBaseUrl(cfg *config) {
 	} else {
 		url := strings.ToLower(BaseURL)
 		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
-			utils.Logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
+			logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
 			BaseURL = fmt.Sprintf("http://%s", BaseURL)
 		}
 	}
 
-	utils.Logger.Infof("main.setBaseUrl() - using %q as server address", BaseURL)
+	logger.Infof("main.setBaseUrl() - using %q as server address", BaseURL)
 }
 
 func setApiKey(cfg *config) {
-	utils.Logger.Debug("OctoScreen - entering main.setApiKey()")
+	logger.TraceEnter("main.setApiKey()")
 
 	APIKey = os.Getenv(utils.EnvAPIKey)
 	if APIKey == "" {
-		utils.Logger.Debug("main.setApiKey() - APIKey is empty, now using cfg.API.Key")
-
+		logger.Debug("main.setApiKey() - APIKey is empty, now using cfg.API.Key")
 		APIKey = cfg.API.Key
 	}
 
 	if APIKey == "" {
-		utils.Logger.Debug("main.setApiKey() - APIKey is empty!")
+		logger.Debug("main.setApiKey() - APIKey is empty!")
 	} else {
 		obfuscatedApiKey := utils.GetObfuscatedValue(APIKey)
-		utils.Logger.Debugf("main.setApiKey() - APIKey is %q", obfuscatedApiKey)
+		logger.Debugf("main.setApiKey() - APIKey is %q", obfuscatedApiKey)
 	}
 
-	utils.Logger.Debug("OctoScreen - leaving main.setApiKey()")
+	logger.TraceLeave("main.setApiKey()")
 }
 
 
@@ -166,132 +172,128 @@ type config struct {
 		// Key is the current API key needed for accessing the API.
 		Key string
 	}
+
 	// Server settings.
 	Server struct {
 		// Hosts define the host to which to bind the server, defaults to "0.0.0.0".
 		Host string
+
 		// Port define the port to which to bind the server, defaults to 5000.
 		Port int
 	}
 }
 
 func readConfig(configFile string) *config {
-	utils.Logger.Debug("")
-	utils.Logger.Debug("")
-	utils.Logger.Debug("entering main.readConfig()")
+	logger.TraceEnter("main.readConfig()")
 
 	cfg := &config{}
 	if configFile == "" {
-		utils.Logger.Info("main.readConfig() - configFile is empty")
-
-		utils.Logger.Debug("leaving main.readConfig(), returning the default config")
+		logger.Info("main.readConfig() - configFile is empty")
+		logger.TraceLeave("main.readConfig(), returning the default config")
 		return cfg
 	} else {
-		utils.Logger.Infof("Path to OctoPrint's config file: %q", configFile)
+		logger.Infof("Path to OctoPrint's config file: %q", configFile)
 	}
 
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		utils.Logger.Fatalf("main.readConfig() - ReadFile() returned an error: %q", err)
+		logger.Fatalf("main.readConfig() - ReadFile() returned an error: %q", err)
 	} else {
-		utils.Logger.Info("main.readConfig() - ReadFile() succeeded")
+		logger.Info("main.readConfig() - ReadFile() succeeded")
 	}
 
 	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
-		utils.Logger.Fatalf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
+		logger.Fatalf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
 	} else {
-		utils.Logger.Info("main.readConfig() - YAML config file was decoded")
+		logger.Info("main.readConfig() - YAML config file was decoded")
 	}
 
 	if cfg.Server.Host == "" {
 		cfg.Server.Host = "localhost"
 	}
 
-	utils.Logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
+	logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
 
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 5000
 	}
 
-	utils.Logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
+	logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
 
-
-	utils.Logger.Debug("leaving main.readConfig()")
-	utils.Logger.Debug("")
-	utils.Logger.Debug("")
-
+	logger.TraceLeave("main.readConfig()")
 	return cfg
 }
 
 func findConfigFile() string {
-	utils.Logger.Debug("entering main.findConfigFile()")
+	logger.TraceEnter("main.findConfigFile()")
 
 	if file := doFindConfigFile(homeOctoPi); file != "" {
-		utils.Logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
-
-		utils.Logger.Debug("leaving main.findConfigFile(), returning the file")
+		logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
+		logger.TraceLeave("main.findConfigFile(), returning the file")
 		return file
 	}
 
 	usr, err := user.Current()
 	if err != nil {
-		utils.LogError("main.findConfigFile()", "Current()", err)
-
-		utils.Logger.Debug("leaving main.findConfigFile(), returning an empty string")
+		logger.LogError("main.findConfigFile()", "Current()", err)
+		logger.TraceLeave("main.findConfigFile(), returning an empty string")
 		return ""
 	}
 
 	configFile := doFindConfigFile(usr.HomeDir)
 
-	utils.Logger.Debug("leaving main.findConfigFile(), returning configFile")
+	logger.TraceLeave("main.findConfigFile(), returning configFile")
 	return configFile
 }
 
 func doFindConfigFile(home string) string {
-	utils.Logger.Debug("entering main.doFindConfigFile()")
+	logger.TraceEnter("main.doFindConfigFile()")
 
 	path := filepath.Join(home, configLocation)
-
 	if _, err := os.Stat(path); err == nil {
-		utils.LogError("main.doFindConfigFile()", "Stat()", err)
-
-		utils.Logger.Debug("leaving main.doFindConfigFile(), returning path")
+		logger.LogError("main.doFindConfigFile()", "Stat()", err)
+		logger.TraceLeave("main.doFindConfigFile(), returning path")
 		return path
 	}
 
-	utils.Logger.Debug("leaving main.doFindConfigFile(), returning an empty string")
+	logger.TraceLeave("main.doFindConfigFile(), returning an empty string")
 	return ""
 }
 
+
+
+
+
+
+
 func getSize() (width, height int) {
-	utils.Logger.Debug("entering main.getSize()")
+	logger.TraceEnter("main.getSize()")
 
 	if Resolution == "" {
-		utils.Logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
-
-		utils.Logger.Debug("leaving main.getSize()")
+		logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
+		logger.TraceLeave("main.getSize()")
 		return
 	}
 
 	parts := strings.SplitN(Resolution, "x", 2)
 	if len(parts) != 2 {
-		utils.Logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
+		logger.Error("main.getSize() - SplitN() - len(parts) != 2")
+		logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
 	}
 
 	var err error
 	width, err = strconv.Atoi(parts[0])
 	if err != nil {
-		utils.LogError("main.getSize()", "Atoi(parts[0])", err)
-		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+		logger.LogError("main.getSize()", "Atoi(parts[0])", err)
+		logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
 	}
 
 	height, err = strconv.Atoi(parts[1])
 	if err != nil {
-		utils.LogError("main.getSize()", "Atoi(parts[1])", err)
-		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+		logger.LogError("main.getSize()", "Atoi(parts[1])", err)
+		logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
 	}
 
-	utils.Logger.Debug("leaving main.getSize()")
+	logger.TraceLeave("main.getSize()")
 	return
 }
