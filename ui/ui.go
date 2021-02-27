@@ -58,7 +58,7 @@ func New(endpoint, key string, width, height int) *UI {
 		PanelHistory:				stack.New(),
 		Client:						octoprintApis.NewClient(endpoint, key),
 		NotificationsBox:			uiWidgets.NewNotificationsBox(),
-		OctoPrintPluginIsAvailable:	true,
+		OctoPrintPluginIsAvailable:	false,
 		Settings:					nil,
 
 		UIState:					"__uninitialized__",
@@ -350,17 +350,19 @@ func (this *UI) loadSettings() {
 			// The call to GetSettings is also used to determine whether or not the
 			// OctoScreen plug-in is available.  If calling GetSettings returns
 			// a 404, the plug-in isn't available.
-			this.OctoPrintPluginIsAvailable = false
 			logger.Info("The OctoScreen plug-in is not available")
 		} else {
 			// If we get back any other kind of error, something bad happened, so log an error.
 			logger.LogError("ui.loadSettings()", "Do(GetSettingsRequest)", err)
 		}
 
+		this.OctoPrintPluginIsAvailable = false
+
 		logger.TraceLeave("ui.loadSettings()")
 		return
 	} else {
 		logger.Info("The call to GetSettings succeeded and the OctoPrint plug-in is available")
+		this.OctoPrintPluginIsAvailable = true
 	}
 
 	if !this.validateMenuItems(settingsResponse.MenuStructure, "", true) {
