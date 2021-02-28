@@ -257,7 +257,7 @@ func MustImageFromFile(imageFileName string) *gtk.Image {
 
 func ImageFromUrl(imageUrl string) (*gtk.Image, error) {
 	if imageUrl == "" {
-		logger.Error("MustImageFromUrl() - imageUrl is empty")
+		logger.Error("ImageFromUrl() - imageUrl is empty")
 		return nil, errors.New("imageUrl is empty")
 	}
 
