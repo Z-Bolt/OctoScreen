@@ -23,21 +23,18 @@ func CreateSelectExtruderStepButton(
 
 	var steps []Step
 	for i := 0; i < extruderCount; i++ {
-		var step Step
+		label := ""
 		if i == 0 && extruderCount == 1 {
-			step = Step {
-				"Extruder",
-				utils.GetExtruderFileName(1, extruderCount),
-				nil,
-				"tool0",
-			}
+			label = "Extruder"
 		} else {
-			step = Step {
-				fmt.Sprintf("Extruder %d", i + 1),
-				utils.GetExtruderFileName(i + 1, extruderCount),
-				nil,
-				fmt.Sprintf("tool%d", i),
-			}
+			label = fmt.Sprintf("Extruder %d", i + 1)
+		}
+
+		step := Step {
+			label,
+			utils.GetExtruderFileName(i + 1, extruderCount),
+			nil,
+			fmt.Sprintf("tool%d", i),
 		}
 
 		steps = append(steps, step)
@@ -71,21 +68,18 @@ func CreateSelectHotendStepButton(
 
 	var steps []Step
 	for i := 0; i < hotendCount; i++ {
-		var step Step
+		label := ""
 		if i == 0 && hotendCount == 1 {
-			step = Step {
-				"Hotend",
-				utils.GetHotendFileName(1, hotendCount),
-				nil,
-				"tool0",
-			}
+			label = "Hotend"
 		} else {
-			step = Step {
-				fmt.Sprintf("Hotend %d", i + 1),
-				utils.GetHotendFileName(i + 1, hotendCount),
-				nil,
-				fmt.Sprintf("tool%d", i),
-			}
+			label = fmt.Sprintf("Hotend %d", i + 1)
+		}
+
+		step := Step {
+			label,
+			utils.GetHotendFileName(i + 1, hotendCount),
+			nil,
+			fmt.Sprintf("tool%d", i),
 		}
 
 		steps = append(steps, step)
