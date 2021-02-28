@@ -439,14 +439,14 @@ func (this *filesPanel) addThumbnail(
 	listItemBox *gtk.Box,
 ) {
 	if fileResponse.Thumbnail != "" {
-		logger.Infof("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
+		logger.Debugf("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
 
 		thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileResponse.Thumbnail)
-		logger.Infof("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
+		logger.Debugf("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
 
 		previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
 		if imageFromUrlErr == nil {
-			logger.Infof("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
+			logger.Debugf("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
 
 			bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
 
