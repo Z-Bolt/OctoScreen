@@ -31,14 +31,24 @@ JESSIE_GO_TAGS := gtk_3_14
 
 
 # Build information
-#GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
-VERSION := 2.6.1
-BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
-#BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+VERSION_EPOCH := 1
+GIT_COMMIT != git rev-parse HEAD | cut -c1-7
+VERSION != git name-rev --tags --name-only $(GIT_COMMIT) | sed -e 's/(^[^0-9]+|[^0-9.])//g'
+BRANCH != git rev-parse --abbrev-ref HEAD
 
-#ifneq ($(BRANCH), master)
-#	VERSION := $(shell echo $(BRANCH)| sed -e 's/v//g')
-#endif
+# If this isn't the master branch, add additional development version information
+ifneq ($(BRANCH), master)
+    # Add the Safe Branch Name
+    VERSION := $(VERSION)~$(shell echo $(BRANCH) | sed -e 's/[^A-Za-z0-9.]//g')
+    # Add commits ahead of master
+    VERSION := $(VERSION)+$(shell git rev-list --count HEAD ^master)
+    # Add the current commit SHA (abreviated)
+    VERSION := $(VERSION):$(GIT_COMMIT)
+    # Add dirty indicator
+    ifneq ($(shell git status --short | wc -l), 0)
+        VERSION := $(VERSION)-dirty
+    endif
+endif
 
 # Package information
 PACKAGE_NAME = octoscreen
@@ -70,9 +80,9 @@ build-internal: prepare-internal
 	cp ../*.deb /build/;
 
 prepare-internal:
-	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
+	dch --create -v '$(VERSION_EPOCH):$(VERSION)-1' --package $(PACKAGE_NAME) empty; \
 	cd $(WORKDIR)/..; \
-	tar -czf octoscreen_$(VERSION).orig.tar.gz --exclude-vcs OctoScreen
+	tar -czf 'octoscreen_$(VERSION).orig.tar.gz' --exclude-vcs --force-local OctoScreen
 
 clean:
 	rm -rf ${BUILD_PATH}
