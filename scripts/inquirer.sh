@@ -136,7 +136,7 @@ gen_index() {
   if [ $k -gt 0 ]; then
     for l in $(seq $k)
     do
-       echo "$l-1" | bc
+       expr $l - 1
     done
   fi
 }
