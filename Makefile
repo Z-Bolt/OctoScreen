@@ -31,9 +31,10 @@ JESSIE_GO_TAGS := gtk_3_14
 
 
 # Build information
+# This indicates that the versioning scheme has been changed and ensures that the package manager will order historical versions correctly
 VERSION_EPOCH := 1
 GIT_COMMIT != git rev-parse HEAD | cut -c1-7
-VERSION != git name-rev --tags --name-only $(GIT_COMMIT) | sed -e 's/(^[^0-9]+|[^0-9.])//g'
+VERSION != git name-rev --tags --name-only $(shell git rev-list --tags --max-count=1) | sed -e 's/(^[^0-9]+|[^0-9.])//g'
 BRANCH != git rev-parse --abbrev-ref HEAD
 
 # If this isn't the master branch, add additional development version information
@@ -44,7 +45,7 @@ ifneq ($(BRANCH), master)
     VERSION := $(VERSION)+$(shell git rev-list --count HEAD ^master)
     # Add the current commit SHA (abreviated)
     VERSION := $(VERSION):$(GIT_COMMIT)
-    # Add dirty indicator
+    # Add dirty indicator (un-committed changes)
     ifneq ($(shell git status --short | wc -l), 0)
         VERSION := $(VERSION)-dirty
     endif
