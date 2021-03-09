@@ -4,10 +4,17 @@ REPO="Z-Bolt/OctoScreen"
 MAIN="master"
 RELEASES="https://api.github.com/repos/$REPO/releases/latest"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
+LIBRARIES=("inquirer.bash" "optparse.bash")
 
-source <(wget -qO- "$WGET_RAW/scripts/inquirer.sh")
+SOURCE="${BASH_SOURCE[0]}"; while [ -h "$SOURCE" ]; do DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
-exit
+echo "$DIR"
+return
+
+echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE="scripts/$LIBRARY"; if [[ ! -f "$SOURCE_FILE" ]]; then echo -e "${CL}Fetching '{$LIBRARY}'..."; SOURCE=$(wget -qO- "$WGET_RAW/scripts/$LIBRARY"); if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; SOURCE_FILE=<(echo "$SOURCE"); unset SOURCE; fi; echo -en "${CL}Loading '{$LIBRARY}'..."; source "$SOURCE_FILE";  if [[ "$?" != "0" ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; unset SOURCE_FILE; done; echo -en "${CL}${CL}";
+
+yes_no=( 'yes' 'no' )
 
 arch=$(uname -m)
 #if [[ $arch == x86_64 ]]; then
@@ -75,11 +82,10 @@ echo "Installing OctoScreen "${version[7]}, $arch" ..."
 cd ~
 wget -O octoscreen.deb $releaseURL -q --show-progress
 
-sudo dpkg -i octodash.deb
+sudo dpkg -i octoscreen.deb
 
-rm octodash.deb
+rm octoscreen.deb
 
-yes_no=( 'yes' 'no' )
 
 list_input "Shall I reboot your Pi now?" yes_no reboot
 echo "OctoScreen has been successfully installed! :)"

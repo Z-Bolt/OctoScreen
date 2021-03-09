@@ -35,15 +35,6 @@ EOL
 
 function optparse.init(){
     
-    unset optparse_version
-    unset optparse_usage
-    unset optparse_process
-    unset optparse_defaults
-    unset optparse_name
-    unset optparse_usage_header
-    unset optparse_variables_validate
-    unset optparse_default_group
-    
     declare -g optparse_version="0.0.2"
     
     declare -g optparse_defaults=""
@@ -58,8 +49,13 @@ function optparse.init(){
         local value="${option#*=}";
 
         case "$key" in
-            "default_group"|"name"|"usage_header"|"description")
+            "default_group"|"usage_header"|"description")
                 declare -g optparse_$key="$value"
+            ;;
+            "name")
+                [[ "${value::1}" == "-" ]] &&
+                    declare -g optparse_name="" ||
+                    declare -g optparse_name="$(basename $value)"
             ;;
             "help_full_width")
                 if ! [[ "$value" =~ ^[0-9]+$ ]]; then
@@ -70,15 +66,35 @@ function optparse.init(){
         esac
     done
     
-    [ -z "$optparse_help_full_width" ] && declare -g optparse_help_full_width=80
-    [ -z "$optparse_default_group" ] && declare -g optparse_default_group="OPTIONS"
-    [ -z "$optparse_name" ] && declare -g optparse_name="$(basename $0)"
-    [ -z "$optparse_usage_header" ] && declare -g optparse_usage_header="[OPTIONS]"
-    [ -z "$optparse_description" ] && declare -g optparse_description="${optparse_name} Help"
+    [[ -z "$optparse_name" ]] && {
+        [[ "${0::1}" == "-" ]] &&
+            declare -g optparse_name="" ||
+            declare -g optparse_name="$(basename $0)"
+    }
+    [[ -z "$optparse_help_full_width" ]] && declare -g optparse_help_full_width=80
+    [[ -z "$optparse_default_group" ]] && declare -g optparse_default_group="OPTIONS"
+    [[ -z "$optparse_usage_header" ]] && declare -g optparse_usage_header="[OPTIONS]"
+    [[ -z "$optparse_description" ]] && declare -g optparse_description="${optparse_name} Help"
     
     optparse.define long=help desc="This Help Screen" dispatch="optparse.usage" behaviour=flag help=explicit
     optparse.define long=optparse_license desc="The OptParse Library License" dispatch="optparse.license" help=hide
     
+}
+
+function optparse.reset(){
+    optparse.unset
+    optparse.init $(printf ' %q' "${@}")
+}
+
+function optparse.unset(){
+    unset optparse_version
+    unset optparse_usage
+    unset optparse_process
+    unset optparse_defaults
+    unset optparse_name
+    unset optparse_usage_header
+    unset optparse_variables_validate
+    unset optparse_default_group
 }
 
 # -----------------------------------------------------------------------------------------------------------------------------
@@ -380,6 +396,8 @@ function optparse.define(){
     
     $has_variable && optparse_variables_validate+="
         [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage true 'ERROR: (${errorname}) not set' 1 || true"
+    
+    true
 }
 
 # -----------------------------------------------------------------------------------------------------------------------------
@@ -556,7 +574,7 @@ EOF
 
     if [ -z "$optparse_preserve" ] ; then
         # Unset global variables
-        optparse.init
+        optparse.unset
     fi
 }
 optparse.init
