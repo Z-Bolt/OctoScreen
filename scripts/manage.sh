@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-REPO="Z-Bolt/OctoScreen"
-MAIN="master"
+REPO="thebeline/OctoScreen"
+MAIN="IMP/Installer"
 RELEASES="https://api.github.com/repos/$REPO/releases/latest"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
 LIBRARIES=("inquirer.bash" "optparse.bash")
