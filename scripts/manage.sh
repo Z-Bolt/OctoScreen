@@ -10,9 +10,25 @@ SOURCE="${BASH_SOURCE[0]}"; while [ -h "$SOURCE" ]; do DIR="$( cd -P "$( dirname
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 echo "$DIR"
-return
+echo "$(pwd)"
+echo "$(printf " '%q'" "${@}")"
+eval set -- "$(printf " %q" "${@}")"
+echo "$(printf " '%q'" "${@}")"
+echo "${@}"
+[ -v PS1 ] && return || exit
 
-echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE="scripts/$LIBRARY"; if [[ ! -f "$SOURCE_FILE" ]]; then echo -e "${CL}Fetching '{$LIBRARY}'..."; SOURCE=$(wget -qO- "$WGET_RAW/scripts/$LIBRARY"); if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; SOURCE_FILE=<(echo "$SOURCE"); unset SOURCE; fi; echo -en "${CL}Loading '{$LIBRARY}'..."; source "$SOURCE_FILE";  if [[ "$?" != "0" ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; unset SOURCE_FILE; done; echo -en "${CL}${CL}";
+echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K';
+for LIBRARY in ${LIBRARIES[*]}; do
+    SOURCE_FILE="scripts/$LIBRARY";
+    if [[ ! -f "$SOURCE_FILE" ]]; then
+        echo -e "${CL}Fetching '{$LIBRARY}'..."; SOURCE=$(wget -qO- "$WGET_RAW/scripts/$LIBRARY");
+        if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; [ -v PS1 ] && return || exit 1; else echo ' SUCCESS'; fi
+        SOURCE_FILE=<(echo "$SOURCE"); unset SOURCE;
+    fi
+    echo -en "${CL}Loading '{$LIBRARY}'..."; source "$SOURCE_FILE";
+    if [[ "$?" != "0" ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; [ -v PS1 ] && return || exit 1; else echo ' SUCCESS'; fi
+    unset SOURCE_FILE
+done; echo -en "${CL}${CL}";
 
 yes_no=( 'yes' 'no' )
 
