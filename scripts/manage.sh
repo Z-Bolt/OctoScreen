@@ -6,33 +6,61 @@ RELEASES="https://api.github.com/repos/$REPO/releases/latest"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
 LIBRARIES=("inquirer.bash" "optparse.bash")
 
-SOURCE="${BASH_SOURCE[0]}"; while [ -h "$SOURCE" ]; do DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done
-DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 PWD="$(pwd)"
+SOURCE="${BASH_SOURCE[0]:-$0}";
+
+while [[ -L "$SOURCE" && "$SOURCE" != /dev/fd/* ]]; do
+    echo "T1 '$SOURCE'"
+    DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
+    echo "T2 '$DIR'"
+    SOURCE="$(readlink "$SOURCE")";
+    echo "T3 '$SOURCE'"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE";
+    echo "T4 '$SOURCE'"
+done
+echo "OUT '$SOURCE'"
+[[ "$SOURCE" != /dev/fd/* ]] && DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )" || DIR=''
+echo "DONE '$DIR'"
 
 echo "$DIR"
 echo "$(pwd)"
-echo "$(printf " '%q'" "${@}")"
-eval set -- "$(printf " %q" "${@}")"
-echo "$(printf " '%q'" "${@}")"
-echo "${@}"
+#echo "$(printf " '%q'" "${@}")"
+#eval set -- "$(printf " %q" "${@}")"
+#echo "$(printf " '%q'" "${@}")"
+#echo "${@}"
 
-echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K';
+echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL=''; #'\e[1A\e[K';
 for LIBRARY in ${LIBRARIES[*]}; do
-    [[ -f "$DIR/$LIBRARY" ]] && SOURCE_FILE="$DIR/$LIBRARY" || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }
+    echo "STARTING $LIBRARY: $SHELLOPTS"
+    SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" && SOURCE_FILE="$DIR/$LIBRARY" ]] || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }
     if [[ -z "$SOURCE_FILE" ]]; then
         echo -e "${CL}Fetching '{$LIBRARY}'..."; SOURCE=$(wget -qO- "$WGET_RAW/scripts/$LIBRARY");
-        if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; [ -v PS1 ] && return || exit 1; else echo ' SUCCESS'; fi
-        SOURCE_FILE=<(echo "$SOURCE"); unset SOURCE;
+        echo "STARTING FETCH: $SHELLOPTS"
+        if [[ "$?" != "0" ]]; then
+            echo " ERROR Fetching dependency '$LIBRARY'!";
+            #[ -v PS1 ] && return || exit 1;
+        else echo ' SUCCESS'; fi
+        echo "MAKING SOURCE: $SHELLOPTS"
+        SOURCE_FILE=<(echo "$SOURCE");
+        echo "MADE SOURCE: $SHELLOPTS"
+        unset SOURCE;
     fi
-    echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source "$SOURCE_FILE";
-    if [[ "$?" != "0" ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; [ -v PS1 ] && return || exit 1; else echo ' SUCCESS'; fi
-    unset SOURCE_FILE
-    sleep 1
+    echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE...";
+    echo "PRE SOURCE: $SHELLOPTS"
+    source "$SOURCE_FILE";
+    echo "POST SOURCE: $SHELLOPTS"
+    if [[ "$?" != "0" ]]; then
+        echo " ERROR Loading dependency '$LIBRARY'!";
+        #[ -v PS1 ] && return || exit 1;
+    else echo ' SUCCESS'; fi
+    echo "ENDING $LIBRARY: $SHELLOPTS"
+    set +o errexit
 done; echo -en "${CL}${CL}";
 
-echo "DONE"
-[ -v PS1 ] && return || exit 1
+echo "DONE: $SHELLOPTS"
+#[ -v PS1 ] && return || exit 1
+
+
 
 yes_no=( 'yes' 'no' )
 
@@ -50,8 +78,8 @@ IFS='/' read -ra version <<< "$releaseURL"
 echo "Installing OctoScreen "${version[7]}, $arch""
 
 echo "Installing Dependencies ..."
-sudo apt -qq update
-sudo apt -qq install $dependencies -y
+#sudo apt -qq update
+#sudo apt -qq install $dependencies -y
 
 if [ -d "/home/pi/OctoPrint/venv" ]; then
     DIRECTORY="/home/pi/OctoPrint/venv"
@@ -100,15 +128,18 @@ fi;
 
 echo "Installing OctoScreen "${version[7]}, $arch" ..."
 cd ~
-wget -O octoscreen.deb $releaseURL -q --show-progress
+#wget -O octoscreen.deb $releaseURL -q --show-progress
 
-sudo dpkg -i octoscreen.deb
+#sudo dpkg -i octoscreen.deb
 
-rm octoscreen.deb
+#rm octoscreen.deb
 
 
-list_input "Shall I reboot your Pi now?" yes_no reboot
-echo "OctoScreen has been successfully installed! :)"
-if [ $reboot == 'yes' ]; then
-    sudo reboot
-fi
+#list_input "Shall I reboot your Pi now?" yes_no reboot
+#echo "OctoScreen has been successfully installed! :)"
+#if [ $reboot == 'yes' ]; then
+#    sudo reboot
+#fi
+
+
+echo "FINAL: $SHELLOPTS"
