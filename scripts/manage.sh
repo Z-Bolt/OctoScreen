@@ -23,14 +23,17 @@ arch=$(uname -m)
 if  [[ $arch == arm* ]]; then
     releaseURL=$(curl -s "$RELEASES" | grep "browser_download_url.*armf.deb" | cut -d '"' -f 4)
 fi
+
+echo "Installing From: $releaseURL"
+
 dependencies="libgtk-3-0 xserver-xorg xinit x11-xserver-utils"
 IFS='/' read -ra version <<< "$releaseURL"
 
 echo "Installing OctoScreen "${version[7]}, $arch""
 
 echo "Installing Dependencies ..."
-#sudo apt -qq update
-#sudo apt -qq install $dependencies -y
+sudo apt -qq update
+sudo apt -qq install $dependencies -y
 
 if [ -d "/home/pi/OctoPrint/venv" ]; then
     DIRECTORY="/home/pi/OctoPrint/venv"
@@ -78,19 +81,16 @@ fi;
 #fi;
 
 echo "Installing OctoScreen "${version[7]}, $arch" ..."
-cd ~
-#wget -O octoscreen.deb $releaseURL -q --show-progress
 
-#sudo dpkg -i octoscreen.deb
+wget -O ~/octoscreen.deb $releaseURL -q --show-progress
 
-#rm octoscreen.deb
+sudo dpkg -i ~/octoscreen.deb
 
-
-#list_input "Shall I reboot your Pi now?" yes_no reboot
-#echo "OctoScreen has been successfully installed! :)"
-#if [ $reboot == 'yes' ]; then
-#    sudo reboot
-#fi
+rm ~/octoscreen.deb
 
 
-echo "FINAL: $SHELLOPTS"
+list_input "Shall I reboot your Pi now?" yes_no reboot
+echo "OctoScreen has been successfully installed! :)"
+if [ $reboot == 'yes' ]; then
+    sudo reboot
+fi
