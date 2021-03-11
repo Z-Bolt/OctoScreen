@@ -47,13 +47,15 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
 echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" ]] && { SOURCE_FILE="$DIR/$LIBRARY"; } || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }; [[ -z "$SOURCE_FILE" ]] && { echo -en "${CL}Fetching '{$LIBRARY}'..."; source <(curl -s -L "$WGET_RAW/scripts/$LIBRARY"); [[ $? -ne 0 ]] && { echo " ERROR Fetching dependency '$LIBRARY'!"; exit 1; } || { echo ' SUCCESS'; continue; }; }; echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source <(cat "$SOURCE_FILE"); [[ $? -ne 0 ]] && { echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; } || { echo ' SUCCESS'; }; done; echo -en "${CL}${CL}";
 
 optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
-optparse.define short=b long=build description="Build OctoScreen from source directory" variable=MAKE_DIR dispatch="octoscreen.tasks.add build #" default="$(pwd)"
+optparse.define short=m long=makedir description="Specify a make directory for build" variable='MAKE_DIR' dispatch="octoscreen.tasks.has && echo.fatal 'Provide MakeDir AFTER \'build\' " default=$(pwd)
 optparse.define long='nodep' variable=SKIP_DEPENDENCIES hide flag
 
 optparse.define short=y long=yes description="Auto-Confirm OctoScreen yes/no options" variable=AUTO_YES optional flag default="false"
 #optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag
 
 optparse.define.single name="install" description="Install/Upgrade OctoScreen" dispatch="octoscreen.tasks.add install"
+optparse.define.single name="remove" description="Remove OctoScreen" dispatch="octoscreen.tasks.add remove"
+optparse.define.single name=build description="Build OctoScreen" dispatch="octoscreen.tasks.add build"
 optparse.define.single name="*.deb" description="Target for Install/Upgrade and/or Build" dispatch="octoscreen.set.deb \"\$__arg\""
 optparse.define.single name="*" dispatch="octoscreen.handle.unknown \"\$__arg\"" help=hide
 
@@ -64,11 +66,21 @@ echo.verbosity.init_optparse 0
 
 function octoscreen.main(){ #Called after all args are parsed
     
-    local _task_order="build lcd install"
+    local _task_order="docker build lcd remove install"
     
     [[ -z "${OCTOSCREEN_TASKS[@]}" ]] && echo.error "Nothing to do. Please give me a purpose in life...  I BEG YOU" && octoscreen.maybe.usage;
     
     echo "Welcome to the OctoScreen Manager"
+    
+    local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
+    
+    echo.notice "Checking to see if OctoScreen is already installed..."
+    
+    declare -G OCTOSCREEN_INSTALLED=$([[ "${found::1}" = "i" ]] && echo "true" || echo "false")
+    
+    $OCTOSCREEN_INSTALLED && [[ "${found:1:1}" != "i" ]] && !octoscreen.tasks.has remove &&
+        echo.warn "OctoScreen is KINDA installed, but it is in a bad way.  We suggest re-installing."
+    
     
     echo.info "Beginning Task List"
     
@@ -304,9 +316,58 @@ function octoscreen.task.install() {
 }
 
 function octoscreen.task.build(){
-    echo.fatal "Building not implemented yet"
-    :
-    true
+    echo.debug "octoscreen.prepare.build()"
+    
+    [[ ! -z $OCTOSCREEN_DEB ]] && echo.error "Just so you know, we don't support outputting the build to a specific file, so, we won't be changing OCTOSCREEN_DEB ($OCTOSCREEN_DEB), this may mess with your install."
+    
+    ( grep 'PACKAGE_NAME = octoscreen' "$MAKE_DIR/Makefile" >/dev/null 2>&1 ) &&
+        echo.debug "Buildign with Source Directory ($MAKE_DIR)" ||
+        echo.fatal "Make File does not seem to be for OctoScreen";
+    
+    [[ -d $MAKE_DIR/build ]] && {
+        echo.notice "Clearing the existing \`build\` directory ($MAKE_DIR/build)"
+        echo.info "Pausing for 5 seconds..."
+        sleep 5
+        sudo rm -rf "$MAKE_DIR/build"
+    }
+    
+    local make_command="make -C $MAKE_DIR"
+    
+    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && make_command+=' -s'
+    
+    [[ $VERBOSITY_CURRENT -ge $VERBOSITY_INFO ]] && make_command+=' -d'
+    
+    make_command+=" build"
+    
+    echo.notice "Executing MAKE command: $make_command"
+    
+    echo "Building OctoScreen, this may take a bit."
+    
+    echo.notice "Sleeping for 5 seconds, incase you want to abort..."
+    
+    sleep 5
+    
+    sudo $make_command
+    
+    [[ $? -ne 0 ]] && {
+        echo.fatal "Make exited unsuccessfully!";
+    }
+    
+    echo.notice "Build Complete!"
+    
+    BUILT_DEB=$(find $MAKE_DIR/build/ -name "*.deb" -print0 | xargs -r -0 ls -1 -t | head -1)
+    
+    [[ -z $BUILT_DEB ]] && echo.fatal "Something happen, we can't find the compiled DEB..."
+    
+    [[ -z $OCTOSCREEN_DEB ]] && {
+        echo.info "Setting OCTOSCREEN_DEB to $BUILT_DEB"
+        OCTOSCREEN_DEB=$BUILT_DEB
+    } || {
+        echo.info "OCTOSCREEN_DEB is not empty, leaving it as it is."
+    }
+    
+    echo "Most recently compiled deb can be found at: $BUILT_DEB"
+    
 }
 
 function octoscreen.task.lcd(){
@@ -321,7 +382,7 @@ function octoscreen.set.deb(){
     # wondering if we should do any checks here...
     # thinking they should be done in build/instal
     
-    !( octoscreen.tasks.has build || octoscreen.tasks.has install ) && echo.warn "The target *.deb file SHOULD be specified after the target COMMAND (build|install)"
+    !( octoscreen.tasks.has install ) && echo.warn "The target *.deb file SHOULD be specified after \`install\`"
     
     OCTOSCREEN_DEB="$1";
 }
@@ -331,26 +392,16 @@ function octoscreen.prepare.install(){
     
     local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
     
-    echo.notice "Looking to see if OctoScreen is already installed... '$found'"
+    echo.notice "Checking to see if OctoScreen is already installed..."
     
-    [[ "${found::1}" = "i" ]] && {
+    ( $OCTOSCREEN_INSTALLED && ! octoscreen.tasks.has remove ) && {
         
-        local question="OctoScreen is already installed. "
-        
-        [[ "${found:1:1}" != "i" ]] &&
-            question+="But it is in a bad way...  Would you like to reinstall it?" ||
-            question+="Would you like to upgrade it?"
+        local question="OctoScreen is already installed. Would you like to re-install it?"
         
         list_input "$question" yes_no reinstall
         if [ $reinstall == 'yes' ]; then
-            echo.notice "We will continue with removing and re-installing OctoScreen."
-            
-            echo.debug "Stopping the OctoScreen Service"
-            sudo service octoscreen stop >/dev/null 2>&1
-            
-            echo.debug "Removing OctoScreen"
-            sudo dpkg -r octoscreen
-            
+            echo.notice "Excelent! We will removie and re-install OctoScreen."
+            octoscreen.tasks.add remove
         else
             echo "OctoScreen is already installed, exiting." && exit
         fi
@@ -359,10 +410,66 @@ function octoscreen.prepare.install(){
     octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 }
 
+function octoscreen.task.remove(){
+    
+    echo.notice "Removing OctoScreen"
+    
+    echo.debug "Stopping the OctoScreen Service"
+    sudo service octoscreen stop >/dev/null 2>&1
+    
+    echo.debug "Removing OctoScreen"
+    sudo dpkg -r octoscreen
+    
+}
+
+function octoscreen.prepare.remove(){
+    $OCTOSCREEN_INSTALLED || {
+        echo.error "OctoScreen is not installed, nothing to do"
+        octoscreen.tasks.remove remove
+    }
+}
+
+function octoscreen.task.docker(){
+    echo "Installing Docker...  This may take a while..."
+    echo.warn "If this hangs on 'Scanning something something something...' just hit enter, should be good..."
+    
+    local _docker='~/get-docker.sh'
+    
+    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && _docker+=' >/dev/null 2>&1'
+    
+    declare -g CHANNEL='stable'
+    declare -g DOWNLOAD_URL=''
+    declare -g REPO_FILE=''
+    
+    curl -fsSL get.docker.com -o $_docker
+    sh $_docker
+}
+
 function octoscreen.prepare.build(){
+    
     echo.debug "octoscreen.prepare.build()"
-    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
-    echo "build"
+    
+    [[ -z $MAKE_DIR ]] && echo.fatal "No Make Directory provided"
+    [[ -d $MAKE_DIR ]] || echo.fatal "Specified Make Directory is not a directory: $MAKE_DIR"
+    
+    while [[ -d $MAKE_DIR ]] && [[ ! -f $MAKE_DIR/Makefile ]]; do
+        echo.debug "$MAKE_DIR does not seem like a valid Make directory. Looking up."
+        local _make_dir=$( dirname $MAKE_DIR )
+        [[ "$_make_dir" == "$MAKE_DIR" ]] && echo.debug "Looks like we are looping, breaking" && break;
+        MAKE_DIR=$_make_dir;
+    done
+    
+    [[ -f $MAKE_DIR/Makefile ]] &&
+        echo.info "Found $MAKE_DIR/Makefile" ||
+        echo.fatal "No Make File found in ($MAKE_DIR)";
+    
+    command -v "docker" > /dev/null 2>&1 &&
+        echo.debug "Docker IS installed." ||
+        octoscreen.tasks.add docker;
+    
+    # need to recall what the dependencies are...
+    # octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+    
 }
 
 function octoscreen.prepare.lcd(){
@@ -384,11 +491,12 @@ function octoscreen.tasks.do(){
     local did_a_thing=false
     
     [[ -z "$2" ]] && echo.fatal "Task execution requies at least an action AND a task to take it on" && return 1;
+    [[ -z "$OCTOSCREEN_TASKS" ]] && echo.debug "There are, like, NO tasks, so...  Nothing to do." && return 1;
     
     local do="$1"; shift;
     
     for task in $@; do
-        octoscreen.tasks.has $task && {
+        ( octoscreen.tasks.has $task ) && {
             task="octoscreen.$do.${task}"
             
             echo.debug "Fully qualified callback name: $task"
@@ -408,27 +516,51 @@ function octoscreen.tasks.do(){
     done
     
     echo.chatty "'did_a_thing' status: $did_a_thing"
+    
     return "$did_a_thing"
 }
 
 function octoscreen.tasks.has(){
     echo.debug "octoscreen.tasks.has($1)"
-    [[ -z "$1" ]] && echo.error "You can't search for nothing, that's bad, m'kay?";
+    [[ -z "$1" ]] && echo.error "You can't search for nothing, that's bad, m'kay?" && return 1;
+    [[ -z "$OCTOSCREEN_TASKS" ]] && echo.debug "There are, like, NO tasks, so...  Nothing to do." && return 1;
     echo.debug "Checking for OCTOSCREEN_TASK '$task' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'"
     if ( dlm=$'\x1F' ; IFS="$dlm" ; [[ "$dlm${OCTOSCREEN_TASKS[*]}$dlm" == *"$dlm${1}$dlm"* ]] ) ; then
-        echo.debug "Found OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'"
-        return 0
+        echo.debug "Found OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'";
+        return 0;
     else
-        echo.debug "task not found"
+        echo.debug "task not found";
     fi
     return 1
 }
 
+function octoscreen.tasks.remove(){
+    echo.debug "octoscreen.tasks.remove()"
+    [[ -z "$1" ]] && { echo.error "Can't remove... um...  NO tasks...  Bad dev..."; return 0; };
+    octoscreen.tasks.has "$1" || { echo.debug "Task ($1) not set. Nothing to do."; return 0; };
+    
+    for i in "${!OCTOSCREEN_TASKS[@]}"; do
+        if [[ ${OCTOSCREEN_TASKS[i]} = $1 ]]; then
+            unset 'OCTOSCREEN_TASKS[i]'
+        fi
+    done
+    
+    local _tasks=()
+    
+    for i in "${!OCTOSCREEN_TASKS[@]}"; do
+        _tasks+=( "${OCTOSCREEN_TASKS[i]}" )
+    done
+    
+    OCTOSCREEN_TASKS=("${_tasks[@]}")
+    
+    echo.debug "New Task List: ${OCTOSCREEN_TASKS[*]}"
+}
 
 function octoscreen.tasks.add(){
     echo.debug "octoscreen.tasks.add()"
-    [[ -z "$1" ]] && echo.error "Can't add... um...  NO tasks...  Bad dev..." && return 0;
-    OCTOSCREEN_TASKS+=( $1 )
+    [[ -z "$1" ]] && { echo.error "Can't add... um...  NO tasks...  Bad dev..."; return 0; };
+    octoscreen.tasks.has "$1" && { echo.debug "Task ($1) already active. Nothing to do."; return 0; };
+    OCTOSCREEN_TASKS+=( "$1" )
     echo.debug "New Task List: ${OCTOSCREEN_TASKS[*]}"
 }
 
