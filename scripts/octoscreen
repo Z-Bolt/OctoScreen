@@ -23,7 +23,7 @@ exit;
 REPO="Z-Bolt/OctoScreen"
 MAIN="master"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
-LIBRARIES=("lib/verbosity.bash" "lib/inquirer.bash" "lib/optparse.bash")
+LIBRARIES=("lib/optparse.bash" "lib/inquirer.bash" "lib/verbosity.bash")
 PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
 RELEASE_ARCH=''
 
@@ -40,12 +40,11 @@ declare -A ARCHITECTURES=( [arm.*]=*armhf.deb )
 for __ARCH in "${!ARCHITECTURES[@]}"; do  [[ `expr "$SYSTEM_ARCH" : "^$__ARCH\$"` -gt 0 ]] && RELEASE_ARCH="${ARCHITECTURES[$__ARCH]}" && break; done;
 [[ -z $RELEASE_ARCH ]] && { echo "We are sorry, but we do not support your system achitecture ($SYSTEM_ARCH). Exiting"; exit 1; }
 
-while [[ "$SOURCE" != /dev/fd/* && -L "$SOURCE" ]]; do echo "hit"; DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done;
+while [[ "$SOURCE" != /dev/fd/* && -L "$SOURCE" ]]; do DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done;
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
 
-### Setup
-
-echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" ]] && { SOURCE_FILE="$DIR/$LIBRARY"; } || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }; if [[ -z "$SOURCE_FILE" ]]; then echo -en "${CL}Fetching '{$LIBRARY}'..."; SOURCE=$(wget -qO- "$WGET_RAW/scripts/$LIBRARY"); if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; [ -v PS1 ] && return || exit 1; else echo ' SUCCESS'; fi; SOURCE_FILE=<(echo "$SOURCE"); unset SOURCE; fi; echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source "$SOURCE_FILE"; if [[ "$?" != "0" ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; done; echo -en "${CL}${CL}";
+### Load Bash Dependencies
+echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" ]] && { SOURCE_FILE="$DIR/$LIBRARY"; } || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }; if [[ -z "$SOURCE_FILE" ]]; then echo -en "${CL}Fetching '{$LIBRARY}'..."; SOURCE_FILE=<(wget -qO- "$WGET_RAW/scripts/$LIBRARY"); if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; fi; echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source <(cat "$SOURCE_FILE"); if [[ $? -ne 0 ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; done; echo -en "${CL}${CL}";
 
 optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
 optparse.define short=b long=build description="Build OctoScreen from source directory" variable=MAKE_DIR dispatch="octoscreen.tasks.add build #" default="$(pwd)"
