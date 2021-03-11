@@ -157,35 +157,6 @@ function octoscreen.task.install() {
     
     echo "HEY HEY!  Welcome to OctoScreen.  Let's get you set up and going..."
     
-    local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
-    
-    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_INFO ]] && silent+='>/dev/null 2>&1'
-    
-    echo.notice "Looking to see if OctoScreen is already installed... '$found'"
-    
-    [[ "${found::1}" = "i" ]] && {
-        
-        local question="OctoScreen is already installed. "
-        
-        [[ "${found:1:1}" != "i" ]] &&
-            question+="But it is in a bad way...  Would you like to reinstall it?" ||
-            question+="Would you like to upgrade it?"
-        
-        list_input "$question" yes_no reinstall
-        if [ $reinstall == 'yes' ]; then
-            echo.notice "We will continue with removing and re-installing OctoScreen."
-            
-            echo.debug "Stopping the OctoScreen Service"
-            sudo service octoscreen stop >/dev/null 2>&1
-            
-            echo.debug "Removing OctoScreen"
-            sudo dpkg -r octoscreen
-            
-        else
-            echo "OctoScreen is already installed, exiting." && exit
-        fi
-    }
-    
     [[ -z $OCTOSCREEN_DEB ]] && {
     
         [[ -z "$RELEASE_ARCH" ]] && echo.fatal "It doesn't seem like we support your Architecture (${SYSTEM_ARCH})"
@@ -358,6 +329,34 @@ function octoscreen.set.deb(){
 
 function octoscreen.prepare.install(){
     echo.debug "octoscreen.prepare.install()"
+    
+    local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
+    
+    echo.notice "Looking to see if OctoScreen is already installed... '$found'"
+    
+    [[ "${found::1}" = "i" ]] && {
+        
+        local question="OctoScreen is already installed. "
+        
+        [[ "${found:1:1}" != "i" ]] &&
+            question+="But it is in a bad way...  Would you like to reinstall it?" ||
+            question+="Would you like to upgrade it?"
+        
+        list_input "$question" yes_no reinstall
+        if [ $reinstall == 'yes' ]; then
+            echo.notice "We will continue with removing and re-installing OctoScreen."
+            
+            echo.debug "Stopping the OctoScreen Service"
+            sudo service octoscreen stop >/dev/null 2>&1
+            
+            echo.debug "Removing OctoScreen"
+            sudo dpkg -r octoscreen
+            
+        else
+            echo "OctoScreen is already installed, exiting." && exit
+        fi
+    }
+    
     octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 }
 
