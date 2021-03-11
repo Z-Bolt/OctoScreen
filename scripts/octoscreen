@@ -334,12 +334,13 @@ function octoscreen.task.install() {
 }
 
 function octoscreen.task.build(){
-    echo "building"
+    echo.fatal "Building not implemented yet"
     :
     true
 }
 
 function octoscreen.task.lcd(){
+    echo.fatal "Installing the LCD is not implemented yet"
     :
 }
 
