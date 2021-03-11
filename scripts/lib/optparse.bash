@@ -437,8 +437,8 @@ function optparse.define(){
         #echo "$_optparse_usage"
     }
     
-    [[ $has_default && ! -z "$variable" ]] &&
-        optparse_defaults+="#NL[[ -z ${variable} ]] && ${variable}='${default}'"
+    $has_default && [[ ! -z "$variable" ]] && 
+        optparse_defaults+="#NL[[ -z \$${variable} ]] && ${variable}='${default}'"
     
     local validate_variable="$is_list && {
                     valid=false
