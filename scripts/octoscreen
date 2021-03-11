@@ -78,7 +78,7 @@ function octoscreen.main(){ #Called after all args are parsed
     
     declare -G OCTOSCREEN_INSTALLED=$([[ "${found::1}" = "i" ]] && echo "true" || echo "false")
     
-    $OCTOSCREEN_INSTALLED && [[ "${found:1:1}" != "i" ]] && !octoscreen.tasks.has remove &&
+    $OCTOSCREEN_INSTALLED && [[ "${found:1:1}" != "i" ]] && ! octoscreen.tasks.has remove &&
         echo.warn "OctoScreen is KINDA installed, but it is in a bad way.  We suggest re-installing."
     
     
@@ -338,6 +338,11 @@ function octoscreen.task.build(){
     [[ $VERBOSITY_CURRENT -ge $VERBOSITY_INFO ]] && make_command+=' -d'
     
     make_command+=" build"
+    
+    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_ECHO ]] && {
+        echo.error "We couldn't help but notice you wanted us to be quiet...  UNFORTUNATELY, we can't silence \`make\`, so...  Get ready..."
+        # make_command+=' >/dev/null 2>&1'
+    }
     
     echo.notice "Executing MAKE command: $make_command"
     
