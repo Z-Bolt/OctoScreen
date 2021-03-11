@@ -73,9 +73,9 @@ function octoscreen.main(){ #Called after all args are parsed
     
     echo.info "Beginning Task List"
     
-    echo.debug "Tasks have to occur in an order, so we do them in order, no matter how they were passed."
-    echo.debug "We check them in the following order: $_task_order[@]"
-    echo.debug "First we execute and available \`prepare\` commands, then we install any registered dependencies, and then we execute the task it's self."
+    echo.chatty "Tasks have to occur in an order, so we do them in order, no matter how they were passed."
+    echo.chatty "We check them in the following order: $_task_order[@]"
+    echo.chatty "First we execute and available \`prepare\` commands, then we install any registered dependencies, and then we execute the task it's self."
     
     octoscreen.tasks.do prepare $_task_order
     
@@ -408,7 +408,7 @@ function octoscreen.tasks.do(){
         }
     done
     
-    echo.debug "'did_a_thing' status: $did_a_thing"
+    echo.chatty "'did_a_thing' status: $did_a_thing"
     return "$did_a_thing"
 }
 
@@ -446,6 +446,12 @@ function octoscreen.dependencies.add(){
 function octoscreen.maybe.usage() {
     [[ $VERBOSITY_CURRENT -ge $VERBOSITY_ECHO ]] && optparse.usage || echo.fatal "Your verbosity is hiding the default behaviour of the help menu, stupid face.";
     exit
+}
+
+function echo.chatty(){
+    __VERBOSITY_URGENCY=$VERBOSITY_DEBUG+1
+    printf -v message "$VERBOSITY_DEBUG_FORMAT\e[0m" "$VERBOSITY_PREFIX" "CHATTY" "$1"
+    echo -e "$message"
 }
 
 . <( optparse.build name=$([[ "$DIR" =~ /proc/* ]] && echo '<this>' || basename $0) description="OctoScreen Manager" allow=positional finally=octoscreen.main allow=unrecognized usage_header="${optparse_usage_header} command [command ...] [*.deb]")
