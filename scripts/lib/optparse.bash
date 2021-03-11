@@ -101,7 +101,7 @@ function optparse.unset(){
 # -----------------------------------------------------------------------------------------------------------------------------
 function optparse.throw_error(){
     local message="$1"
-    [ ! -z $2 ] && message+=": ($2)"
+    [[ ! -z $2 ]] && message+=": ($2)"
     optparse._log "ERROR" "$message"
     exit 1
 }
@@ -114,18 +114,18 @@ function optparse._log(){
 
 function optparse.warn(){
     local message="$1"
-    [ ! -z $2 ] && message+=": ($2)"
+    [[ ! -z "$2" ]] && message+=": ($2)"
     optparse._log "WARN" "$message"
 }
 
 function optparse.group(){
     local group="$1"
-    [ ! -z "$group" ] && [ ! -z "$optparse_usage" ] && group="#NL$group"
-    optparse_usage+="echo \"$group\";#NL"
+    [[ ! -z "$group" && ! -z "$optparse_usage" ]] && group="#NL$group"
+    optparse_usage+="cat >&2 << EOU#NL$group#NLEOU#NL"
 }
 
 # -----------------------------------------------------------------------------------------------------------------------------
-function optparse.command(){
+function optparse.define.single(){
     local name=""
     local desc=""
     local default=""
@@ -175,16 +175,16 @@ function optparse.command(){
     
     has_val=$([[ -z "$val" ]] && echo "false" || echo "true")
     
-    [ -z "$name" ] && optparse.throw_error "name is mandatory";
-    [ -z "$desc" ] && optparse.throw_error "description is mandatory" "$name";
-    [ -z "$dispatch" ] && optparse.throw_error "a dispatcher is mandatory for commands" "$name";
+    [[ -z "$name" ]] && optparse.throw_error "name is mandatory";
+    [[ -z "$desc" && "$behaviour_help" != "hide" ]] && optparse.throw_error "description is mandatory" "$name";
+    [[ -z "$dispatch" ]] && optparse.throw_error "a dispatcher is mandatory for commands" "$name";
     
     #[ -z "$optparse_usage" ] && optparse.group "$optparse_default_group"
     
     
-    [ "$behaviour_help" != "hide" ] && {
+    [[ "$behaviour_help" != "hide" ]] && {
         
-        [ -z "$optparse_usage_commands" ] && optparse_usage_commands="echo \"Commands\"#NL"
+        [[ -z "$optparse_usage_commands" ]] && optparse_usage_commands="cat >&2 << EOU#NLCommands#NLEOU#NL"
         
         local _optparse_usage=""
     
@@ -217,23 +217,9 @@ function optparse.command(){
         #echo "$_optparse_usage"
     }
     
-    
-    
-    
-    
-    
-    [ ! -z "$dispatch" ] && {
-        [ -z "$dispatch_var" ] && {
-            $has_val && dispatch_var="\"${val}\"" || dispatch_var="\"\$@\""
-        }
-        dispatch_caller="${dispatch} ${dispatch_var}"
-    }
-    
     optparse_additional_handlers+="
         ${name})
-            ${dispatch} ${dispatch_var}
-            optparse_command_hit=\"true\"
-            break
+            ${dispatch} ; true;
             ;;"
     
     true
@@ -257,6 +243,8 @@ function optparse.define(){
     local behaviour_help="default"
     local behaviour_extra=""
     local optparse_help_indent=15
+    local optional="false"
+    local has_variable="false"
 
     for option in "$@"; do
         local key="${option%%=*}";
@@ -264,26 +252,24 @@ function optparse.define(){
         
         case "$key" in
             "short")
-                [ ${#value} -ne 1 ] &&
+                [[ ${#value} -ne 1 ]] &&
                     optparse.throw_error "short name expected to be one character long" "$value"
                 for i in "${optparse_shortnames[@]}"; do
-                    if [ "$i" == "$value" ] ; then
-                        optparse.warn "shortname [-$value] already handled" "-$value"
-                    fi
+                    [[ "$i" == "$value" ]] && 
+                        optparse.warn "shortname [-$value] already handled" "-$value" && break;
                 done
                 optparse_shortnames+=("$value")
                 shortname="$value"
                 short="-$value"
-                [ -z errorname ] &&
-                    errorname="-$short"
+                [[ -z "$errorname" ]] &&
+                    errorname="$short"
             ;;
             "long")
-                [ -z ${value} ] &&
+                [[ -z ${value} ]] &&
                     optparse.throw_error "long name expected to be atleast one character long" "--$value"
                 for i in "${optparse_longnames[@]}"; do
-                    if [ "$i" == "$value" ] ; then
-                        optparse.warn "longname [--$value] already handled" "--$value"
-                    fi
+                    [[ "$i" == "$value" ]] &&
+                        optparse.warn "longname [--$value] already handled" "--$value" && break;
                 done
                 optparse_longnames+=("$value")
                 longname="$value"
@@ -296,6 +282,12 @@ function optparse.define(){
             "default")
                 default="$value"
                 has_default="true"
+            ;;
+            "optional")
+                optional="true"
+            ;;
+            flag|list)
+                behaviour="$key"
             ;;
             "behaviour")
                 case $value in
@@ -313,9 +305,8 @@ function optparse.define(){
             "variable")
                 variable="$value"
                 for i in "${optparse_variables[@]}"; do
-                    if [ "$i" == "$value" ] ; then
-                        optparse.warn "value assignment [\$$value] already handled" "$errorname"
-                    fi
+                    [[ "$i" == "$value" ]] &&
+                        optparse.warn "value assignment [\$$value] already handled" "$errorname" && break;
                 done
                 optparse_variables+=("$value")
             ;;
@@ -325,16 +316,13 @@ function optparse.define(){
             "dispatch")
                 dispatch="$value"
             ;;
-            "explicit_help")
-                always_help=false
-            ;;
-            "debug")
-                debug=true
-            ;;
-            "extra"|"help")
+            "extra"|"help"|"hide"|"explicit")
                 case $value in
                     default|explicit|hide)
-                        declare behaviour_$key="$value"
+                        [[ "$value" == "$key" ]] && {
+                            declare behaviour_help="$value";
+                            declare behaviour_extra="$value";
+                        } || declare behaviour_$key="$value";
                     ;;
                     *)
                         optparse.throw_error "$key [$value] not supported" "$errorname"
@@ -344,27 +332,27 @@ function optparse.define(){
         esac
     done
     
-    [ -z $behaviour_extra ] && {
-        [ "$behaviour" == "flag" ] && behaviour_extra="hide" || behaviour_extra="explicit"
+    [[ -z $behaviour_extra ]] && {
+        [[ "$behaviour" == "flag" ]] && behaviour_extra="hide" || behaviour_extra="explicit"
     }
     
-    [ -z "$errorname" ] && optparse.throw_error "argument must have a long or short name"
+    [[ -z "$errorname" ]] && optparse.throw_error "argument must have a long or short name"
     
     flag=$([[ $behaviour == "flag" ]] && echo "true" || echo "false")
     is_list=$([[ $behaviour == "list" ]] && echo "true" || echo "false")
 
-    [ $behaviour == "flag" ] && {
-        [ -z $default ] && default=false
+    [[ $behaviour == "flag" ]] && {
+        [[ -z $default ]] && default=false
         has_default=true
-        [ $default = "true" ] && val="false"
-        [ $default = "false" ] && val="true"
+        [[ $default == "true" ]] && val="false"
+        [[ $default == "false" ]] && val="true"
     }
     
     has_val=$([[ -z "$val" ]] && echo "false" || echo "true")
     has_variable=$([[ -z "$variable" ]] && echo "false" || echo "true")
 
     # check list behaviour
-    [ $behaviour == "list" ] && {
+    [[ $behaviour == "list" ]] && {
         [[ -z ${list:-} ]] &&
             optparse.throw_error "list is mandatory when using list behaviour" "$errorname"
 
@@ -378,22 +366,21 @@ function optparse.define(){
         }
     }
 
-    if [ -z "$desc" ]; then
-        if [ -z "$dispatch" ]; then
+    [[ -z "$desc" && "$behaviour_help" != "hide" ]] && {
+        [[ -z "$dispatch" ]] && {
             optparse.throw_error "description is mandatory" "$errorname"
-        else
-            [ "$behaviour_help" == "default" ] && help_behaviour="explicit"
-            [ "$behaviour_help" != "hide" ] && desc="Executes $dispatch"
-        fi
-    fi
+        } || {
+            [[ "$behaviour_help" == "default" ]] && help_behaviour="explicit"
+            [[ "$behaviour_help" != "hide" ]] && desc="Executes $dispatch"
+        }
+    }
 
-    [ -z "$variable" ] && [ -z "$dispatch" ] && optparse.throw_error "you must give a target variable" "$errorname"
+    [[ -z "$variable" && -z "$dispatch" ]] && optparse.throw_error "you must give a target variable" "$errorname";
     
     
-    [ -z "$optparse_usage" ] && optparse.group "$optparse_default_group"
-    
-    
-    [ "$behaviour_help" != "hide" ] && {
+    [[ "$behaviour_help" != "hide" ]] && {
+        
+        [[ -z "$optparse_usage" ]] && optparse.group "$optparse_default_group";
         
         local _optparse_usage=""
     
@@ -418,7 +405,7 @@ function optparse.define(){
         
         _optparse_usage="cat >&2 << EOU#NL$_optparse_usage#NLEOU#NL"
         
-        [ "$behaviour_extra" != "hide" ] && {
+        [[ "$behaviour_extra" != "hide" ]] && {
             
             local _optparse_extra=""
             
@@ -427,22 +414,22 @@ function optparse.define(){
             $flag && {
                 _optparse_extra+="#TB#TB#TBTreated as a Flag#NL"
             } || {
-                ${has_default} &&
+                $has_default &&
                     _optparse_extra+="#TB#TB#TBDefault: '$default'#NL"
             }
             
-            [ ! -z "$_optparse_extra" ] && {
+            [[ ! -z "$_optparse_extra" ]] && {
             
                 _optparse_extra="cat >&2 << EOE#NL${_optparse_extra}EOE#NL"
                 
-                [ "$behaviour_extra" == "explicit" ]  && 
+                [[ "$behaviour_extra" == "explicit" ]]  && 
                     _optparse_extra="if [[ \$1 == "true" ]]; then#NL$_optparse_extra#NLfi#NL"
                 
                 _optparse_usage+="$_optparse_extra"
             }
         }
         
-        [ "$behaviour_help" == "explicit" ] && 
+        [[ "$behaviour_help" == "explicit" ]] && 
             _optparse_usage="if [[ \$1 == "true" ]]; then#NL$_optparse_usage#NLfi#NL"
     
         optparse_usage+="$_optparse_usage"
@@ -450,58 +437,56 @@ function optparse.define(){
         #echo "$_optparse_usage"
     }
     
-    $has_default && [ ! -z "$variable" ] &&
-        optparse_defaults+="#NL${variable}='${default}'"
+    [[ $has_default && ! -z "$variable" ]] &&
+        optparse_defaults+="#NL[[ -z ${variable} ]] && ${variable}='${default}'"
     
     local validate_variable="$is_list && {
                     valid=false
                     for i in $list; do
-                        [[ \$optparse_processing_arg_value == \$i ]] && valid=true && break
+                        [[ \$__arg_value == \$i ]] && valid=true && break
                     done
-                    \$valid || optparse.usage false \"ERROR: invalid value for argument \\\"\$_optparse_arg_errorname\\\"\" 1
+                    \$valid || optparse.usage false \"ERROR: invalid value for argument \\\"\$__arg_errorname\\\"\" 1
                 }
-                $has_variable && [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage false \"ERROR: (\$_optparse_arg_errorname) requires input value\" 1"
+                $has_variable && [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage false \"ERROR: (\$__arg_errorname) requires input value\" 1 || true"
         
     local dispatch_caller="# No Dispatcher"
     
-    [ ! -z "$dispatch" ] && {
-        [ -z "$dispatch_var" ] && {
-            $has_variable && dispatch_var="\"\$${variable}\"" || dispatch_var="\"\$optparse_processing_arg_value\""
+    [[ ! -z "$dispatch" ]] && {
+        [[ -z "$dispatch_var" ]] && {
+            $has_variable && dispatch_var="\"\$${variable}\"" || dispatch_var="\"\$__arg_value\""
         }
-        dispatch_caller="${dispatch} ${dispatch_var}"
+        dispatch_caller="${dispatch} ${dispatch_var}; true;"
     }
     
-    [ ! -z "$shortname" ] && {
+    [[ ! -z "$shortname" ]] && {
         optparse_process_short+="
             ${shortname})
-                _optparse_arg_errorname=\"$short\"
-                optparse_processing_arg_value=\"\"
-                ( $flag || $has_val ) && optparse_processing_arg_value=\"$val\"  || {
-                    $has_variable && {
-                        optparse_processing_arg_value=\"\$optparse_processing_arg\";
-                        if [ -z \"\$optparse_processing_arg_value\" ]; then
-                            optparse_processing_arg_value=\"\$1\" && shift
-                        else
-                            optparse_processing_arg=''
-                        fi
-                    }
+                __arg_errorname=\"$short\";
+                __arg_value='';
+                ( $flag || $has_val ) && {
+                    __arg_value=\"$val\";
                 }
-                $has_variable && ${variable}=\"\$optparse_processing_arg_value\"
+                $has_variable && [[ -z \"\$__arg_value\" ]] && {
+                    __arg_value=\"\$__arg_sremain\";
+                    __arg_sremain='';
+                    [[ -z \"\$__arg_value\" && ! -z \"\$1\" ]] && __arg_value=\"\$1\" && shift;
+                }
+                $has_variable && ${variable}=\"\$__arg_value\";
                 $validate_variable
                 $dispatch_caller
                 continue
             ;;"
     }
     
-    [ ! -z "$longname" ] && {
+    [[ ! -z "$longname" ]] && {
         optparse_process_long+="
             ${longname})
-                _optparse_arg_errorname=\"$long\"
+                __arg_errorname=\"$long\";
                 $has_val && {
-                    [ ! -z \"\$optparse_processing_arg_value\" ] && optparse.usage true 'ERROR: (${errorname}) does not accept user input' 1
-                    optparse_processing_arg_value=\"$val\"
+                    [[ ! -z \"\$__arg_value\" ]] && optparse.usage true 'ERROR: (${errorname}) does not accept user input' 1;
+                    __arg_value=\"$val\";
                 }
-                $has_variable && ${variable}=\"\$optparse_processing_arg_value\"
+                $has_variable && ${variable}=\"\$__arg_value\";
                 $validate_variable
                 $dispatch_caller
                 continue
@@ -509,7 +494,7 @@ function optparse.define(){
     }
     
     $has_variable && optparse_variables_validate+="
-        [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage true 'ERROR: (${errorname}) not set' 1 || true"
+        $optional || { [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage true 'ERROR: (${errorname}) not set' 1 || true; };"
     
     true
 }
@@ -526,6 +511,8 @@ function optparse.build(){
     
     local _optparse_process=$optparse_process
     local _optparse_variables_validate=$optparse_variables_validate
+    
+    local _exec=''
 
     for option in "$@"; do
         local key="${option%%=*}";
@@ -545,45 +532,40 @@ function optparse.build(){
                         "unrecognized")
                             allow_unrecognized=true
                         ;;
-                        *)
-                            optparse.throw_error "Unhandled Allowance '$allow'"
-                        ;;
                     esac
                 done
             ;;
-            "exec")
-                optparse_variables_validate+="#NL$value;"
+            "finally")
+                _exec="#NL$value;"
             ;;
         esac
     done
     
+    local _has_additional=$([[ -z "$optparse_additional_handlers" ]] && echo "false" || echo "true")
+    
+    $_has_additional && preserve_positional=true
+    
     $preserve_positional && {
         preserve_positional="
-        [ ! -z \"\$optparse_processing_arg\" ] && {
-            $optparse_debug && echo \"Passing positional arg to args \\\"\$optparse_processing_arg\\\"\"
-            optparse_processing_args+=( \"\$optparse_processing_arg\" )
-        }"
+        [ ! -z \"\$__arg\" ] && __args_processed+=( \"\$__arg\" )"
     } || {
         preserve_positional="optparse.usage true \"ERROR: Unconfigured Arguments are not accepted.\" 1"
     }
     
     $allow_unrecognized && {
         unknown_long_handler="
-                $optparse_debug && echo \"Passing unknown long to args \$optparse_processing_arg\"
-                optparse_processing_args+=( \"\$optparse_processing_arg\" )
+                __args_processed+=( \"\$__arg\" )
                 continue"
         unknown_short_handler="
-                $optparse_debug && echo \"Passing unknown short '\$optparse_processing_arg_key' to args \$optparse_processing_arg\"
-                optparse_processing_arg+=\"\$optparse_processing_arg_key\"
+                __arg_processed+=\"\$__arg_key\"
                 continue"
         non_empty_shorts="
-            [ ! -z \"\$optparse_processing_arg\" ] && {
-                $optparse_debug && echo \"Passing non-empty shorts '-\$optparse_processing_arg' to args \$optparse_processing_arg\"
-                optparse_processing_args+=(\"-\$optparse_processing_arg\")
+            [ ! -z \"\$__arg_short_processed\" ] && {
+                __args_processed+=(\"-\$__arg_processed\")
                 continue
             }"
     } || {
-        unknown_long_handler="optparse.usage true \"Unrecognized option: \$optparse_processing_arg_key\" 1"
+        unknown_long_handler="optparse.usage true \"Unrecognized option: \$__arg_key\" 1"
         unknown_short_handler="$unknown_long_handler"
     }
     
@@ -596,7 +578,7 @@ exit 0
 }
 
 function optparse.usage(){
-( [ "\$1" == "true" ] && [ ! -z "\$2" ]) && echo -e "\$2"
+[[ ! -z "\$2" ]] && echo -e "\$2"
 cat >&2 << EOH
 ${optparse_description}
 Usage: $optparse_name $optparse_usage_header
@@ -609,38 +591,37 @@ cat >&2 << EOH
 \$(printf "%${optparse_help_full_width}s %s" "Powered by optparse $optparse_version")
 \$(printf "%${optparse_help_full_width}s %s" "@see --optparse_license")
 EOH
-if [ "\$1" == "true" ] && [ ! -z "\$3" ]; then
-    exit "\$3"
-else
-    exit 3
-fi
+[[ "\$1" == "true" && ! -z "\$3" ]] && exit "\$3" || exit 3
 }
 
 # Set default variable values
 $optparse_defaults
 
-optparse_processing_args=()
+__args_processed=()
 
 optparse_command_hit="false"
 
 # Begin Parseing
-while [ \$# -ne 0 ]; do
-    optparse_processing_arg="\$1"
+while [[ \$# -ne 0 ]]; do
+    __arg_key=''
+    __arg_value=''
+    __arg_short=''
+    __arg="\$1"
     shift
     
-    case "\$optparse_processing_arg" in
+    case "\$__arg" in
         --)
-            optparse_processing_args+=("--") && break
+            __args_processed+=("--") && break
             ;;
             
         --*)
             
-            optparse_processing_arg_key="\${optparse_processing_arg%%=*}";
-            optparse_processing_arg_value="\${optparse_processing_arg#*=}";
+            __arg_key="\${__arg%%=*}";
+            __arg_value="\${__arg#*=}";
             
-            [ "\$optparse_processing_arg_value" == "\$optparse_processing_arg_key" ] && optparse_processing_arg_value=''
+            [[ "\$__arg_value" == "\$__arg_key" ]] && __arg_value=''
             
-            case "\${optparse_processing_arg_key:2}" in
+            case "\${__arg_key:2}" in
                 $optparse_process_long
             esac
             
@@ -650,16 +631,16 @@ while [ \$# -ne 0 ]; do
             
         -*)
             
-            optparse_processing_arg_short="\${optparse_processing_arg:1}"
-            optparse_processing_arg=''
+            __arg_sremain="\${__arg:1}"
+            __arg_processed=''
             
-            while [ \${#optparse_processing_arg_short} -ne 0 ]; do
+            while [[ \${#__arg_sremain} -ne 0 ]]; do
             
-                optparse_processing_arg_key="\${optparse_processing_arg_short:0:1}";
-                optparse_processing_arg_short="\${optparse_processing_arg_short:1}"
-                optparse_processing_arg_value='';
+                __arg_key="\${__arg_sremain:0:1}";
+                __arg_sremain="\${__arg_sremain:1}"
+                __arg_value='';
                 
-                case "\$optparse_processing_arg_key" in
+                case "\$__arg_key" in
                     $optparse_process_short
                 esac
                 
@@ -670,7 +651,7 @@ while [ \$# -ne 0 ]; do
             $non_empty_shorts
             
             ;;
-        
+            
         $optparse_additional_handlers
         
     esac
@@ -679,19 +660,24 @@ while [ \$# -ne 0 ]; do
     
 done
 
-# GODLY arg quote with printf, WHERE HAVE YOU BEEN??
-eval set -- "\$([ ! -z "$optparse_processing_args" ] && printf ' %q' "\${optparse_processing_args[@]}") \$(printf ' %q' "\${@}")"
+# GODLY arg quote with printf, WHERE HAVE YOU BEEN MY WHOLE LIFE??
+[[ ! -z "\$__args_processed" ]] && {
+    __args_processed="\$(printf '%q ' "\${__args_processed[@]}")"
+    [[ ! -z "\$@" ]] && __args_processed+="\$(printf '%q ' "\${@}")"
+    eval set -- "\$__args_processed"
+}
 
 $optparse_variables_validate
 
 unset _optparse_params
 unset _optparse_param
 
+$_exec
+
 EOF
 
-    if [ -z "$optparse_preserve" ] ; then
-        # Unset global variables
-        optparse.unset
-    fi
+    # Unset global variables
+    [[ -z "$optparse_preserve" ]] && optparse.unset
 }
-optparse.init
+
+optparse.init && true

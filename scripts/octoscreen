@@ -1,0 +1,451 @@
+#!/usr/bin/bash
+function octoscreen.license() { [[ $VERBOSITY_CURRENT -ge $VERBOSITY_ECHO ]] && { cat <<EOL
+# OctoScreen: A OctoPrint touch interface for TFT touch modules
+# Copyright (C) 2018 Máximo Cuadros Ortiz
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+EOL
+} || echo.error "Can't display License when quiet..."
+exit;
+}
+
+REPO="Z-Bolt/OctoScreen"
+MAIN="master"
+WGET_RAW="https://github.com/$REPO/raw/$MAIN"
+LIBRARIES=("lib/verbosity.bash" "lib/inquirer.bash" "lib/optparse.bash")
+PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
+RELEASE_ARCH=''
+
+VERBOSITY_PREFIX='OCTOSCREEN '
+OCTOSCREEN_TASKS=()
+OCTOSCREEN_DEPENDENCIES=()
+OCTOSCREEN_DEB=''
+yes_no=( 'yes' 'no' )
+
+SYSTEM_ARCH=$(uname -m)
+declare -A ARCHITECTURES=( [arm.*]=*armhf.deb )
+
+# Prelim, just check if we support the current architecture...
+for __ARCH in "${!ARCHITECTURES[@]}"; do  [[ `expr "$SYSTEM_ARCH" : "^$__ARCH\$"` -gt 0 ]] && RELEASE_ARCH="${ARCHITECTURES[$__ARCH]}" && break; done;
+[[ -z $RELEASE_ARCH ]] && { echo "We are sorry, but we do not support your system achitecture ($SYSTEM_ARCH). Exiting"; exit 1; }
+
+while [[ "$SOURCE" != /dev/fd/* && -L "$SOURCE" ]]; do echo "hit"; DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done;
+DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
+
+### Setup
+
+echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" ]] && { SOURCE_FILE="$DIR/$LIBRARY"; } || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }; if [[ -z "$SOURCE_FILE" ]]; then echo -en "${CL}Fetching '{$LIBRARY}'..."; SOURCE=$(wget -qO- "$WGET_RAW/scripts/$LIBRARY"); if [[ "$?" != "0" ]]; then echo " ERROR Fetching dependency '$LIBRARY'!"; [ -v PS1 ] && return || exit 1; else echo ' SUCCESS'; fi; SOURCE_FILE=<(echo "$SOURCE"); unset SOURCE; fi; echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source "$SOURCE_FILE"; if [[ "$?" != "0" ]]; then echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; else echo ' SUCCESS'; fi; done; echo -en "${CL}${CL}";
+
+optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
+optparse.define short=b long=build description="Build OctoScreen from source directory" variable=MAKE_DIR dispatch="octoscreen.tasks.add build #" default="$(pwd)"
+optparse.define long='nodep' variable=SKIP_DEPENDENCIES hide flag
+
+optparse.define short=y long=yes description="Auto-Confirm OctoScreen yes/no options" variable=AUTO_YES optional flag default="false"
+#optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag
+
+optparse.define.single name="install" description="Install/Upgrade OctoScreen" dispatch="octoscreen.tasks.add install"
+optparse.define.single name="*.deb" description="Target for Install/Upgrade and/or Build" dispatch="octoscreen.set.deb \"\$__arg\""
+optparse.define.single name="*" dispatch="octoscreen.handle.unknown \"\$__arg\"" help=hide
+
+echo.verbosity.init_optparse 0
+
+
+### Primary Functions: See bottom for other Utility Functions
+
+function octoscreen.main(){ #Called after all args are parsed
+    
+    local _task_order="build lcd install"
+    
+    [[ -z "${OCTOSCREEN_TASKS[@]}" ]] && echo.error "Nothing to do. Please give me a purpose in life...  I BEG YOU" && octoscreen.maybe.usage;
+    
+    echo "Welcome to the OctoScreen Manager"
+    
+    echo.info "Beginning Task List"
+    
+    echo.debug "Tasks have to occur in an order, so we do them in order, no matter how they were passed."
+    echo.debug "We check them in the following order: $_task_order[@]"
+    echo.debug "First we execute and available \`prepare\` commands, then we install any registered dependencies, and then we execute the task it's self."
+    
+    octoscreen.tasks.do prepare $_task_order
+    
+    [[ $? -eq 0 ]] && octoscreen.dependencies.install
+    
+    # Tasks have to occur in an order, so we do them in order, no matter how they were passed.
+    [[ $? -eq 0 ]] && octoscreen.tasks.do task $_task_order
+        
+    [[ $? -eq 0 ]] || echo.fatal "Unknown error. ($?)"
+    
+}
+
+function octoscreen.dependencies.install(){
+    echo.debug "octoscreen.dependencies.install()"
+    
+    [[ -z "$OCTOSCREEN_DEPENDENCIES" ]] && echo.info "No dependencies to install, returning" && return 0
+    
+    local dependency_count="${#OCTOSCREEN_DEPENDENCIES[@]}"
+    
+    echo.debug "${dependency_count} dependencies queued to install: ${OCTOSCREEN_DEPENDENCIES[*]}"
+    
+    [[ ! -z $SKIP_DEPENDENCIES ]] && echo.notice "Skipping dependencies per user request" && return 0
+    
+    #local _apt_list_installed=()
+    #
+    #echo.debug "Looking for already installed libraries"
+    #
+    #readarray -t _apt_list_installed <<<"$(apt list ${OCTOSCREEN_DEPENDENCIES[*]} 2>/dev/null)"
+    #
+    #[[ "${#_apt_installed[@]}" -gt 1 ]] && {
+    #   
+    #    local _listing=false
+    #    local _apt_installed=()
+    #    
+    #    
+    #    
+    #    echo.info "Parsing out already installed libraries"
+    #    
+    #    echo.debug "Of the queued dependencies, we found the following were already installed: ${_apt_installed[*]}"
+    #    
+    #}
+    #
+    #[[ -z $AUTO_FORCE ]] && {
+    #    
+    #    
+    #    
+    #    #IFS=$'\n' read -rd '' -a __read <<<"$(apt list ${OCTOSCREEN_DEPENDENCIES[*]} 2>/dev/null)"
+    #    
+    #    for option in "${_apt_installed[@]}"; do
+    #        echo "Package: $option"
+    #    done
+    #    
+    #}
+    
+    echo -e "Installing the queued dependencies:\n\t${OCTOSCREEN_DEPENDENCIES[*]}"
+    
+    local apt='apt'
+    
+    [[ $VERBOSITY_CURRENT -le $VERBOSITY_NOTICE ]] && {
+        echo.notice "Setting \`apt\` quiet."
+        apt+=' -q'
+    }
+    
+    echo.notice "Executing \`$apt update\`"
+    sudo $apt update
+    
+    [[ ! -z $AUTO_YES ]] && apt+=' -y'
+    
+    echo.notice "Executing \`$apt install ${OCTOSCREEN_DEPENDENCIES[*]}\`"
+    sudo $apt install ${OCTOSCREEN_DEPENDENCIES[*]}
+    
+    true
+}
+
+function octoscreen.task.install() {
+    
+    local version_regex=''
+    local deb_name=''
+    
+    echo "HEY HEY!  Welcome to OctoScreen.  Let's get you set up and going..."
+    
+    local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
+    
+    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_INFO ]] && silent+='>/dev/null 2>&1'
+    
+    echo.notice "Looking to see if OctoScreen is already installed... '$found'"
+    
+    [[ "${found::1}" = "i" ]] && {
+        
+        local question="OctoScreen is already installed. "
+        
+        [[ "${found:1:1}" != "i" ]] &&
+            question+="But it is in a bad way...  Would you like to reinstall it?" ||
+            question+="Would you like to upgrade it?"
+        
+        list_input "$question" yes_no reinstall
+        if [ $reinstall == 'yes' ]; then
+            echo.notice "We will continue with removing and re-installing OctoScreen."
+            
+            echo.debug "Stopping the OctoScreen Service"
+            sudo service octoscreen stop >/dev/null 2>&1
+            
+            echo.debug "Removing OctoScreen"
+            sudo dpkg -r octoscreen
+            
+        else
+            echo "OctoScreen is already installed, exiting." && exit
+        fi
+    }
+    
+    [[ -z $OCTOSCREEN_DEB ]] && {
+    
+        [[ -z "$RELEASE_ARCH" ]] && echo.fatal "It doesn't seem like we support your Architecture (${SYSTEM_ARCH})"
+        
+        local RELEASES="https://api.github.com/repos/$REPO/releases/latest"
+        
+        echo.info "Using Release Source URL: $RELEASES"
+        
+        local RELEASE_URL=$(curl -s "$RELEASES" | grep "browser_download_url.$RELEASE_ARCH" | cut -d '"' -f 4);
+        
+        [[ -z "$RELEASE_URL" ]] && echo.fatal "Unable to find correct package for your Architecture (${arch})"
+        
+        echo.info "Found matching Package URL: $RELEASE_URL"
+        
+        deb_name=$(basename $RELEASE_URL)
+        
+        echo.debug "Basename is \`basename $deb_name\`"
+        
+        OCTOSCREEN_DEB=$(mktemp)
+        
+        echo.debug "Created temporary target file $OCTOSCREEN_DEB"
+    
+    } || {
+        
+        echo.info "Using user-supplied DEB file $OCTOSCREEN_DEB"
+        
+        [[ ! -f $OCTOSCREEN_DEB ]] && echo.fatal "$OCTOSCREEN_DEB does not exist"
+        
+        deb_name=$(basename $OCTOSCREEN_DEB)
+        
+        echo.debug "Basename is \`$deb_name\`"
+    }
+    
+    echo.debug "Extracting the Version and Architecture from ($deb_name)"
+    
+    if [[ $deb_name =~ [^_/]+_(.+)_([^_]+)\.deb ]]; then
+        local DEB_ARCH="${BASH_REMATCH[2]}"
+        OCTOSCREEN_DEB_VERSION="${BASH_REMATCH[1]}"
+        
+    else
+        echo.warn "Unable to determine the OctoScreen Version and Architecture from file: $deb_name"
+        OCTOSCREEN_DEB_VERSION=unknown
+        list_input "The Package version and Release Architecture were unable to be determined, this may not end well.  Would you like to continue?" yes_no force
+        if [ $force == 'yes' ]; then
+            echo.warn "We will continue with installation, god speed."
+            SYSTEM_ARCH=unknown
+        else
+            echo.fatal "Unable to determine the OctoScreen Version and Archetecture from Package: $deb_name"
+        fi
+    fi
+    
+    echo.debug "Parsed DEB Version: $OCTOSCREEN_DEB_VERSION"
+    
+    false && {
+        if [ -d "/home/pi/OctoPrint/venv" ]; then
+            DIRECTORY="/home/pi/OctoPrint/venv"
+        elif [ -d "/home/pi/oprint" ]; then
+            DIRECTORY="/home/pi/oprint"
+        else
+            echo "Neither /home/pi/OctoPrint/venv nor /home/pi/oprint can be found."
+            echo "If your OctoPrint instance is running on a different machine just type - in the following prompt."
+            text_input "Please specify OctoPrints full virtualenv path manually (no trailing slash)." DIRECTORY
+        fi;
+        
+        if [ $DIRECTORY == "-" ]; then
+            echo "Not installing any plugins for remote installation. Please make sure to have Display Layer Progress installed."
+        elif [ ! -d $DIRECTORY ]; then
+            echo "Can't find OctoPrint Installation, please run the script again!"
+            exit 1
+        fi;
+        
+        
+        #if [ $DIRECTORY != "-" ]; then
+        #  plugins=( 'Display Layer Progress (mandatory)' 'Filament Manager' 'Preheat Button' 'Enclosure' 'Print Time Genius' 'Ultimaker Format Package' 'PrusaSlicer Thumbnails' )
+        #  checkbox_input "Which plugins should I install (you can also install them via the Octoprint UI)?" plugins selected_plugins
+        #  echo "Installing Plugins..."
+        #
+        #  if [[ " ${selected_plugins[@]} " =~ "Display Layer Progress (mandatory)" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/OllisGit/OctoPrint-DisplayLayerProgress/releases/latest/download/master.zip"
+        #  fi;
+        #  if [[ " ${selected_plugins[@]} " =~ "Filament Manager" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/OllisGit/OctoPrint-FilamentManager/releases/latest/download/master.zip"
+        #  fi;
+        #  if [[ " ${selected_plugins[@]} " =~ "Preheat Button" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/marian42/octoprint-preheat/archive/master.zip"
+        #  fi;
+        #  if [[ " ${selected_plugins[@]} " =~ "Enclosure" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/vitormhenrique/OctoPrint-Enclosure/archive/master.zip"
+        #  fi;
+        #  if [[ " ${selected_plugins[@]} " =~ "Print Time Genius" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/eyal0/OctoPrint-PrintTimeGenius/archive/master.zip"
+        #  fi;
+        #  if [[ " ${selected_plugins[@]} " =~ "Ultimaker Format Package" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/jneilliii/OctoPrint-UltimakerFormatPackage/archive/master.zip"
+        #  fi;
+        #  if [[ " ${selected_plugins[@]} " =~ "PrusaSlicer Thumbnails" ]]; then
+        #      "$DIRECTORY"/bin/pip install -q --disable-pip-version-check "https://github.com/jneilliii/OctoPrint-PrusaSlicerThumbnails/archive/master.zip"
+        #  fi;
+        #fi;
+    }
+    
+    echo "Installing OctoScreen "$OCTOSCREEN_DEB_VERSION, $DEB_ARCH""
+    
+    
+    [[ ! -z $RELEASE_URL ]] && {
+        echo.notice "Downloading Remote Deb File From: $RELEASE_URL"
+        
+        local command="wget -O $OCTOSCREEN_DEB $RELEASE_URL"
+        
+        [[ $VERBOSITY_CURRENT -lt $VERBOSITY_INFO ]] && command+=' -q'
+        
+        [[ $VERBOSITY_CURRENT -ge $VERBOSITY_ECHO ]] && command+=' --show-progress'
+        
+        echo.debug "Executing \`$command\`"
+        
+        trap "rm -f $OCTOSCREEN_DEB" EXIT
+        
+        # -q --show-progress
+        $command
+        
+        echo.info "Temporary Deb File: $OCTOSCREEN_DEB"
+        
+    }
+    
+    [[ ! -f $OCTOSCREEN_DEB ]] && echo.fatal "After all this work, it seems like the Package doesn't actually exist: $OCTOSCREEN_DEB"
+    
+    sudo dpkg -i $OCTOSCREEN_DEB
+    
+    [[ ! -z $RELEASE_URL ]] && {
+        rm -f $OCTOSCREEN_DEB
+        trap - EXIT
+    }
+    
+    #? Maybe other tasks?
+    list_input "Shall I reboot your Pi now?" yes_no reboot
+    if [ $reboot == 'yes' ]; then
+        echo "Your system will now reboot!"
+        sudo reboot
+    else
+        echo "Starting OctoScreen Service"
+        sudo service octoscreen start
+        echo "OctoScreen has been successfully installed! Have a great day!"
+    fi
+    
+    exit #?  Maybe other tasks?
+}
+
+function octoscreen.task.build(){
+    echo "building"
+    :
+    true
+}
+
+function octoscreen.task.lcd(){
+    :
+}
+
+### Task Preparation Functions
+
+function octoscreen.set.deb(){
+    
+    # wondering if we should do any checks here...
+    # thinking they should be done in build/instal
+    
+    !( octoscreen.tasks.has build || octoscreen.tasks.has install ) && echo.warn "The target *.deb file SHOULD be specified after the target COMMAND (build|install)"
+    
+    OCTOSCREEN_DEB="$1";
+}
+
+function octoscreen.prepare.install(){
+    echo.debug "octoscreen.prepare.install()"
+    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+}
+
+function octoscreen.prepare.build(){
+    echo.debug "octoscreen.prepare.build()"
+    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+    echo "build"
+}
+
+function octoscreen.prepare.lcd(){
+    echo.debug "octoscreen.prepare.lcd()"
+    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+}
+
+function octoscreen.handle.unknown(){
+    echo.error "Unknown Task '$1'"
+    octoscreen.maybe.usage
+}
+
+
+### Utility Functions
+
+function octoscreen.tasks.do(){
+    echo.debug "octoscreen.tasks.do($*)"
+    
+    local did_a_thing=false
+    
+    [[ -z "$2" ]] && echo.fatal "Task execution requies at least an action AND a task to take it on" && return 1;
+    
+    local do="$1"; shift;
+    
+    for task in $@; do
+        octoscreen.tasks.has $task && {
+            task="octoscreen.$do.${task}"
+            
+            echo.debug "Fully qualified callback name: $task"
+            
+            echo.debug "Checking to see if there is a function with that name"
+            
+            ( declare -f "$task" >/dev/null 2>&1 ) && {
+                echo.debug "Function Exists: $task"
+                echo.info "Executing ${task}()"
+                $task
+                did_a_thing="$?"
+            } || {
+                echo.debug "Function does not exist, skipping: $task"
+            }
+            
+        }
+    done
+    
+    echo.debug "'did_a_thing' status: $did_a_thing"
+    return "$did_a_thing"
+}
+
+function octoscreen.tasks.has(){
+    echo.debug "octoscreen.tasks.has($1)"
+    [[ -z "$1" ]] && echo.error "You can't search for nothing, that's bad, m'kay?";
+    echo.debug "Checking for OCTOSCREEN_TASK '$task' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'"
+    if ( dlm=$'\x1F' ; IFS="$dlm" ; [[ "$dlm${OCTOSCREEN_TASKS[*]}$dlm" == *"$dlm${1}$dlm"* ]] ) ; then
+        echo.debug "Found OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'"
+        return 0
+    else
+        echo.debug "task not found"
+    fi
+    return 1
+}
+
+
+function octoscreen.tasks.add(){
+    echo.debug "octoscreen.tasks.add()"
+    [[ -z "$1" ]] && echo.error "Can't add... um...  NO tasks...  Bad dev..." && return 0;
+    OCTOSCREEN_TASKS+=( $1 )
+    echo.debug "New Task List: ${OCTOSCREEN_TASKS[*]}"
+}
+
+
+function octoscreen.dependencies.add(){
+    echo.debug "octoscreen.dependencies.add()";
+    
+    [[ -z "$1" ]] && echo.error "Can't add... um...  NO dependencies...  Bad dev..." && return 0;
+    
+    OCTOSCREEN_DEPENDENCIES+=( $* );
+    echo.debug "New Dependency List: ${OCTOSCREEN_DEPENDENCIES[*]}";
+}
+
+function octoscreen.maybe.usage() {
+    [[ $VERBOSITY_CURRENT -ge $VERBOSITY_ECHO ]] && optparse.usage || echo.fatal "Your verbosity is hiding the default behaviour of the help menu, stupid face.";
+    exit
+}
+
+. <( optparse.build name=$([[ "$DIR" =~ /proc/* ]] && echo '<this>' || basename $0) description="OctoScreen Manager" allow=positional finally=octoscreen.main allow=unrecognized usage_header="${optparse_usage_header} command [command ...] [*.deb]")
