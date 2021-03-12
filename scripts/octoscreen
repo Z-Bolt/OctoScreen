@@ -459,25 +459,21 @@ function octoscreen.task.docker(){
     
     [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] &&
         _quiet='> /dev/null 2>&1';
+
+    echo.notice "Fetching Docker Install Script"
     
-    [[ ! -f $_docker ]] && {
-        
-        echo.notice "Fetching Docker Install Script"
-        
-        local _wget='wget '
-        
-        [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
-            _wget+='-v ';
-        
-        _wget+="-O $_docker get.docker.com $_quiet";
-        
-        echo.debug "Executing WGET (\`$_wget\`)"
-        
-        `$_wget`
-        
-        [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error Fetching (\`$_wget\`)"
-        
-    } || echo.notice "Docker Install Script exists, using that."
+    local _wget='wget '
+    
+    [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
+        _wget+='-v ';
+    
+    _wget+="-O $_docker get.docker.com $_quiet";
+    
+    echo.debug "Executing WGET (\`$_wget\`)"
+    
+    `$_wget`
+    
+    [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error Fetching (\`$_wget\`)"
     
     echo.warn "If this hangs on 'Scanning something something something...' just hit enter, should be good..."
     
