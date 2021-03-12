@@ -20,6 +20,10 @@ EOL
 exit;
 }
 
+[[ ! -f /etc/os-release ]] && echo "ERROR: We kinda need \`/etc/os-release\`, but I couldn't find it.  Proooobably means we don't support your system.  If you believe this is in error, please file a bug report." && exit 1;
+source /etc/os-release
+[[ $ID_LIKE != debian ]] && echo "ERROR: Yeah, no." && exit 1;
+
 REPO="Z-Bolt/OctoScreen"
 MAIN="master"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
@@ -48,7 +52,8 @@ echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e
 
 optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
 optparse.define short=m long=makedir description="Specify a make directory for build" variable='MAKE_DIR' dispatch="octoscreen.tasks.has && echo.fatal 'Provide MakeDir AFTER \'build\' " default=$(pwd)
-optparse.define long='nodep' variable=SKIP_DEPENDENCIES hide flag
+optparse.define short=b long=build description="Build for a specific Release Target [STRETCH|BUSTER|JESSIE]" variable=VERSION_CODENAME default=${VERSION_CODENAME^^} extra=explicit
+optparse.define long='nodep' description="Skip installing Apt Dependencies (DISCOURAGED)" variable=SKIP_DEPENDENCIES flag
 
 optparse.define short=y long=yes description="Auto-Confirm OctoScreen yes/no options" variable=AUTO_YES optional flag default="false"
 #optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag
@@ -337,7 +342,7 @@ function octoscreen.task.build(){
     
     [[ $VERBOSITY_CURRENT -ge $VERBOSITY_INFO ]] && make_command+=' -d'
     
-    make_command+=" build"
+    make_command+=" build DEBIAN_PACKAGES=$VERSION_CODENAME"
     
     [[ $VERBOSITY_CURRENT -lt $VERBOSITY_ECHO ]] && {
         echo.error "We couldn't help but notice you wanted us to be quiet...  UNFORTUNATELY, we can't silence \`make\`, so...  Get ready..."
@@ -405,7 +410,7 @@ function octoscreen.prepare.install(){
         
         list_input "$question" yes_no reinstall
         if [ $reinstall == 'yes' ]; then
-            echo.notice "Excelent! We will removie and re-install OctoScreen."
+            echo.notice "Excelent! We will remove and re-install OctoScreen."
             octoscreen.tasks.add remove
         else
             echo "OctoScreen is already installed, exiting." && exit
@@ -453,6 +458,9 @@ function octoscreen.task.docker(){
 function octoscreen.prepare.build(){
     
     echo.debug "octoscreen.prepare.build()"
+    
+    [[ -z $VERSION_CODENAME ]] && echo.fatal "Unable to determine a Release Target (see --help)"
+    VERSION_CODENAME=${VERSION_CODENAME^^}
     
     [[ -z $MAKE_DIR ]] && echo.fatal "No Make Directory provided"
     [[ -d $MAKE_DIR ]] || echo.fatal "Specified Make Directory is not a directory: $MAKE_DIR"
