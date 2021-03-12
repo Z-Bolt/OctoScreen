@@ -20,8 +20,8 @@ EOL
 exit;
 }
 
-REPO="Z-Bolt/OctoScreen"
-MAIN="master"
+REPO="thebeline/OctoScreen"
+MAIN="me_test"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
 LIBRARIES=("lib/optparse.bash" "lib/inquirer.bash" "lib/verbosity.bash")
 PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
@@ -454,12 +454,20 @@ function octoscreen.prepare.remove(){
 function octoscreen.task.docker(){
     echo "Installing Docker...  This may take a while..."
     
-    local _docker='~/get-docker.sh'
-    local _quiet=''
+    local _curl='curl -fsSL'
     
-    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && _quiet+=' >/dev/null 2>&1'
+    [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] && _curl+='v'
     
-    curl -fsSL get.docker.com -o "$_docker" $_quiet
+    _curl+=' get.docker.com';
+    
+    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && {
+        _curl+=' 2>/dev/null'
+        _docker+=' > /dev/null 2>&1'
+    }
+    
+    echo.debug "Fetching Docker install '$_curl'"
+    
+    _docker=<( $_curl $_quiet )
     
     [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error fetching '$_docker'"
     
@@ -469,7 +477,7 @@ function octoscreen.task.docker(){
     declare -g DOWNLOAD_URL=''
     declare -g REPO_FILE=''
     
-    sh $_docker $_quiet
+    sh $_docker
     
     [[ $? -ne 0 ]] && echo.fatal "Docker Installer exited Unsucessfully."
 }
