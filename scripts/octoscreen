@@ -472,7 +472,7 @@ function octoscreen.task.docker(){
         
         echo.debug "Fetching Docker install '$_curl'"
         
-        $_curl $_quiet
+        $_curl
         
         [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error fetching '$_docker'"
         
