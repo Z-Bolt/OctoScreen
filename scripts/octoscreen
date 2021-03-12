@@ -465,10 +465,10 @@ function octoscreen.task.docker(){
         [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
             _curl+='v';
         
-        _curl+=' get.docker.com';
+        _curl+=' get.docker.com > $_docker';
         
         [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] &&
-            _curl+=' > $_docker 2>/dev/null';
+            _curl+=' 2>/dev/null';
         
         echo.debug "Fetching Docker install '$_curl'"
         
