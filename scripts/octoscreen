@@ -460,7 +460,7 @@ function octoscreen.task.docker(){
         
         echo.notice "Fetching Docker Install Script"
         
-        local _wget='curl -fsSL'
+        local _curl='curl -fsSL'
         
         [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
             _curl+='v';
