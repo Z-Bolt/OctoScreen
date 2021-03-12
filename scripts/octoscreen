@@ -460,19 +460,19 @@ function octoscreen.task.docker(){
         
         echo.notice "Fetching Docker Install Script"
         
-        local _curl='curl -fsSL'
+        local _wget='curl -fsSL'
         
         [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
             _curl+='v';
         
-        _curl+=" get.docker.com";
+        _curl+=" get.docker.com -o $_docker";
         
         [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] &&
             _curl+=' 2>/dev/null';
         
         echo.debug "Executing Curl ($_curl)"
         
-        ( $_curl > $_docker )
+        $_curl
         
         [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error fetching '$_docker'"
         
