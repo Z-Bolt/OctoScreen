@@ -120,7 +120,7 @@ function octoscreen.dependencies.install(){
     
     echo.debug "${dependency_count} dependencies queued to install: ${OCTOSCREEN_DEPENDENCIES[*]}"
     
-    [[ ! -z $SKIP_DEPENDENCIES ]] && echo.notice "Skipping dependencies per user request" && return 0
+    $SKIP_DEPENDENCIES && echo.notice "Skipping dependencies per user request" && return 0
     
     #local _apt_list_installed=()
     #
@@ -190,7 +190,7 @@ function octoscreen.task.install() {
         
         local RELEASE_URL=$(curl -s "$RELEASES" | grep "browser_download_url.$RELEASE_ARCH" | cut -d '"' -f 4);
         
-        [[ -z "$RELEASE_URL" ]] && echo.fatal "Unable to find correct package for your Architecture (${arch})"
+        [[ -z "$RELEASE_URL" ]] && echo.fatal "Unable to find correct package for your Architecture (${SYSTEM_ARCH})"
         
         echo.info "Found matching Package URL: $RELEASE_URL"
         
