@@ -20,8 +20,8 @@ EOL
 exit;
 }
 
-REPO="Z-Bolt/OctoScreen"
-MAIN="master"
+REPO="thebeline/OctoScreen"
+MAIN="me_test"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
 LIBRARIES=("lib/optparse.bash" "lib/inquirer.bash" "lib/verbosity.bash")
 PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
