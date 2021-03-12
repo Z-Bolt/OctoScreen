@@ -470,7 +470,7 @@ function octoscreen.task.docker(){
         [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] &&
             _curl+=' 2>/dev/null';
         
-        echo.debug "Fetching Docker install '$_curl'"
+        echo.debug "Fetching Docker Install Script ($_curl)"
         
         $_curl
         
