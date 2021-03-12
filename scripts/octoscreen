@@ -463,7 +463,7 @@ function octoscreen.task.docker(){
         
         echo.notice "Fetching Docker Install Script"
         
-        local wget='wget '
+        local _wget='wget '
         
         [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
             _wget+='-v ';
