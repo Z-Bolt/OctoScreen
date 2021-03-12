@@ -472,7 +472,7 @@ function octoscreen.task.docker(){
         
         echo.debug "Executing Curl ($_curl)"
         
-        (( $_curl > $_docker ))
+        ( $_curl > $_docker )
         
         [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error fetching '$_docker'"
         
@@ -487,7 +487,7 @@ function octoscreen.task.docker(){
     [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] &&
         _docker+=' > /dev/null 2>&1';
     
-    (( sh $_docker ))
+    ( sh $_docker )
     
     [[ $? -ne 0 ]] && echo.fatal "Docker Installer exited Unsucessfully."
 }
