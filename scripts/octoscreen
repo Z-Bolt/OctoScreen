@@ -470,7 +470,7 @@ function octoscreen.task.docker(){
         
         _curl+=" get.docker.com -o $_docker";
         
-        echo.debug "Executing Curl ($_curl)"
+        echo.debug "Executing Curl (\`$_curl\`)"
         
         `$_curl`
         
@@ -483,6 +483,8 @@ function octoscreen.task.docker(){
     declare -g CHANNEL='stable'
     declare -g DOWNLOAD_URL=''
     declare -g REPO_FILE=''
+    
+    echo.debug "Executing Docker (\`$_docker\`)"
     
     `sh $_docker`
     
