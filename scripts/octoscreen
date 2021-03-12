@@ -453,18 +453,25 @@ function octoscreen.prepare.remove(){
 
 function octoscreen.task.docker(){
     echo "Installing Docker...  This may take a while..."
-    echo.warn "If this hangs on 'Scanning something something something...' just hit enter, should be good..."
     
     local _docker='~/get-docker.sh'
+    local _quiet=''
     
-    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && _docker+=' >/dev/null 2>&1'
+    [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && _quiet+=' >/dev/null 2>&1'
+    
+    curl -fsSL get.docker.com -o $_docker $_quiet
+    
+    [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error fetching '$_docker'"
+    
+    echo.warn "If this hangs on 'Scanning something something something...' just hit enter, should be good..."
     
     declare -g CHANNEL='stable'
     declare -g DOWNLOAD_URL=''
     declare -g REPO_FILE=''
     
-    curl -fsSL get.docker.com -o $_docker
-    sh $_docker
+    sh $_docker $_quiet
+    
+    [[ $? -ne 0 ]] && echo.fatal "Docker Installer exited Unsucessfully."
 }
 
 function octoscreen.prepare.build(){
