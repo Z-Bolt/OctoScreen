@@ -20,8 +20,8 @@ EOL
 exit;
 }
 
-REPO="thebeline/OctoScreen"
-MAIN="me_test"
+REPO="Z-Bolt/OctoScreen"
+MAIN="master"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
 LIBRARIES=("lib/optparse.bash" "lib/inquirer.bash" "lib/verbosity.bash")
 PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
@@ -459,7 +459,7 @@ function octoscreen.task.docker(){
     
     [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] && _quiet+=' >/dev/null 2>&1'
     
-    curl -fsSL get.docker.com -o $_docker $_quiet
+    curl -fsSL get.docker.com -o "$_docker" $_quiet
     
     [[ $? -ne 0 || ! -f $_docker ]] && echo.fatal "Error fetching '$_docker'"
     
