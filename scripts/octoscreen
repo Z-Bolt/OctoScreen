@@ -20,10 +20,6 @@ EOL
 exit;
 }
 
-[[ ! -f /etc/os-release ]] && echo "ERROR: We kinda need \`/etc/os-release\`, but I couldn't find it.  Proooobably means we don't support your system.  If you believe this is in error, please file a bug report." && exit 1;
-source /etc/os-release
-[[ $ID_LIKE != debian ]] && echo "ERROR: Yeah, no." && exit 1;
-
 REPO="Z-Bolt/OctoScreen"
 MAIN="master"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
@@ -51,12 +47,12 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
 echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" ]] && { SOURCE_FILE="$DIR/$LIBRARY"; } || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }; [[ -z "$SOURCE_FILE" ]] && { echo -en "${CL}Fetching '{$LIBRARY}'..."; source <(curl -s -L "$WGET_RAW/scripts/$LIBRARY"); [[ $? -ne 0 ]] && { echo " ERROR Fetching dependency '$LIBRARY'!"; exit 1; } || { echo ' SUCCESS'; continue; }; }; echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source <(cat "$SOURCE_FILE"); [[ $? -ne 0 ]] && { echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; } || { echo ' SUCCESS'; }; done; echo -en "${CL}${CL}";
 
 optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
-optparse.define short=m long=makedir description="Specify a make directory for build" variable='MAKE_DIR' dispatch="octoscreen.tasks.has && echo.fatal 'Provide MakeDir AFTER \'build\' " default=$(pwd)
-optparse.define short=b long=build description="Build for a specific Release Target [STRETCH|BUSTER|JESSIE]" variable=VERSION_CODENAME default=${VERSION_CODENAME^^} extra=explicit
-optparse.define long='nodep' description="Skip installing Apt Dependencies (DISCOURAGED)" variable=SKIP_DEPENDENCIES flag
+optparse.define short=b long=build description="Specify a make directory for build" variable='MAKE_DIR' dispatch="octoscreen.tasks.has build || echo.fatal \"Specify MakeDir AFTER 'build'\"; #" default=$(pwd)
+optparse.define short=r long=release description="Release Target [STRETCH|BUSTER|JESSIE]" dispatch="octoscreen.tasks.has build || echo.fatal \"Specify Release Target AFTER 'build'\"; #" variable=VERSION_CODENAME default=${VERSION_CODENAME^^} extra=explicit
+optparse.define long=nodep description="Skip installing Apt Dependencies (DISCOURAGED)" variable=SKIP_DEPENDENCIES flag default="false"
 
 optparse.define short=y long=yes description="Auto-Confirm OctoScreen yes/no options" variable=AUTO_YES optional flag default="false"
-#optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag
+optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag default="false"
 
 optparse.define.single name="install" description="Install/Upgrade OctoScreen" dispatch="octoscreen.tasks.add install"
 optparse.define.single name="remove" description="Remove OctoScreen" dispatch="octoscreen.tasks.add remove"
@@ -72,6 +68,17 @@ echo.verbosity.init_optparse 0
 function octoscreen.main(){ #Called after all args are parsed
     
     local _task_order="docker build lcd remove install"
+    
+    [[ -f /etc/os-release ]] && {
+        source /etc/os-release
+    } || {
+        $AUTO_FORCE || echo "ERROR: We kinda need \`/etc/os-release\`, but I couldn't find it.  Proooobably means we don't support your system.  If you believe this is in error, please file a bug report." && exit 1;
+    };
+    
+    $AUTO_FORCE || {
+        [[ $ID_LIKE != debian ]] && echo "ERROR: Yeah, no." && exit 1
+    };
+    
     
     [[ -z "${OCTOSCREEN_TASKS[@]}" ]] && echo.error "Nothing to do. Please give me a purpose in life...  I BEG YOU" && octoscreen.maybe.usage;
     
@@ -158,7 +165,7 @@ function octoscreen.dependencies.install(){
     echo.notice "Executing \`$apt update\`"
     sudo $apt update
     
-    [[ ! -z $AUTO_YES ]] && apt+=' -y'
+    $AUTO_YES && apt+=' -y'
     
     echo.notice "Executing \`$apt install ${OCTOSCREEN_DEPENDENCIES[*]}\`"
     sudo $apt install ${OCTOSCREEN_DEPENDENCIES[*]}
@@ -215,7 +222,9 @@ function octoscreen.task.install() {
     else
         echo.warn "Unable to determine the OctoScreen Version and Architecture from file: $deb_name"
         OCTOSCREEN_DEB_VERSION=unknown
-        list_input "The Package version and Release Architecture were unable to be determined, this may not end well.  Would you like to continue?" yes_no force
+        $AUTO_FORCE &&
+            local force="yes" ||
+            list_input "The Package version and Release Architecture were unable to be determined, this may not end well.  Would you like to continue?" yes_no force;
         if [ $force == 'yes' ]; then
             echo.warn "We will continue with installation, god speed."
             SYSTEM_ARCH=unknown
@@ -307,7 +316,10 @@ function octoscreen.task.install() {
     }
     
     #? Maybe other tasks?
-    list_input "Shall I reboot your Pi now?" yes_no reboot
+    $AUTO_YES &&
+        local reboot="yes" ||
+        list_input "Shall I reboot your Pi now?" yes_no reboot;
+    
     if [ $reboot == 'yes' ]; then
         echo "Your system will now reboot!"
         sudo reboot
@@ -323,16 +335,17 @@ function octoscreen.task.install() {
 function octoscreen.task.build(){
     echo.debug "octoscreen.prepare.build()"
     
+    local _start=$SECONDS
+    
     [[ ! -z $OCTOSCREEN_DEB ]] && echo.error "Just so you know, we don't support outputting the build to a specific file, so, we won't be changing OCTOSCREEN_DEB ($OCTOSCREEN_DEB), this may mess with your install."
     
     ( grep 'PACKAGE_NAME = octoscreen' "$MAKE_DIR/Makefile" >/dev/null 2>&1 ) &&
-        echo.debug "Buildign with Source Directory ($MAKE_DIR)" ||
+        echo.debug "Building with Source Directory ($MAKE_DIR)" ||
         echo.fatal "Make File does not seem to be for OctoScreen";
     
     [[ -d $MAKE_DIR/build ]] && {
         echo.notice "Clearing the existing \`build\` directory ($MAKE_DIR/build)"
-        echo.info "Pausing for 5 seconds..."
-        sleep 5
+        $AUTO_YES || echo.info "Pausing for 5 seconds... (press [enter] to continue)" && read -t 5;
         sudo rm -rf "$MAKE_DIR/build"
     }
     
@@ -353,9 +366,7 @@ function octoscreen.task.build(){
     
     echo "Building OctoScreen, this may take a bit."
     
-    echo.notice "Sleeping for 5 seconds, incase you want to abort..."
-    
-    sleep 5
+    $AUTO_YES || echo.info "Pausing for 5 seconds... (press [enter] to continue)" && read -t 5;
     
     sudo $make_command
     
@@ -363,7 +374,7 @@ function octoscreen.task.build(){
         echo.fatal "Make exited unsuccessfully!";
     }
     
-    echo.notice "Build Complete!"
+    echo.notice "Build Complete! ($(octoscreen.timer $_start))"
     
     BUILT_DEB=$(find $MAKE_DIR/build/ -name "*.deb" -print0 | xargs -r -0 ls -1 -t | head -1)
     
@@ -400,15 +411,16 @@ function octoscreen.set.deb(){
 function octoscreen.prepare.install(){
     echo.debug "octoscreen.prepare.install()"
     
-    local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
+    #local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
     
-    echo.notice "Checking to see if OctoScreen is already installed..."
+    echo.notice "Checking if we can install, or if we need to re-install..."
     
     ( $OCTOSCREEN_INSTALLED && ! octoscreen.tasks.has remove ) && {
         
-        local question="OctoScreen is already installed. Would you like to re-install it?"
+        $AUTO_FORCE &&
+            local reinstall="yes" ||
+            list_input "OctoScreen is already installed. Would you like to re-install it?" yes_no reinstall;
         
-        list_input "$question" yes_no reinstall
         if [ $reinstall == 'yes' ]; then
             echo.notice "Excelent! We will remove and re-install OctoScreen."
             octoscreen.tasks.add remove
@@ -498,12 +510,21 @@ function octoscreen.handle.unknown(){
 
 ### Utility Functions
 
+function octoscreen.timer(){
+    local seconds=$1
+    let "seconds=SECONDS-seconds"
+    let "hours=seconds/3600"
+    let "minutes=(seconds%3600)/60"
+    let "seconds=(seconds%3600)%60"
+    printf "%02d:%02d:%02d" $hours $minutes $seconds
+}
+
 function octoscreen.tasks.do(){
     echo.debug "octoscreen.tasks.do($*)"
     
     local did_a_thing=false
     
-    [[ -z "$2" ]] && echo.fatal "Task execution requies at least an action AND a task to take it on" && return 1;
+    [[ -z "$2" ]] && echo.fatal "Task execution requies an action and atgleast one task to take it on" && return 1;
     [[ -z "$OCTOSCREEN_TASKS" ]] && echo.debug "There are, like, NO tasks, so...  Nothing to do." && return 1;
     
     local do="$1"; shift;
@@ -537,13 +558,17 @@ function octoscreen.tasks.has(){
     echo.debug "octoscreen.tasks.has($1)"
     [[ -z "$1" ]] && echo.error "You can't search for nothing, that's bad, m'kay?" && return 1;
     [[ -z "$OCTOSCREEN_TASKS" ]] && echo.debug "There are, like, NO tasks, so...  Nothing to do." && return 1;
-    echo.debug "Checking for OCTOSCREEN_TASK '$task' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'"
+    echo.debug "Checking for OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[*]}'"
+    local _IFS=$IFS
     if ( dlm=$'\x1F' ; IFS="$dlm" ; [[ "$dlm${OCTOSCREEN_TASKS[*]}$dlm" == *"$dlm${1}$dlm"* ]] ) ; then
-        echo.debug "Found OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[@]}'";
+        IFS=$_IFS
+        echo.debug "Found OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[*]}'";
         return 0;
     else
+        IFS=$_IFS
         echo.debug "task not found";
     fi
+    IFS=$_IFS
     return 1
 }
 
@@ -598,4 +623,4 @@ function echo.chatty(){
     echo -e "$message"
 }
 
-. <( optparse.build name=$([[ "$DIR" =~ /proc/* ]] && echo '<this>' || basename $0) description="OctoScreen Manager" allow=positional finally=octoscreen.main allow=unrecognized usage_header="${optparse_usage_header} command [command ...] [*.deb]")
+. <( optparse.build name=$([[ "$DIR" =~ /proc/* ]] && echo '<this>' || basename $0) description="OctoScreen Manager" finally=octoscreen.main usage_header="${optparse_usage_header} command [command ...] [*.deb]")
