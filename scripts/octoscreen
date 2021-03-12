@@ -19,7 +19,7 @@ EOL
 } || echo.error "Can't display License when quiet..."
 exit;
 }
-
+_IFS=$IFS
 REPO="thebeline/OctoScreen"
 MAIN="me_test"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
@@ -454,10 +454,11 @@ function octoscreen.prepare.remove(){
 function octoscreen.task.docker(){
     echo "Installing Docker...  This may take a while..."
     
-    local _docker="~/get_docker.sh"
+    local _docker=$(mktemp)
+    local _quiet=''
     
     [[ $VERBOSITY_CURRENT -lt $VERBOSITY_NOTICE ]] &&
-        _docker+=' > /dev/null 2>&1';
+        _quiet='> /dev/null 2>&1';
     
     [[ ! -f $_docker ]] && {
         
@@ -468,7 +469,7 @@ function octoscreen.task.docker(){
         [[ $VERBOSITY_CURRENT -ge $VERBOSITY_DEBUG ]] &&
             _wget+='-v ';
         
-        _wget+="get.docker.com -O $_docker";
+        _wget+="-O $_docker get.docker.com $_quiet";
         
         echo.debug "Executing WGET (\`$_wget\`)"
         
@@ -484,14 +485,15 @@ function octoscreen.task.docker(){
     declare -g DOWNLOAD_URL=''
     declare -g REPO_FILE=''
     
-    echo.debug "Executing Docker (\`$_docker\`)"
+    echo.debug "Executing Docker (\`$_docker $_quiet\`)"
     
-    `sh $_docker`
+    sh $_docker $_quiet
     
     [[ $? -ne 0 ]] && echo.fatal "Docker Installer exited Unsucessfully."
 }
 
 function octoscreen.prepare.build(){
+    IFS=$_IFS
     
     echo.debug "octoscreen.prepare.build()"
     
@@ -583,7 +585,6 @@ function octoscreen.tasks.has(){
     [[ -z "$1" ]] && echo.error "You can't search for nothing, that's bad, m'kay?" && return 1;
     [[ -z "$OCTOSCREEN_TASKS" ]] && echo.debug "There are, like, NO tasks, so...  Nothing to do." && return 1;
     echo.debug "Checking for OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[*]}'"
-    local _IFS=$IFS
     if ( dlm=$'\x1F' ; IFS="$dlm" ; [[ "$dlm${OCTOSCREEN_TASKS[*]}$dlm" == *"$dlm${1}$dlm"* ]] ) ; then
         IFS=$_IFS
         echo.debug "Found OCTOSCREEN_TASK '$1' in OCTOSCREEN_TASKS '${OCTOSCREEN_TASKS[*]}'";
