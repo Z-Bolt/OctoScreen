@@ -45,6 +45,10 @@ if [ "$1" = configure ] && [ -d /etc/systemd/system/ ]; then
   fi
 fi
 
+# Install the octoscreen CLI
+if [ "$1" = configure ] && [ -d /usr/local/bin/ ]; then
+  ln -sf /etc/octoscreen/scripts/octoscreen /usr/local/bin/octoscreen
+fi
 db_stop || true
 
 #DEBHELPER#
