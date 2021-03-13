@@ -8,14 +8,16 @@ import (
 	// "path"
 	// "runtime"
 	"strings"
+	"sync"
 	// "time"
 
 	"github.com/sirupsen/logrus"
 )
 
 
-var _indentLevel int
-var _indentation string
+var _mutex *sync.RWMutex = nil
+var _indentLevel int = -1
+var _indentation string = ""
 const INDENTATION_TOKEN = "    "
 const INDENTATION_TOKEN_LENGTH = 4
 
@@ -26,6 +28,8 @@ var _strLogLevel string
 
 
 func init() {
+	_mutex = &sync.RWMutex {}
+
 	_indentLevel = 0
 	_indentation = ""
 
@@ -51,7 +55,7 @@ func init() {
 			_logrusLogger.Out = io.MultiWriter(os.Stdout, file)
 			logrus.SetOutput(_logrusLogger.Out)
 		} else {
-			standardLog.Printf("logger.init() - OpenFile() FAILED!  err is: %s", err.Error)
+			standardLog.Printf("logger.init() - OpenFile() FAILED!  err is: %s", err.Error())
 			standardLog.Print("Failed to open the log file, defaulting to use the standard console output.")
 			_logrusLogger.Out = os.Stdout
 		}
@@ -62,6 +66,21 @@ func init() {
 	// Start off with the logging level set to debug until we get a chance to read the configuration settings.
 	SetLogLevel(logrus.DebugLevel)
 }
+
+func readIndentation() string {
+	_mutex.RLock()
+	var indentation = _indentation
+	_mutex.RUnlock()
+
+	return indentation
+}
+
+func writeIndentation(indentation string) {
+	_mutex.Lock()
+	_indentation = indentation
+	_mutex.Unlock()
+}
+
 
 func SetLogLevel(newLevel logrus.Level) {
 	_logLevel = newLevel
@@ -78,77 +97,82 @@ func LogLevel() string {
 
 
 func TraceEnter(functionName string) {
-	message := fmt.Sprintf("%sentering %s", _indentation, functionName)
+	message := fmt.Sprintf("%sentering %s", readIndentation(), functionName)
 	_logrusEntry.Debug(message)
 	_indentLevel++
-	_indentation += INDENTATION_TOKEN
+	indentation := readIndentation() + INDENTATION_TOKEN
+	writeIndentation(indentation)
 }
 
 func TraceLeave(functionName string) {
 	_indentLevel--
-	_indentation = _indentation[:(_indentLevel * INDENTATION_TOKEN_LENGTH)]
-	message := fmt.Sprintf("%sleaving %s", _indentation, functionName)
+
+	indentation := readIndentation()
+	indentation = indentation[:(_indentLevel * INDENTATION_TOKEN_LENGTH)]
+	writeIndentation(indentation)
+
+	message := fmt.Sprintf("%sleaving %s", readIndentation(), functionName)
 	_logrusEntry.Debug(message)
 }
 
 
 func LogError(currentFunctionName, functionCalledName string, err error) {
 	if err != nil {
-		_logrusEntry.Errorf("%s%s - %s returned an error: %q", _indentation, currentFunctionName, functionCalledName, err)
+		_logrusEntry.Errorf("%s%s - %s returned an error: %q", readIndentation(), currentFunctionName, functionCalledName, err)
 	} else {
-		_logrusEntry.Errorf("%s%s - %s returned an error", _indentation, currentFunctionName, functionCalledName)
+		_logrusEntry.Errorf("%s%s - %s returned an error", readIndentation(), currentFunctionName, functionCalledName)
 	}
 }
 
 func LogFatalError(currentFunctionName, functionCalledName string, err error) {
 	if err != nil {
-		_logrusEntry.Fatalf("%s%s - %s returned an error: %q", _indentation, currentFunctionName, functionCalledName, err)
+		_logrusEntry.Fatalf("%s%s - %s returned an error: %q", readIndentation(), currentFunctionName, functionCalledName, err)
 	} else {
-		_logrusEntry.Fatalf("%s%s - %s returned an error", _indentation, currentFunctionName, functionCalledName)
+		_logrusEntry.Fatalf("%s%s - %s returned an error", readIndentation(), currentFunctionName, functionCalledName)
 	}
 }
 
 
 func Debug(args ...interface{}) {
-	_logrusEntry.Debug(_indentation + fmt.Sprint(args...))
+	_logrusEntry.Debug(readIndentation() + fmt.Sprint(args...))
 }
 
 func Debugf(format string, args ...interface{}) {
-	_logrusEntry.Debugf(_indentation + format, args...)
+	_logrusEntry.Debugf(readIndentation() + format, args...)
 }
 
 
 func Info(args ...interface{}) {
-	_logrusEntry.Info(_indentation + fmt.Sprint(args...))
+	_logrusEntry.Info(readIndentation() + fmt.Sprint(args...))
 }
 
 func Infof(format string, args ...interface{}) {
-	_logrusEntry.Infof(_indentation + format, args...)
+	_logrusEntry.Infof(readIndentation() + format, args...)
 }
 
 
 func Warn(args ...interface{}) {
-	_logrusEntry.Warn(_indentation + fmt.Sprint(args...))
+	_logrusEntry.Warn(readIndentation() + fmt.Sprint(args...))
 }
 
 func Warnf(format string, args ...interface{}) {
-	_logrusEntry.Warnf(_indentation + format, args...)
+	_logrusEntry.Warnf(readIndentation() + format, args...)
 }
 
 
 func Error(args ...interface{}) {
-	_logrusEntry.Error(_indentation + fmt.Sprint(args...))
+	_logrusEntry.Error(readIndentation() + fmt.Sprint(args...))
 }
 
 func Errorf(format string, args ...interface{}) {
-	_logrusEntry.Errorf(_indentation + format, args...)
+	_logrusEntry.Errorf(readIndentation() + format, args...)
 }
 
 
 func Fatal(args ...interface{}) {
-	_logrusEntry.Fatal(_indentation + fmt.Sprint(args...))
+	_logrusEntry.Fatal(readIndentation() + fmt.Sprint(args...))
 }
 
 func Fatalf(format string, args ...interface{}) {
-	_logrusEntry.Fatalf(_indentation + format, args...)
+	_logrusEntry.Fatalf(readIndentation() + format, args...)
 }
