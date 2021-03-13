@@ -16,12 +16,15 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
+
 var filesPanelInstance *filesPanel
 
 type filesPanel struct {
 	CommonPanel
 
 	listBox				*gtk.Box
+	refreshButton		*gtk.Button
+	backButton			*gtk.Button
 	locationHistory		utils.LocationHistory
 }
 
@@ -61,7 +64,7 @@ func (this *filesPanel) initialize() {
 	this.doLoadFiles()
 }
 
-func (this *filesPanel) createActionFooter() gtk.IWidget {
+func (this *filesPanel) createActionFooter() *gtk.Box {
 	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actionBar.SetHAlign(gtk.ALIGN_END)
 	actionBar.SetHExpand(true)
@@ -69,18 +72,21 @@ func (this *filesPanel) createActionFooter() gtk.IWidget {
 	actionBar.SetMarginBottom(5)
 	actionBar.SetMarginEnd(5)
 
-	actionBar.Add(this.createRefreshButton())
-	actionBar.Add(this.createBackButton())
+	this.refreshButton = this.createRefreshButton()
+	actionBar.Add(this.refreshButton)
+
+	this.backButton = this.createBackButton()
+	actionBar.Add(this.backButton)
 
 	return actionBar
 }
 
-func (this *filesPanel) createRefreshButton() gtk.IWidget {
+func (this *filesPanel) createRefreshButton() *gtk.Button {
 	image := utils.MustImageFromFileWithSize("refresh.svg", this.Scaled(40), this.Scaled(40))
 	return utils.MustButton(image, this.doLoadFiles)
 }
 
-func (this *filesPanel) createBackButton() gtk.IWidget {
+func (this *filesPanel) createBackButton() *gtk.Button {
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
 	return utils.MustButton(image, func() {
 		if this.locationHistory.Length() < 1 {
@@ -98,21 +104,28 @@ func (this *filesPanel) createBackButton() gtk.IWidget {
 func (this *filesPanel) doLoadFiles() {
 	utils.EmptyTheContainer(&this.listBox.Container)
 
-	sortedFiles := this.getSortedFiles()
-	if sortedFiles == nil {
+	if this.displayRootLocations() {
 		this.addRootLocations()
 	} else {
+		sortedFiles := this.getSortedFiles()
 		this.addSortedFiles(sortedFiles)
 	}
 
 	this.listBox.ShowAll()
 }
 
+func (this *filesPanel) displayRootLocations() bool {
+	if this.locationHistory.Length() < 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 	var files []*dataModels.FileResponse
 
-	length := this.locationHistory.Length()
-	if length < 1 {
+	if this.displayRootLocations() {
 		return nil
 	}
 
