@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -65,6 +66,55 @@ func init() {
 
 
 func main() {
+	defer func() {
+		standardLog.Println("main's defer() was called, now calling recover()")
+		rec := recover();
+		if rec != nil {
+			standardLog.Println("main's defer() - recover:", rec)
+		} else {
+			standardLog.Println("main's defer() - recover was nil")
+		}
+
+		var ms runtime.MemStats
+		runtime.ReadMemStats(&ms)
+
+		/*
+		programCounter, fileName, lineNumber, infoWasRecovered := runtime.Caller(2)
+		standardLog.Println("main's defer() - programCounter:", programCounter)
+		standardLog.Println("main's defer() - fileName:", fileName)
+		standardLog.Println("main's defer() - lineNumber:", lineNumber)
+		standardLog.Println("main's defer() - infoWasRecovered:", infoWasRecovered)
+		*/
+
+		pc := make([]uintptr, 20)
+		numberOfPcEntries := runtime.Callers(0, pc)
+		if numberOfPcEntries > 10 {
+			numberOfPcEntries = 10
+		}
+
+		for i := 1; i < numberOfPcEntries; i++ {
+			/*
+			standardLog.Printf("main's defer() - [%d]", i)
+			standardLog.Printf("main's defer() - [%d]", numberOfPcEntries)
+
+			programCounter, fileName, lineNumber, infoWasRecovered := runtime.Caller(i)
+			standardLog.Printf("main's defer() - programCounter[%d]: %v", i, programCounter)
+			standardLog.Printf("main's defer() - fileName[%d]: %v", i, fileName)
+			standardLog.Printf("main's defer() - lineNumber[%d]: %v", i, lineNumber)
+			standardLog.Printf("main's defer() - infoWasRecovered[%d]: %v", i, infoWasRecovered)
+			standardLog.Println("")
+			*/
+
+			_, fileName, lineNumber, infoWasRecovered := runtime.Caller(i)
+			if infoWasRecovered {
+				standardLog.Printf("main's defer() - [%d] %s, line %d", i, fileName, lineNumber)
+			}
+		}
+
+		standardLog.Println("main's defer() was called, now exiting func()")
+	}()
+
+
 	logger.Debug("+")
 	logger.Debug("+")
 	logger.TraceEnter("OctoScreen - main.main()")
