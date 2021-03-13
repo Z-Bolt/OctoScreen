@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
@@ -131,6 +132,20 @@ func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 
 	current := this.locationHistory.CurrentLocation()
 	logger.Infof("Loading list of files from: %s", string(current))
+
+	if current == dataModels.SDCard {
+		sdRefreshRequest := &octoprintApis.SdRefreshRequest {}
+		err := sdRefreshRequest.Do(this.UI.Client)
+		if err != nil {
+			logger.LogError("getSortedFiles()", "sdRefreshRequest.Do()", err)
+			return []*dataModels.FileResponse{}
+		} else {
+			// Pause here for a second, because the preceding call to filesRequest.Do()
+			// doesn't work, and it returns a truncated list of files.  Pausing here
+			// for a second seems to resolve the issue.
+			time.Sleep(1 * time.Second)
+		}
+	}
 
 	filesRequest := &octoprintApis.FilesRequest {
 		Location: current,
