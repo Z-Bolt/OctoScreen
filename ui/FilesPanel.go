@@ -245,7 +245,7 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 	topBox.Add(actionBox)
 
 	rootLocationButton, _ := gtk.ButtonNew()
-	rootLocationButton.Connect("clicked", handleRootLocationClick)
+	rootLocationButton.Connect("clicked", this.handleRootLocationClick)
 	rootLocationButton.Add(topBox)
 
 	return rootLocationButton
