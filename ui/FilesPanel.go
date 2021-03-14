@@ -90,25 +90,23 @@ func (this *filesPanel) createRefreshButton() *gtk.Button {
 
 func (this *filesPanel) createBackButton() *gtk.Button {
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
-	return utils.MustButton(image, func() {
-		if this.locationHistory.Length() < 1 {
-			this.UI.GoToPreviousPanel()
-		} else if this.locationHistory.IsRoot() {
-			this.locationHistory.GoBack()
-			this.doLoadFiles()
-		} else {
-			this.locationHistory.GoBack()
-			this.doLoadFiles()
-		}
-	})
+	return utils.MustButton(image, this.goBack)
 }
 
 func (this *filesPanel) doLoadFiles() {
 	utils.EmptyTheContainer(&this.listBox.Container)
 
-	if this.displayRootLocations() {
-		this.addRootLocations()
-	} else {
+	if this.isRoot() {
+		if this.refreshSD() {
+			this.addRootLocations()
+		} else {
+			this.locationHistory = utils.LocationHistory {
+				Locations: []dataModels.Location{dataModels.Local},
+			}
+		}
+	}
+	
+	if !this.isRoot() {
 		sortedFiles := this.getSortedFiles()
 		this.addSortedFiles(sortedFiles)
 	}
@@ -116,7 +114,32 @@ func (this *filesPanel) doLoadFiles() {
 	this.listBox.ShowAll()
 }
 
-func (this *filesPanel) displayRootLocations() bool {
+func (this *filesPanel) refreshSD() bool {
+	sdResponse, err := (&octoprintApis.SdRefreshRequest {}).Do(this.UI.Client)
+	if err == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (this *filesPanel) goBack() {
+	if this.isRoot() {
+		this.UI.GoToPreviousPanel()
+	} else if this.locationHistory.IsRoot() {
+		this.locationHistory.GoBack()
+		if this.refreshSD() {
+			this.doLoadFiles()
+		} else {
+			this.UI.GoToPreviousPanel()
+		}
+	} else {
+		this.locationHistory.GoBack()
+		this.doLoadFiles()
+	}
+}
+
+func (this *filesPanel) isRoot() bool {
 	if this.locationHistory.Length() < 1 {
 		return true
 	} else {
@@ -127,7 +150,7 @@ func (this *filesPanel) displayRootLocations() bool {
 func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 	var files []*dataModels.FileResponse
 
-	if this.displayRootLocations() {
+	if this.isRoot() {
 		return nil
 	}
 
