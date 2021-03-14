@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/coreos/go-systemd/daemon"
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
@@ -244,17 +245,22 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 	topBox.Add(actionBox)
 
 	rootLocationButton, _ := gtk.ButtonNew()
-	rootLocationButton.Connect("clicked", func() {
-		this.locationHistory = utils.LocationHistory {
-			Locations: []dataModels.Location{location},
-		}
-
-		this.doLoadFiles()
-	})
-
+	rootLocationButton.Connect("clicked", handleRootLocationClick)
 	rootLocationButton.Add(topBox)
 
 	return rootLocationButton
+}
+
+func (this *filesPanel) handleRootLocationClick() {
+	this.sdNotify(daemon.SdNotifyWatchdog)
+
+	this.locationHistory = utils.LocationHistory {
+		Locations: []dataModels.Location{location},
+	}
+
+	this.doLoadFiles()
+
+	this.sdNotify(daemon.SdNotifyReady)
 }
 
 func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
