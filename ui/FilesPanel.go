@@ -245,22 +245,21 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 	topBox.Add(actionBox)
 
 	rootLocationButton, _ := gtk.ButtonNew()
-	rootLocationButton.Connect("clicked", this.handleRootLocationClick)
+	rootLocationButton.Connect("clicked", func() {
+		this.sdNotify(daemon.SdNotifyWatchdog)
+
+		this.locationHistory = utils.LocationHistory {
+			Locations: []dataModels.Location{location},
+		}
+
+		this.doLoadFiles()
+
+		this.sdNotify(daemon.SdNotifyReady)
+	})
+
 	rootLocationButton.Add(topBox)
 
 	return rootLocationButton
-}
-
-func (this *filesPanel) handleRootLocationClick() {
-	this.sdNotify(daemon.SdNotifyWatchdog)
-
-	this.locationHistory = utils.LocationHistory {
-		Locations: []dataModels.Location{location},
-	}
-
-	this.doLoadFiles()
-
-	this.sdNotify(daemon.SdNotifyReady)
 }
 
 func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
