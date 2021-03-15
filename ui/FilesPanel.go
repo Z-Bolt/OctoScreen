@@ -115,7 +115,7 @@ func (this *filesPanel) doLoadFiles() {
 }
 
 func (this *filesPanel) refreshSD() bool {
-	sdResponse, err := (&octoprintApis.SdRefreshRequest {}).Do(this.UI.Client)
+	err := (&octoprintApis.SdRefreshRequest {}).Do(this.UI.Client)
 	if err == nil {
 		return true
 	} else {
