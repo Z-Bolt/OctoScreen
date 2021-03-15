@@ -51,6 +51,7 @@ func FilesPanel(
 }
 
 func (this *filesPanel) initialize() {
+	logger.Info("Begin (*filesPanel).initialize()")
 	this.listBox = utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	this.listBox.SetVExpand(true)
 
@@ -64,6 +65,7 @@ func (this *filesPanel) initialize() {
 	this.Grid().Add(box)
 
 	this.doLoadFiles()
+	logger.Info("End (*filesPanel).initialize()")
 }
 
 func (this *filesPanel) createActionFooter() *gtk.Box {
@@ -94,12 +96,16 @@ func (this *filesPanel) createBackButton() *gtk.Button {
 }
 
 func (this *filesPanel) doLoadFiles() {
+	logger.Info("Begin (*filesPanel).doLoadFiles()")
 	utils.EmptyTheContainer(&this.listBox.Container)
 
 	if this.isRoot() {
+		logger.Info("Determined True (*filesPanel).isRoot()")
 		if this.refreshSD() {
+			logger.Info("Determined True (*filesPanel).refreshSD()")
 			this.addRootLocations()
 		} else {
+			logger.Info("Determined False (*filesPanel).refreshSD()")
 			this.locationHistory = utils.LocationHistory {
 				Locations: []dataModels.Location{dataModels.Local},
 			}
@@ -107,11 +113,13 @@ func (this *filesPanel) doLoadFiles() {
 	}
 	
 	if !this.isRoot() {
+		logger.Info("Determined False (*filesPanel).isRoot()")
 		sortedFiles := this.getSortedFiles()
 		this.addSortedFiles(sortedFiles)
 	}
 
 	this.listBox.ShowAll()
+	logger.Info("End (*filesPanel).doLoadFiles()")
 }
 
 func (this *filesPanel) refreshSD() bool {
