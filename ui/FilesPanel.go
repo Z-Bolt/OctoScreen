@@ -96,16 +96,16 @@ func (this *filesPanel) createBackButton() *gtk.Button {
 }
 
 func (this *filesPanel) doLoadFiles() {
-	logger.Info("Begin (*filesPanel).doLoadFiles()")
+	logger.Infof("Begin (*filesPanel).doLoadFiles(%s)", "nb")
 	utils.EmptyTheContainer(&this.listBox.Container)
 
 	if this.isRoot() {
-		logger.Info("Determined True (*filesPanel).isRoot()")
+		logger.Infof("Determined True (*filesPanel).isRoot(%s)", "nb")
 		if this.refreshSD() {
-			logger.Info("Determined True (*filesPanel).refreshSD()")
+			logger.Infof("Determined True (*filesPanel).refreshSD(%s)", "nb")
 			this.addRootLocations()
 		} else {
-			logger.Info("Determined False (*filesPanel).refreshSD()")
+			logger.Infof("Determined False (*filesPanel).refreshSD(%s)", "nb")
 			this.locationHistory = utils.LocationHistory {
 				Locations: []dataModels.Location{dataModels.Local},
 			}
@@ -113,13 +113,13 @@ func (this *filesPanel) doLoadFiles() {
 	}
 	
 	if !this.isRoot() {
-		logger.Info("Determined False (*filesPanel).isRoot()")
+		logger.Infof("Determined False (*filesPanel).isRoot()", "nb")
 		sortedFiles := this.getSortedFiles()
 		this.addSortedFiles(sortedFiles)
 	}
 
 	this.listBox.ShowAll()
-	logger.Info("End (*filesPanel).doLoadFiles()")
+	logger.Infof("End (*filesPanel).doLoadFiles()", "nb")
 }
 
 func (this *filesPanel) refreshSD() bool {
