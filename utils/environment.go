@@ -26,14 +26,15 @@ const (
 	EnvLogFilePath = "OCTOSCREEN_LOG_FILE_PATH"
 	EnvResolution  = "OCTOSCREEN_RESOLUTION"
 	EnvConfigFile  = "OCTOPRINT_CONFIG_FILE"
+	EnvAutoReconnect = "OCTOPRINT_AUTO_RECONNECT"
 )
 
 func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
-	if( !environmentVariableIsSet(EnvStylePath) ) {
+	if( !EnvironmentVariableIsSet(EnvStylePath) ) {
 		return false
 	}
 
-	if( !environmentVariableIsSet(EnvBaseURL) ) {
+	if( !EnvironmentVariableIsSet(EnvBaseURL) ) {
 		return false
 	}
 
@@ -45,7 +46,7 @@ func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
 	// and due to GoLang's rules, /main/utils doesn't have access to globals in /main,
 	// so APIKey has to be passed into RequiredEnvironmentVariablesAreSet().
 	//
-	// if( !environmentVariableIsSet(EnvAPIKey) ) {
+	// if( !EnvironmentVariableIsSet(EnvAPIKey) ) {
 	// 	return false
 	// }
 	if apiKey == "" {
@@ -55,16 +56,16 @@ func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
 	return true
 }
 
-func environmentVariableIsSet(environmentVariable string) bool {
+func EnvironmentVariableIsSet(environmentVariable string) bool {
 	return os.Getenv(environmentVariable) != ""
 }
 
 func NameOfMissingRequiredEnvironmentVariable(apiKey string) string {
-	if( !environmentVariableIsSet(EnvStylePath) ) {
+	if( !EnvironmentVariableIsSet(EnvStylePath) ) {
 		return EnvStylePath
 	}
 
-	if( !environmentVariableIsSet(EnvBaseURL) ) {
+	if( !EnvironmentVariableIsSet(EnvBaseURL) ) {
 		return EnvBaseURL
 	}
 
@@ -72,7 +73,7 @@ func NameOfMissingRequiredEnvironmentVariable(apiKey string) string {
 	// Since the runtime value of APIKey is set in main.init(), and can be set by either
 	// being defined in OctoScreen's config file or in OctoPrint's config file,
 	// the value needs to be passed into NameOfMissingRequiredEnvironmentVariable().
-	// if( !environmentVariableIsSet(EnvAPIKey) ) {
+	// if( !EnvironmentVariableIsSet(EnvAPIKey) ) {
 	// 	return EnvAPIKey
 	// }
 	if apiKey == "" {
@@ -110,6 +111,7 @@ func DumpEnvironmentVariables() {
 	dumpEnvironmentVariable(EnvLogFilePath)
 	dumpEnvironmentVariable(EnvLogLevel)
 	dumpEnvironmentVariable(EnvResolution)
+	dumpEnvironmentVariable(EnvAutoReconnect)
 	// EnvResolution is optional.  If not set, the window size will
 	// default to the values defined in globalVars.go.
 }

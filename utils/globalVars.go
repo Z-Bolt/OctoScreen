@@ -6,6 +6,7 @@ var (
 	WindowName   = "OctoScreen"
 	WindowWidth  = 800
 	WindowHeight = 480
+	AutoReconnect = true
 )
 
 const (

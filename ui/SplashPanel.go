@@ -14,12 +14,12 @@ type SplashPanel struct {
 }
 
 func NewSplashPanel(ui *UI) *SplashPanel {
-	instane := &SplashPanel {
+	instance := &SplashPanel {
 		CommonPanel: NewCommonPanel(ui, nil),
 	}
-	instane.initialize()
+	instance.initialize()
 
-	return instane
+	return instance
 }
 
 func (this *SplashPanel) initialize() {
@@ -58,7 +58,7 @@ func (this *SplashPanel) createActionBar() gtk.IWidget {
 	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actionBar.SetHAlign(gtk.ALIGN_END)
 
-	this.RetryButton = utils.MustButtonImageStyle("Retry", "refresh.svg", "color2", this.releaseFromHold)
+	this.RetryButton = utils.MustButtonImageStyle("Reconnect", "refresh.svg", "color2", this.doReconnect)
 	this.RetryButton.SetProperty("width-request", this.Scaled(100))
 	this.RetryButton.SetProperty("visible", true)
 	actionBar.Add(this.RetryButton)
@@ -77,32 +77,43 @@ func (this *SplashPanel) createActionBar() gtk.IWidget {
 	return actionBar
 }
 
-func (this *SplashPanel) putOnHold() {
-	logger.TraceEnter("SplashPanel.putOnHold()")
+func (this *SplashPanel) displayReconnect() {
+	logger.TraceEnter("SplashPanel.displayReconnect()")
 
 	this.RetryButton.Show()
 	ctx, err := this.RetryButton.GetStyleContext()
 	if err != nil {
-		logger.LogError("SplashPanel.putOnHold()", "RetryButton.GetStyleContext()", err)
+		logger.LogError("SplashPanel.displayReconnect()", "RetryButton.GetStyleContext()", err)
 	} else {
 		ctx.RemoveClass("hidden")
 	}
-	this.Label.SetText("Cannot connect to the printer.  Tap \"Retry\" to try again.")
+	this.Label.SetText("Cannot connect to the printer.  Tap \"Reconnect\" to try again.")
 
-	logger.TraceLeave("SplashPanel.putOnHold()")
+	logger.TraceLeave("SplashPanel.displayReconnect()")
 }
 
-func (this *SplashPanel) releaseFromHold() {
-	logger.TraceEnter("SplashPanel.releaseFromHold()")
-
+func (this *SplashPanel) hideReconnect() {
+	logger.TraceEnter("SplashPanel.hideReconnect()")
 	this.RetryButton.Hide()
 	ctx, _ := this.RetryButton.GetStyleContext()
 	ctx.AddClass("hidden")
+	logger.TraceEnter("SplashPanel.hideReconnect()")
+}
 
-	this.Label.SetText("Loading...")
+func (this *SplashPanel) doReconnect() {
+	logger.TraceEnter("SplashPanel.doReconnect()")
+
+	this.hideReconnect()
+
 	this.UI.connectionAttempts = 0
+	
+	if this.UI.DoReconnect() {
+		this.Label.SetText("Attempting to reconnect...")
+	} else {
+		this.Label.SetText("ERROR: Unable to reconnect...")
+	}	
 
-	logger.TraceLeave("SplashPanel.releaseFromHold()")
+	logger.TraceLeave("SplashPanel.doReconnect()")
 }
 
 func (this *SplashPanel) showNetwork() {
