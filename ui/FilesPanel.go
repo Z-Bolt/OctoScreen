@@ -34,7 +34,9 @@ func FilesPanel(
 	ui					*UI,
 	parentPanel			interfaces.IPanel,
 ) *filesPanel {
+	logger.Info("Begin filesPanel()")
 	if filesPanelInstance == nil {
+		logger.Info("Making New filesPanel")
 		locationHistory := utils.LocationHistory {
 			Locations: []dataModels.Location{},
 		}
@@ -47,6 +49,7 @@ func FilesPanel(
 		filesPanelInstance = instance
 	}
 
+	logger.Info("End filesPanel()")
 	return filesPanelInstance
 }
 
