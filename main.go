@@ -145,7 +145,7 @@ func main() {
 
 
 func setLogLevel() {
-	logLevel := logger.LogLevel()
+	logLevel := strings.ToLower(os.Getenv(utils.EnvLogLevel))
 
 	switch logLevel {
 		case "debug":
