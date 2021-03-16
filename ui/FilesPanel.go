@@ -130,6 +130,8 @@ func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 	if this.displayRootLocations() {
 		return nil
 	}
+	
+	this.UI.sdNotify(daemon.SdNotifyWatchdog)
 
 	current := this.locationHistory.CurrentLocation()
 	logger.Infof("Loading list of files from: %s", string(current))
@@ -246,15 +248,11 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 
 	rootLocationButton, _ := gtk.ButtonNew()
 	rootLocationButton.Connect("clicked", func() {
-		this.UI.sdNotify(daemon.SdNotifyWatchdog)
-
 		this.locationHistory = utils.LocationHistory {
 			Locations: []dataModels.Location{location},
 		}
 
 		this.doLoadFiles()
-
-		this.UI.sdNotify(daemon.SdNotifyReady)
 	})
 
 	rootLocationButton.Add(topBox)

@@ -156,8 +156,6 @@ var errMercyPeriod = time.Second * 10
 func (this *UI) verifyConnection() {
 	logger.TraceEnter("ui.verifyConnection()")
 
-	this.sdNotify(daemon.SdNotifyWatchdog)
-
 	newUIState := "<<uninitialized-state>>"
 	splashMessage := "<<uninitialized-message>>"
 
@@ -426,10 +424,11 @@ func (this *UI) validateMenuItems(menuItems []dataModels.MenuItem, name string, 
 func (this *UI) update() {
 	logger.TraceEnter("ui.update()")
 
+	this.sdNotify(daemon.SdNotifyWatchdog)
+	
 	if this.connectionAttempts > 8 {
 		logger.Info("ui.update() - this.connectionAttempts > 8")
 		this.splashPanel.putOnHold()
-		this.sdNotify(daemon.SdNotifyWatchdog)
 
 		logger.TraceLeave("ui.update()")
 		return
