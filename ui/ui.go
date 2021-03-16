@@ -53,6 +53,12 @@ func New(endpoint, key string, width, height int) *UI {
 		width = utils.WindowWidth
 		height = utils.WindowHeight
 	}
+	
+	if width < 548 || height < 348 {
+		logger.Errorf("Resolution is not within minumum limits.  Resolution must be greater than 548x348.  Target width and height: %dx%d",
+			width,
+			height)
+	}
 
 	instance := &UI {
 		PanelHistory:				stack.New(),

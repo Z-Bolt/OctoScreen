@@ -6,10 +6,12 @@ import (
 	standardLog "log"
 	"os"
 	"os/user"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+	"regexp"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
@@ -318,32 +320,67 @@ func doFindConfigFile(home string) string {
 
 func getSize() (width, height int) {
 	logger.TraceEnter("main.getSize()")
-
+	
 	if Resolution == "" {
 		logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
 		logger.TraceLeave("main.getSize()")
 		return
-	}
+	} else if strings.ToLower(Resolution) == "auto" {
+		
+		logger.Warn("Using OCTOSCREEN_RESOLUTION = AUTO is an experimental feature. God speed.")
+		
+		xrandr, err := exec.LookPath( "xrandr" )
+		
+		if err != nil {
+			logger.Error("Unable to determine 'xrandr' executable path.")
+			return
+		}
+		
+		cmd := exec.Command(
+			xrandr,
+			"-d", ":0.0",
+			"--prop",
+		);
+		
+		output, err := cmd.Output()
+		
+		if err != nil {
+			logger.Error("Unable to determine 'xrander' executable path. But may have gotten: %s", output)
+			return
+		}
+		
+		re := regexp.MustCompile(`current ([0-9]+) x ([0-9]+)`)
+		matches := re.FindStringSubmatch(string(output))
+		
+		width,  _ = strconv.Atoi(matches[1])
+		height, _ = strconv.Atoi(matches[2])
+		
+		logger.Info("Used xrandr to determine the screen resolution.  Found %d x %d", width, height)
+		
+		return
+	} else {
 
-	parts := strings.SplitN(Resolution, "x", 2)
-	if len(parts) != 2 {
-		logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-		logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
+		parts := strings.SplitN(Resolution, "x", 2)
+		if len(parts) != 2 {
+			logger.Error("main.getSize() - SplitN() - len(parts) != 2")
+			logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
+		}
+	
+		var err error
+		width, err = strconv.Atoi(parts[0])
+		if err != nil {
+			logger.LogError("main.getSize()", "Atoi(parts[0])", err)
+			logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+		}
+	
+		height, err = strconv.Atoi(parts[1])
+		if err != nil {
+			logger.LogError("main.getSize()", "Atoi(parts[1])", err)
+			logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+		}
+	
+		logger.TraceLeave("main.getSize()")
+		return
+	
 	}
-
-	var err error
-	width, err = strconv.Atoi(parts[0])
-	if err != nil {
-		logger.LogError("main.getSize()", "Atoi(parts[0])", err)
-		logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
-	}
-
-	height, err = strconv.Atoi(parts[1])
-	if err != nil {
-		logger.LogError("main.getSize()", "Atoi(parts[1])", err)
-		logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
-	}
-
-	logger.TraceLeave("main.getSize()")
-	return
 }

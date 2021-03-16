@@ -49,4 +49,6 @@ OCTOSCREEN_LOG_LEVEL=Error
 # screen, for example 800x480.
 OCTOSCREEN_RESOLUTION=800x480
 # OCTOSCREEN_RESOLUTION is optional and defaults to 800x480 if missing
+# Set to AUTO to enable automatic display resolution detection
+# Minimum resolution is 548x348
 # (defined in globalVars.go)
