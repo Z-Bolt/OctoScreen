@@ -1,2 +1,3 @@
 debian/local/octoscreen	etc
+debian/local/octosplash	etc
 debian/local/insserv.conf.d			    etc

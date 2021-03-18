@@ -50,3 +50,7 @@ OCTOSCREEN_LOG_LEVEL=Error
 OCTOSCREEN_RESOLUTION=800x480
 # OCTOSCREEN_RESOLUTION is optional and defaults to 800x480 if missing
 # (defined in globalVars.go)
+
+# Path to the OctoScreen Splash Image.
+# Must be a *.png file
+OCTOSCREEN_BOOT_SPLASH=/etc/octosplash/splash.png

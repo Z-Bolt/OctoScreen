@@ -17,6 +17,10 @@ override_dh_auto_build:
 			-X $(DH_GOPKG)/ui.Build=$(BUILD_DATE)\
 		"
 
+override_dh_installinit:
+	dh_installinit --name=octosplash
+	dh_installinit --name=octoscreen
+
 override_dh_golang:
 	# The dh_golang is used to add the Built-using field to the deb. This is only for reference.
 	# https://github.com/git-lfs/git-lfs/pull/2203/files

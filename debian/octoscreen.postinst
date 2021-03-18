@@ -45,6 +45,27 @@ if [ "$1" = configure ] && [ -d /etc/systemd/system/ ]; then
   fi
 fi
 
+# Install the octoscreen Splash
+if [ "$1" = configure ] && [ -f /lib/systemd/system/octosplash.service ]; then
+  if ! grep -qE "^\w*disable_splash=1\w*\$" /boot/config.txt; then
+    echo "disable_splash=1" >> /boot/config.txt
+  fi
+  _fb=$(ls -1at /dev/fb* | grep -E "^/dev/fb[0-9]\$" | head -1)
+  __fb=$(grep -oP "(?<=[[:space:]])(/dev/fb[0-9])(?=[[:space:]]*)\$" /lib/systemd/system/octosplash.service )
+  if [ -z "$_fb" ] || [ -z "$__fb" ]; then
+    echo "Unable to determine Frame Buffer"
+  else
+    if [ "$_fb" != "$__fb" ]; then
+      SED_STRING="s~$__fb~$_fb~g"
+      echo "seding $SED_STRING"
+      sed -i "$SED_STRING" /lib/systemd/system/octosplash.service
+    fi
+    if grep -q 'tty1' /boot/cmdline.txt ; then
+      sed -i 's/console=tty1/console=tty3 logo.nologo consoleblank=0 loglevel=1 quiet vt.global_cursor_default=0/g' /boot/cmdline.txt
+    fi
+  fi
+fi
+
 db_stop || true
 
 #DEBHELPER#
