@@ -399,11 +399,11 @@ func (this *UI) validateMenuItems(menuItems []dataModels.MenuItem, name string, 
 			description = fmt.Sprintf("\n    When the MenuStructure for '%s' was parsed,\n    %d items were found.", name, menuItemsLength)
 		}
 
-		fatalErrorWindow := CreateFatalErrorWindow(
+		errorWindow := CreateErrorWindow(
 			message,
 			description,
 		)
-		fatalErrorWindow.ShowAll()
+		errorWindow.ShowAll()
 
 		logger.TraceLeave("ui.validateMenuItems()")
 		return false

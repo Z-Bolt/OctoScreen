@@ -169,6 +169,15 @@ func Errorf(format string, args ...interface{}) {
 }
 
 
+func Panic(args ...interface{}) {
+	_logrusEntry.Panic(readIndentation() + fmt.Sprint(args...))
+}
+
+func Panicf(format string, args ...interface{}) {
+	_logrusEntry.Panicf(readIndentation() + format, args...)
+}
+
+
 func Fatal(args ...interface{}) {
 	_logrusEntry.Fatal(readIndentation() + fmt.Sprint(args...))
 }

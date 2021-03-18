@@ -126,14 +126,19 @@ func main() {
 	utils.DumpEnvironmentVariables()
 
 	if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-		width, height := getSize()
-		// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
-		// and aren't required - if not set, ui.New() will use the default
-		// values (defined in globalVars.go).
-		_ = ui.New(BaseURL, APIKey, width, height)
+		width, height, err := getSize()
+		if err == "" {
+			// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
+			// and aren't required - if not set, ui.New() will use the default
+			// values (defined in globalVars.go).
+			_ = ui.New(BaseURL, APIKey, width, height)
+		} else {
+			errorWindow := ui.CreateErrorWindow("Config Error:", err)
+			errorWindow.ShowAll()
+		}
 	} else {
-		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable(APIKey))
-		fatalErrorWindow.ShowAll()
+		errorWindow := ui.CreateErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable(APIKey))
+		errorWindow.ShowAll()
 	}
 
 	gtk.Main()
@@ -316,7 +321,7 @@ func doFindConfigFile(home string) string {
 
 
 
-func getSize() (width, height int) {
+func getSize() (width, height int, parse_err string) {
 	logger.TraceEnter("main.getSize()")
 
 	if Resolution == "" {
@@ -328,20 +333,29 @@ func getSize() (width, height int) {
 	parts := strings.SplitN(Resolution, "x", 2)
 	if len(parts) != 2 {
 		logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-		logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
+		parse_err = fmt.Sprintf("Malformed %s (format != [0-9]+x[0-9]+): %q", utils.EnvResolution, Resolution)
+		logger.Error(parse_err)
+		logger.TraceLeave("main.getSize()")
+		return
 	}
 
 	var err error
 	width, err = strconv.Atoi(parts[0])
 	if err != nil {
 		logger.LogError("main.getSize()", "Atoi(parts[0])", err)
-		logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+		parse_err = fmt.Sprintf("Malformed %s (width): %q, %s", utils.EnvResolution, Resolution, err)
+		logger.Error(parse_err)
+		logger.TraceLeave("main.getSize()")
+		return
 	}
 
 	height, err = strconv.Atoi(parts[1])
 	if err != nil {
 		logger.LogError("main.getSize()", "Atoi(parts[1])", err)
-		logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+		parse_err = fmt.Sprintf("Malformed %s (height): %q, %s", utils.EnvResolution, Resolution, err)
+		logger.Error(parse_err)
+		logger.TraceLeave("main.getSize()")
+		return
 	}
 
 	logger.TraceLeave("main.getSize()")

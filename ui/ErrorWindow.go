@@ -6,13 +6,13 @@ import (
 	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
-func CreateFatalErrorWindow(message string, description string) *gtk.Window {
+func CreateErrorWindow(message string, description string) *gtk.Window {
 	window, error := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if error != nil {
-		logger.LogFatalError("FatalErrorWindow.CreateFatalErrorWindow()", "WindowNew()", error)
+		logger.LogError("ErrorWindow.CreateErrorWindow()", "WindowNew()", error)
 	}
 
-	window.SetTitle("Fatal Error")
+	window.SetTitle("Error")
 	window.Connect("destroy", func() {
 		gtk.MainQuit()
 	})
@@ -22,7 +22,7 @@ func CreateFatalErrorWindow(message string, description string) *gtk.Window {
 	// Create a new label widget to show in the window.
 	label, error := gtk.LabelNew("\n    " + message + "\n    " + description)
 	if error != nil {
-		logger.LogFatalError("FatalErrorWindow.CreateFatalErrorWindow()", "LabelNew()", error)
+		logger.LogError("ErrorWindow.CreateErrorWindow()", "LabelNew()", error)
 	}
 
 	label.SetHAlign(gtk.ALIGN_START)
