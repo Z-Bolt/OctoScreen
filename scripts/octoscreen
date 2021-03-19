@@ -68,7 +68,7 @@ echo.verbosity.init_optparse 0
 function octoscreen.main(){ #Called after all args are parsed
     
     # Tasks have to occur in an order, so we do them in order, no matter how they were passed.
-    local _task_order="docker build lcd remove install"
+    local _task_order="lcd docker build remove install"
     
     [[ -f /etc/os-release ]] && {
         source /etc/os-release
@@ -107,7 +107,7 @@ function octoscreen.main(){ #Called after all args are parsed
     
     [[ $? -eq 0 ]] && octoscreen.tasks.do main $_task_order
     
-    [[ $? -eq 0 ]] && octoscreen.tasks.do finish $_task_order
+    [[ $? -eq 0 ]] && octoscreen.tasks.do finally $_task_order
         
     [[ $? -eq 0 ]] || echo.fatal "Unknown error. ($?)"
     
@@ -370,7 +370,7 @@ function octoscreen.task.install.main() {
     
 }
 
-function octoscreen.task.install.finish() {
+function octoscreen.task.install.finally() {
     #? Maybe other tasks?
     $AUTO_YES &&
         local reboot="yes" ||
@@ -516,6 +516,10 @@ function octoscreen.task.lcd.init(){
 }
 
 function octoscreen.task.lcd.main(){
+    :
+}
+
+function octoscreen.task.lcd.finally(){
     :
 }
 
