@@ -288,7 +288,7 @@ function octoscreen.task.install.main() {
     
     echo.debug "Parsed DEB Version: $OCTOSCREEN_DEB_VERSION"
     
-    false && {
+    true || {
         if [ -d "/home/pi/OctoPrint/venv" ]; then
             DIRECTORY="/home/pi/OctoPrint/venv"
         elif [ -d "/home/pi/oprint" ]; then
@@ -343,7 +343,7 @@ function octoscreen.task.install.main() {
     echo "Installing OctoScreen "$OCTOSCREEN_DEB_VERSION, $DEB_ARCH""
     
     
-    [[ ! -z $RELEASE_URL ]] && {
+    [[ -z $RELEASE_URL ]] || {
         echo.notice "Downloading Remote Deb File From: $RELEASE_URL"
         
         local command="wget -O $OCTOSCREEN_DEB $RELEASE_URL"
@@ -363,11 +363,12 @@ function octoscreen.task.install.main() {
         
     }
     
-    [[ ! -f $OCTOSCREEN_DEB ]] && echo.fatal "After all this work, it seems like the Package doesn't actually exist: $OCTOSCREEN_DEB"
+    [[ -f $OCTOSCREEN_DEB ]] ||
+        echo.fatal "After all this work, it seems like the Package doesn't actually exist: $OCTOSCREEN_DEB"
     
     sudo dpkg -i $OCTOSCREEN_DEB
     
-    [[ ! -z $RELEASE_URL ]] && {
+    [[ -z $RELEASE_URL ]] || {
         rm -f $OCTOSCREEN_DEB
         trap - EXIT
     }
