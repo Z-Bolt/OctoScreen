@@ -20,8 +20,8 @@ EOL
 exit;
 }
 _IFS=$IFS
-REPO="thebeline/OctoScreen"
-MAIN="me_test"
+REPO="Z-Bolt/OctoScreen"
+MAIN="master"
 WGET_RAW="https://github.com/$REPO/raw/$MAIN"
 LIBRARIES=("lib/optparse.bash" "lib/inquirer.bash" "lib/verbosity.bash")
 PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
@@ -622,10 +622,10 @@ function octoscreen.task.lcd.finally(){
 function octoscreen.task.docker.init() {
     if command -v "docker" > /dev/null 2>&1; then
         echo.debug "Docker is already installed."
-        octoscreen.tasks.has docker || octoscreen.tasks.remove docker
+        octoscreen.tasks.has docker && octoscreen.tasks.remove docker
     else
         echo.debug "Docker is not installed."
-        octoscreen.tasks.has docker && octoscreen.tasks.add docker
+        octoscreen.tasks.has docker || octoscreen.tasks.add docker
     fi
 }
 
