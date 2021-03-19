@@ -702,7 +702,7 @@ function octoscreen.timer(){
 function octoscreen.tasks.do(){
     echo.debug "octoscreen.tasks.do($*)"
     
-    local did_a_thing=false
+    local did_a_thing=0
     
     [[ -z "$2" ]] && echo.fatal "Task execution requies an action and atgleast one task to take it on" && return 1;
     [[ -z "$OCTOSCREEN_TASKS" ]] && echo.debug "There are, like, NO tasks, so...  Nothing to do." && return 1;
@@ -711,7 +711,7 @@ function octoscreen.tasks.do(){
     
     for task in $@; do
         ( octoscreen.tasks.has $task ) && {
-            task="octoscreen.$do.${task}"
+            task="octoscreen.task.${task}.${do}"
             
             echo.debug "Fully qualified callback name: $task"
             
@@ -731,7 +731,7 @@ function octoscreen.tasks.do(){
     
     echo.chatty "'did_a_thing' status: $did_a_thing"
     
-    return "$did_a_thing"
+    return $did_a_thing
 }
 
 function octoscreen.tasks.has(){
