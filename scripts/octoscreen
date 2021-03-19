@@ -94,6 +94,8 @@ function octoscreen.main(){ #Called after all args are parsed
     $OCTOSCREEN_INSTALLED && [[ "${found:1:1}" != "i" ]] && ! octoscreen.tasks.has remove &&
         echo.warn "OctoScreen is KINDA installed, but it is in a bad way.  We suggest re-installing."
     
+    # ALSO a bad way: Having `default.target` exist.
+    # sudo rm -rf /etc/systemd/system/default.target
     
     echo.info "Beginning Task List"
     
@@ -510,17 +512,105 @@ function octoscreen.task.remove.main(){
 
 function octoscreen.task.lcd.init(){
     echo.debug "octoscreen.task.lcd.init()"
-    echo.fatal "Installing the LCD is not implemented yet"
-    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
-    :
+    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils git build-essential xorg-dev xutils-dev x11proto-dri2-dev libltdl-dev libtool automake libdrm-dev
 }
 
 function octoscreen.task.lcd.main(){
-    :
+    
+    local __pwd=$(pwd)
+    local __install_waveshare=true
+    local __install_fbturbo=true
+    
+    #check if LCD SHOW IS ALREADY INSTALLED, SKIP IF SO
+    if ls /boot/overlays/waveshare*.dtbo > /dev/null 2>&1; then
+        __install_waveshare=false
+    fi
+    
+    # /boot/overlays/waveshare*.dtbo
+    
+    $__install_waveshare && {
+        [[ -d LCD-show ]] || {
+            echo "Cloning LCD-show";
+            git clone https://github.com/waveshare/LCD-show.git;
+        }
+        
+        [[ -d LCD-show ]] ||
+            echo.fatal "Unable to clone LCD-show";
+        
+        { chmod 755 LCD-show/* && cd LCD-show/; } ||
+            echo.fatal "Failed to set permissions and enter LCD-show.";
+        
+        echo "Executing LCD-show"
+        # This WOULD be the option to NOT reboot, but...  Alas, looks like we need it
+        #systemd-inhibit sudo bash ./LCD35-show
+        
+        # ALLLLLLL OF THIS NEEDS OPTIONS
+        sudo bash ./LCD35-show
+        ## System will now reboot, we need to do something about this, I'll figure something out...
+        
+        # MOOT, as system will reboot, but for feels, I'll spell it out
+        cd $__pwd
+        sudo reboot now
+    } || {
+        echo.notice "Waveshare is installed.  Skipping."
+    }
+    
+    # Check is FBTurbo is installed, and skip if so
+    if [[ -f /usr/share/X11/xorg.conf.d/99-fbturbo.conf || -f /usr/share/X11/xorg.conf.d/99-calibration.conf]]; then
+        __install_fbturbo=false
+    fi
+    
+    $__install_fbturbo && {
+        [[ -d xf86-video-fbturbo ]] || {
+            echo "Cloning FBTurbo.";
+            git clone https://github.com/ssvb/xf86-video-fbturbo.git;
+        }
+        
+        [[ -d xf86-video-fbturbo ]] ||
+            echo.fatal "Failed cloning FBTurbo.";
+        
+        cd xf86-video-fbturbo
+        
+        { autoreconf -vi && ./configure --prefix=/usr && make; } ||
+            echo.fatal "Failed to build FBTurbo.";
+        
+        sudo sh -c 'make install && cp xorg.conf /etc/X11/xorg.conf' ||
+            echo.fatal "Failed to Install X11 or copy X11 Configuration";
+        
+        cd $__pwd
+        
+        # Does not reboot, nor does it need to.
+        # Continue
+    } || {
+        echo.notice "FBTurbo is installed.  Skipping."
+    }
+    
+    local __res=$(xrandr -d :0.0 2>/dev/null | grep -oP "(?<=current )[0-9]+ x [0-9]+")
+    read -r -a __res <<< "$__res"
+    
+    if [[ ${__res[0]} < 548 ]] || [[ ${__res[2]} < 348 ]]; then
+    
+        echo.info "Configuring the /boot/config.txt for small screens."
+        
+        # The 800x533 thing is really only needed for small resolutions...  Whatever the 3.5 is, I think
+        sudo sh -c 'cp /boot/config.txt /boot/config.txt.bak && \
+        sed -i -re "s/^\w*(hdmi_cvt.*)$/#\1/g" /boot/config.txt && \
+        echo "hdmi_cvt=800 533 60 6 0 0 0" >> /boot/config.txt' || {
+            echo.fatal "Failed to configure Boot Config.";
+        }
+        
+    fi
+    
 }
 
 function octoscreen.task.lcd.finally(){
-    :
+    # Note about re-running/configuring raspicam
+    echo.warn "If you are using a Raspberry Pi Camera Module (RaspiCam), you will need to re-activate it using \`raspi-config\`"
+    # Or maybe detect, if we can, and execute `raspi-config` automatically?
+    
+    
+    # also maybe fix the resolutiion in the config, if we did that in the `main`?
+    # sed -i -re "s/^\w*(OCTOSCREEN_RESOLUTION.*)$/OCTOSCREEN_RESOLUTION=800x533/g" /etc/octoscreen/config
 }
 
 ###############################################################################
