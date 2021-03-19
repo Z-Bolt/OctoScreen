@@ -67,6 +67,7 @@ echo.verbosity.init_optparse 0
 
 function octoscreen.main(){ #Called after all args are parsed
     
+    # Tasks have to occur in an order, so we do them in order, no matter how they were passed.
     local _task_order="docker build lcd remove install"
     
     [[ -f /etc/os-release ]] && {
@@ -100,12 +101,13 @@ function octoscreen.main(){ #Called after all args are parsed
     echo.chatty "We check them in the following order: $_task_order[@]"
     echo.chatty "First we execute and available \`prepare\` commands, then we install any registered dependencies, and then we execute the task it's self."
     
-    octoscreen.tasks.do prepare $_task_order
+    octoscreen.tasks.do init $_task_order
     
     [[ $? -eq 0 ]] && octoscreen.dependencies.install
     
-    # Tasks have to occur in an order, so we do them in order, no matter how they were passed.
-    [[ $? -eq 0 ]] && octoscreen.tasks.do task $_task_order
+    [[ $? -eq 0 ]] && octoscreen.tasks.do main $_task_order
+    
+    [[ $? -eq 0 ]] && octoscreen.tasks.do finish $_task_order
         
     [[ $? -eq 0 ]] || echo.fatal "Unknown error. ($?)"
     
@@ -173,7 +175,54 @@ function octoscreen.dependencies.install(){
     true
 }
 
-function octoscreen.task.install() {
+
+###############################################################################
+# Begin TASKS
+###############################################################################
+
+###############################################################################
+# Install Task
+#
+# Handles instalation of either a specified DEB package, or the latest release.
+#
+# Additionally handles "updating" or reinstalling via checking if OctoScreen is
+# already installed.
+#
+# Dev Notes: At some point it MAY be bennificial for this to parse out the full
+# set of available releases and provide the option for the user to select a
+# non-recent release, or specify a specific version at the CLI and validate
+# and select against the available releases.
+
+function octoscreen.task.install.init(){
+    echo.debug "octoscreen.task.install.init()"
+    
+    #local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
+    
+    echo.notice "Checking if we can install, or if we need to re-install..."
+    
+    ( $OCTOSCREEN_INSTALLED && ! octoscreen.tasks.has remove ) && {
+        
+        $AUTO_FORCE &&
+            local reinstall="yes" ||
+            list_input "OctoScreen is already installed. Would you like to re-install it?" yes_no reinstall;
+        
+        if [ $reinstall == 'yes' ]; then
+            echo.notice "Excelent! We will remove and re-install OctoScreen."
+            octoscreen.tasks.add remove
+        else
+            echo "OctoScreen is already installed, exiting." && exit
+        fi
+    }
+    
+    ###
+    # This really SHOULDN'T be nessesary, as the DEB should include these as
+    # dependencies, but this was in the install guide at the time this was
+    # developed, so it is here for now.
+    ###
+    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+}
+
+function octoscreen.task.install.main() {
     
     local version_regex=''
     local deb_name=''
@@ -253,7 +302,11 @@ function octoscreen.task.install() {
             exit 1
         fi;
         
-        
+        ###
+        # This was from the install script this was ORIGINALLY based off from
+        # but it would be benificial to allow installing Plug-Ins, so it is
+        # left here for reference.
+        ###
         #if [ $DIRECTORY != "-" ]; then
         #  plugins=( 'Display Layer Progress (mandatory)' 'Filament Manager' 'Preheat Button' 'Enclosure' 'Print Time Genius' 'Ultimaker Format Package' 'PrusaSlicer Thumbnails' )
         #  checkbox_input "Which plugins should I install (you can also install them via the Octoprint UI)?" plugins selected_plugins
@@ -315,6 +368,9 @@ function octoscreen.task.install() {
         trap - EXIT
     }
     
+}
+
+function octoscreen.task.install.finish() {
     #? Maybe other tasks?
     $AUTO_YES &&
         local reboot="yes" ||
@@ -328,12 +384,48 @@ function octoscreen.task.install() {
         sudo service octoscreen start
         echo "OctoScreen has been successfully installed! Have a great day!"
     fi
-    
-    exit #?  Maybe other tasks?
 }
 
-function octoscreen.task.build(){
-    echo.debug "octoscreen.prepare.build()"
+###############################################################################
+# Build OctoScreen from Source
+#
+# Builds from the specified source directory.
+#
+# Dev Notes: Due to a certain dev being dumb, this currently executes `build`
+# as `root` which is...  Not great.  Avoid using `sudo` when you can, and all.
+# A better way would be to correctly set up `docker` so the current user can
+# build WITHOUT `sudo`.  For another day, perhaps.
+#
+# Also, balks if you specify a DEB. Pretty sure that is desired behaviour.
+
+function octoscreen.task.build.init(){
+    
+    echo.debug "octoscreen.task.build.init()"
+    IFS=$_IFS
+    
+    [[ -z $VERSION_CODENAME ]] && echo.fatal "Unable to determine a Release Target (see --help)"
+    VERSION_CODENAME=${VERSION_CODENAME^^}
+    
+    [[ -z $MAKE_DIR ]] && echo.fatal "No Make Directory provided"
+    [[ -d $MAKE_DIR ]] || echo.fatal "Specified Make Directory is not a directory: $MAKE_DIR"
+    
+    while [[ -d $MAKE_DIR ]] && [[ ! -f $MAKE_DIR/Makefile ]]; do
+        echo.debug "$MAKE_DIR does not seem like a valid Make directory. Looking up."
+        local _make_dir=$( dirname $MAKE_DIR )
+        [[ "$_make_dir" == "$MAKE_DIR" ]] && echo.debug "Looks like we are looping, breaking" && break;
+        MAKE_DIR=$_make_dir;
+    done
+    
+    [[ -f $MAKE_DIR/Makefile ]] &&
+        echo.info "Found $MAKE_DIR/Makefile" ||
+        echo.fatal "No Make File found in ($MAKE_DIR)";
+    
+    octoscreen.task.docker.init
+    
+}
+
+function octoscreen.task.build.main(){
+    echo.debug "octoscreen.task.build.main()"
     
     local _start=$SECONDS
     
@@ -391,48 +483,17 @@ function octoscreen.task.build(){
     
 }
 
-function octoscreen.task.lcd(){
-    echo.fatal "Installing the LCD is not implemented yet"
-    :
-}
+###############################################################################
+# Remove/Uninstall OctoScreen
 
-### Task Preparation Functions
-
-function octoscreen.set.deb(){
-    
-    # wondering if we should do any checks here...
-    # thinking they should be done in build/instal
-    
-    !( octoscreen.tasks.has install ) && echo.warn "The target *.deb file SHOULD be specified after \`install\`"
-    
-    OCTOSCREEN_DEB="$1";
-}
-
-function octoscreen.prepare.install(){
-    echo.debug "octoscreen.prepare.install()"
-    
-    #local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
-    
-    echo.notice "Checking if we can install, or if we need to re-install..."
-    
-    ( $OCTOSCREEN_INSTALLED && ! octoscreen.tasks.has remove ) && {
-        
-        $AUTO_FORCE &&
-            local reinstall="yes" ||
-            list_input "OctoScreen is already installed. Would you like to re-install it?" yes_no reinstall;
-        
-        if [ $reinstall == 'yes' ]; then
-            echo.notice "Excelent! We will remove and re-install OctoScreen."
-            octoscreen.tasks.add remove
-        else
-            echo "OctoScreen is already installed, exiting." && exit
-        fi
+function octoscreen.task.remove.init(){
+    $OCTOSCREEN_INSTALLED || {
+        echo.error "OctoScreen is not installed, nothing to do"
+        octoscreen.tasks.remove remove
     }
-    
-    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
 }
 
-function octoscreen.task.remove(){
+function octoscreen.task.remove.main(){
     
     echo.notice "Removing OctoScreen"
     
@@ -444,14 +505,35 @@ function octoscreen.task.remove(){
     
 }
 
-function octoscreen.prepare.remove(){
-    $OCTOSCREEN_INSTALLED || {
-        echo.error "OctoScreen is not installed, nothing to do"
-        octoscreen.tasks.remove remove
-    }
+###############################################################################
+# Install/Configure LCD Screen
+
+function octoscreen.task.lcd.init(){
+    echo.debug "octoscreen.task.lcd.init()"
+    echo.fatal "Installing the LCD is not implemented yet"
+    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+    :
 }
 
-function octoscreen.task.docker(){
+function octoscreen.task.lcd.main(){
+    :
+}
+
+###############################################################################
+# Install and configure Docker
+# This currently doesn't
+
+function octoscreen.task.docker.init() {
+    if command -v "docker" > /dev/null 2>&1; then
+        echo.debug "Docker is already installed."
+        octoscreen.tasks.has docker || octoscreen.tasks.remove docker
+    else
+        echo.debug "Docker is not installed."
+        octoscreen.tasks.has docker && octoscreen.tasks.add docker
+    fi
+}
+
+function octoscreen.task.docker.main(){
     echo "Installing Docker...  This may take a while..."
     
     local _docker=$(mktemp)
@@ -488,49 +570,29 @@ function octoscreen.task.docker(){
     [[ $? -ne 0 ]] && echo.fatal "Docker Installer exited Unsucessfully."
 }
 
-function octoscreen.prepare.build(){
-    IFS=$_IFS
-    
-    echo.debug "octoscreen.prepare.build()"
-    
-    [[ -z $VERSION_CODENAME ]] && echo.fatal "Unable to determine a Release Target (see --help)"
-    VERSION_CODENAME=${VERSION_CODENAME^^}
-    
-    [[ -z $MAKE_DIR ]] && echo.fatal "No Make Directory provided"
-    [[ -d $MAKE_DIR ]] || echo.fatal "Specified Make Directory is not a directory: $MAKE_DIR"
-    
-    while [[ -d $MAKE_DIR ]] && [[ ! -f $MAKE_DIR/Makefile ]]; do
-        echo.debug "$MAKE_DIR does not seem like a valid Make directory. Looking up."
-        local _make_dir=$( dirname $MAKE_DIR )
-        [[ "$_make_dir" == "$MAKE_DIR" ]] && echo.debug "Looks like we are looping, breaking" && break;
-        MAKE_DIR=$_make_dir;
-    done
-    
-    [[ -f $MAKE_DIR/Makefile ]] &&
-        echo.info "Found $MAKE_DIR/Makefile" ||
-        echo.fatal "No Make File found in ($MAKE_DIR)";
-    
-    command -v "docker" > /dev/null 2>&1 &&
-        echo.debug "Docker IS installed." ||
-        octoscreen.tasks.add docker;
-    
-    # need to recall what the dependencies are...
-    # octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
-    
-}
 
-function octoscreen.prepare.lcd(){
-    echo.debug "octoscreen.prepare.lcd()"
-    octoscreen.dependencies.add libgtk-3-0 xserver-xorg xinit x11-xserver-utils
+
+
+
+
+###############################################################################
+# Begin UTILITY FUNCTIONS
+###############################################################################
+
+function octoscreen.set.deb(){
+    
+    # wondering if we should do any checks here...
+    # thinking they should be done in build/install
+    
+    !( octoscreen.tasks.has install ) && echo.warn "The target *.deb file SHOULD be specified after \`install\`"
+    
+    OCTOSCREEN_DEB="$1";
 }
 
 function octoscreen.handle.unknown(){
     echo.error "Unknown Task '$1'"
     octoscreen.maybe.usage
 }
-
-
-### Utility Functions
 
 function octoscreen.timer(){
     local seconds=$1
