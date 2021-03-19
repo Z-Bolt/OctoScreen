@@ -558,7 +558,7 @@ function octoscreen.task.lcd.main(){
     }
     
     # Check is FBTurbo is installed, and skip if so
-    if [[ -f /usr/share/X11/xorg.conf.d/99-fbturbo.conf || -f /usr/share/X11/xorg.conf.d/99-calibration.conf]]; then
+    if [[ -f /usr/share/X11/xorg.conf.d/99-fbturbo.conf || -f /usr/share/X11/xorg.conf.d/99-calibration.conf ]]; then
         __install_fbturbo=false
     fi
     
