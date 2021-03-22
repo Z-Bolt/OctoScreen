@@ -104,6 +104,9 @@ func (this *filesPanel) createBackButton() *gtk.Button {
 }
 
 func (this *filesPanel) doLoadFiles() {
+	
+	this.UI.sdNotify(daemon.SdNotifyWatchdog)
+	
 	utils.EmptyTheContainer(&this.listBox.Container)
 
 	if this.displayRootLocations() {
@@ -130,8 +133,6 @@ func (this *filesPanel) getSortedFiles() []*dataModels.FileResponse {
 	if this.displayRootLocations() {
 		return nil
 	}
-	
-	this.UI.sdNotify(daemon.SdNotifyWatchdog)
 
 	current := this.locationHistory.CurrentLocation()
 	logger.Infof("Loading list of files from: %s", string(current))
