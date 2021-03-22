@@ -96,7 +96,7 @@ func (this *filesPanel) createBackButton() *gtk.Button {
 func (this *filesPanel) doLoadFiles() {
 	utils.EmptyTheContainer(&this.listBox.Container)
 	if this.isRoot() {
-		if this.refreshSD() {
+		if this.sdReady() {
 			this.addRootLocations()
 		} else {
 			this.locationHistory = utils.LocationHistory {
@@ -111,7 +111,7 @@ func (this *filesPanel) doLoadFiles() {
 	this.listBox.ShowAll()
 }
 
-func (this *filesPanel) refreshSD() bool {
+func (this *filesPanel) sdReady() bool {
 	err := (&octoprintApis.SdRefreshRequest {}).Do(this.UI.Client)
 	if err == nil {
 		sdState, err := (&octoprintApis.SdStateRequest {}).Do(this.UI.Client)
@@ -130,7 +130,7 @@ func (this *filesPanel) goBack() {
 		this.UI.GoToPreviousPanel()
 	} else if this.locationHistory.IsRoot() {
 		this.locationHistory.GoBack()
-		if this.refreshSD() {
+		if this.sdReady() {
 			this.doLoadFiles()
 		} else {
 			this.UI.GoToPreviousPanel()
