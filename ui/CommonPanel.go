@@ -15,9 +15,6 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-// OctoScreenVersion - set at compilation time.
-var OctoScreenVersion = "2.7.0"
-
 type CommonPanel struct {
 	UI					*UI
 	grid				*gtk.Grid
