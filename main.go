@@ -327,12 +327,13 @@ func getSize() (width, height int) {
 		return
 	} else if strings.ToLower(Resolution) == "auto" {
 		
-		logger.Warn("Using OCTOSCREEN_RESOLUTION = AUTO is an experimental feature. God speed.")
+		logger.Info("Automatically detecting resolution with 'xrandr'.")
 		
 		xrandr, err := exec.LookPath( "xrandr" )
 		
 		if err != nil {
 			logger.Error("Unable to determine 'xrandr' executable path.")
+			logger.TraceLeave("main.getSize()")
 			return
 		}
 		
@@ -345,9 +346,16 @@ func getSize() (width, height int) {
 		output, err := cmd.Output()
 		
 		if err != nil {
-			logger.Error("Unable to determine 'xrander' executable path. But may have gotten: %s", output)
+			logger.Errorf("When determining resolution, 'xrander' returned with an error. Output: %s", output)
+			logger.TraceLeave("main.getSize()")
 			return
 		}
+		
+		/*
+		There is no real error handeling here, as if `xrandr` executes without
+		an error, we are gauranteed an output of this format, so the regex
+		won't fail.
+		*/
 		
 		re := regexp.MustCompile(`current ([0-9]+) x ([0-9]+)`)
 		matches := re.FindStringSubmatch(string(output))
@@ -355,7 +363,8 @@ func getSize() (width, height int) {
 		width,  _ = strconv.Atoi(matches[1])
 		height, _ = strconv.Atoi(matches[2])
 		
-		logger.Info("Used xrandr to determine the screen resolution.  Found %d x %d", width, height)
+		logger.Info("Used 'xrandr' to determine the screen resolution.  Found %d x %d", width, height)
+		logger.TraceLeave("main.getSize()")
 		
 		return
 	} else {

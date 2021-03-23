@@ -49,13 +49,13 @@ type UI struct {
 func New(endpoint, key string, width, height int) *UI {
 	logger.TraceEnter("ui.New()")
 
-	if width == 0 || height == 0 {
-		width = utils.WindowWidth
-		height = utils.WindowHeight
-	}
-	
 	if width < 548 || height < 348 {
 		logger.Errorf("Resolution is not within minumum limits.  Resolution must be greater than 548x348.  Target width and height: %dx%d",
+			width,
+			height)
+		width = utils.WindowWidth
+		height = utils.WindowHeight
+		logger.Infof("Using default resolution: %dx%d",
 			width,
 			height)
 	}
