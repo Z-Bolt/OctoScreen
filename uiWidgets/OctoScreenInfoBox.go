@@ -2,7 +2,7 @@ package uiWidgets
 
 import (
 	// "fmt"
-	"strings"
+	//"strings"
 
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
@@ -15,10 +15,12 @@ type OctoScreenInfoBox struct {
 
 func CreateOctoScreenInfoBox(
 	client				*octoprintApis.Client,
-	octoScreenVersion	string,
+	Version				string,
+	Build				string,
 ) *OctoScreenInfoBox {
 	logoImage := utils.MustImageFromFile("logos/octoscreen-isometric-90%.png")
 
+	/*
 	str2 := ""
 	str3 := ""
 	stringArray := strings.Split(octoScreenVersion, " ")
@@ -29,13 +31,14 @@ func CreateOctoScreenInfoBox(
 		str2 = octoScreenVersion
 		str3 = ""
 	}
+	*/
 
 	base := CreateSystemInfoBox(
 		client,
 		logoImage,
 		"OctoScreen",
-		str2,
-		str3,
+		Version,
+		Build,
 	)
 
 	instance := &OctoScreenInfoBox {

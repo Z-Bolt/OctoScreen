@@ -51,7 +51,7 @@ func (this *systemPanel) initialize() {
 	this.octoPrintInfoBox = uiWidgets.CreateOctoPrintInfoBox(this.UI.Client, logoWidth)
 	this.Grid().Attach(this.octoPrintInfoBox,        0, 0, 1, 1)
 
-	this.octoScreenInfoBox = uiWidgets.CreateOctoScreenInfoBox(this.UI.Client, OctoScreenVersion)
+	this.octoScreenInfoBox = uiWidgets.CreateOctoScreenInfoBox(this.UI.Client, Version, Build)
 	this.Grid().Attach(this.octoScreenInfoBox,       1, 0, 2, 1)
 
 	this.octoScreenPluginInfoBox = uiWidgets.CreateOctoScreenPluginInfoBox(this.UI.Client, this.UI.UIState, this.UI.OctoPrintPluginIsAvailable)
