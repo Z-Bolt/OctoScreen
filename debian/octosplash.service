@@ -5,7 +5,7 @@ After=local-fs.target
 
 [Service]
 EnvironmentFile=/etc/octoscreen/config
-ExecStart=/bin/bash /etc/octosplash/splash.sh /dev/fb0
+ExecStart=/bin/bash /etc/octoscreen/boot_splash.sh /dev/fb0
 StandardOutput=journal+console
 StandardInput=tty
 
