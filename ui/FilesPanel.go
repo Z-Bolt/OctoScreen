@@ -104,6 +104,9 @@ func (this *filesPanel) createBackButton() *gtk.Button {
 }
 
 func (this *filesPanel) doLoadFiles() {
+	
+	this.UI.sdNotify(daemon.SdNotifyWatchdog)
+	
 	utils.EmptyTheContainer(&this.listBox.Container)
 
 	if this.displayRootLocations() {
@@ -246,15 +249,11 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 
 	rootLocationButton, _ := gtk.ButtonNew()
 	rootLocationButton.Connect("clicked", func() {
-		this.UI.sdNotify(daemon.SdNotifyWatchdog)
-
 		this.locationHistory = utils.LocationHistory {
 			Locations: []dataModels.Location{location},
 		}
 
 		this.doLoadFiles()
-
-		this.UI.sdNotify(daemon.SdNotifyReady)
 	})
 
 	rootLocationButton.Add(topBox)

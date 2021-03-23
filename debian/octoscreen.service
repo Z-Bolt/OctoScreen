@@ -11,7 +11,7 @@ ExecStart=/usr/bin/xinit /usr/bin/OctoScreen -- :0 -nolisten tcp -nocursor
 ExecStartPost=/bin/bash /etc/octoscreen/disablescreenblank.sh 0
 StandardOutput=journal
 Restart=always
-WatchdogSec=10s
+WatchdogSec=20s
 
 [Install]
 WantedBy=graphical.target
