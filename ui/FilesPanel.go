@@ -99,7 +99,7 @@ func (this *filesPanel) doLoadFiles() {
 	
 	utils.EmptyTheContainer(&this.listBox.Container)
 	atRootLevel := this.displayRootLocations()
-	/**
+	/*
 	 * If we are at `root` (display the option for SD AND Local), but SD is not
 	 * ready, push us up and into Local so the user doesn't have to work harder
 	 * than they have to.
