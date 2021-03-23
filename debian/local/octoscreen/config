@@ -52,5 +52,6 @@ OCTOSCREEN_RESOLUTION=800x480
 # (defined in globalVars.go)
 
 # Path to the OctoScreen Splash Image.
-# Must be a *.png file
-OCTOSCREEN_BOOT_SPLASH=/etc/octosplash/splash.png
+# Must be a *.png file, or a directory containing PNG files
+# Default is the directory:
+# OCTOSCREEN_BOOT_SPLASH=/opt/octoscreen/styles/z-bolt/images/boot-splash/
