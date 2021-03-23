@@ -176,8 +176,6 @@ func (this *UI) loadStyle() {
 func (this *UI) verifyConnection() {
 	logger.TraceEnter("ui.verifyConnection()")
 
-	this.sdNotify(daemon.SdNotifyWatchdog)
-
 	newUIState := "<<uninitialized-state>>"
 	splashMessage := "<<uninitialized-message>>"
 
@@ -450,9 +448,10 @@ func (this *UI) DoReconnect() bool {
 func (this *UI) update() {
 	logger.TraceEnter("ui.update()")
 
+	this.sdNotify(daemon.SdNotifyWatchdog)
+	
 	if this.connectionAttempts > connectionAttemptsMax {
 		logger.Info("ui.update() - this.connectionAttempts > %d", connectionAttemptsMax)
-		this.sdNotify(daemon.SdNotifyWatchdog)
 		logger.TraceLeave("ui.update()")
 		return
 	}

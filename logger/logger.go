@@ -176,3 +176,11 @@ func Fatal(args ...interface{}) {
 func Fatalf(format string, args ...interface{}) {
 	_logrusEntry.Fatalf(readIndentation() + format, args...)
 }
+
+func Panic(args ...interface{}) {
+	_logrusEntry.Panic(readIndentation() + fmt.Sprint(args...))
+}
+
+func Panicf(format string, args ...interface{}) {
+	_logrusEntry.Panicf(readIndentation() + format, args...)
+}

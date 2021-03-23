@@ -90,30 +90,63 @@ func (this *filesPanel) createRefreshButton() *gtk.Button {
 
 func (this *filesPanel) createBackButton() *gtk.Button {
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
-	return utils.MustButton(image, func() {
-		if this.locationHistory.Length() < 1 {
-			this.UI.GoToPreviousPanel()
-		} else if this.locationHistory.IsRoot() {
-			this.locationHistory.GoBack()
-			this.doLoadFiles()
-		} else {
-			this.locationHistory.GoBack()
-			this.doLoadFiles()
-		}
-	})
+	return utils.MustButton(image, this.goBack)
 }
 
 func (this *filesPanel) doLoadFiles() {
+	
+	this.UI.sdNotify(daemon.SdNotifyWatchdog)
+	
 	utils.EmptyTheContainer(&this.listBox.Container)
-
-	if this.displayRootLocations() {
+	atRootLevel := this.displayRootLocations()
+	/*
+	 * If we are at `root` (display the option for SD AND Local), but SD is not
+	 * ready, push us up and into Local so the user doesn't have to work harder
+	 * than they have to.
+	 */
+	if atRootLevel && !this.sdIsReady() {
+		atRootLevel = false
+		this.locationHistory = utils.LocationHistory {
+			Locations: []dataModels.Location{dataModels.Local},
+		}
+	}
+	if atRootLevel {
 		this.addRootLocations()
 	} else {
 		sortedFiles := this.getSortedFiles()
 		this.addSortedFiles(sortedFiles)
 	}
-
 	this.listBox.ShowAll()
+}
+
+func (this *filesPanel) sdIsReady() bool {
+	err := (&octoprintApis.SdRefreshRequest {}).Do(this.UI.Client)
+	if err == nil {
+		sdState, err := (&octoprintApis.SdStateRequest {}).Do(this.UI.Client)
+		if err == nil && sdState.IsReady == true {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
+	}
+}
+
+func (this *filesPanel) goBack() {
+	if this.displayRootLocations() {
+		this.UI.GoToPreviousPanel()
+	} else if this.locationHistory.IsRoot() {
+		this.locationHistory.GoBack()
+		if this.sdIsReady() {
+			this.doLoadFiles()
+		} else {
+			this.UI.GoToPreviousPanel()
+		}
+	} else {
+		this.locationHistory.GoBack()
+		this.doLoadFiles()
+	}
 }
 
 func (this *filesPanel) displayRootLocations() bool {
@@ -246,15 +279,11 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 
 	rootLocationButton, _ := gtk.ButtonNew()
 	rootLocationButton.Connect("clicked", func() {
-		this.UI.sdNotify(daemon.SdNotifyWatchdog)
-
 		this.locationHistory = utils.LocationHistory {
 			Locations: []dataModels.Location{location},
 		}
 
 		this.doLoadFiles()
-
-		this.UI.sdNotify(daemon.SdNotifyReady)
 	})
 
 	rootLocationButton.Add(topBox)
