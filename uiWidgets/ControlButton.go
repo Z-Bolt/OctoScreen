@@ -41,15 +41,22 @@ func CreateControlButton(
 }
 
 func (this *ControlButton) handleClicked() {
+	var handleClick func()
+	
 	if len(this.controlDefinition.Confirm) != 0 {
-		utils.MustConfirmDialogBox(this.parentWindow, this.controlDefinition.Confirm, this.sendCommand)
-		return
+		logger.Debugf("ControlButton.handleClicked().MustConfirmDialogBox: %s", this.controlDefinition.Name)
+		handleClick = utils.MustConfirmDialogBox(this.parentWindow, this.controlDefinition.Confirm, this.sendCommand)
 	} else {
-		this.sendCommand()
+		logger.Debugf("ControlButton.handleClicked().sendCommand: %s", this.controlDefinition.Name)
+		handleClick = this.sendCommand
 	}
+	
+	handleClick()
 }
 
 func (this *ControlButton) sendCommand() {
+	logger.Debugf("ControlButton.sendCommand(): %q", this.controlDefinition.Name)
+	
 	commandRequest := &octoprintApis.CommandRequest{
 		Commands: this.controlDefinition.Commands,
 	}
@@ -58,7 +65,6 @@ func (this *ControlButton) sendCommand() {
 		commandRequest.Commands = []string{this.controlDefinition.Command}
 	}
 
-	logger.Infof("Executing command %q", this.controlDefinition.Name)
 	err := commandRequest.Do(this.client)
 	if err != nil {
 		logger.LogError("ControlButton.sendCommand()", "Do(CommandRequest)", err)
