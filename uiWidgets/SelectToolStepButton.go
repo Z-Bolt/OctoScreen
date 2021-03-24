@@ -5,7 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,29 +15,26 @@ type SelectToolStepButton struct {
 	*StepButton
 }
 
-func CreateSelectToolStepButton(
-	client							*octoprint.Client,
+func CreateSelectExtruderStepButton(
+	client							*octoprintApis.Client,
 	includeBed						bool,
 ) *SelectToolStepButton {
-	toolheadCount := utils.GetToolheadCount(client)
+	extruderCount := utils.GetExtruderCount(client)
 
 	var steps []Step
-	for i := 0; i < toolheadCount; i++ {
-		var step Step
-		if i == 0 && toolheadCount == 1 {
-			step = Step {
-				"Hotend",
-				utils.GetHotendFileName(1, toolheadCount),
-				nil,
-				"tool0",
-			}
+	for i := 0; i < extruderCount; i++ {
+		label := ""
+		if i == 0 && extruderCount == 1 {
+			label = "Extruder"
 		} else {
-			step = Step {
-				fmt.Sprintf("Hotend %d", i + 1),
-				utils.GetHotendFileName(i + 1, toolheadCount),
-				nil,
-				fmt.Sprintf("tool%d", i),
-			}
+			label = fmt.Sprintf("Extruder %d", i + 1)
+		}
+
+		step := Step {
+			label,
+			utils.GetExtruderFileName(i + 1, extruderCount),
+			nil,
+			fmt.Sprintf("tool%d", i),
 		}
 
 		steps = append(steps, step)
@@ -50,6 +49,7 @@ func CreateSelectToolStepButton(
 		steps...,
 	)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateSelectExtruderStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 
@@ -59,6 +59,54 @@ func CreateSelectToolStepButton(
 
 	return instance
 }
+
+func CreateSelectHotendStepButton(
+	client							*octoprintApis.Client,
+	includeBed						bool,
+) *SelectToolStepButton {
+	hotendCount := utils.GetHotendCount(client)
+
+	var steps []Step
+	for i := 0; i < hotendCount; i++ {
+		label := ""
+		if i == 0 && hotendCount == 1 {
+			label = "Hotend"
+		} else {
+			label = fmt.Sprintf("Hotend %d", i + 1)
+		}
+
+		step := Step {
+			label,
+			utils.GetHotendFileName(i + 1, hotendCount),
+			nil,
+			fmt.Sprintf("tool%d", i),
+		}
+
+		steps = append(steps, step)
+	}
+
+	if includeBed {
+		steps = append(steps, Step{"Bed", "bed.svg", nil, "bed"})
+	}
+
+	base, err := CreateStepButton(
+		1,
+		steps...,
+	)
+	if err != nil {
+		logger.LogError("PANIC!!! - CreateSelectHotendStepButton()", "CreateStepButton()", err)
+		panic(err)
+	}
+
+	instance := &SelectToolStepButton{
+		StepButton: base,
+	}
+
+	return instance
+}
+
+
+
 
 func (this *SelectToolStepButton) Value() string  {
 	return this.StepButton.Value().(string)

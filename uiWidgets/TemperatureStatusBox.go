@@ -4,8 +4,10 @@ import (
 	// "time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,23 +15,23 @@ type TemperatureStatusBox struct {
 	*gtk.Box
 	interfaces.ITemperatureDataDisplay
 
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	labelWithImages				map[string]*utils.LabelWithImage
 }
 
 func CreateTemperatureStatusBox(
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	includeHotends				bool,
 	includeBed					bool,
 ) *TemperatureStatusBox {
 	if !includeHotends && !includeBed {
-		utils.Logger.Error("TemperatureStatusBox.CreateTemperatureStatusBox() - both includeToolheads and includeBed are false, but at least one needs to be true")
+		logger.Error("TemperatureStatusBox.CreateTemperatureStatusBox() - both includeToolheads and includeBed are false, but at least one needs to be true")
 		return nil
 	}
 
 	currentTemperatureData, err := utils.GetCurrentTemperatureData(client)
 	if err != nil {
-		utils.LogError("TemperatureStatusBox.CreateTemperatureStatusBox()", "GetCurrentTemperatureData(client)", err)
+		logger.LogError("TemperatureStatusBox.CreateTemperatureStatusBox()", "GetCurrentTemperatureData(client)", err)
 		return nil
 	}
 
@@ -44,9 +46,9 @@ func CreateTemperatureStatusBox(
 	instance.SetVAlign(gtk.ALIGN_CENTER)
 	instance.SetHAlign(gtk.ALIGN_CENTER)
 
-	var bedTemperatureData *octoprint.TemperatureData = nil
+	var bedTemperatureData *dataModels.TemperatureData = nil
 	var hotendIndex int = 0
-	var hotendCount int = utils.GetToolheadCount(client)
+	var hotendCount int = utils.GetHotendCount(client)
 	for key, temperatureData := range currentTemperatureData {
 		if key == "bed" {
 			bedTemperatureData = &temperatureData
@@ -80,7 +82,7 @@ func CreateTemperatureStatusBox(
 }
 
 // interfaces.ITemperatureDataDisplay
-func (this *TemperatureStatusBox) UpdateTemperatureData(currentTemperatureData map[string]octoprint.TemperatureData) {
+func (this *TemperatureStatusBox) UpdateTemperatureData(currentTemperatureData map[string]dataModels.TemperatureData) {
 	for key, temperatureData := range currentTemperatureData {
 		if labelWithImage, ok := this.labelWithImages[key]; ok {
 			temperatureDataString := utils.GetTemperatureDataString(temperatureData)

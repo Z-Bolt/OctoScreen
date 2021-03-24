@@ -1,7 +1,7 @@
-
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -35,10 +35,12 @@ func ReplaceHTMLTag(html, from, to string) string {
 	return html
 }
 
+// TODO: Clean up StrEllipsis(), StrEllipsisLen(), and TruncateString() and consolidate
+// into a single function.
 func StrEllipsis(name string) string {
 	l := len(name)
 	if l > 32 {
-		return name[:12] + "..." + name[l-17:l]
+		return name[:12] + "..." + name[l - 17:l]
 	}
 
 	return name
@@ -51,4 +53,35 @@ func StrEllipsisLen(name string, length int) string {
 	}
 
 	return name
+}
+
+func TruncateString(str string, maxLength int) string {
+	if maxLength < 3 {
+		maxLength = 3
+	}
+
+	strLen := len(str)
+	if strLen <= maxLength {
+		return str
+	}
+
+	truncateString := str
+	if maxLength > 3 {
+		maxLength -= 3
+	}
+
+	truncateString = str[0:maxLength] + "..."
+
+	return truncateString
+}
+
+
+func StructToJson(obj interface{}) (string, error) {
+	bytes, err := json.Marshal(obj)
+	if err != nil {
+		return "", err
+	} else {
+		jsonStr := string(bytes)
+		return jsonStr, nil
+	}
 }

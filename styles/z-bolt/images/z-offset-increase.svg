@@ -12,7 +12,7 @@
 	<path id="Path_5_" fill="none" stroke="#FFFFFF" stroke-linecap="round" d="M48.02,52.412l3.295-7.688"/>
 	<path id="Path_6_" fill="none" stroke="#FFFFFF" stroke-linecap="round" d="M55.706,52.412L59,44.727"/>
 	<path id="Path_7_" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" d="M66.688,47.953
-		c0-1.768-1.439-3.229-3.186-3.229H6.185C4.44,44.727,3,46.186,3,47.953v1.23c0,1.768,1.44,3.229,3.185,3.229h57.317
+		c0-1.768-1.438-3.229-3.186-3.229H6.185C4.44,44.727,3,46.186,3,47.953v1.23c0,1.768,1.44,3.229,3.185,3.229h57.317
 		c1.744,0,3.186-1.461,3.186-3.229V47.953L66.688,47.953z"/>
 	<polyline id="Path_8_" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" points="8.49,54.607 8.49,59 
 		15.079,59 15.079,54.607 	"/>
@@ -47,6 +47,6 @@
 			<line fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="20.862" y1="24.402" x2="16.616" y2="24.402"/>
 	</g>
 </g>
-<path id="Arrow_1_" fill="#232323" stroke="#FFFFFF" stroke-width="2.4221" stroke-linejoin="round" d="M59.451,23.026l-4.458-4.504
+<path id="Arrow_1_" fill="none" stroke="#FFFFFF" stroke-width="2.4221" stroke-linejoin="round" d="M59.451,23.026l-4.458-4.504
 	l0.001,16.609h-8.073V18.388l-4.598,4.549l-5.679-5.738L50.991,3l14.196,14.348L59.451,23.026z"/>
 </svg>

@@ -4,7 +4,9 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,7 +15,7 @@ type SystemInfoBox struct {
 }
 
 func CreateSystemInfoBox(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	image				*gtk.Image,
 	str1				string,
 	str2				string,
@@ -40,7 +42,7 @@ func CreateSystemInfoBox(
 	ctx.AddClass("font-size-18")
 	base.Add(label2)
 
-	logLevel := utils.LowerCaseLogLevel()
+	logLevel := logger.LogLevel()
 	if logLevel == "debug" {
 		label3 := utils.MustLabel(str3)
 		ctx, _ = label3.GetStyleContext()

@@ -3,7 +3,9 @@ package uiWidgets
 import (
 	"fmt"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,23 +15,31 @@ type OctoPrintInfoBox struct {
 }
 
 func CreateOctoPrintInfoBox(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	logoWidth			int,
 ) *OctoPrintInfoBox {
 	logoHeight := int(float64(logoWidth) * 1.25)
 	logoImage := utils.MustImageFromFileWithSize("logos/logo-octoprint.png", logoWidth, logoHeight)
 
-	versionResponse, err := (&octoprint.VersionRequest{}).Do(client)
+	server := ""
+	apiVersion := ""
+	versionResponse, err := (&octoprintApis.VersionRequest{}).Do(client)
 	if err != nil {
-		panic(err)
+		logger.LogError("OctoPrintInfoBox.CreateOctoPrintInfoBox()", "VersionRequest.Do()", err)
+	} else if versionResponse == nil {
+		server = "Unknown?"
+		apiVersion = "Unknown?"
+	} else {
+		server = versionResponse.Server
+		apiVersion = versionResponse.API
 	}
 
 	base := CreateSystemInfoBox(
 		client,
 		logoImage,
 		"OctoPrint",
-		versionResponse.Server,
-		fmt.Sprintf("(API   %s)", versionResponse.API),
+		server,
+		fmt.Sprintf("(API   %s)", apiVersion),   // Use 3 spaces... 1 space doesn't have enough kerning.
 	)
 
 	instance := &OctoPrintInfoBox {

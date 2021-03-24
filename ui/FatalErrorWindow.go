@@ -2,13 +2,14 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
 func CreateFatalErrorWindow(message string, description string) *gtk.Window {
 	window, error := gtk.WindowNew(gtk.WINDOW_TOPLEVEL)
 	if error != nil {
-		utils.LogFatalError("fatal_error_window.CreateFatalErrorWindow()", "WindowNew()", error)
+		logger.LogFatalError("FatalErrorWindow.CreateFatalErrorWindow()", "WindowNew()", error)
 	}
 
 	window.SetTitle("Fatal Error")
@@ -21,7 +22,7 @@ func CreateFatalErrorWindow(message string, description string) *gtk.Window {
 	// Create a new label widget to show in the window.
 	label, error := gtk.LabelNew("\n    " + message + "\n    " + description)
 	if error != nil {
-		utils.LogFatalError("fatal_error_window.CreateFatalErrorWindow()", "LabelNew()", error)
+		logger.LogFatalError("FatalErrorWindow.CreateFatalErrorWindow()", "LabelNew()", error)
 	}
 
 	label.SetHAlign(gtk.ALIGN_START)

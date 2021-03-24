@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="60px" height="60px" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>open</title>
-    <desc>Created with Sketch.</desc>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linejoin="round">
-        <g id="load" transform="translate(29.000000, 30.000000) rotate(90.000000) translate(-29.000000, -30.000000) translate(10.000000, 9.000000)" fill="#232323" stroke="#FFFFFF" stroke-width="3">
-            <polygon id="path7561-4-3" points="36.7466734 18.2023592 19.1610914 0.4322738 1.3910064 18.0178552 8.4256294 25.1258922 14.1191704 19.4912442 13.8826214 40.2301292 23.8819714 40.3441822 24.1179184 19.6580282 29.6386334 25.2369812"></polygon>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="60px" height="60px" viewBox="0 0 60 60" enable-background="new 0 0 60 60" xml:space="preserve">
+	<g id="Page-1">
+		<g id="load" transform="translate(29.000000, 30.000000) rotate(90.000000) translate(-29.000000, -30.000000) translate(10.000000, 9.000000)">
+			<polygon id="path7561-4-3" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" points="36.746,18.202 
+				19.161,0.432 1.391,18.018 8.426,25.126 14.119,19.491 13.883,40.23 23.882,40.344 24.118,19.658 29.639,25.237 		"/>
+		</g>
+	</g>
 </svg>

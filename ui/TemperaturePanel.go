@@ -14,7 +14,7 @@ type temperaturePanel struct {
 
 	// First row
 	decreaseButton					*uiWidgets.TemperatureIncreaseButton
-	selectToolStepButton			*uiWidgets.SelectToolStepButton
+	selectHotendStepButton			*uiWidgets.SelectToolStepButton
 	temperatureAmountStepButton		*uiWidgets.TemperatureAmountStepButton
 	increaseButton					*uiWidgets.TemperatureIncreaseButton
 
@@ -45,26 +45,26 @@ func (this *temperaturePanel) initialize() {
 
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.temperatureAmountStepButton = uiWidgets.CreateTemperatureAmountStepButton()
-	this.selectToolStepButton = uiWidgets.CreateSelectToolStepButton(this.UI.Client, true)
+	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, true)
 
 
 	// First row
 	this.decreaseButton = uiWidgets.CreateTemperatureIncreaseButton(
 		this.UI.Client,
 		this.temperatureAmountStepButton,
-		this.selectToolStepButton,
+		this.selectHotendStepButton,
 		false,
 	)
 	this.Grid().Attach(this.decreaseButton, 0, 0, 1, 1)
 
-	this.Grid().Attach(this.selectToolStepButton, 1, 0, 1, 1)
+	this.Grid().Attach(this.selectHotendStepButton, 1, 0, 1, 1)
 
 	this.Grid().Attach(this.temperatureAmountStepButton, 2, 0, 1, 1)
 
 	this.increaseButton = uiWidgets.CreateTemperatureIncreaseButton(
 		this.UI.Client,
 		this.temperatureAmountStepButton,
-		this.selectToolStepButton,
+		this.selectHotendStepButton,
 		true,
 	)
 	this.Grid().Attach(this.increaseButton, 3, 0, 1, 1)
@@ -84,6 +84,6 @@ func (this *temperaturePanel) initialize() {
 }
 
 func (this *temperaturePanel) showTemperaturePresetsPanel() {
-	temperaturePresetsPanel := TemperaturePresetsPanel(this.UI, this, this.selectToolStepButton)
+	temperaturePresetsPanel := TemperaturePresetsPanel(this.UI, this, this.selectHotendStepButton)
 	this.UI.GoToPanel(temperaturePresetsPanel)
 }

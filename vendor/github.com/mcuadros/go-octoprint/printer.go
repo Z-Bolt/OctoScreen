@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"strings"
+	// "strings"
 )
 
 const (
-	URIPrinter       = "/api/printer"
+	// URIPrinter       = "/api/printer"
 	URIPrintHead     = "/api/printer/printhead"
 	URIPrintTool     = "/api/printer/tool"
 	URIPrintBed      = "/api/printer/bed"
@@ -20,21 +20,21 @@ const (
 )
 
 var (
-	PrintErrors = statusMapping{
+	PrintErrors = StatusMapping{
 		409: "Printer is not operational",
 	}
-	PrintHeadJobErrors = statusMapping{
+	PrintHeadJobErrors = StatusMapping{
 		400: "Invalid axis specified, invalid value for travel amount for a jog command or factor for feed rate or otherwise invalid request",
 		409: "Printer is not operational or currently printing",
 	}
-	PrintToolErrors = statusMapping{
+	PrintToolErrors = StatusMapping{
 		400: "Targets or offsets contains a property or tool contains a value not matching the format tool{n}, the target/offset temperature, extrusion amount or flow rate factor is not a valid number or outside of the supported range, or if the request is otherwise invalid",
 		409: "Printer is not operational",
 	}
-	PrintBedErrors = statusMapping{
+	PrintBedErrors = StatusMapping{
 		409: "Printer is not operational or the selected printer profile does not have a heated bed.",
 	}
-	PrintSDErrors = statusMapping{
+	PrintSDErrors = StatusMapping{
 		404: "SD support has been disabled in OctoPrint’s settings.",
 		409: "SD card has not been initialized.",
 	}
@@ -44,88 +44,88 @@ var (
 
 
 
+// FullStateRequest has been moved to FullStateRequest.go
+// // FullStateRequest retrieves the current state of the printer.
+// type FullStateRequest struct {
+// 	// bytes if true retrieve the temperature history.
+// 	IncludeHistory bool
 
-// FullStateRequest retrieves the current state of the printer.
-type FullStateRequest struct {
-	// bytes if true retrieve the temperature history.
-	IncludeHistory bool
+// 	// Limit limits the amount of returned history data points.
+// 	Limit int
 
-	// Limit limits the amount of returned history data points.
-	Limit int
+// 	// Exclude list of fields to exclude from the response (e.g. if not
+// 	// needed by the client). Valid values to supply here are `temperature`,
+// 	// `sd` and `state`.
+// 	Exclude []string
+// }
 
-	// Exclude list of fields to exclude from the response (e.g. if not
-	// needed by the client). Valid values to supply here are `temperature`,
-	// `sd` and `state`.
-	Exclude []string
-}
+// // FullStateResponse contains informantion about the current state of the printer.
+// type FullStateResponse struct {
+// 	// TemperatureStateResponse is the printer’s temperature state data.
+// 	Temperature TemperatureStateResponse `json:"temperature"`
 
-// FullStateResponse contains informantion about the current state of the printer.
-type FullStateResponse struct {
-	// TemperatureStateResponse is the printer’s temperature state data.
-	Temperature TemperatureStateResponse `json:"temperature"`
+// 	// SD is the printer’s sd state data.
+// 	SD SDState `json:"sd"`
 
-	// SD is the printer’s sd state data.
-	SD SDState `json:"sd"`
+// 	// State is the printer’s general state.
+// 	State PrinterState `json:"state"`
+// }
 
-	// State is the printer’s general state.
-	State PrinterState `json:"state"`
-}
+// // Do sends an API request and returns the API response.
+// func (cmd *FullStateRequest) Do(c *Client) (*FullStateResponse, error) {
+// 	uri := fmt.Sprintf(
+// 		"%s?history=%t&limit=%d&exclude=%s",
+// 		URIPrinter,
+// 		cmd.IncludeHistory,
+// 		cmd.Limit,
+// 		strings.Join(cmd.Exclude, ","),
+// 	)
 
-// Do sends an API request and returns the API response.
-func (cmd *FullStateRequest) Do(c *Client) (*FullStateResponse, error) {
-	uri := fmt.Sprintf(
-		"%s?history=%t&limit=%d&exclude=%s",
-		URIPrinter,
-		cmd.IncludeHistory,
-		cmd.Limit,
-		strings.Join(cmd.Exclude, ","),
-	)
-
-	log.Printf("TODO-Remove: StateRequest (FullStateResponse) uri is: %s", uri)
-	//StateRequest uri is: %s /api/printer?history=true&limit=1&exclude=sd,state
-	/*
-		{
-			"temperature": {
-				"bed": {
-					"actual": 26.9,
-					"offset": 0,
-					"target": 0.0
-				},
-				"history": [
-					{
-						"bed": {
-							"actual": 26.9,
-							"target": 0.0
-						},
-						"time": 1598235178,
-						"tool0": {
-							"actual": 35.4,
-							"target": 0.0
-						}
-					}
-				],
-				"tool0": {
-					"actual": 35.4,
-					"offset": 0,
-					"target": 0.0
-				}
-			}
-		}
-	*/
+// 	log.Printf("TODO-Remove: StateRequest (FullStateResponse) uri is: %s", uri)
+// 	//StateRequest uri is: %s /api/printer?history=true&limit=1&exclude=sd,state
+// 	/*
+// 		{
+// 			"temperature": {
+// 				"bed": {
+// 					"actual": 26.9,
+// 					"offset": 0,
+// 					"target": 0.0
+// 				},
+// 				"history": [
+// 					{
+// 						"bed": {
+// 							"actual": 26.9,
+// 							"target": 0.0
+// 						},
+// 						"time": 1598235178,
+// 						"tool0": {
+// 							"actual": 35.4,
+// 							"target": 0.0
+// 						}
+// 					}
+// 				],
+// 				"tool0": {
+// 					"actual": 35.4,
+// 					"offset": 0,
+// 					"target": 0.0
+// 				}
+// 			}
+// 		}
+// 	*/
 
 
-	bytes, err := c.doJSONRequest("GET", uri, nil, PrintErrors)
-	if err != nil {
-		return nil, err
-	}
+// 	bytes, err := c.doJSONRequest("GET", uri, nil, PrintErrors)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	response := &FullStateResponse{}
-	if err := json.Unmarshal(bytes, response); err != nil {
-		return nil, err
-	}
+// 	response := &FullStateResponse{}
+// 	if err := json.Unmarshal(bytes, response); err != nil {
+// 		return nil, err
+// 	}
 
-	return response, err
-}
+// 	return response, err
+// }
 
 
 
@@ -657,7 +657,7 @@ func (cmd *SDReleaseRequest) Do(c *Client) error {
 
 // doCommandRequest can be used in any operation where the only required field
 // is the `command` field.
-func doCommandRequest(c *Client, uri, command string, m statusMapping) error {
+func doCommandRequest(c *Client, uri, command string, m StatusMapping) error {
 	v := map[string]string{"command": command}
 
 	b := bytes.NewBuffer(nil)

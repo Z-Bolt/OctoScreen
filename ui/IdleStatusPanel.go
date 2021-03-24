@@ -1,14 +1,18 @@
 package ui
 
 import (
+	// "encoding/json"
 	// "fmt"
 	// "sync"
 	"time"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var idleStatusPanelInstance *idleStatusPanel
 
@@ -37,16 +41,32 @@ func IdleStatusPanel(ui *UI) *idleStatusPanel {
 }
 
 func (this *idleStatusPanel) initialize() {
+	logger.TraceEnter("IdleStatusPanel.initialize()")
+
 	defer this.Initialize()
 
-	utils.Logger.Info(this.UI.Settings)
+	logger.Info("IdleStatusPanel.initialize() - settings are:")
+	if this.UI == nil {
+		logger.Error("IdleStatusPanel.initialize() - this.UI is nil")
+	} else if this.UI.Settings == nil {
+		logger.Error("IdleStatusPanel.initialize() - this.UI.Settings is nil")
+	} else {
+		logger.Info("struct values:")
+		logger.Info(this.UI.Settings)
 
-	var menuItems []octoprint.MenuItem
+		jsonStr, err := utils.StructToJson(this.UI.Settings)
+		if err == nil {
+			logger.Info("JSON:")
+			logger.Info(jsonStr)
+		}
+	}
+
+	var menuItems []dataModels.MenuItem
 	if this.UI.Settings == nil || this.UI.Settings.MenuStructure == nil || len(this.UI.Settings.MenuStructure) < 1 {
-		utils.Logger.Info("Loading default menu")
+		logger.Info("IdleStatusPanel.initialize() - Loading default menu")
 		this.UI.Settings.MenuStructure = getDefaultMenuItems(this.UI.Client)
 	} else {
-		utils.Logger.Info("Loading octo menu")
+		logger.Info("IdleStatusPanel.initialize() - Loading octo menu")
 	}
 
 	menuItems = this.UI.Settings.MenuStructure
@@ -61,22 +81,34 @@ func (this *idleStatusPanel) initialize() {
 	this.Grid().Attach(printButton, 2, 2, 2, 1)
 
 	this.showTools()
+
+	logger.TraceLeave("IdleStatusPanel.initialize()")
 }
 
 func (this *idleStatusPanel) showFiles() {
+	logger.TraceEnter("IdleStatusPanel.showFiles()")
+
 	this.UI.GoToPanel(FilesPanel(this.UI, this))
+
+	logger.TraceLeave("IdleStatusPanel.showFiles()")
 }
 
 func (this *idleStatusPanel) update() {
+	logger.TraceEnter("IdleStatusPanel.update()")
+
 	this.updateTemperature()
+
+	logger.TraceLeave("IdleStatusPanel.update()")
 }
 
 func (this *idleStatusPanel) showTools() {
+	logger.TraceEnter("IdleStatusPanel.showTools()")
+
 	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
 	// PrintStatusPanel look similar, but there are subtle differences between the two
 	// and they can't be reused.
-	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-	if toolheadCount == 1 {
+	hotendCount := utils.GetHotendCount(this.UI.Client)
+	if hotendCount == 1 {
 		this.tool0Button = uiWidgets.CreateToolButton(0, this.UI.Client)
 	} else {
 		this.tool0Button = uiWidgets.CreateToolButton(1, this.UI.Client)
@@ -86,7 +118,7 @@ func (this *idleStatusPanel) showTools() {
 	this.tool3Button = uiWidgets.CreateToolButton( 4, this.UI.Client)
 	this.bedButton   = uiWidgets.CreateToolButton(-1, this.UI.Client)
 
-	switch toolheadCount {
+	switch hotendCount {
 		case 1:
 			toolGrid := utils.MustGrid()
 			toolGrid.SetRowHomogeneous(true)
@@ -113,16 +145,17 @@ func (this *idleStatusPanel) showTools() {
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
 	}
+
+	logger.TraceLeave("IdleStatusPanel.showTools()")
 }
 
 func (this *idleStatusPanel) updateTemperature() {
-	utils.Logger.Debug("entering IdleStatusPanel.updateTemperature()")
+	logger.TraceEnter("IdleStatusPanel.updateTemperature()")
 
-	fullStateResponse, err := (&octoprint.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
+	fullStateResponse, err := (&octoprintApis.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("IdleStatusPanel.updateTemperature()", "Do(StateRequest)", err)
-
-		utils.Logger.Debug("leaving IdleStatusPanel.updateTemperature()")
+		logger.LogError("IdleStatusPanel.updateTemperature()", "Do(StateRequest)", err)
+		logger.TraceLeave("IdleStatusPanel.updateTemperature()")
 		return
 	}
 
@@ -145,5 +178,5 @@ func (this *idleStatusPanel) updateTemperature() {
 		}
 	}
 
-	utils.Logger.Debug("leaving IdleStatusPanel.updateTemperature()")
+	logger.TraceLeave("IdleStatusPanel.updateTemperature()")
 }

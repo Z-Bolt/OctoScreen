@@ -17,107 +17,118 @@ const (
 	ZAxis Axis = "z"
 )
 
+// JobResponse is now in JobRequest.go
+// // JobResponse is the response from a job command.
+// type JobResponse struct {
+// 	// Job contains information regarding the target of the current print job.
+// 	Job JobInformation `json:"job"`
 
-// JobResponse is the response from a job command.
-type JobResponse struct {
-	// Job contains information regarding the target of the current print job.
-	Job JobInformation `json:"job"`
+// 	// Progress contains information regarding the progress of the current job.
+// 	Progress ProgressInformation `json:"progress"`
 
-	// Progress contains information regarding the progress of the current job.
-	Progress ProgressInformation `json:"progress"`
+// 	//State StateInformation `json:"state"`
+// 	State string `json:"state"`
+// }
 
-	//State StateInformation `json:"state"`
-	State string `json:"state"`
-}
 
-// JobInformation contains information regarding the target of the current job.
-type JobInformation struct {
-	// File is the file that is the target of the current print job.
-	File FileInformation `json:"file"`
 
-	// EstimatedPrintTime is the estimated print time for the file, in seconds.
-	EstimatedPrintTime float64 `json:"estimatedPrintTime"`
+// JobInformation i no in JobInformation.go
+// // JobInformation contains information regarding the target of the current job.
+// type JobInformation struct {
+// 	// File is the file that is the target of the current print job.
+// 	File FileResponse `json:"file"`
 
-	// LastPrintTime is the print time of the last print of the file, in seconds.
-	LastPrintTime float64 `json:"lastPrintTime"`
+// 	// EstimatedPrintTime is the estimated print time for the file, in seconds.
+// 	EstimatedPrintTime float64 `json:"estimatedPrintTime"`
 
-	// Filament contains Information regarding the estimated filament
-	// usage of the print job.
-	Filament struct {
-		// Length of filament used, in mm
-		Length float64 `json:"length"`
-		// Volume of filament used, in cm³
-		Volume float64 `json:"volume"`
-	} `json:"filament"`
+// 	// LastPrintTime is the print time of the last print of the file, in seconds.
+// 	LastPrintTime float64 `json:"lastPrintTime"`
 
-	FilePosition uint64 `json:"filepos"`
-}
+// 	// Filament contains Information regarding the estimated filament
+// 	// usage of the print job.
+// 	Filament struct {
+// 		// Length of filament used, in mm
+// 		Length float64 `json:"length"`
+// 		// Volume of filament used, in cm³
+// 		Volume float64 `json:"volume"`
+// 	} `json:"filament"`
 
+// 	FilePosition uint64 `json:"filepos"`
+// }
+
+
+
+// ProgressInformation is now in ProgressInformation.go
 // ProgressInformation contains information regarding the progress of the
 // current print job.
-type ProgressInformation struct {
-	// Completion percentage of completion of the current print job.
-	Completion float64 `json:"completion"`
+// type ProgressInformation struct {
+// 	// Completion percentage of completion of the current print job.
+// 	Completion float64 `json:"completion"`
 
-	// FilePosition current position in the file being printed, in bytes
-	// from the beginning.
-	FilePosition uint64 `json:"filepos"`
+// 	// FilePosition current position in the file being printed, in bytes
+// 	// from the beginning.
+// 	FilePosition uint64 `json:"filepos"`
 
-	// PrintTime is time already spent printing, in seconds
-	PrintTime float64 `json:"printTime"`
+// 	// PrintTime is time already spent printing, in seconds
+// 	PrintTime float64 `json:"printTime"`
 
-	// PrintTimeLeft is estimate of time left to print, in seconds
-	PrintTimeLeft float64 `json:"printTimeLeft"`
+// 	// PrintTimeLeft is estimate of time left to print, in seconds
+// 	PrintTimeLeft float64 `json:"printTimeLeft"`
 
-	// Origin of the current time left estimate
-	PrintTimeLeftOrigin string `json:"printTimeLeftOrigin"`
-}
+// 	// Origin of the current time left estimate
+// 	PrintTimeLeftOrigin string `json:"printTimeLeftOrigin"`
+// }
 
-// TemperatureState is the printer’s temperature state data.
-type TemperatureStateResponse temperatureStateResponse
 
-type temperatureStateResponse struct {
-	// Current temperature stats.
-	CurrentTemperatureData map[string]TemperatureData `json:"current"`
 
-	// Temperature history.
-	History []*HistoricTemperatureData `json:"history"`
-}
 
-func (r *TemperatureStateResponse) UnmarshalJSON(b []byte) error {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(b, &raw); err != nil {
-		return err
-	}
+// TemperatureStateResponse is now in TemperatureStateResponse.go
+// // TemperatureState is the printer’s temperature state data.
+// type TemperatureStateResponse temperatureStateResponse
 
-	history := raw["history"]
-	delete(raw, "history")
-	b, _ = json.Marshal(map[string]interface{}{
-		"current": raw,
-		"history": history,
-	})
+// type temperatureStateResponse struct {
+// 	// Current temperature stats.
+// 	CurrentTemperatureData map[string]TemperatureData `json:"current"`
 
-	i := &temperatureStateResponse{}
-	if err := json.Unmarshal(b, i); err != nil {
-		return err
-	}
+// 	// Temperature history.
+// 	History []*HistoricTemperatureData `json:"history"`
+// }
 
-	*r = TemperatureStateResponse(*i)
-	return nil
-}
+// func (r *TemperatureStateResponse) UnmarshalJSON(b []byte) error {
+// 	var raw map[string]interface{}
+// 	if err := json.Unmarshal(b, &raw); err != nil {
+// 		return err
+// 	}
 
-// TemperatureData is temperature stats for a tool.
-type TemperatureData struct {
-	// Actual current temperature.
-	Actual float64 `json:"actual"`
+// 	history := raw["history"]
+// 	delete(raw, "history")
+// 	b, _ = json.Marshal(map[string]interface{}{
+// 		"current": raw,
+// 		"history": history,
+// 	})
 
-	// Target temperature, may be nil if no target temperature is set.
-	Target float64 `json:"target"`
+// 	i := &temperatureStateResponse{}
+// 	if err := json.Unmarshal(b, i); err != nil {
+// 		return err
+// 	}
 
-	// Offset currently configured temperature offset to apply, will be left
-	// out for historic temperature information.
-	Offset float64 `json:"offset"`
-}
+// 	*r = TemperatureStateResponse(*i)
+// 	return nil
+// }
+
+// TemperatureData is now in TemperatureData.go
+// // TemperatureData is temperature stats for a tool.
+// type TemperatureData struct {
+// 	// Actual current temperature.
+// 	Actual float64 `json:"actual"`
+
+// 	// Target temperature, may be nil if no target temperature is set.
+// 	Target float64 `json:"target"`
+
+// 	// Offset currently configured temperature offset to apply, will be left
+// 	// out for historic temperature information.
+// 	Offset float64 `json:"offset"`
+// }
 
 // PrinterState current state of the printer.
 type PrinterState struct {
@@ -272,8 +283,8 @@ type Profile struct {
 type FilesResponse struct {
 	// Files is the list of requested files. Might be an empty list if no files
 	// are available
-	Files    []*FileInformation
-	Children []*FileInformation
+	Files    []*FileResponse
+	Children []*FileResponse
 
 	// Free is the amount of disk space in bytes available in the local disk
 	// space (refers to OctoPrint’s `uploads` folder). Only returned if file
@@ -281,62 +292,64 @@ type FilesResponse struct {
 	Free uint64
 }
 
+// FileInformation/FileResponse is now in FileRequest.go
+// TODO: remove this commented code
 // FileInformation contains information regarding a file.
-type FileInformation struct {
-	// Name is name of the file without path. E.g. “file.gco” for a file
-	// “file.gco” located anywhere in the file system.
-	Name string `json:"name"`
+// type FileInformation struct {
+// 	// Name is name of the file without path. E.g. “file.gco” for a file
+// 	// “file.gco” located anywhere in the file system.
+// 	Name string `json:"name"`
 
-	// The name of the file without the path
-	Display string `json:"display"`
+// 	// The name of the file without the path
+// 	Display string `json:"display"`
 
-	// Path is the path to the file within the location. E.g.
-	//“folder/subfolder/file.gco” for a file “file.gco” located within “folder”
-	// and “subfolder” relative to the root of the location.
-	Path string `json:"path"`
+// 	// Path is the path to the file within the location. E.g.
+// 	//“folder/subfolder/file.gco” for a file “file.gco” located within “folder”
+// 	// and “subfolder” relative to the root of the location.
+// 	Path string `json:"path"`
 
-	// Type of file. model or machinecode. Or folder if it’s a folder, in
-	// which case the children node will be populated.
-	Type string `json:"type"`
+// 	// Type of file. model or machinecode. Or folder if it’s a folder, in
+// 	// which case the children node will be populated.
+// 	Type string `json:"type"`
 
-	// TypePath path to type of file in extension tree. E.g. `["model", "stl"]`
-	// for .stl files, or `["machinecode", "gcode"]` for .gcode files.
-	// `["folder"]` for folders.
-	TypePath []string `json:"typePath"`
+// 	// TypePath path to type of file in extension tree. E.g. `["model", "stl"]`
+// 	// for .stl files, or `["machinecode", "gcode"]` for .gcode files.
+// 	// `["folder"]` for folders.
+// 	TypePath []string `json:"typePath"`
 
-	// Hash is the MD5 hash of the file. Only available for `local` files.
-	Hash string `json:"hash"`
+// 	// Hash is the MD5 hash of the file. Only available for `local` files.
+// 	Hash string `json:"hash"`
 
-	// Size of the file in bytes. Only available for `local` files or `sdcard`
-	// files if the printer supports file sizes for sd card files.
-	Size uint64 `json:"size"`
+// 	// Size of the file in bytes. Only available for `local` files or `sdcard`
+// 	// files if the printer supports file sizes for sd card files.
+// 	Size uint64 `json:"size"`
 
-	// Date when this file was uploaded. Only available for `local` files.
-	Date JSONTime `json:"date"`
+// 	// Date when this file was uploaded. Only available for `local` files.
+// 	Date JSONTime `json:"date"`
 
-	// Origin of the file, `local` when stored in OctoPrint’s `uploads` folder,
-	// `sdcard` when stored on the printer’s SD card (if available)
-	Origin string `json:"origin"`
+// 	// Origin of the file, `local` when stored in OctoPrint’s `uploads` folder,
+// 	// `sdcard` when stored on the printer’s SD card (if available)
+// 	Origin string `json:"origin"`
 
-	// Refs references relevant to this file, left out in abridged versio
-	Refs Reference `json:"refs"`
+// 	// Refs references relevant to this file, left out in abridged versio
+// 	Refs Reference `json:"refs"`
 
-	// GCodeAnalysis information from the analysis of the GCODE file, if
-	// available. Left out in abridged version.
-	GCodeAnalysis GCodeAnalysisInformation `json:"gcodeAnalysis"`
+// 	// GCodeAnalysis information from the analysis of the GCODE file, if
+// 	// available. Left out in abridged version.
+// 	GCodeAnalysis GCodeAnalysisInformation `json:"gcodeAnalysis"`
 
-	// Print information from the print stats of a file.
-	Print PrintStats `json:"print"`
-}
+// 	// Print information from the print stats of a file.
+// 	Print PrintStats `json:"print"`
+// }
 
-// IsFolder it returns true if the file is a folder.
-func (f *FileInformation) IsFolder() bool {
-	if len(f.TypePath) == 1 && f.TypePath[0] == "folder" {
-		return true
-	}
+// // IsFolder it returns true if the file is a folder.
+// func (f *FileInformation) IsFolder() bool {
+// 	if len(f.TypePath) == 1 && f.TypePath[0] == "folder" {
+// 		return true
+// 	}
 
-	return false
-}
+// 	return false
+// }
 
 // Reference of a file.
 type Reference struct {
@@ -395,11 +408,11 @@ type UploadFileResponse struct {
 	File struct {
 		// Local is the information regarding the file that was just uploaded
 		// to the local storage.
-		Local *FileInformation `json:"local"`
+		Local *FileResponse `json:"local"`
 
 		// SDCard is the information regarding the file that was just uploaded
 		// to the printer’s SD card.
-		SDCard *FileInformation `json:"sdcard"`
+		SDCard *FileResponse `json:"sdcard"`
 	} `json:"files"`
 
 	// Done whether any file processing after upload has already finished or

@@ -2,7 +2,9 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -10,19 +12,19 @@ type FilamentExtrudeButton struct {
 	*gtk.Button
 
 	parentWindow				*gtk.Window
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	amountToExtrudeStepButton	*AmountToExtrudeStepButton
 	flowRateStepButton			*FlowRateStepButton // The flow rate step button is optional.
-	selectToolStepButton		*SelectToolStepButton
+	selectExtruderStepButton	*SelectToolStepButton
 	isForward					bool
 }
 
 func CreateFilamentExtrudeButton(
 	parentWindow				*gtk.Window,
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	amountToExtrudeStepButton	*AmountToExtrudeStepButton,
 	flowRateStepButton			*FlowRateStepButton, // The flow rate step button is optional.
-	selectToolStepButton		*SelectToolStepButton,
+	selectExtruderStepButton	*SelectToolStepButton,
 	isForward					bool,
 ) *FilamentExtrudeButton {
 	var base *gtk.Button
@@ -38,11 +40,12 @@ func CreateFilamentExtrudeButton(
 		client:						client,
 		amountToExtrudeStepButton:	amountToExtrudeStepButton,
 		flowRateStepButton:			flowRateStepButton,
-		selectToolStepButton:		selectToolStepButton,
+		selectExtruderStepButton:	selectExtruderStepButton,
 		isForward:					isForward,
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateFilamentExtrudeButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -53,37 +56,20 @@ func (this *FilamentExtrudeButton) handleClicked() {
 	this.sendExtrudeCommand(this.amountToExtrudeStepButton.Value())
 }
 
-func (this *FilamentExtrudeButton) sendExtrudeCommand(amount int) {
-	// The flow rate step button is optional.
+func (this *FilamentExtrudeButton) sendExtrudeCommand(length int) {
+	extruderId := this.selectExtruderStepButton.Value()
+
+	flowRatePercentage := 100
 	if this.flowRateStepButton != nil {
-		err := this.flowRateStepButton.SendChangeFlowRate()
-		if err != nil {
-			utils.LogError("FilamentExtrudeButton.sendExtrudeCommand()", "SendChangeFlowRate()", err)
-			return
-		}
+		flowRatePercentage = this.flowRateStepButton.Value()
 	}
 
-	extruderId := this.selectToolStepButton.Value()
-	var action string
-	if this.isForward {
-		action = "extrude"
-	} else {
-		action = "retract"
-	}
-	if utils.CurrentHotendTemperatureIsTooLow(this.client, extruderId, action, this.parentWindow) {
-		utils.Logger.Error("FilamentExtrudeButton.sendExtrudeCommand() -  temperature is too low")
-		return
-	}
-
-	cmd := &octoprint.ToolExtrudeRequest{}
-	if this.isForward {
-		cmd.Amount = amount
-	} else {
-		cmd.Amount = -amount
-	}
-
-	utils.Logger.Infof("FilamentExtrudeButton.sendExtrudeCommand() - sending extrude request with amount: %d", cmd.Amount)
-	if err := cmd.Do(this.client); err != nil {
-		utils.LogError("FilamentExtrudeButton.sendExtrudeCommand()", "Do(ToolExtrudeRequest)", err)
-	}
+	utils.Extrude(
+		this.client,
+		this.isForward,
+		extruderId,
+		this.parentWindow,
+		flowRatePercentage,
+		length,
+	)
 }

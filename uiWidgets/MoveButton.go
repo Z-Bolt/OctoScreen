@@ -2,25 +2,26 @@ package uiWidgets
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
-	"github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
 type MoveButton struct {
 	*gtk.Button
 
-	client					*octoprint.Client
+	client					*octoprintApis.Client
 	amountToMoveStepButton	*AmountToMoveStepButton
-	axis					octoprint.Axis
+	axis					dataModels.Axis
 	direction				float64
 }
 
 func CreateMoveButton(
-	client					*octoprint.Client,
+	client					*octoprintApis.Client,
 	amountToMoveStepButton	*AmountToMoveStepButton,
 	label					string,
 	image					string,
-	axis					octoprint.Axis,
+	axis					dataModels.Axis,
 	direction				float64,
 ) *MoveButton {
 	// A little bit of a "chicken or the egg" situation here.  Create the
@@ -41,20 +42,20 @@ func CreateMoveButton(
 
 func (this *MoveButton) handlePressed() {
 	distance := this.amountToMoveStepButton.Value() * this.direction
-	cmd := &octoprint.PrintHeadJogRequest{}
+	cmd := &octoprintApis.PrintHeadJogRequest{}
 	switch this.axis {
-		case octoprint.XAxis:
+		case dataModels.XAxis:
 			cmd.X = distance
 
-		case octoprint.YAxis:
+		case dataModels.YAxis:
 			cmd.Y = distance
 
-		case octoprint.ZAxis:
+		case dataModels.ZAxis:
 			cmd.Z = distance
 	}
 
 	if err := cmd.Do(this.client); err != nil {
-		utils.LogError("MoveButton.handlePressed()", "Do(PrintHeadJogRequest)", err)
+		logger.LogError("MoveButton.handlePressed()", "Do(PrintHeadJogRequest)", err)
 		return
 	}
 }

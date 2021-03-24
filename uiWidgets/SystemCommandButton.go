@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,18 +15,19 @@ type SystemCommandButton struct {
 }
 
 func CreateSystemCommandButton(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	parentWindow		*gtk.Window,
 	name				string,
 	action				string,
 	style				string,
 ) *SystemCommandButton {
-	systemCommandsResponse, err := (&octoprint.SystemCommandsRequest{}).Do(client)
+	systemCommandsResponse, err := (&octoprintApis.SystemCommandsRequest{}).Do(client)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateSystemCommandButton()", "SystemCommandsRequest.Do()", err)
 		panic(err)
 	}
 
-	var cmd *octoprint.CommandDefinition
+	var cmd *dataModels.CommandDefinition
 	var cb func()
 
 	for _, commandDefinition := range systemCommandsResponse.Core {
@@ -35,13 +38,13 @@ func CreateSystemCommandButton(
 
 	if cmd != nil {
 		do := func() {
-			systemExecuteCommandRequest := &octoprint.SystemExecuteCommandRequest{
-				Source: octoprint.Core,
+			systemExecuteCommandRequest := &octoprintApis.SystemExecuteCommandRequest{
+				Source: dataModels.Core,
 				Action: cmd.Action,
 			}
 
 			if err := systemExecuteCommandRequest.Do(client); err != nil {
-				utils.LogError("system.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
+				logger.LogError("system.createCommandButton()", "Do(SystemExecuteCommandRequest)", err)
 				return
 			}
 		}

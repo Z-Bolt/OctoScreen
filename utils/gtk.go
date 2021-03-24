@@ -1,17 +1,22 @@
 package utils
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"net/http"
 	"path/filepath"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 )
 
 // MustWindow returns a new gtk.Window, if error panics.
 func MustWindow(windowType gtk.WindowType) *gtk.Window {
 	win, err := gtk.WindowNew(windowType)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustWindow()", "gtk.WindowNew()", err)
 		panic(err)
 	}
 
@@ -24,6 +29,7 @@ func MustWindow(windowType gtk.WindowType) *gtk.Window {
 func MustGrid() *gtk.Grid {
 	grid, err := gtk.GridNew()
 	if err != nil {
+		logger.LogError("PANIC!!! - MustGrid()", "gtk.GridNew()", err)
 		panic(err)
 	}
 
@@ -34,6 +40,7 @@ func MustGrid() *gtk.Grid {
 func MustBox(orientation gtk.Orientation, spacing int) *gtk.Box {
 	box, err := gtk.BoxNew(orientation, spacing)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustBox()", "gtk.BoxNew()", err)
 		panic(err)
 	}
 
@@ -44,6 +51,7 @@ func MustBox(orientation gtk.Orientation, spacing int) *gtk.Box {
 func MustProgressBar() *gtk.ProgressBar {
 	progressBar, err := gtk.ProgressBarNew()
 	if err != nil {
+		logger.LogError("PANIC!!! - MustProgressBar()", "gtk.ProgressBarNew()", err)
 		panic(err)
 	}
 
@@ -54,6 +62,7 @@ func MustProgressBar() *gtk.ProgressBar {
 func MustLabel(format string, args ...interface{}) *gtk.Label {
 	label, err := gtk.LabelNew("")
 	if err != nil {
+		logger.LogError("PANIC!!! - MustLabel()", "gtk.LabelNew()", err)
 		panic(err)
 	}
 
@@ -66,6 +75,7 @@ func MustLabel(format string, args ...interface{}) *gtk.Label {
 func MustLabelWithCssClass(format string, className string, args ...interface{}) *gtk.Label {
 	label, err := gtk.LabelNew("")
 	if err != nil {
+		logger.LogError("PANIC!!! - MustLabelWithCssClass()", "gtk.LabelNew()", err)
 		panic(err)
 	}
 
@@ -81,6 +91,7 @@ func MustLabelWithCssClass(format string, className string, args ...interface{})
 func MustLabelWithCssClasses(format string, classNames []string, args ...interface{}) *gtk.Label {
 	label, err := gtk.LabelNew("")
 	if err != nil {
+		logger.LogError("PANIC!!! - MustLabelWithCssClasses()", "gtk.LabelNew()", err)
 		panic(err)
 	}
 
@@ -127,6 +138,7 @@ func MustButtonImage(buttonlabel, imageFileName string, clicked func()) *gtk.But
 	image := MustImageFromFile(imageFileName)
 	button, err := gtk.ButtonNewWithLabel(buttonlabel)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustButtonImage()", "gtk.ButtonNewWithLabel()", err)
 		panic(err)
 	}
 
@@ -147,6 +159,7 @@ func MustToggleButton(label string, imageFileName string, clicked func()) *gtk.T
 	image := MustImageFromFile(imageFileName)
 	button, err := gtk.ToggleButtonNewWithLabel(label)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustToggleButton()", "gtk.ToggleButtonNewWithLabel()", err)
 		panic(err)
 	}
 
@@ -166,6 +179,7 @@ func MustToggleButton(label string, imageFileName string, clicked func()) *gtk.T
 func MustButton(image *gtk.Image, clicked func()) *gtk.Button {
 	button, err := gtk.ButtonNew()
 	if err != nil {
+		logger.LogError("PANIC!!! - MustButton()", "gtk.ButtonNew()", err)
 		panic(err)
 	}
 
@@ -182,6 +196,7 @@ func MustButton(image *gtk.Image, clicked func()) *gtk.Button {
 func MustButtonText(label string, clicked func()) *gtk.Button {
 	button, err := gtk.ButtonNewWithLabel(label)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustButtonText()", "gtk.ButtonNewWithLabel()", err)
 		panic(err)
 	}
 
@@ -194,23 +209,24 @@ func MustButtonText(label string, clicked func()) *gtk.Button {
 
 func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Image {
 	if imageFileName == "" {
-		Logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
+		logger.Error("MustImageFromFileWithSize() - imageFileName is empty")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	imageFilePath := imagePath(imageFileName)
 	if !FileExists(imageFilePath) {
-		Logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+		logger.Error("MustImageFromFileWithSize() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
-	p, err := gdk.PixbufNewFromFileAtScale(imageFilePath, width, height, true)
+	pixbuf, err := gdk.PixbufNewFromFileAtScale(imageFilePath, width, height, true)
 	if err != nil {
-		LogError("gtk.MustImageFromFileWithSize()", "PixbufNewFromFileAtScale()", err)
+		logger.LogError("gtk.MustImageFromFileWithSize()", "PixbufNewFromFileAtScale()", err)
 	}
 
-	image, err := gtk.ImageNewFromPixbuf(p)
+	image, err := gtk.ImageNewFromPixbuf(pixbuf)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustImageFromFileWithSize()", "gtk.ImageNewFromPixbuf()", err)
 		panic(err)
 	}
 
@@ -220,36 +236,79 @@ func MustImageFromFileWithSize(imageFileName string, width, height int) *gtk.Ima
 // MustImageFromFile returns a new gtk.Image based on the given file, if error panics.
 func MustImageFromFile(imageFileName string) *gtk.Image {
 	if imageFileName == "" {
-		Logger.Error("MustImageFromFile() - imageFileName is empty")
+		logger.Error("MustImageFromFile() - imageFileName is empty")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	imageFilePath := imagePath(imageFileName)
 	if !FileExists(imageFilePath) {
-		Logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
+		logger.Error("MustImageFromFile() - imageFilePath is '" + imageFilePath + "', but doesn't exist")
 		//debug.PrintStack()			need to import "runtime/debug"
 	}
 
 	image, err := gtk.ImageNewFromFile(imageFilePath)
 	if err != nil {
+		logger.LogError("PANIC!!! - MustImageFromFile()", "gtk.ImageNewFromFile()", err)
 		panic(err)
 	}
 
 	return image
 }
 
+func ImageFromUrl(imageUrl string) (*gtk.Image, error) {
+	if imageUrl == "" {
+		logger.Error("ImageFromUrl() - imageUrl is empty")
+		return nil, errors.New("imageUrl is empty")
+	}
+
+	response, getErr:= http.Get(imageUrl)
+	if getErr != nil {
+		return nil, getErr
+	}
+	defer response.Body.Close()
+
+	buf := new(bytes.Buffer)
+	readLength, readErr := buf.ReadFrom(response.Body)
+	if readErr != nil {
+		return nil, readErr
+	} else if readLength < 1 {
+		return nil, errors.New("bytes read was zero")
+	}
+
+	pixbufLoader, newPixbufLoaderErr := gdk.PixbufLoaderNew()
+	if newPixbufLoaderErr != nil {
+		return nil, newPixbufLoaderErr
+	}
+	defer pixbufLoader.Close()
+
+	writeLength, writeErr := pixbufLoader.Write(buf.Bytes())
+	if writeErr != nil {
+		return nil, writeErr
+	} else if writeLength < 1 {
+		return nil, errors.New("bytes written was zero")
+	}
+
+	pixbuf, _ := pixbufLoader.GetPixbuf()
+	image, imageNewFromPixbufErr := gtk.ImageNewFromPixbuf(pixbuf)
+
+	return image, imageNewFromPixbufErr
+}
+
+
 // MustCSSProviderFromFile returns a new gtk.CssProvider for a given css file, if error panics.
 func MustCSSProviderFromFile(css string) *gtk.CssProvider {
-	p, err := gtk.CssProviderNew()
+	cssProvider, err := gtk.CssProviderNew()
 	if err != nil {
+		logger.LogError("PANIC!!! - MustCSSProviderFromFile()", "gtk.CssProviderNew()", err)
 		panic(err)
 	}
 
-	if err := p.LoadFromPath(filepath.Join(StylePath, css)); err != nil {
+	if err := cssProvider.LoadFromPath(filepath.Join(StylePath, css)); err != nil {
+		logger.LogError("PANIC!!! - MustCSSProviderFromFile()", "cssProvider.LoadFromPath()", err)
 		panic(err)
 	}
 
-	return p
+	return cssProvider
 }
 
 func imagePath(imageFileName string) string {
@@ -258,10 +317,11 @@ func imagePath(imageFileName string) string {
 
 // MustOverlay returns a new gtk.Overlay, if error panics.
 func MustOverlay() *gtk.Overlay {
-	o, err := gtk.OverlayNew()
+	overlay, err := gtk.OverlayNew()
 	if err != nil {
+		logger.LogError("PANIC!!! - MustOverlay()", "gtk.OverlayNew()", err)
 		panic(err)
 	}
 
-	return o
+	return overlay
 }

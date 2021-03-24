@@ -7,29 +7,36 @@ import (
 	"log"
 )
 
-const JobTool = "/api/job"
 
-var JobToolErrors = statusMapping{
+var JobToolErrors = StatusMapping{
 	409: "Printer is not operational or the current print job state does not match the preconditions for the command.",
 }
 
-// JobRequest retrieve information about the current job (if there is one).
-type JobRequest struct{}
 
-// Do sends an API request and returns the API response.
-func (cmd *JobRequest) Do(c *Client) (*JobResponse, error) {
-	bytes, err := c.doJSONRequest("GET", JobTool, nil, nil)
-	if err != nil {
-		return nil, err
-	}
 
-	response := &JobResponse{}
-	if err := json.Unmarshal(bytes, response); err != nil {
-		return nil, err
-	}
 
-	return response, err
-}
+// JobRequest is now in JobRequest.go
+// // JobRequest retrieve information about the current job (if there is one).
+// type JobRequest struct{}
+
+// // Do sends an API request and returns the API response.
+// func (cmd *JobRequest) Do(c *Client) (*JobResponse, error) {
+// 	bytes, err := c.doJSONRequest("GET", JobTool, nil, nil)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	response := &JobResponse{}
+// 	if err := json.Unmarshal(bytes, response); err != nil {
+// 		return nil, err
+// 	}
+
+// 	return response, err
+// }
+
+
+
+
 
 // StartRequest starts the print of the currently selected file.
 type StartRequest struct{}

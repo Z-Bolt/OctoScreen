@@ -4,20 +4,21 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
-
 
 type CoolDownButton struct {
 	*gtk.Button
 
-	client						*octoprint.Client
+	client						*octoprintApis.Client
 	callback					func()
 }
 
 func CreateCoolDownButton(
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 	callback					func(),
 ) *CoolDownButton {
 	base := utils.MustButtonImage("All Off", "cool-down.svg", nil)
@@ -29,6 +30,7 @@ func CreateCoolDownButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateCoolDownButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -44,23 +46,29 @@ func (this *CoolDownButton) handleClicked() {
 }
 
 func TurnAllHeatersOff(
-	client						*octoprint.Client,
+	client						*octoprintApis.Client,
 ) {
 	// Set the bed's temp.
-	bedTargetRequest := &octoprint.BedTargetRequest{Target: 0.0}
+	bedTargetRequest := &octoprintApis.BedTargetRequest {
+		Target: 0.0,
+	}
 	err := bedTargetRequest.Do(client)
 	if err != nil {
-		utils.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
+		logger.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
 		return
 	}
 
 	// Set the temp of each hotend.
-	toolheadCount := utils.GetToolheadCount(client)
-	for i := 0; i < toolheadCount; i++ {
-		var toolTargetRequest = &octoprint.ToolTargetRequest{Targets: map[string]float64{fmt.Sprintf("tool%d", i): 0.0}}
+	hotendCount := utils.GetHotendCount(client)
+	for i := 0; i < hotendCount; i++ {
+		var toolTargetRequest = &octoprintApis.ToolTargetRequest {
+			Targets: map[string]float64 {
+				fmt.Sprintf("tool%d", i): 0.0,
+			},
+		}
 		err = toolTargetRequest.Do(client)
 		if err != nil {
-			utils.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
+			logger.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
 		}
 	}
 }

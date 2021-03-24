@@ -3,6 +3,7 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -22,6 +23,8 @@ func NewSplashPanel(ui *UI) *SplashPanel {
 }
 
 func (this *SplashPanel) initialize() {
+	logger.TraceEnter("SplashPanel.initialize()")
+
 	logo := utils.MustImageFromFile("logos/logo.png")
 	this.Label = utils.MustLabel("...")
 	this.Label.SetHExpand(true)
@@ -45,9 +48,13 @@ func (this *SplashPanel) initialize() {
 	box.Add(this.createActionBar())
 
 	this.Grid().Add(box)
+
+	logger.TraceLeave("SplashPanel.initialize()")
 }
 
 func (this *SplashPanel) createActionBar() gtk.IWidget {
+	logger.TraceEnter("SplashPanel.createActionBar()")
+
 	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	actionBar.SetHAlign(gtk.ALIGN_END)
 
@@ -66,29 +73,50 @@ func (this *SplashPanel) createActionBar() gtk.IWidget {
 	networkButton.SetProperty("width-request", this.Scaled(100))
 	actionBar.Add(networkButton)
 
+	logger.TraceLeave("SplashPanel.createActionBar()")
 	return actionBar
 }
 
 func (this *SplashPanel) putOnHold() {
+	logger.TraceEnter("SplashPanel.putOnHold()")
+
 	this.RetryButton.Show()
-	ctx, _ := this.RetryButton.GetStyleContext()
-	ctx.RemoveClass("hidden")
+	ctx, err := this.RetryButton.GetStyleContext()
+	if err != nil {
+		logger.LogError("SplashPanel.putOnHold()", "RetryButton.GetStyleContext()", err)
+	} else {
+		ctx.RemoveClass("hidden")
+	}
 	this.Label.SetText("Cannot connect to the printer.  Tap \"Retry\" to try again.")
+
+	logger.TraceLeave("SplashPanel.putOnHold()")
 }
 
 func (this *SplashPanel) releaseFromHold() {
+	logger.TraceEnter("SplashPanel.releaseFromHold()")
+
 	this.RetryButton.Hide()
 	ctx, _ := this.RetryButton.GetStyleContext()
 	ctx.AddClass("hidden")
 
 	this.Label.SetText("Loading...")
 	this.UI.connectionAttempts = 0
+
+	logger.TraceLeave("SplashPanel.releaseFromHold()")
 }
 
 func (this *SplashPanel) showNetwork() {
+	logger.TraceEnter("SplashPanel.showNetwork()")
+
 	this.UI.GoToPanel(NetworkPanel(this.UI, this))
+
+	logger.TraceLeave("SplashPanel.showNetwork()")
 }
 
 func (this *SplashPanel) showSystem() {
+	logger.TraceEnter("SplashPanel.showSystem()")
+
 	this.UI.GoToPanel(SystemPanel(this.UI, this))
+
+	logger.TraceLeave("SplashPanel.showSystem()")
 }

@@ -42,13 +42,13 @@ func NewClient(endpoint, apiKey string) *Client {
 }
 
 func (c *Client) doJSONRequest(
-	method, target string, body io.Reader, m statusMapping,
+	method, target string, body io.Reader, m StatusMapping,
 ) ([]byte, error) {
 	return c.doRequest(method, target, "application/json", body, m)
 }
 
 func (c *Client) doJSONRequestWithLogging(
-	method, target string, body io.Reader, m statusMapping,
+	method, target string, body io.Reader, m StatusMapping,
 ) ([]byte, error) {
 	return c.doRequestWithLogging(method, target, "application/json", body, m)
 }
@@ -56,7 +56,7 @@ func (c *Client) doJSONRequestWithLogging(
 
 
 func (c *Client) doRequest(
-	method, target, contentType string, body io.Reader, m statusMapping,
+	method, target, contentType string, body io.Reader, m StatusMapping,
 ) ([]byte, error) {
 	req, err := http.NewRequest(method, joinURL(c.Endpoint, target), body)
 	if err != nil {
@@ -83,7 +83,7 @@ func (c *Client) doRequest(
 
 
 func (c *Client) doRequestWithLogging(
-	method, target, contentType string, body io.Reader, m statusMapping,
+	method, target, contentType string, body io.Reader, m StatusMapping,
 ) ([]byte, error) {
 
 
@@ -140,7 +140,7 @@ func (c *Client) doRequestWithLogging(
 
 
 
-func (c *Client) handleResponse(r *http.Response, m statusMapping) ([]byte, error) {
+func (c *Client) handleResponse(r *http.Response, m StatusMapping) ([]byte, error) {
 	defer r.Body.Close()
 
 	if m != nil {
@@ -171,7 +171,7 @@ func (c *Client) handleResponse(r *http.Response, m statusMapping) ([]byte, erro
 
 
 
-func (c *Client) handleResponseWithLogging(r *http.Response, m statusMapping) ([]byte, error) {
+func (c *Client) handleResponseWithLogging(r *http.Response, m StatusMapping) ([]byte, error) {
 
 	log.Println("Now in Client.handleResponse()")
 
@@ -224,9 +224,9 @@ func joinURL(base, uri string) string {
 	return b.ResolveReference(u).String()
 }
 
-type statusMapping map[int]string
+type StatusMapping map[int]string
 
-func (m *statusMapping) Error(code int) error {
+func (m *StatusMapping) Error(code int) error {
 	err, ok := (*m)[code]
 	if ok {
 		return fmt.Errorf(err)
