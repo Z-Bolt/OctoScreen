@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	standardLog "log"
@@ -30,14 +31,15 @@ var (
 	APIKey     string
 	ConfigFile string
 	Resolution string
+	initSucceeded bool
 )
 
 
 func init() {
 	logger.Debug("-")
 	logger.Debug("-")
-	// logger.Debug("OctoScreen - entering main.init()")
 	logger.TraceEnter("OctoScreen - main.init()")
+	initSucceeded = false
 
 	ConfigFile = os.Getenv(utils.EnvConfigFile)
 	if ConfigFile == "" {
@@ -45,22 +47,18 @@ func init() {
 	}
 
 	cfg := readConfig(ConfigFile)
-	setApiKey(cfg)
-
-	if !utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-		logger.Error("OctoScreen - main.init() - RequiredEnvironmentVariablesAreSet() returned false")
-		// logger.Debug("OctoScreen - leaving main.init()")
-		logger.TraceLeave("OctoScreen - main.init()")
+	if cfg == nil {
+		initSucceeded = false
 		return
 	}
 
+	setApiKey(cfg)
 	setLogLevel()
-
 	utils.StylePath = os.Getenv(utils.EnvStylePath)
 	Resolution = os.Getenv(utils.EnvResolution)
 	setBaseUrl(cfg)
 
-	// logger.Debug("OctoScreen - leaving main.init()")
+	initSucceeded = true
 	logger.TraceLeave("OctoScreen - main.init()")
 	logger.Debug("-")
 	logger.Debug("-")
@@ -127,15 +125,39 @@ func main() {
 
 	utils.DumpEnvironmentVariables()
 
-	if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-		width, height := getSize()
-		// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
-		// and aren't required - if not set, ui.New() will use the default
-		// values (defined in globalVars.go).
-		_ = ui.New(BaseURL, APIKey, width, height)
-	} else {
-		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable(APIKey))
+	if initSucceeded != true {
+		// readConfig() logs any errors it encounters.  Don't display
+		// the error here, because the error could be long, and we don't
+		// want to display a long message and have the screen resize.
+		fatalErrorWindow := ui.CreateFatalErrorWindow(
+			"Initialization failed:",
+			"readConfig() failed, see log for errors",
+		)
 		fatalErrorWindow.ShowAll()
+	} else {
+		if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
+			width, height, err := getSize()
+			if err == nil {
+				// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
+				// and aren't required - if not set, ui.New() will use the default
+				// values (defined in globalVars.go).
+				_ = ui.New(BaseURL, APIKey, width, height)
+			} else {
+				// But if there is an error while parsing OCTOSCREEN_RESOLUTION,
+				// then display the error.
+				fatalErrorWindow := ui.CreateFatalErrorWindow(
+					"getSize() failed",
+					err.Error(),
+				)
+				fatalErrorWindow.ShowAll()
+			}
+		} else {
+			fatalErrorWindow := ui.CreateFatalErrorWindow(
+				"Required environment variable is not set:",
+				utils.NameOfMissingRequiredEnvironmentVariable(APIKey),
+			)
+			fatalErrorWindow.ShowAll()
+		}
 	}
 
 	gtk.Main()
@@ -147,7 +169,7 @@ func main() {
 
 
 func setLogLevel() {
-	logLevel := logger.LogLevel()
+	logLevel := strings.ToLower(os.Getenv(utils.EnvLogLevel))
 
 	switch logLevel {
 		case "debug":
@@ -167,8 +189,9 @@ func setLogLevel() {
 			logger.SetLogLevel(logrus.ErrorLevel)
 
 		default:
-			// unknown log level, so exit
-			logger.Fatalf("main.setLogLevel() - unknown logLevel: %q", logLevel)
+			// unknown log level
+			logLevel = "error"
+			logger.Errorf("main.setLogLevel() - unknown logLevel: %q, defaulting to error", logLevel)
 	}
 
 	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
@@ -238,26 +261,26 @@ type config struct {
 func readConfig(configFile string) *config {
 	logger.TraceEnter("main.readConfig()")
 
-	cfg := &config{}
 	if configFile == "" {
 		logger.Info("main.readConfig() - configFile is empty")
-		logger.TraceLeave("main.readConfig(), returning the default config")
-		return cfg
-	} else {
-		logger.Infof("Path to OctoPrint's config file: %q", configFile)
+		logger.TraceLeave("main.readConfig()")
+		return nil
 	}
+
+	logger.Infof("Path to OctoPrint's config file: %q", configFile)
 
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		logger.Fatalf("main.readConfig() - ReadFile() returned an error: %q", err)
-	} else {
-		logger.Info("main.readConfig() - ReadFile() succeeded")
+		logger.Errorf("main.readConfig() - ReadFile() returned an error: %q", err)
+		logger.TraceLeave("main.readConfig()")
+		return nil
 	}
 
+	cfg := &config{}
 	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
-		logger.Fatalf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
-	} else {
-		logger.Info("main.readConfig() - YAML config file was decoded")
+		logger.Errorf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
+		logger.TraceLeave("main.readConfig()")
+		return nil
 	}
 
 	if cfg.Server.Host == "" {
@@ -313,12 +336,7 @@ func doFindConfigFile(home string) string {
 }
 
 
-
-
-
-
-
-func getSize() (width, height int) {
+func getSize() (width int, height int, err error) {
 	logger.TraceEnter("main.getSize()")
 	
 	if Resolution == "" {
@@ -333,6 +351,7 @@ func getSize() (width, height int) {
 		
 		if err != nil {
 			logger.Error("Unable to determine 'xrandr' executable path.")
+      err = errors.New("Unable to determine 'xrandr' executable path.")
 			logger.TraceLeave("main.getSize()")
 			return
 		}
@@ -346,7 +365,8 @@ func getSize() (width, height int) {
 		output, err := cmd.Output()
 		
 		if err != nil {
-			logger.Errorf("When determining resolution, 'xrander' returned with an error. Output: %s", output)
+			logger.Errorf("When determining resolution, 'xrandr' returned with an error. Output: %s", output)
+      err = errors.New(fmt.Sprintf("When determining resolution, 'xrandr' returned with an error. Output: %s", output))
 			logger.TraceLeave("main.getSize()")
 			return
 		}
@@ -363,33 +383,30 @@ func getSize() (width, height int) {
 		width,  _ = strconv.Atoi(matches[1])
 		height, _ = strconv.Atoi(matches[2])
 		
-		logger.Info("Used 'xrandr' to determine the screen resolution.  Found %d x %d", width, height)
-		logger.TraceLeave("main.getSize()")
-		
-		return
 	} else {
 
 		parts := strings.SplitN(Resolution, "x", 2)
 		if len(parts) != 2 {
 			logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-			logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
+			err = errors.New(fmt.Sprintf("%s is malformed\nvalue: %q", utils.EnvResolution, Resolution))
 		}
 	
 		var err error
 		width, err = strconv.Atoi(parts[0])
 		if err != nil {
 			logger.LogError("main.getSize()", "Atoi(parts[0])", err)
-			logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(0) failed\nvalue: %q", utils.EnvResolution, Resolution))
 		}
 	
 		height, err = strconv.Atoi(parts[1])
 		if err != nil {
 			logger.LogError("main.getSize()", "Atoi(parts[1])", err)
-			logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(1) failed\nvalue: %q", utils.EnvResolution, Resolution))
 		}
+  }
 	
-		logger.TraceLeave("main.getSize()")
-		return
-	
-	}
+  logger.Info("Determined a screen resolution of: %d x %d", width, height)
+  
+  logger.TraceLeave("main.getSize()")
+  return
 }
