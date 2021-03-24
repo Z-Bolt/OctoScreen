@@ -145,8 +145,9 @@ entry {
 
 button.keyboard {
 	font-size: 30px;
-	margin: 0px;
-	/* margin-bottom: 10px; */
+	margin: 2px;
+	background-color: #538fbe;
+	border: 5px outset #2d6898;
 }
 
 .dialog {
