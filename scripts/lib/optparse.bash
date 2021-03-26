@@ -471,6 +471,10 @@ function optparse.define(){
     $has_default && [[ ! -z "$variable" ]] && 
         optparse_defaults+="#NL[[ -z \$${variable} ]] && ${variable}='${default}'"
     
+    $has_default &&
+        local _def=DEF ||
+        local _def='';
+    
     local validate_variable="$is_list && {
                     valid=false
                     for i in $list; do
@@ -478,7 +482,7 @@ function optparse.define(){
                     done
                     \$valid || optparse.usage false \"ERROR: invalid value for argument \\\"\$__arg_errorname\\\"\" 1
                 }
-                $has_variable && [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage false \"ERROR: (\$__arg_errorname) requires input value\" 1 || true"
+                $has_variable && [[ -z \${${variable}:-$_def} ]] && optparse.usage false \"ERROR: (\$__arg_errorname) requires input value\" 1 || true"
         
     local dispatch_caller="# No Dispatcher"
     
@@ -500,7 +504,7 @@ function optparse.define(){
                     __arg_value=\"$val\";
                 }
                 $has_variable && [[ -z \"\$__arg_value\" ]] && {
-                    __arg_value=$__arg_sremain;
+                    __arg_value=\"\$__arg_sremain\";
                     __arg_sremain='';
                     [[ -z \"\$__arg_value\" && ! -z \"\$1\" ]] && __arg_value=\"\$1\" && shift;
                 }
@@ -525,10 +529,6 @@ function optparse.define(){
                 continue
             ;;"
     }
-    
-    $has_default &&
-        local _def=DEF ||
-        local _def='';
     
     $has_variable && optparse_variables_validate+="
         $optional || { [[ -z \${${variable}:-$_def} ]] && optparse.usage true 'ERROR: (${errorname}) not set' 1 || true; };"
