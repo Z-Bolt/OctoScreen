@@ -1,0 +1,48 @@
+name: GolangCI Lint
+on:
+  push:
+    paths:
+      - '**.go'
+    tags:
+      - v*
+    branches:
+      - master
+      - development
+  pull_request:
+    paths:
+      - '**.go'
+jobs:
+  golangci:
+    name: Lint
+    runs-on: ubuntu-latest
+    # This is just temporary, until we upgrade `gotk3` to the latest version
+    # At this time, with our current version of `gotk3` there are a few bugs with `golang1.16.x`
+    strategy:
+      matrix:
+        go-version: [1.15.x]
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential git-buildpackage fakeroot libcairo2-dev libgtk-3-dev git devscripts gccgo gcc libc-dev
+      # When we ARE able to use 1.16, this would be how we install `golang1.16.x` AND modify the `go env` (`golangci-lint` doesn't support this natively)
+      #- name: GolangCI INIT
+      #  uses: golangci/golangci-lint-action@master
+      - name: Configure Golang ENV
+        # This ensures that the correct build flags are set for the linters.
+        # To have this be the ACTUAL installed versions, use
+        #   go env -w GOFLAGS=-tags=gtk_$(pkg-config --modversion gtk+-3.0 | tr -t . _ | cut -d _ -f 1-2),pango_$(pkg-config --modversion pango | tr -t . _ | cut -d _ -f 1-2),gdk_pixbuf_$(pkg-config --modversion gdk-pixbuf-2.0 | tr -t . _ | cut -d _ -f 1-2),glib_$(pkg-config --modversion glib-2.0 | tr -t . _ | cut -d _ -f 1-2)
+        # I set it to these statics, as these are the statics used in the MakeFile, and are acceptable in leu of setting them to the explicit versions.
+        # Additionally, the `gtk_3_22` tag must be explicitly set for `golang1.16.x` at this time, as the current `gotk3` package (current `master, not our packaged version) has an issue with `1.16.x`.  This may change in the future, will have to run more tests.
+        run: |
+          go version
+          go env -w GOFLAGS=-tags=gtk_3_22,glib_2_58,pango_1_42,gdk_pixbuf_2_38
+          go env
+      - name: GolangCI Lint
+        uses: golangci/golangci-lint-action@master
+        with:
+          version: v1.39.0
+          skip-go-installation: true
+          only-new-issues: true
+          # FIXME Only for the time being, we should comment this out once we are comfortable with it.
+          args: --issues-exit-code 0
