@@ -1,0 +1,448 @@
+run:
+
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  #
+  # OctoScreen Note:
+  #   Build on a Pi takes ~25m, so we give it some headroom
+  timeout: 60m
+
+  # include test files or not, default is true
+  #
+  # OctoScreen Note:
+  #   We don't generate test structures, dissabling this may speed up linter.
+  #tests: false
+
+  # which dirs to skip: issues from them won't be reported;
+  # can use regexp here: generated.*, regexp is applied on full path;
+  # default value is empty list, but default dirs are skipped independently
+  # from this option's value (see skip-dirs-use-default).
+  #
+  # OctoScreen Note:
+  #   We have edited files in vendors, so don't skip it; even though that would
+  #   be ideal in an ideal world. Maybe we add specific vendor directories that
+  #   we have not edited, or will not edit.
+  #skip-dirs:
+  #  - vendor
+
+  # default is true. Enables skipping of directories:
+  #   vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
+  #
+  # OctoScreen Note:
+  #   We have edited files in `./vendor/`, so... tsk tsk
+  skip-dirs-use-default: false
+
+  # If invoked with -mod=vendor, the go command assumes that the vendor
+  # directory holds the correct copies of dependencies and ignores
+  # the dependency descriptions in go.mod.
+  modules-download-mode: vendor
+
+  # Allow multiple parallel golangci-lint instances running.
+  # If false (default) - golangci-lint acquires file lock on start.
+  #
+  # OctoScreen Note:
+  #   This might be something we want
+  #allow-parallel-runners: true
+
+# all available settings of specific linters
+linters-settings:
+  dogsled:
+    # checks assignments with too many blank identifiers; default is 2
+    max-blank-identifiers: 2
+  dupl:
+    # tokens count to trigger issue, 150 by default
+    threshold: 100
+  errcheck:
+    # report about not checking of errors in type assertions: `a := b.(MyStruct)`;
+    # default is false: such cases aren't reported by default.
+    check-type-assertions: false
+
+    # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
+    # default is false: such cases aren't reported by default.
+    check-blank: false
+  exhaustive:
+    # check switch statements in generated files also
+    check-generated: false
+    # indicates that switch statements are to be considered exhaustive if a
+    # 'default' case is present, even if all enum members aren't listed in the
+    # switch
+    default-signifies-exhaustive: true
+#  exhaustivestruct:
+#    struct-patterns:
+#      - '*.Test'
+#      - '*.Test2'
+#      - '*.Embedded'
+#      - '*.External'
+  funlen:
+    lines: 60
+    statements: 40
+  gci:
+    # put imports beginning with prefix after 3rd-party packages;
+    # only support one prefix
+    # if not set, use goimports.local-prefixes # which we do
+#    local-prefixes: github.com/Z-Bolt/OctoScreen
+  gocognit:
+    # minimal code complexity to report, 30 by default (but we recommend 10-20)
+    min-complexity: 10
+  nestif:
+    # minimal complexity of if statements to report, 5 by default
+    min-complexity: 5
+  goconst:
+    # minimal length of string constant, 3 by default
+    min-len: 3
+    # minimal occurrences count to trigger, 3 by default
+    min-occurrences: 3
+  gocritic:
+
+    # Enable multiple checks by tags, run `GL_DEBUG=gocritic golangci-lint run` to see all tags and checks.
+    # Empty list by default. See https://github.com/go-critic/go-critic#usage -> section "Tags".
+    enabled-tags:
+      - performance
+      - style
+      - diagnostic
+    disabled-tags:
+      - experimental
+      - opinionated
+
+    # Settings passed to gocritic.
+    # The settings key is the name of a supported gocritic checker.
+    # The list of supported checkers can be find in https://go-critic.github.io/overview.
+#    settings:
+#      captLocal: # must be valid enabled check name
+#        # whether to restrict checker to params only (default true)
+#        paramsOnly: true
+#      elseif:
+#        # whether to skip balanced if-else pairs (default true)
+#        skipBalanced: true
+#      hugeParam:
+#        # size in bytes that makes the warning trigger (default 80)
+#        sizeThreshold: 80
+#      nestingReduce:
+#        # min number of statements inside a branch to trigger a warning (default 5)
+#        bodyWidth: 5
+#      rangeExprCopy:
+#        # size in bytes that makes the warning trigger (default 512)
+#        sizeThreshold: 512
+#        # whether to check test functions (default true)
+#        skipTestFuncs: true
+#      rangeValCopy:
+#        # size in bytes that makes the warning trigger (default 128)
+#        sizeThreshold: 32
+#        # whether to check test functions (default true)
+#        skipTestFuncs: true
+#      ruleguard:
+#        # path to a gorules file for the ruleguard checker
+#        rules: ''
+#      truncateCmp:
+#        # whether to skip int/uint/uintptr types (default true)
+#        skipArchDependent: true
+#      underef:
+#        # whether to skip (*x).method() calls where x is a pointer receiver (default true)
+#        skipRecvDeref: true
+#        unnamedResult:
+#        # whether to check exported functions
+#        checkExported: true
+  cyclop:
+    # the maximal code complexity to report
+    max-complexity: 10
+    # the maximal average package complexity. If it's higher than 0.0 (float) the check is enabled (default 0.0)
+    package-average: 0.0
+    # should ignore tests (default false)
+    skip-tests: false
+  godot:
+    # comments to be checked: `declarations`, `toplevel`, or `all`
+    scope: declarations
+    # list of regexps for excluding particular comment lines from check
+#    exclude:
+#      # example: exclude comments which contain numbers
+#      # - '[0-9]+'
+#    # check that each sentence starts with a capital letter
+#    capital: false
+  godox:
+    # report any comments starting with keywords, this is useful for TODO or FIXME comments that
+    # might be left in the code accidentally and should be resolved before merging
+    keywords: # default keywords are TODO, BUG, and FIXME, these can be overwritten by this setting
+      - TODO
+      - BUG
+      - FIXME
+      - NOTE
+      - OPTIMIZE # marks code that should be optimized before merging
+      - HACK # marks hack-arounds that should be removed before merging
+  goimports:
+    # put imports beginning with prefix after 3rd-party packages;
+    # it's a comma-separated list of prefixes
+    local-prefixes: github.com/Z-Bolt/OctoScreen
+  golint:
+    # minimal confidence for issues, default is 0.8
+    min-confidence: 0.8
+  gomnd:
+    settings:
+      mnd:
+        # the list of enabled checks, see https://github.com/tommy-muehle/go-mnd/#checks for description.
+        checks: argument,case,condition,operation,return,assign
+        # ignored-numbers: 1000
+        # ignored-files: magic_.*.go
+        # ignored-functions: math.*
+  govet:
+    # report about shadowed variables
+    check-shadowing: true
+
+    # settings per analyzer
+    settings:
+      printf: # analyzer name, run `go tool vet help` to see all analyzers
+        funcs: # run `go tool vet help printf` to see available settings for `printf` analyzer
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Infof
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Warnf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Errorf
+          - (github.com/golangci/golangci-lint/pkg/logutils.Log).Fatalf
+
+    # enable or disable analyzers by name
+    # run `go tool vet help` to see all analyzers
+#    enable:
+#      - atomicalign
+    enable-all: true
+#    disable:
+#      - shadow
+#    disable-all: false
+  ifshort:
+    # Maximum length of variable declaration measured in number of lines, after which linter won't suggest using short syntax.
+    # Has higher priority than max-decl-chars.
+    max-decl-lines: 1
+    # Maximum length of variable declaration measured in number of characters, after which linter won't suggest using short syntax.
+    max-decl-chars: 30
+  lll:
+    # max line length, lines longer will be reported. Default is 120.
+    # '\t' is counted as 1 character by default, and can be changed with the tab-width option
+    line-length: 80
+    # tab width in spaces. Default to 1.
+    tab-width: 4
+  misspell:
+    # Correct spellings using locale preferences for US or UK.
+    # Default is to use a neutral variety of English.
+    # Setting locale to US will correct the British spelling of 'colour' to 'color'.
+#    locale: US
+  nakedret:
+    # make an issue if func has more lines of code than this setting and it has naked returns; default is 30
+    max-func-lines: 30
+#  prealloc:
+#    # XXX: we don't recommend using this linter before doing performance profiling.
+#    # For most programs usage of prealloc will be a premature optimization.
+#
+#    # Report preallocation suggestions only on simple loops that have no returns/breaks/continues/gotos in them.
+#    # True by default.
+#    simple: true
+#    range-loops: true # Report preallocation suggestions on range loops, true by default
+#    for-loops: false # Report preallocation suggestions on for loops, false by default
+  predeclared:
+    # comma-separated list of predeclared identifiers to not report on
+    ignore: ""
+    # include method names and field names (i.e., qualified names) in checks
+    q: false
+  nolintlint:
+    # Enable to ensure that nolint directives are all used. Default is true.
+#    allow-unused: false
+    # Disable to ensure that nolint directives don't have a leading space. Default is true.
+    allow-leading-space: false
+    # Exclude following linters from requiring an explanation.  Default is [].
+    allow-no-explanation: []
+    # Enable to require an explanation of nonzero length after each nolint directive. Default is false.
+    require-explanation: true
+    # Enable to require nolint directives to mention the specific linter being suppressed. Default is false.
+    require-specific: true
+  unparam:
+    # Inspect exported functions, default is false. Set to true if no external program/library imports your code.
+    # XXX: if you enable this setting, unparam will report a lot of false-positives in text editors:
+    # if it's called for subdir of a project it can't find external interfaces. All text editor integrations
+    # with golangci-lint call it on a directory with the changed file.
+    check-exported: false
+  unused:
+    # treat code as a program (not a library) and report unused exported identifiers; default is false.
+    # XXX: if you enable this setting, unused will report a lot of false-positives in text editors:
+    # if it's called for subdir of a project it can't find funcs usages. All text editor integrations
+    # with golangci-lint call it on a directory with the changed file.
+    #
+    # OctoScreen Note:
+    #   Breaks on GTK3 for some reason
+    #   "failed to load package gtk: could not load export data: no export data for \"github.com/gotk3/gotk3/gtk\""
+    check-exported: false
+  whitespace:
+    multi-if: false   # Enforces newlines (or comments) after every multi-line if statement
+    multi-func: false # Enforces newlines (or comments) after every multi-line function signature
+  wsl:
+    # If true append is only allowed to be cuddled if appending value is
+    # matching variables, fields or types on line above. Default is true.
+    strict-append: true
+    # Allow calls and assignments to be cuddled as long as the lines have any
+    # matching variables, fields or types. Default is true.
+    allow-assign-and-call: true
+    # Allow assignments to be cuddled with anything. Default is false.
+    allow-assign-and-anything: false
+    # Allow multiline assignments to be cuddled. Default is true.
+    allow-multiline-assign: true
+    # Allow declarations (var) to be cuddled.
+    allow-cuddle-declarations: false
+    # Allow trailing comments in ending of blocks
+    allow-trailing-comment: false
+    # Force newlines in end of case at this limit (0 = never).
+    force-case-trailing-whitespace: 0
+    # Force cuddling of err checks with err var assignment
+    force-err-cuddling: false
+    # Allow leading comments to be separated with empty lines
+    allow-separated-leading-comment: false
+  gofumpt:
+    # Choose whether or not to use the extra rules that are disabled
+    # by default
+    extra-rules: true
+  errorlint:
+    # Report non-wrapping error creation using fmt.Errorf
+    errorf: true
+  makezero:
+    # Allow only slices initialized with a length of zero. Default is false.
+    always: false
+#  forbidigo:
+#    # Forbid the following identifiers
+#    forbid:
+#      - fmt.Errorf # consider errors.Errorf in github.com/pkg/errors
+#      - fmt.Print.* # too much log noise
+#      - ginkgo\\.F.* # these are used just for local development
+#    # Exclude godoc examples from forbidigo checks.  Default is true.
+#    exclude_godoc_examples: false
+
+linters:
+  enable:
+#    - dogsled
+##    - dupl
+#    - errcheck
+#    - exhaustive
+##    - funlen
+#    - gci
+    - gocognit
+    - nestif
+#    - goconst
+#    - gocritic
+##    - cyclop
+#    - godot
+    - godox
+#    - goimports
+    - golint
+    - gomnd
+    - govet
+    - ifshort
+    - lll
+    - misspell
+    - nakedret
+#    - predeclared
+    - nolintlint
+#    - unparam
+##    - unused
+    - whitespace
+    - wsl
+    - gofumpt
+#    - errorlint
+##    - makezero
+  disable-all: true
+#  disable:
+#    # Going to try to disable the ones that seem to be throwing errors, for now.
+#    - unused
+#    - makezero
+#  presets:
+#    - bugs
+#    - unused
+  fast: false
+
+issues:
+  # List of regexps of issue texts to exclude, empty list by default.
+  # But independently from this option we use default exclude patterns,
+  # it can be disabled by `exclude-use-default: false`. To list all
+  # excluded by default patterns execute `golangci-lint run --help`
+  #exclude:
+  #  - abcdef
+
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude some linters from running on tests files.
+    - path: ".*github.com/gotk3/.*"
+      linters:
+        - unused
+
+#    # Exclude known linters from partially hard-vendored code,
+#    # which is impossible to exclude via "nolint" comments.
+#    - path: internal/hmac/
+#      text: "weak cryptographic primitive"
+#      linters:
+#        - gosec
+
+#    # Exclude some staticcheck messages
+#    - linters:
+#        - staticcheck
+#      text: "SA9003:"
+
+    # Exclude lll issues for long lines with go:generate
+    - linters:
+        - lll
+      source: "^//go:generate "
+
+  # Independently from option `exclude` we use default exclude patterns,
+  # it can be disabled by this option. To list all
+  # excluded by default patterns execute `golangci-lint run --help`.
+  # Default value for this option is true.
+  exclude-use-default: true
+
+  # The default value is false. If set to true exclude and exclude-rules
+  # regular expressions become case sensitive.
+  exclude-case-sensitive: false
+
+  # The list of ids of default excludes to include or disable. By default it's empty.
+  include:
+    - EXC0002 # disable excluding of issues about comments from golint
+
+  # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
+  max-same-issues: 0
+
+  # Show only new issues: if there are unstaged changes or untracked files,
+  # only those changes are analyzed, else only changes in HEAD~ are analyzed.
+  # It's a super-useful option for integration of golangci-lint into existing
+  # large codebase. It's not practical to fix all existing issues at the moment
+  # of integration: much better don't allow issues in new code.
+  # Default is false.
+  #
+  # OctoScreen Note:
+  #   We set this to TRUE so you could, in theory, run this from the CLI.
+  #   The GitHub Action will overwrite this and set it to FALSE.
+  new: true
+
+  # Show only new issues created after git revision `REV`
+#  new-from-rev: REV
+
+  # Show only new issues created in git patch with set file path.
+  #new-from-patch: path/to/patch/file
+
+  # Fix found issues (if it's supported by the linter)
+#  fix: true
+
+severity:
+  # Default value is empty string.
+  # Set the default severity for issues. If severity rules are defined and the issues
+  # do not match or no severity is provided to the rule this will be the default
+  # severity applied. Severities should match the supported severity names of the
+  # selected out format.
+  # - Code climate: https://docs.codeclimate.com/docs/issues#issue-severity
+  # -   Checkstyle: https://checkstyle.sourceforge.io/property_types.html#severity
+  # -       Github: https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-error-message
+  default-severity: error
+
+  # The default value is false.
+  # If set to true severity-rules regular expressions become case sensitive.
+  case-sensitive: false
+
+  # Default value is empty list.
+  # When a list of severity rules are provided, severity information will be added to lint
+  # issues. Severity rules have the same filtering capability as exclude rules except you
+  # are allowed to specify one matcher per severity rule.
+  # Only affects out formats that support setting severity information.
+  rules:
+    - linters:
+      - dupl
+      severity: info

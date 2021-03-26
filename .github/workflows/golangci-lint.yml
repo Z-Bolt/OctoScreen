@@ -1,0 +1,41 @@
+name: GolangCI Lint
+on:
+  push:
+    paths:
+      - '**.go'
+    tags:
+      - v*
+    branches:
+      - master
+      - development
+  pull_request:
+    paths:
+      - '**.go'
+jobs:
+  golangci:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends build-essential git-buildpackage fakeroot libcairo2-dev libgtk-3-dev git devscripts gccgo gcc libc-dev
+      - name: Install Golang
+        uses: actions/setup-go@v2
+        with:
+          # Supports build all the way back to Jessie, NOT ideal...
+          # If we didn't support Jessie, we could use 1.15.* or 1.16.*
+          go-version: '1.8.7'
+      - name: Configure GO ENV
+        run: |
+          go version
+          mkdir -p /home/runner/.config/go/
+          export GOENV=/home/runner/.config/go/env
+          echo "GOFLAGS=-tags=gtk_$(pkg-config --modversion gtk+-3.0 | tr -t . _ | cut -d _ -f 1-2),pango_$(pkg-config --modversion pango | tr -t . _ | cut -d _ -f 1-2),gdk_pixbuf_$(pkg-config --modversion gdk-pixbuf-2.0 | tr -t . _ | cut -d _ -f 1-2),glib_$(pkg-config --modversion glib-2.0 | tr -t . _ | cut -d _ -f 1-2)" > /home/runner/.config/go/env
+          go env
+      - name: GolangCI Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.39.0
+          skip-go-installation: true
+          only-new-issues: true
