@@ -109,7 +109,7 @@ function optparse.throw_error(){
 function optparse._log(){
     local type="$1"
     local message="$2"
-    echo "OPTPARSE $type: $message"
+    >&2 echo "OPTPARSE $type: $message"
 }
 
 function optparse.warn(){
@@ -468,17 +468,22 @@ function optparse.define(){
         #echo "$_optparse_usage"
     }
     
-    $has_default && [[ ! -z "$variable" ]] && 
+    $has_default && $has_variable && 
         optparse_defaults+="#NL[[ -z \$${variable} ]] && ${variable}='${default}'"
     
-    local validate_variable="$is_list && {
+    $has_default &&
+        local _def=DEF ||
+        local _def='';
+    
+    local validate_variable="valid=true
+                $is_list && \$valid && {
                     valid=false
                     for i in $list; do
                         [[ \$__arg_value == \$i ]] && valid=true && break
                     done
-                    \$valid || optparse.usage false \"ERROR: invalid value for argument \\\"\$__arg_errorname\\\"\" 1
                 }
-                $has_variable && [[ -z \${${variable}:-$($has_default && echo 'DEF' || echo '')} ]] && optparse.usage false \"ERROR: (\$__arg_errorname) requires input value\" 1 || true"
+                \$valid || optparse.usage false \"ERROR: invalid value for argument \\\"\$__arg_key\\\"\" 1;
+                $has_variable && [[ -z \${${variable}:-$_def} ]] && optparse.usage false \"ERROR: (\$__arg_key) requires input value\" 1 || true;"
         
     local dispatch_caller="# No Dispatcher"
     
@@ -494,13 +499,12 @@ function optparse.define(){
     [[ ! -z "$shortname" ]] && {
         optparse_process_short+="
             ${shortname})
-                __arg_errorname=$short;
                 __arg_value='';
                 ( $flag || $has_val ) && {
                     __arg_value=\"$val\";
                 }
                 $has_variable && [[ -z \"\$__arg_value\" ]] && {
-                    __arg_value=$__arg_sremain;
+                    __arg_value=\"\$__arg_sremain\";
                     __arg_sremain='';
                     [[ -z \"\$__arg_value\" && ! -z \"\$1\" ]] && __arg_value=\"\$1\" && shift;
                 }
@@ -514,7 +518,6 @@ function optparse.define(){
     [[ ! -z "$longname" ]] && {
         optparse_process_long+="
             ${longname})
-                __arg_errorname=$long;
                 $has_val && {
                     [[ ! -z \"\$__arg_value\" ]] && optparse.usage true 'ERROR: (${errorname}) does not accept user input' 1;
                     __arg_value=\"$val\";
@@ -525,10 +528,6 @@ function optparse.define(){
                 continue
             ;;"
     }
-    
-    $has_default &&
-        local _def=DEF ||
-        local _def='';
     
     $has_variable && optparse_variables_validate+="
         $optional || { [[ -z \${${variable}:-$_def} ]] && optparse.usage true 'ERROR: (${errorname}) not set' 1 || true; };"
@@ -556,9 +555,6 @@ function optparse.build(){
         local value="${option#*=}";
         
         case "$key" in
-            name|description|usage_header|usage)
-                declare -g optparse_$key="$value"
-            ;;
             allow)
                 value=( $value )
                 for allowed in "${value[@]}"; do
@@ -724,4 +720,4 @@ EOF
     [[ -z "$optparse_preserve" ]] && optparse.unset
 }
 
-optparse.init && true
+[[ -z $OPTPARSE_DELAY_INIT ]] || optparse.init

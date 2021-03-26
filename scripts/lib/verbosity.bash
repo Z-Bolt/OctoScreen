@@ -1,6 +1,6 @@
 #!/user/bib/env bash
 
-VERBOSITY_CURRENT=0
+VERBOSITY_CURRENT=${VERBOSITY_CURRENT:-0}
 VERBOSITY_FATAL=-3
 VERBOSITY_ERROR=-2
 VERBOSITY_QUIET=-1
@@ -20,8 +20,8 @@ VERBOSITY_INFO_FORMAT='\e[96m%s%s\e[0m: %s'
 VERBOSITY_DEBUG_FORMAT='\e[94m%s%s\e[0m: %s'
 VERBOSITY_HELL_FORMAT='\e[102m\e[95m\e[5m\e[30m\e[2m'
 
+
 function echo.verbosity.init_optparse() {
-    VERBOSITY_CURRENT=0
     
     declare -F 'optparse.define' > /dev/null
     

@@ -28,17 +28,18 @@ PWD="$(pwd)"; DIR=''; SOURCE="${BASH_SOURCE[0]:-$0}";
 RELEASE_ARCH=''
 
 VERBOSITY_PREFIX='OCTOSCREEN '
+#VERBOSITY_CURRENT=3
+
+OPTPARSE_DELAY_INIT=true
+
 OCTOSCREEN_TASKS=()
 OCTOSCREEN_DEPENDENCIES=()
 OCTOSCREEN_DEB=''
+
 yes_no=( 'yes' 'no' )
 
 SYSTEM_ARCH=$(uname -m)
 declare -A ARCHITECTURES=( [arm.*]=*armhf.deb )
-
-# Prelim, just check if we support the current architecture...
-for __ARCH in "${!ARCHITECTURES[@]}"; do  [[ `expr "$SYSTEM_ARCH" : "^$__ARCH\$"` -gt 0 ]] && RELEASE_ARCH="${ARCHITECTURES[$__ARCH]}" && break; done;
-[[ -z $RELEASE_ARCH ]] && { echo "We are sorry, but we do not support your system achitecture ($SYSTEM_ARCH). Exiting"; exit 1; }
 
 while [[ "$SOURCE" != /dev/fd/* && -L "$SOURCE" ]]; do DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"; SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"; done;
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
@@ -46,41 +47,49 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )";
 ### Load Bash Dependencies
 echo -e "Loading OctoScreen Manager dependencies, please wait...\n"; CL='\e[1A\e[K'; for LIBRARY in ${LIBRARIES[*]}; do SOURCE_FILE=''; SOURCE=''; [[ -f "$DIR/$LIBRARY" ]] && { SOURCE_FILE="$DIR/$LIBRARY"; } || { [[ -f "$PWD/$LIBRARY" ]] && SOURCE_FILE="$PWD/$LIBRARY"; } || { [[ -f "$PWD/scripts/$LIBRARY" ]] && SOURCE_FILE="$PWD/scripts/$LIBRARY"; }; [[ -z "$SOURCE_FILE" ]] && { echo -en "${CL}Fetching '{$LIBRARY}'..."; source <(curl -s -L "$WGET_RAW/scripts/$LIBRARY"); [[ $? -ne 0 ]] && { echo " ERROR Fetching dependency '$LIBRARY'!"; exit 1; } || { echo ' SUCCESS'; continue; }; }; echo -en "${CL}Loading '{$LIBRARY}' from: $SOURCE_FILE..."; source <(cat "$SOURCE_FILE"); [[ $? -ne 0 ]] && { echo " ERROR Loading dependency '$LIBRARY'!"; exit 1; } || { echo ' SUCCESS'; }; done; echo -en "${CL}${CL}";
 
-optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
-optparse.define long=lcd35 description="Install drivers for 3.5 inch LCD display" dispatch="octoscreen.tasks.add lcd; #"
-#optparse.define short=l long=lcd description="Install drivers for LCD display" dispatch="octoscreen.tasks.add lcd; #"
-optparse.define short=b long=build description="Specify a make directory for build" variable='MAKE_DIR' dispatch="octoscreen.tasks.has build || echo.fatal \"Specify MakeDir AFTER 'build'\"; #" default=$(pwd)
-optparse.define short=r long=release description="Release Target [STRETCH|BUSTER|JESSIE]" dispatch="octoscreen.tasks.has build || echo.fatal \"Specify Release Target AFTER 'build'\"; #" variable=VERSION_CODENAME default=${VERSION_CODENAME^^} extra=explicit
-optparse.define long=nodep description="Skip installing ALL Dependencies (DISCOURAGED)" variable=SKIP_DEPENDENCIES flag default="false"
-
-optparse.define short=y long=yes description="Auto-Confirm OctoScreen yes/no options" variable=AUTO_YES optional flag default="false"
-optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag default="false"
-
-optparse.define.single name="install" description="Install/Upgrade OctoScreen" dispatch="octoscreen.tasks.add install"
-optparse.define.single name="remove" description="Remove OctoScreen" dispatch="octoscreen.tasks.add remove"
-optparse.define.single name=build description="Build OctoScreen" dispatch="octoscreen.tasks.add build"
-optparse.define.single name="*.deb" description="Target for Install/Upgrade and/or Build" dispatch="octoscreen.set.deb \"\$__arg\""
-optparse.define.single name="*" dispatch="octoscreen.handle.unknown \"\$__arg\"" help=hide
-
-echo.verbosity.init_optparse 0
-
-
 ### Primary Functions: See bottom for other Utility Functions
+
+function octoscreen.init(){
+    
+    [[ -f /etc/os-release ]] && {
+        set -a
+        . /etc/os-release
+        set +a
+    } || {
+        echo.fatal "We kinda need \`/etc/os-release\`, but I couldn't find it.  Proooobably means we don't support your system.  If you believe this is in error, please file a bug report."
+    }
+    
+    # Prelim, just check if we support the current architecture...
+    for __ARCH in "${!ARCHITECTURES[@]}"; do  [[ `expr "$SYSTEM_ARCH" : "^$__ARCH\$"` -gt 0 ]] && RELEASE_ARCH="${ARCHITECTURES[$__ARCH]}" && break; done;
+    
+    optparse.init name=$([[ "$DIR" =~ /proc/* ]] && echo '<this>' || basename $0) description="OctoScreen Manager" usage_header="${optparse_usage_header} command [command ...] [*.deb]"
+    
+    optparse.define long=license description="The OctoScreen license" dispatch="octoscreen.license"
+    optparse.define long=lcd35 description="Install drivers for 3.5 inch LCD display" dispatch="octoscreen.tasks.add lcd; #"
+    #optparse.define short=l long=lcd description="Install drivers for LCD display" dispatch="octoscreen.tasks.add lcd; #"
+    optparse.define short=b long=build description="Specify a make directory for build" variable='MAKE_DIR' dispatch="octoscreen.tasks.has build || echo.fatal \"Specify MakeDir AFTER 'build'\"" default=$(pwd)
+    optparse.define short=r long=release description="Release Target [STRETCH|BUSTER|JESSIE]" dispatch="octoscreen.tasks.has build || echo.fatal \"Specify Release Target AFTER 'build'\"" variable=VERSION_CODENAME default=${VERSION_CODENAME^^} extra=explicit
+    optparse.define long=nodep description="Skip installing ALL Dependencies (DISCOURAGED)" variable=SKIP_DEPENDENCIES flag default="false"
+    
+    optparse.define short=y long=yes description="Auto-Confirm OctoScreen yes/no options" variable=AUTO_YES optional flag default="false"
+    optparse.define long=force description="Continue with dubious data.  Caution, combined with --yes, this can do bad things..." variable=AUTO_FORCE optional flag default="false"
+    
+    optparse.define.single name="install" description="Install/Upgrade OctoScreen" dispatch="octoscreen.tasks.add install"
+    optparse.define.single name="remove" description="Remove OctoScreen" dispatch="octoscreen.tasks.add remove"
+    optparse.define.single name=build description="Build OctoScreen" dispatch="octoscreen.tasks.add build"
+    optparse.define.single name="*.deb" description="Target for Install/Upgrade and/or Build" dispatch="octoscreen.set.deb \"\$__arg\""
+    optparse.define.single name="*" dispatch="octoscreen.handle.unknown \"\$__arg\"" help=hide
+    
+    echo.verbosity.init_optparse 0
+}
 
 function octoscreen.main(){ #Called after all args are parsed
     
     # Tasks have to occur in an order, so we do them in order, no matter how they were passed.
     local _task_order="lcd docker build remove install"
     
-    [[ -f /etc/os-release ]] && {
-        source /etc/os-release
-    } || {
-        $AUTO_FORCE || echo "ERROR: We kinda need \`/etc/os-release\`, but I couldn't find it.  Proooobably means we don't support your system.  If you believe this is in error, please file a bug report." && exit 1;
-    };
-    
-    $AUTO_FORCE || {
-        [[ $ID_LIKE != debian ]] && echo "ERROR: Yeah, no." && exit 1
-    };
+    $AUTO_FORCE || 
+        [[ $ID_LIKE != debian ]] && echo.fatal "This currently only runs on Debian.";
     
     
     [[ -z "${OCTOSCREEN_TASKS[@]}" ]] && echo.error "Nothing to do. Please give me a purpose in life...  I BEG YOU" && octoscreen.maybe.usage;
@@ -203,6 +212,8 @@ function octoscreen.task.install.init(){
     #local found=`dpkg -l octoscreen | grep -oE "^(i|r)[^ ]+ "`
     
     echo.notice "Checking if we can install, or if we need to re-install..."
+    
+    [[ -z $RELEASE_ARCH ]] && echo.fatal "We are sorry, but we do not support your system achitecture ($SYSTEM_ARCH)";
     
     ( $OCTOSCREEN_INSTALLED && ! octoscreen.tasks.has remove ) && {
         
@@ -803,4 +814,9 @@ function echo.chatty(){
     echo -e "$message"
 }
 
-. <( optparse.build name=$([[ "$DIR" =~ /proc/* ]] && echo '<this>' || basename $0) description="OctoScreen Manager" finally=octoscreen.main usage_header="${optparse_usage_header} command [command ...] [*.deb]")
+octoscreen.init
+
+. <( optparse.build )
+
+octoscreen.main
+
