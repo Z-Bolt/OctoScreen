@@ -19,15 +19,15 @@ DEBIAN_PACKAGES = STRETCH
 
 BUSTER_NAME := buster
 BUSTER_IMAGE := golang:1.15-buster
-BUSTER_GO_TAGS := gtk_3_24
+BUSTER_GO_TAGS := gtk_3_22,glib_2_58,pango_1_42,gdk_pixbuf_2_38
 
 STRETCH_NAME := stretch
-STRETCH_IMAGE := golang:1.9-stretch
-STRETCH_GO_TAGS := gtk_3_22
+STRETCH_IMAGE := golang:1.15-stretch
+STRETCH_GO_TAGS := gtk_3_22,glib_2_50,pango_1_40,gdk_pixbuf_2_36
 
 JESSIE_NAME := jessie
 JESSIE_IMAGE := golang:1.8-jessie
-JESSIE_GO_TAGS := gtk_3_14
+JESSIE_GO_TAGS := gtk_3_14,glib_2_42,pango_1_36,gdk_pixbuf_2_31
 
 
 # Build information
