@@ -53,13 +53,13 @@ func (this *CommandButton) handleClicked() {
 }
 
 func (this *CommandButton) sendCommand() {
-	logger.Infof("CommandButton.sendCommand(), now sending command %q", this.controlDefinition.Name)
-	
+	logger.Infof("CommandButton.sendCommand(), now sending command %q", this.commandDefinition.Name)
+
 	commandRequest := &octoprintApis.SystemExecuteCommandRequest{
 		Source: dataModels.Custom,
 		Action: this.commandDefinition.Action,
 	}
-	
+
 	err := commandRequest.Do(this.client)
 	if err != nil {
 		logger.LogError("CommandButton.sendCommand()", "Do(SystemExecuteCommandRequest)", err)
