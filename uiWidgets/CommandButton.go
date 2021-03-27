@@ -41,21 +41,19 @@ func CreateCommandButton(
 }
 
 func (this *CommandButton) handleClicked() {
-	var handleClick func()
-	
 	if len(this.commandDefinition.Confirm) != 0 {
-		logger.Debugf("CommandButton.handleClicked().MustConfirmDialogBox: %s", this.commandDefinition.Name)
-		handleClick = utils.MustConfirmDialogBox(this.parentWindow, this.commandDefinition.Confirm, this.sendCommand)
+		utils.MustConfirmDialogBox(
+			this.parentWindow,
+			this.commandDefinition.Confirm,
+			this.sendCommand,
+		)()
 	} else {
-		logger.Debugf("CommandButton.handleClicked().sendCommand: %s", this.commandDefinition.Name)
-		handleClick = this.sendCommand
+		this.sendCommand()
 	}
-	
-	handleClick()
 }
 
 func (this *CommandButton) sendCommand() {
-	logger.Debugf("CommandButton.sendCommand(): %q", this.commandDefinition.Name)
+	logger.Infof("CommandButton.sendCommand(), now sending command %q", this.controlDefinition.Name)
 	
 	commandRequest := &octoprintApis.SystemExecuteCommandRequest{
 		Source: dataModels.Custom,
