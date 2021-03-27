@@ -25,6 +25,8 @@ override_dh_golang:
 override_dh_install:
 	mkdir -p $(CURDIR)/debian/octoscreen/opt/octoscreen/
 	cp -r styles $(CURDIR)/debian/octoscreen/opt/octoscreen/
+	mkdir -p $(CURDIR)/debian/local/octoscreen/scripts/
+	cp -r scripts $(CURDIR)/debian/local/octoscreen/
 	rm -rf $(CURDIR)/debian/octoscreen/usr/share/gocode
 	dh_install -XLICENSE
 
