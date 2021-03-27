@@ -83,7 +83,7 @@ func (this *controlPanel) getCustomControls() []*dataModels.ControlDefinition {
 
 	for _, control := range response.Controls {
 		for _, childControl := range control.Children {
-			if childControl.Command != "" || childControl.Script != "" {
+			if childControl.Command != "" || childControl.Script != "" || childControl.Commands != nil {
 				controlDefinitions = append(controlDefinitions, childControl)
 			}
 		}
