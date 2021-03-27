@@ -3,44 +3,49 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="68px" height="68px" viewBox="0 0 68 68" enable-background="new 0 0 68 68" xml:space="preserve">
-<path id="Path" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" d="M40.034,4.386H16.327
-	C14.664,4.386,13,5.911,13,7.575v53.514C13,62.752,14.664,64,16.327,64h35.976c1.664,0,2.981-1.248,2.981-2.911V21.023"/>
-<path id="Path_1_" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
-	M53.776,20.328c1.595,0,2.011-0.832,0.832-2.01L41.23,5.009c-1.109-1.109-2.149-0.693-2.149,0.901v11.646
-	c0,1.594,1.456,2.773,3.119,2.773H53.776z"/>
-<path id="Path_2_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M19.239,12.705h16.636"/>
-<path id="Path_3_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M18.545,24.489h13.864"/>
-<path id="Path_4_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M36.568,24.489h13.17"/>
-<path id="Path_5_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M18.545,28.648h20.795"/>
-<path id="Path_6_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M43.5,28.648h6.238"/>
-<path id="Path_7_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M18.545,32.807h13.864"/>
-<path id="Path_8_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M36.568,32.807h13.17"/>
-<path id="Path_9_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M18.545,36.966h20.795"/>
-<path id="Path_10_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
-	M43.5,36.966h6.238"/>
-<g id="Group" transform="translate(19.238636, 41.125000)">
-	<path id="Path_11_" fill="#FFFFFF" d="M0,13.934c0-0.555,0.139-0.971,0.416-1.248c0.277-0.277,0.693-0.416,1.317-0.416
-		c0.555,0,0.97,0.139,1.248,0.416s0.416,0.693,0.416,1.248c0,0.554-0.139,0.9-0.485,1.247c-0.277,0.277-0.693,0.416-1.248,0.416
-		s-0.971-0.139-1.317-0.416C0.139,14.903,0,14.487,0,13.934z"/>
-	<path id="Path_12_" fill="#FFFFFF" d="M13.863,12.062c0,1.108-0.416,2.011-1.178,2.564c-0.763,0.624-1.941,0.901-3.535,0.901
-		c-0.832,0-1.456-0.069-2.08-0.139c-0.485-0.139-0.832-0.277-1.525-0.485v-2.495c0.693,0.277,1.178,0.484,1.872,0.693
-		c0.693,0.207,1.317,0.277,1.872,0.277c1.109,0,1.664-0.348,1.664-0.971c0-0.208-0.069-0.416-0.208-0.555s-0.416-0.347-0.763-0.485
-		c-0.346-0.208-0.832-0.416-1.386-0.624c-0.832-0.346-1.456-0.693-1.872-0.971S6.031,9.15,5.823,8.734S5.546,7.833,5.546,7.278
-		c0-0.97,0.347-1.733,1.109-2.288c0.763-0.554,1.802-0.831,3.258-0.831c1.317,0,2.634,0.277,3.881,0.901l-0.901,2.148
-		c-0.555-0.208-1.04-0.416-1.525-0.555c-0.485-0.139-0.971-0.207-1.456-0.207c-0.901,0-1.317,0.207-1.317,0.692
-		c0,0.277,0.139,0.485,0.416,0.693s0.901,0.485,1.872,0.901c0.832,0.346,1.525,0.693,1.872,0.971
-		c0.416,0.277,0.693,0.623,0.901,1.039C13.794,11.091,13.863,11.507,13.863,12.062z"/>
-	<path id="Path_13_" fill="#FFFFFF" d="M20.934,13.17c0.554,0,1.247-0.139,1.94-0.346v2.218c-0.693,0.347-1.732,0.485-2.842,0.485
-		c-1.178,0-2.08-0.277-2.634-0.901c-0.555-0.624-0.832-1.524-0.832-2.703V6.238h-1.386v-0.9l1.594-0.971l0.832-2.287h1.803v2.079
-		h3.465v2.079H19.41v5.685c0,0.416,0.207,0.763,0.484,0.97C20.102,13.031,20.518,13.17,20.934,13.17z"/>
+<g id="DocumentOutline">
+	<path id="Path" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round" d="M40.034,4.386H16.327
+		C14.664,4.386,13,5.911,13,7.575v53.514C13,62.752,14.664,64,16.327,64h35.976c1.664,0,2.981-1.248,2.981-2.911V19.584"/>
+	<path id="Path_1_" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="
+		M53.775,20.328c1.596,0,2.012-0.832,0.832-2.01L41.23,5.009C40.121,3.9,39.081,4.316,39.081,5.91v11.646
+		c0,1.594,1.456,2.773,3.119,2.773L53.775,20.328L53.775,20.328z"/>
+</g>
+<g id="MockContent">
+	<path id="Path_2_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M19.239,12.705h16.636"/>
+	<path id="Path_3_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M18.545,24.489h13.864"/>
+	<path id="Path_4_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M36.568,24.489h13.17"/>
+	<path id="Path_5_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M18.545,28.648H39.34"/>
+	<path id="Path_6_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M43.5,28.648h6.238"/>
+	<path id="Path_7_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M18.545,32.807h13.864"/>
+	<path id="Path_8_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M36.568,32.807h13.17"/>
+	<path id="Path_9_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M18.545,36.966H39.34"/>
+	<path id="Path_10_" fill="none" stroke="#FFFFFF" stroke-width="0.5" stroke-linecap="round" stroke-linejoin="round" d="
+		M43.5,36.966h6.238"/>
+</g>
+<g id="_x2E_stl" transform="translate(19.238636, 41.125000)">
+	<path id="Path_11_" fill="#FFFFFF" d="M0,13.934c0-0.555,0.139-0.971,0.416-1.248c0.277-0.276,0.693-0.416,1.317-0.416
+		c0.555,0,0.97,0.14,1.248,0.416c0.278,0.277,0.416,0.693,0.416,1.248s-0.139,0.9-0.485,1.248c-0.277,0.276-0.693,0.416-1.248,0.416
+		c-0.555,0-0.971-0.14-1.317-0.416C0.139,14.902,0,14.486,0,13.934z"/>
+	<path id="Path_12_" fill="#FFFFFF" d="M13.863,12.062c0,1.107-0.416,2.011-1.178,2.563c-0.763,0.624-1.941,0.901-3.535,0.901
+		c-0.832,0-1.456-0.069-2.08-0.139c-0.485-0.14-0.832-0.277-1.525-0.486v-2.494c0.693,0.277,1.178,0.484,1.872,0.693
+		c0.693,0.207,1.317,0.276,1.872,0.276c1.109,0,1.664-0.349,1.664-0.971c0-0.208-0.069-0.416-0.208-0.556
+		c-0.139-0.139-0.416-0.347-0.763-0.484c-0.346-0.208-0.832-0.416-1.386-0.624C7.764,10.396,7.14,10.05,6.724,9.771
+		C6.308,9.494,6.031,9.15,5.823,8.734S5.546,7.833,5.546,7.277c0-0.969,0.347-1.732,1.109-2.287
+		c0.763-0.555,1.802-0.831,3.258-0.831c1.317,0,2.634,0.276,3.881,0.901l-0.901,2.147C12.338,7,11.853,6.792,11.368,6.652
+		c-0.485-0.139-0.971-0.207-1.456-0.207c-0.901,0-1.317,0.207-1.317,0.693c0,0.276,0.139,0.484,0.416,0.692
+		c0.277,0.208,0.901,0.485,1.872,0.901c0.832,0.346,1.525,0.692,1.872,0.971c0.416,0.277,0.693,0.623,0.901,1.039
+		C13.794,11.091,13.863,11.507,13.863,12.062z"/>
+	<path id="Path_13_" fill="#FFFFFF" d="M20.934,13.17c0.554,0,1.247-0.139,1.94-0.346v2.218c-0.693,0.347-1.732,0.485-2.843,0.485
+		c-1.178,0-2.08-0.277-2.634-0.901c-0.555-0.624-0.832-1.524-0.832-2.703V6.238H15.18v-0.9l1.594-0.971l0.832-2.287h1.803v2.079
+		h3.466v2.079H19.41v5.685c0,0.416,0.207,0.763,0.484,0.97C20.102,13.031,20.518,13.17,20.934,13.17z"/>
 	<polygon id="Path_14_" fill="#FFFFFF" points="27.727,15.25 24.955,15.25 24.955,0 27.727,0 	"/>
 </g>
 </svg>

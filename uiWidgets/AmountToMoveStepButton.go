@@ -1,6 +1,7 @@
 package uiWidgets
 
 import (
+	"github.com/Z-Bolt/OctoScreen/logger"
 )
 
 type AmountToMoveStepButton struct {
@@ -18,6 +19,7 @@ func CreateAmountToMoveStepButton() *AmountToMoveStepButton {
 		Step{" 1mm",   "move-step.svg", nil,  1.00},
 	)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateAmountToMoveStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 

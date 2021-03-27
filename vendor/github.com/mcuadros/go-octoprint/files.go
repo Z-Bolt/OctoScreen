@@ -11,65 +11,73 @@ import (
 type Location string
 
 const (
-	URIFiles = "/api/files"
+	// URIFiles = "/api/files"
 
 	Local  Location = "local"
 	SDCard Location = "sdcard"
 )
 
 var (
-	FilesLocationGETErrors = statusMapping{
+	FilesLocationGETErrors = StatusMapping{
 		404: "Location is neither local nor sdcard",
 	}
-	FilesLocationPOSTErrors = statusMapping{
+	FilesLocationPOSTErrors = StatusMapping{
 		400: "No file or foldername are included in the request, userdata was provided but could not be parsed as JSON or the request is otherwise invalid.",
 		404: "Location is neither local nor sdcard or trying to upload to SD card and SD card support is disabled",
 		409: "The upload of the file would override the file that is currently being printed or if an upload to SD card was requested and the printer is either not operational or currently busy with a print job.",
 		415: "The file is neither a gcode nor an stl file (or it is an stl file but slicing support is disabled)",
 		500: "The upload failed internally",
 	}
-	FilesLocationPathPOSTErrors = statusMapping{
+	FilesLocationPathPOSTErrors = StatusMapping{
 		400: "The command is unknown or the request is otherwise invalid",
 		415: "A slice command was issued against something other than an STL file.",
 		404: "Location is neither local nor sdcard or the requested file was not found",
 		409: "Selected file is supposed to start printing directly but the printer is not operational or if a file to be sliced is supposed to be selected or start printing directly but the printer is not operational or already printing.",
 	}
-	FilesLocationDeleteErrors = statusMapping{
+	FilesLocationDeleteErrors = StatusMapping{
 		404: "Location is neither local nor sdcard",
 		409: "The file to be deleted is currently being printed",
 	}
 )
 
+// FileRequest is now in FileRequest.go
+// TODO: remove this commented code
 // FileRequest retrieves the selected file’s or folder’s information.
-type FileRequest struct {
-	// Location of the file for which to retrieve the information, either
-	// `local` or `sdcard`.
-	Location Location
-	// Filename of the file for which to retrieve the information
-	Filename string
-	// Recursive if set to true, return all files and folders recursively.
-	// Otherwise only return items on same level.
-	Recursive bool
-}
+// type FileRequest struct {
+// 	// Location of the file for which to retrieve the information, either
+// 	// `local` or `sdcard`.
+// 	Location Location
 
-// Do sends an API request and returns the API response
-func (cmd *FileRequest) Do(c *Client) (*FileInformation, error) {
-	uri := fmt.Sprintf("%s/%s/%s?recursive=%t", URIFiles,
-		cmd.Location, cmd.Filename, cmd.Recursive,
-	)
+// 	// Filename of the file for which to retrieve the information
+// 	Filename string
 
-	b, err := c.doJSONRequest("GET", uri, nil, FilesLocationGETErrors)
-	if err != nil {
-		return nil, err
-	}
+// 	// Recursive if set to true, return all files and folders recursively.
+// 	// Otherwise only return items on same level.
+// 	Recursive bool
+// }
 
-	r := &FileInformation{}
-	if err := json.Unmarshal(b, r); err != nil {
-		return nil, err
-	}
+// // Do sends an API request and returns the API response
+// func (cmd *FileRequest) Do(c *Client) (*FileInformation, error) {
+// 	uri := fmt.Sprintf("%s/%s/%s?recursive=%t", URIFiles,
+// 		cmd.Location, cmd.Filename, cmd.Recursive,
+// 	)
 
-	return r, err
-}
+// 	b, err := c.doJSONRequest("GET", uri, nil, FilesLocationGETErrors)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	r := &FileInformation{}
+// 	if err := json.Unmarshal(b, r); err != nil {
+// 		return nil, err
+// 	}
+
+// 	return r, err
+// }
+
+
+
+
 
 // FilesRequest retrieve information regarding all files currently available and
 // regarding the disk space still available locally in the system.
@@ -203,39 +211,40 @@ func (req *DeleteFileRequest) Do(c *Client) error {
 	return nil
 }
 
-// SelectFileRequest selects a file for printing.
-type SelectFileRequest struct {
-	// Location is target location on which to send the command for is located,
-	// either local (for OctoPrint’s uploads folder) or sdcard for the
-	// printer’s SD card (if available)
-	Location Location `json:"-"`
-	// Path  of the file for which to issue the command
-	Path string `json:"-"`
-	// Print, if set to true the file will start printing directly after
-	// selection. If the printer is not operational when this parameter is
-	// present and set to true, the request will fail with a response of
-	// 409 Conflict.
-	Print bool `json:"print"`
-}
+// SelectFileRequest is now in SelectFileRequest.go
+// // SelectFileRequest selects a file for printing.
+// type SelectFileRequest struct {
+// 	// Location is target location on which to send the command for is located,
+// 	// either local (for OctoPrint’s uploads folder) or sdcard for the
+// 	// printer’s SD card (if available)
+// 	Location Location `json:"-"`
+// 	// Path  of the file for which to issue the command
+// 	Path string `json:"-"`
+// 	// Print, if set to true the file will start printing directly after
+// 	// selection. If the printer is not operational when this parameter is
+// 	// present and set to true, the request will fail with a response of
+// 	// 409 Conflict.
+// 	Print bool `json:"print"`
+// }
 
-// Do sends an API request and returns an error if any.
-func (cmd *SelectFileRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := cmd.encode(b); err != nil {
-		return err
-	}
+// // Do sends an API request and returns an error if any.
+// func (cmd *SelectFileRequest) Do(c *Client) error {
+// 	b := bytes.NewBuffer(nil)
+// 	if err := cmd.encode(b); err != nil {
+// 		return err
+// 	}
 
-	uri := fmt.Sprintf("%s/%s/%s", URIFiles, cmd.Location, cmd.Path)
-	_, err := c.doJSONRequest("POST", uri, b, FilesLocationPathPOSTErrors)
-	return err
-}
+// 	uri := fmt.Sprintf("%s/%s/%s", URIFiles, cmd.Location, cmd.Path)
+// 	_, err := c.doJSONRequest("POST", uri, b, FilesLocationPathPOSTErrors)
+// 	return err
+// }
 
-func (cmd *SelectFileRequest) encode(w io.Writer) error {
-	return json.NewEncoder(w).Encode(struct {
-		Command string `json:"command"`
-		SelectFileRequest
-	}{
-		Command:           "select",
-		SelectFileRequest: *cmd,
-	})
-}
+// func (cmd *SelectFileRequest) encode(w io.Writer) error {
+// 	return json.NewEncoder(w).Encode(struct {
+// 		Command string `json:"command"`
+// 		SelectFileRequest
+// 	}{
+// 		Command:           "select",
+// 		SelectFileRequest: *cmd,
+// 	})
+// }

@@ -4,19 +4,21 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type FanButton struct {
 	*gtk.Button
 
-	client				*octoprint.Client
+	client				*octoprintApis.Client
 	amount				int
 }
 
 func CreateFanButton(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	amount				int,
 ) *FanButton {
 	var (
@@ -40,6 +42,7 @@ func CreateFanButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateFanButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -47,13 +50,13 @@ func CreateFanButton(
 }
 
 func (this *FanButton) handleClicked() {
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	cmd.Commands = []string{
 		fmt.Sprintf("M106 S%d", (255 * this.amount / 100)),
 	}
 
 	err := cmd.Do(this.client)
 	if err != nil {
-		utils.LogError("FanButton.handleClicked()", "Do(CommandRequest)", err)
+		logger.LogError("FanButton.handleClicked()", "Do(CommandRequest)", err)
 	}
 }

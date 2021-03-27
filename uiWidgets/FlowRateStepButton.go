@@ -1,17 +1,19 @@
 package uiWidgets
 
 import (
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type FlowRateStepButton struct {
 	*StepButton
-	client			*octoprint.Client
+	client			*octoprintApis.Client
 }
 
 func CreateFlowRateStepButton(
-	client			*octoprint.Client,
+	client			*octoprintApis.Client,
 ) *FlowRateStepButton {
 	base, err := CreateStepButton(
 		1,
@@ -20,6 +22,7 @@ func CreateFlowRateStepButton(
 		Step{"Slow (75%)",    "speed-slow.svg",   nil,  75},
 	)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateFlowRateStepButton()", "CreateStepButton()", err)
 		panic(err)
 	}
 
@@ -36,14 +39,5 @@ func (this *FlowRateStepButton) Value() int {
 }
 
 func (this *FlowRateStepButton) SendChangeFlowRate() error {
-	cmd := &octoprint.ToolFlowRateRequest{}
-	cmd.Factor = this.Value()
-
-	utils.Logger.Infof("FlowRateStepButton.SendChangeFlowRate() - changing flow rate to %d%%", cmd.Factor)
-	if err := cmd.Do(this.client); err != nil {
-		utils.LogError("FlowRateStepButton.SendChangeFlowRate()", "Go(ToolFlowRateRequest)", err)
-		return err
-	}
-
-	return nil
+	return utils.SetFlowRate(this.client, this.Value())
 }

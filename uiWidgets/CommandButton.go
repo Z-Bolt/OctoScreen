@@ -4,22 +4,24 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 type CommandButton struct {
 	*gtk.Button
 
-	client				*octoprint.Client
+	client				*octoprintApis.Client
 	parentWindow		*gtk.Window
-	commandDefinition	*octoprint.CommandDefinition
+	commandDefinition	*dataModels.CommandDefinition
 }
 
 func CreateCommandButton(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	parentWindow		*gtk.Window,
-	commandDefinition	*octoprint.CommandDefinition,
+	commandDefinition	*dataModels.CommandDefinition,
 	iconName			string,
 ) *CommandButton {
 	base := utils.MustButtonImage(utils.StrEllipsisLen(commandDefinition.Name, 16), iconName + ".svg", nil)
@@ -31,6 +33,7 @@ func CreateCommandButton(
 	}
 	_, err := instance.Button.Connect("clicked", instance.handleClicked)
 	if err != nil {
+		logger.LogError("PANIC!!! - CreateCommandButton()", "instance.Button.Connect()", err)
 		panic(err)
 	}
 
@@ -39,21 +42,26 @@ func CreateCommandButton(
 
 func (this *CommandButton) handleClicked() {
 	if len(this.commandDefinition.Confirm) != 0 {
-		utils.MustConfirmDialogBox(this.parentWindow, this.commandDefinition.Confirm, this.sendCommand)
-		return
+		utils.MustConfirmDialogBox(
+			this.parentWindow,
+			this.commandDefinition.Confirm,
+			this.sendCommand,
+		)()
 	} else {
 		this.sendCommand()
 	}
 }
 
 func (this *CommandButton) sendCommand() {
-	commandRequest := &octoprint.SystemExecuteCommandRequest{
-		Source: octoprint.Custom,
+	logger.Infof("CommandButton.sendCommand(), now sending command %q", this.commandDefinition.Name)
+
+	commandRequest := &octoprintApis.SystemExecuteCommandRequest{
+		Source: dataModels.Custom,
 		Action: this.commandDefinition.Action,
 	}
 
 	err := commandRequest.Do(this.client)
 	if err != nil {
-		utils.LogError("CommandButton.sendCommand()", "Do(SystemExecuteCommandRequest)", err)
+		logger.LogError("CommandButton.sendCommand()", "Do(SystemExecuteCommandRequest)", err)
 	}
 }

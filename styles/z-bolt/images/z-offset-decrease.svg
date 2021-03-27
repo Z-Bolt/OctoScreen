@@ -47,6 +47,6 @@
 			<line fill="none" stroke="#FFFFFF" stroke-width="1.7437" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" x1="20.862" y1="24.402" x2="16.616" y2="24.402"/>
 	</g>
 </g>
-<path id="Arrow_1_" fill="#232323" stroke="#FFFFFF" stroke-width="2.4221" stroke-linejoin="round" d="M65.188,20.783
-	L50.991,35.131L36.645,20.932l5.679-5.738l4.598,4.549V3h8.073l-0.001,16.609l4.458-4.504L65.188,20.783z"/>
+<path id="Arrow_1_" fill="none" stroke="#FFFFFF" stroke-width="2.4221" stroke-linejoin="round" d="M65.188,20.783L50.991,35.131
+	L36.645,20.932l5.68-5.738l4.598,4.549V3h8.073l-0.001,16.609l4.458-4.504L65.188,20.783z"/>
 </svg>

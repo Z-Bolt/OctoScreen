@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"pifke.org/wpasupplicant"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
+	"pifke.org/wpasupplicant"
 )
 
 var networkPanelInstance *networkPanel
@@ -47,10 +48,14 @@ func (this *networkPanel) initialize() {
 }
 
 func (this *networkPanel) update() {
+	logger.TraceEnter("networkPanel.update()")
+
 	utils.EmptyTheContainer(&this.listBox.Container)
 	this.setNetStatusText()
 	this.setNetworkItems()
 	this.listBox.ShowAll()
+
+	logger.TraceLeave("networkPanel.update()")
 }
 
 func (this *networkPanel) setNetStatusText() {
@@ -139,7 +144,7 @@ func (this *networkPanel) setNetworkListItems(wpa wpasupplicant.Conn) {
 
 			err := wpa.Scan()
 			if err != nil {
-				utils.LogError("NetworkPanel.update()", "Scan()", err)
+				logger.LogError("NetworkPanel.update()", "Scan()", err)
 			}
 		} else {
 			label := utils.MustLabel("\n\nWiFi management is not available\non this hardware")

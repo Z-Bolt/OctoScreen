@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 )
 
 
@@ -76,7 +75,7 @@ func AttachToolheadButtonsToGrid(toolheadButtons []*gtk.Button, grid *gtk.Grid) 
 
 
 // ****************************************************************************
-// DislogBox Routines
+// DialogBox Routines
 func MustConfirmDialogBox(parent *gtk.Window, msg string, cb func()) func() {
 	return func() {
 		win := gtk.MessageDialogNewWithMarkup(
@@ -135,7 +134,7 @@ func messageDialogBox(parentWindow *gtk.Window, messageType gtk.MessageType, mes
 	box, _ := dialogBox.GetContentArea()
 	box.SetMarginStart(25)
 	box.SetMarginEnd(25)
-	box.SetMarginTop(50)
+	box.SetMarginTop(20)
 	box.SetMarginBottom(10)
 
 	ctx, _ := dialogBox.GetStyleContext()
@@ -144,22 +143,20 @@ func messageDialogBox(parentWindow *gtk.Window, messageType gtk.MessageType, mes
 	dialogBox.Run()
 }
 
-func HotendTemperatureIsTooLow(temperatureData octoprint.TemperatureData, action string, parentWindow *gtk.Window) bool {
-	targetTemperature := temperatureData.Target
-	Logger.Infof("filament.hotendTemperatureIsTooLow() - targetTemperature is %.2f", targetTemperature)
 
-	actualTemperature := temperatureData.Actual
-	Logger.Infof("filament.hotendTemperatureIsTooLow() - actualTemperature is %.2f", actualTemperature)
+// func hotendTemperatureIsTooLow(temperatureData octoprint.TemperatureData, action string, parentWindow *gtk.Window) bool {
+// 	targetTemperature := temperatureData.Target
+// 	Logger.Infof("ui_utils.HotendTemperatureIsTooLow() - targetTemperature is %.2f", targetTemperature)
 
-	// If the temperature of the hotend is too low, display an error.
-	if targetTemperature <= 150.0 || actualTemperature <= 150.0 {
-		errorMessage := fmt.Sprintf("The temperature of the hotend is too low to %s.\n(the current temperature is only %.0f°C)\n\nPlease increase the temperature and try again.", action, actualTemperature)
-		ErrorMessageDialogBox(parentWindow, errorMessage)
-		return true
-	}
+// 	actualTemperature := temperatureData.Actual
+// 	Logger.Infof("ui_utils.HotendTemperatureIsTooLow() - actualTemperature is %.2f", actualTemperature)
 
-	return false
-}
+// 	if targetTemperature <= 150.0 || actualTemperature <= 150.0 {
+// 		return true
+// 	}
+
+// 	return false
+// }
 
 
 func EmptyTheContainer(container *gtk.Container) {

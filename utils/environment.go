@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"os"
 	//"strings"
+
+
+	"github.com/Z-Bolt/OctoScreen/logger"
 )
+
+
+const MISSING_ENV_TOKEN = ">>MISSING<<"
+const INVALID_ENV_TOKEN = "!!!INVALID!!!"
 
 // Required environment variables
 const (
@@ -76,46 +83,55 @@ func NameOfMissingRequiredEnvironmentVariable(apiKey string) string {
 }
 
 func DumpEnvironmentVariables() {
-	Logger.Info("")
-	Logger.Info("")
-	Logger.Info("Environment variables...")
+	logger.Info("Environment variables...")
 
 	// Required environment variables
-	Logger.Infof("Required environment variables:")
+	logger.Info("Required environment variables:")
 	dumpEnvironmentVariable(EnvBaseURL)
+
+	// TODO: revisit this!
+	// 1. remove OCTOPRINT_APIKEY from option settings
+	// 2. make the octoprint config path required
+	// 3. update code... use only one path to get the api key octoprint)
+	// 4. update code... make octoprint config path required
+	// 5. update code... read api key from octoprint config
+	// 6. dump api key (obfuscated though)
+	// 7. update docs
+	// 8. make sure what's dumped to the log is correct, for both when present and when missing.
 	dumpObfuscatedEnvironmentVariable(EnvAPIKey)
+
+
 	dumpEnvironmentVariable(EnvStylePath)
 
 	// Optional environment variables
-	Logger.Info("")
-	Logger.Infof("Optional environment variables:")
+	logger.Info("")
+	logger.Info("Optional environment variables:")
 	dumpEnvironmentVariable(EnvConfigFile)
 	dumpEnvironmentVariable(EnvLogFilePath)
 	dumpEnvironmentVariable(EnvLogLevel)
 	dumpEnvironmentVariable(EnvResolution)
 	// EnvResolution is optional.  If not set, the window size will
 	// default to the values defined in globalVars.go.
-
-	Logger.Info("")
-	Logger.Info("")
 }
 
 func dumpEnvironmentVariable(key string) {
 	value := os.Getenv(key)
 	if value == "" {
-		value = ">>MISSING<<"
+		value = MISSING_ENV_TOKEN
 	}
 
-	Logger.Infof("key: %q, value: %q", key, value)
+	logger.Infof("key: %q, value: %q", key, value)
 }
 
 func dumpObfuscatedEnvironmentVariable(key string) {
 	value := os.Getenv(key)
 	if value == "" {
-		value = ">>MISSING<<"
+		value = MISSING_ENV_TOKEN
+	} else {
+		value = GetObfuscatedValue(value)
 	}
 
-	Logger.Infof("key: %q, value: %q", key, GetObfuscatedValue(value))
+	logger.Infof("key: %q, value: %q", key, value)
 }
 
 func GetObfuscatedValue(value string) string {
@@ -123,16 +139,20 @@ func GetObfuscatedValue(value string) string {
 
 	obfuscatedValue := ""
 	if length < 6 {
-		obfuscatedValue = "!!!INVALID!!!"
+		obfuscatedValue = INVALID_ENV_TOKEN
 	} else {
-		obfuscatedValue = fmt.Sprintf("%c%c%c---%c%c%c",
-			value[0],
-			value[1],
-			value[2],
-			value[length - 3],
-			value[length - 2],
-			value[length - 1],
-		)
+		if value == MISSING_ENV_TOKEN {
+			return value
+		} else {
+			obfuscatedValue = fmt.Sprintf("%c%c%c---%c%c%c",
+				value[0],
+				value[1],
+				value[2],
+				value[length - 3],
+				value[length - 2],
+				value[length - 1],
+			)
+		}
 	}
 
 	return obfuscatedValue

@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -26,6 +27,7 @@ type StepButton struct {
 
 func CreateStepButton(colorVariation int, steps ...Step) (*StepButton, error) {
 	if len(steps) < 1 {
+		logger.Error("PANIC!!! - CreateStepButton() - len(steps) < 1")
 		panic("StepButton.CreateStepButton() - steps is empty")
 	}
 

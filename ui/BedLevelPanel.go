@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -104,23 +106,21 @@ func (this *bedLevelPanel) addBedLevelCornerButton(isLeft, isTop bool) {
 }
 
 func (this *bedLevelPanel) defineLevelingPoints() {
-	utils.Logger.Debug("entering BedLevelPanel.verifyConnection()")
+	logger.TraceEnter("BedLevelPanel.defineLevelingPoints()")
 
-	connectionRequest, err := (&octoprint.ConnectionRequest{}).Do(this.UI.Client)
+	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(ConnectionRequest)", err)
-
-		utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
+		logger.LogError("BedLevelPanel.defineLevelingPoints()", "version.Get()", err)
+		logger.TraceLeave("BedLevelPanel.defineLevelingPoints()")
 		return
 	}
 
-	utils.Logger.Info(connectionRequest.Current.PrinterProfile)
+	logger.Info(connectionResponse.Current.PrinterProfile)
 
-	printerProfile, err := (&octoprint.PrinterProfilesRequest{Id: connectionRequest.Current.PrinterProfile}).Do(this.UI.Client)
+	printerProfile, err := (&octoprintApis.PrinterProfilesRequest{Id: connectionResponse.Current.PrinterProfile}).Do(this.UI.Client)
 	if err != nil {
-		utils.LogError("BedLevelPanel.defineLevelingPoints()", "Do(PrinterProfilesRequest)", err)
-
-		utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
+		logger.LogError("BedLevelPanel.defineLevelingPoints()", "Do(PrinterProfilesRequest)", err)
+		logger.TraceLeave("BedLevelPanel.defineLevelingPoints()")
 		return
 	}
 
@@ -136,7 +136,7 @@ func (this *bedLevelPanel) defineLevelingPoints() {
 		"b-r": {xMax - xOffset, yOffset},
 	}
 
-	utils.Logger.Debug("leaving BedLevelPanel.verifyConnection()")
+	logger.TraceLeave("BedLevelPanel.defineLevelingPoints()")
 }
 
 func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
@@ -145,7 +145,7 @@ func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
 	button := utils.MustButtonImage(noLabel, imageFileName, func() {
 		this.goHomeIfRequired()
 
-		cmd := &octoprint.CommandRequest{}
+		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string {
 			"G0 Z10 F2000",
 			fmt.Sprintf("G0 X%f Y%f F10000", this.points[placement][0], this.points[placement][1]),
@@ -153,7 +153,7 @@ func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
 		}
 
 		if err := cmd.Do(this.UI.Client); err != nil {
-			utils.LogError("BedLevelPanel.createLevelButton()", "Do(CommandRequest)", err)
+			logger.LogError("BedLevelPanel.createLevelButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
@@ -166,13 +166,13 @@ func (this *bedLevelPanel) goHomeIfRequired() {
 		return
 	}
 
-	cmd := &octoprint.CommandRequest{}
+	cmd := &octoprintApis.CommandRequest{}
 	cmd.Commands = []string{
 		"G28",
 	}
 
 	if err := cmd.Do(this.UI.Client); err != nil {
-		utils.LogError("BedLevelPanel.goHomeIfRequire()", "Do(CommandRequest)", err)
+		logger.LogError("BedLevelPanel.goHomeIfRequire()", "Do(CommandRequest)", err)
 		return
 	}
 
@@ -181,13 +181,13 @@ func (this *bedLevelPanel) goHomeIfRequired() {
 
 func (this *bedLevelPanel) createAutoLevelButton(gcode string) *gtk.Button {
 	button := utils.MustButtonImage("Auto Level", "bed-level.svg", func() {
-		cmd := &octoprint.CommandRequest{}
+		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string{
 			gcode,
 		}
 
 		if err := cmd.Do(this.UI.Client); err != nil {
-			utils.LogError("BedLevelPanel.createAutoLevelButton()", "Do(CommandRequest)", err)
+			logger.LogError("BedLevelPanel.createAutoLevelButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})

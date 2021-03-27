@@ -4,8 +4,10 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/mcuadros/go-octoprint"
 	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -55,12 +57,12 @@ func (this *toolChangerPanel) createZCalibrationButton() gtk.IWidget {
 
 func (this *toolChangerPanel) createMagnetOnButton() gtk.IWidget {
 	return utils.MustButtonImageStyle("Magnet On", "magnet-on.svg", "", func() {
-		cmd := &octoprint.CommandRequest{}
+		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=1"}
 
-		utils.Logger.Info("Turn on magnet")
+		logger.Info("Turn on magnet")
 		if err := cmd.Do(this.UI.Client); err != nil {
-			utils.LogError("tool-changer.createMagnetOnButton()", "Do(CommandRequest)", err)
+			logger.LogError("tool-changer.createMagnetOnButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
@@ -68,20 +70,20 @@ func (this *toolChangerPanel) createMagnetOnButton() gtk.IWidget {
 
 func (this *toolChangerPanel) createMagnetOffButton() gtk.IWidget {
 	return utils.MustButtonImageStyle("Magnet Off", "magnet-off.svg", "", func() {
-		cmd := &octoprint.CommandRequest{}
+		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string{"SET_PIN PIN=sol VALUE=0"}
 
-		utils.Logger.Info("Turn off magnet")
+		logger.Info("Turn off magnet")
 		if err := cmd.Do(this.UI.Client); err != nil {
-			utils.LogError("tool-changer.createMagnetOffButton()", "Do(CommandRequest)", err)
+			logger.LogError("tool-changer.createMagnetOffButton()", "Do(CommandRequest)", err)
 			return
 		}
 	})
 }
 
 func (this *toolChangerPanel) createToolheadButtons() {
-	toolheadCount := utils.GetToolheadCount(this.UI.Client)
-	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(toolheadCount, this.Grid())
+	extruderCount := utils.GetExtruderCount(this.UI.Client)
+	toolheadButtons := utils.CreateChangeToolheadButtonsAndAttachToGrid(extruderCount, this.Grid())
 	this.setToolheadButtonClickHandlers(toolheadButtons)
 }
 
@@ -93,7 +95,7 @@ func (this *toolChangerPanel) setToolheadButtonClickHandlers(toolheadButtons []*
 
 func (this *toolChangerPanel) setToolheadButtonClickHandler(toolheadButton *gtk.Button, toolheadIndex int) {
 	toolheadButton.Connect("clicked", func() {
-		utils.Logger.Infof("Changing tool to tool%d", toolheadIndex)
+		logger.Infof("Changing tool to tool%d", toolheadIndex)
 
 		gcode := fmt.Sprintf("T%d", toolheadIndex)
 		this.command(gcode)

@@ -1,58 +1,43 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	standardLog "log"
 	"os"
 	"os/user"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 
+	"github.com/gotk3/gotk3/gtk"
+	"github.com/sirupsen/logrus"
+
+	"github.com/Z-Bolt/OctoScreen/logger"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/Z-Bolt/OctoScreen/utils"
-	"github.com/gotk3/gotk3/gtk"
-	"gopkg.in/yaml.v1"
 
-	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v1"
 )
+
 
 var (
 	BaseURL    string
 	APIKey     string
 	ConfigFile string
 	Resolution string
+	initSucceeded bool
 )
-
-func main() {
-	utils.Logger.Debug("OctoScreen - entering main.main()")
-
-	gtk.Init(nil)
-	settings, _ := gtk.SettingsGetDefault()
-	settings.SetProperty("gtk-application-prefer-dark-theme", true)
-
-	utils.DumpEnvironmentVariables()
-
-	if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-		width, height := getSize()
-		// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
-		// and aren't required - if not set, ui.New() will use the default
-		// values (defined in globalVars.go).
-		_ = ui.New(BaseURL, APIKey, width, height)
-	} else {
-		fatalErrorWindow := ui.CreateFatalErrorWindow("Required environment variable is not set:", utils.NameOfMissingRequiredEnvironmentVariable(APIKey))
-		fatalErrorWindow.ShowAll()
-	}
-
-	gtk.Main()
-
-	utils.Logger.Debug("OctoScreen - leaving main.main()")
-}
 
 
 func init() {
-	utils.Logger.Debug("OctoScreen - entering main.init()")
+	logger.Debug("-")
+	logger.Debug("-")
+	logger.TraceEnter("OctoScreen - main.init()")
+	initSucceeded = false
 
 	ConfigFile = os.Getenv(utils.EnvConfigFile)
 	if ConfigFile == "" {
@@ -60,46 +45,151 @@ func init() {
 	}
 
 	cfg := readConfig(ConfigFile)
-	setApiKey(cfg)
-
-	if !utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-		utils.Logger.Error("OctoScreen - main.init() - RequiredEnvironmentVariablesAreSet() returned false")
-
-		utils.Logger.Debug("OctoScreen - leaving main.init()")
+	if cfg == nil {
+		initSucceeded = false
 		return
 	}
 
+	setApiKey(cfg)
 	setLogLevel()
-
 	utils.StylePath = os.Getenv(utils.EnvStylePath)
 	Resolution = os.Getenv(utils.EnvResolution)
 	setBaseUrl(cfg)
 
-	utils.Logger.Debug("OctoScreen - leaving main.init()")
+	initSucceeded = true
+	logger.TraceLeave("OctoScreen - main.init()")
+	logger.Debug("-")
+	logger.Debug("-")
 }
 
+
+func main() {
+	defer func() {
+		standardLog.Println("main's defer() was called, now calling recover()")
+		rec := recover();
+		if rec != nil {
+			standardLog.Println("main's defer() - recover:", rec)
+		} else {
+			standardLog.Println("main's defer() - recover was nil")
+		}
+
+		var ms runtime.MemStats
+		runtime.ReadMemStats(&ms)
+
+		/*
+		programCounter, fileName, lineNumber, infoWasRecovered := runtime.Caller(2)
+		standardLog.Println("main's defer() - programCounter:", programCounter)
+		standardLog.Println("main's defer() - fileName:", fileName)
+		standardLog.Println("main's defer() - lineNumber:", lineNumber)
+		standardLog.Println("main's defer() - infoWasRecovered:", infoWasRecovered)
+		*/
+
+		pc := make([]uintptr, 20)
+		numberOfPcEntries := runtime.Callers(0, pc)
+		if numberOfPcEntries > 10 {
+			numberOfPcEntries = 10
+		}
+
+		for i := 1; i < numberOfPcEntries; i++ {
+			/*
+			standardLog.Printf("main's defer() - [%d]", i)
+			standardLog.Printf("main's defer() - [%d]", numberOfPcEntries)
+
+			programCounter, fileName, lineNumber, infoWasRecovered := runtime.Caller(i)
+			standardLog.Printf("main's defer() - programCounter[%d]: %v", i, programCounter)
+			standardLog.Printf("main's defer() - fileName[%d]: %v", i, fileName)
+			standardLog.Printf("main's defer() - lineNumber[%d]: %v", i, lineNumber)
+			standardLog.Printf("main's defer() - infoWasRecovered[%d]: %v", i, infoWasRecovered)
+			standardLog.Println("")
+			*/
+
+			_, fileName, lineNumber, infoWasRecovered := runtime.Caller(i)
+			if infoWasRecovered {
+				standardLog.Printf("main's defer() - [%d] %s, line %d", i, fileName, lineNumber)
+			}
+		}
+
+		standardLog.Println("main's defer() was called, now exiting func()")
+	}()
+
+
+	logger.Debug("+")
+	logger.Debug("+")
+	logger.TraceEnter("OctoScreen - main.main()")
+
+	gtk.Init(nil)
+	settings, _ := gtk.SettingsGetDefault()
+	settings.SetProperty("gtk-application-prefer-dark-theme", true)
+
+	utils.DumpEnvironmentVariables()
+
+	if initSucceeded != true {
+		// readConfig() logs any errors it encounters.  Don't display
+		// the error here, because the error could be long, and we don't
+		// want to display a long message and have the screen resize.
+		fatalErrorWindow := ui.CreateFatalErrorWindow(
+			"Initialization failed:",
+			"readConfig() failed, see log for errors",
+		)
+		fatalErrorWindow.ShowAll()
+	} else {
+		if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
+			width, height, err := getSize()
+			if err == nil {
+				// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
+				// and aren't required - if not set, ui.New() will use the default
+				// values (defined in globalVars.go).
+				_ = ui.New(BaseURL, APIKey, width, height)
+			} else {
+				// But if there is an error while parsing OCTOSCREEN_RESOLUTION,
+				// then display the error.
+				fatalErrorWindow := ui.CreateFatalErrorWindow(
+					"getSize() failed",
+					err.Error(),
+				)
+				fatalErrorWindow.ShowAll()
+			}
+		} else {
+			fatalErrorWindow := ui.CreateFatalErrorWindow(
+				"Required environment variable is not set:",
+				utils.NameOfMissingRequiredEnvironmentVariable(APIKey),
+			)
+			fatalErrorWindow.ShowAll()
+		}
+	}
+
+	gtk.Main()
+
+	logger.TraceLeave("OctoScreen - main.main()")
+	logger.Debug("+")
+	logger.Debug("+")
+}
+
+
 func setLogLevel() {
-	logLevel := utils.LowerCaseLogLevel()
+	logLevel := strings.ToLower(os.Getenv(utils.EnvLogLevel))
+
 	switch logLevel {
 		case "debug":
-			utils.SetLogLevel(logrus.DebugLevel)
+			logger.SetLogLevel(logrus.DebugLevel)
 
 		case "info":
-			utils.SetLogLevel(logrus.InfoLevel)
+			logger.SetLogLevel(logrus.InfoLevel)
 
 		case "warn":
-			utils.SetLogLevel(logrus.WarnLevel)
+			logger.SetLogLevel(logrus.WarnLevel)
 
 		case "":
 			logLevel = "error"
 			os.Setenv(utils.EnvLogLevel, "error")
 			fallthrough
 		case "error":
-			utils.SetLogLevel(logrus.ErrorLevel)
+			logger.SetLogLevel(logrus.ErrorLevel)
 
 		default:
-			// unknown log level, so exit
-			utils.Logger.Fatalf("main.setLogLevel() - unknown logLevel: %q", logLevel)
+			// unknown log level
+			logLevel = "error"
+			logger.Errorf("main.setLogLevel() - unknown logLevel: %q, defaulting to error", logLevel)
 	}
 
 	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
@@ -116,32 +206,31 @@ func setBaseUrl(cfg *config) {
 	} else {
 		url := strings.ToLower(BaseURL)
 		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
-			utils.Logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
+			logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
 			BaseURL = fmt.Sprintf("http://%s", BaseURL)
 		}
 	}
 
-	utils.Logger.Infof("main.setBaseUrl() - using %q as server address", BaseURL)
+	logger.Infof("main.setBaseUrl() - using %q as server address", BaseURL)
 }
 
 func setApiKey(cfg *config) {
-	utils.Logger.Debug("OctoScreen - entering main.setApiKey()")
+	logger.TraceEnter("main.setApiKey()")
 
 	APIKey = os.Getenv(utils.EnvAPIKey)
 	if APIKey == "" {
-		utils.Logger.Debug("main.setApiKey() - APIKey is empty, now using cfg.API.Key")
-
+		logger.Debug("main.setApiKey() - APIKey is empty, now using cfg.API.Key")
 		APIKey = cfg.API.Key
 	}
 
 	if APIKey == "" {
-		utils.Logger.Debug("main.setApiKey() - APIKey is empty!")
+		logger.Debug("main.setApiKey() - APIKey is empty!")
 	} else {
 		obfuscatedApiKey := utils.GetObfuscatedValue(APIKey)
-		utils.Logger.Debugf("main.setApiKey() - APIKey is %q", obfuscatedApiKey)
+		logger.Debugf("main.setApiKey() - APIKey is %q", obfuscatedApiKey)
 	}
 
-	utils.Logger.Debug("OctoScreen - leaving main.setApiKey()")
+	logger.TraceLeave("main.setApiKey()")
 }
 
 
@@ -156,132 +245,126 @@ type config struct {
 		// Key is the current API key needed for accessing the API.
 		Key string
 	}
+
 	// Server settings.
 	Server struct {
 		// Hosts define the host to which to bind the server, defaults to "0.0.0.0".
 		Host string
+
 		// Port define the port to which to bind the server, defaults to 5000.
 		Port int
 	}
 }
 
 func readConfig(configFile string) *config {
-	utils.Logger.Debug("")
-	utils.Logger.Debug("")
-	utils.Logger.Debug("entering main.readConfig()")
+	logger.TraceEnter("main.readConfig()")
 
-	cfg := &config{}
 	if configFile == "" {
-		utils.Logger.Info("main.readConfig() - configFile is empty")
-
-		utils.Logger.Debug("leaving main.readConfig(), returning the default config")
-		return cfg
-	} else {
-		utils.Logger.Infof("Path to OctoPrint's config file: %q", configFile)
+		logger.Info("main.readConfig() - configFile is empty")
+		logger.TraceLeave("main.readConfig()")
+		return nil
 	}
+
+	logger.Infof("Path to OctoPrint's config file: %q", configFile)
 
 	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		utils.Logger.Fatalf("main.readConfig() - ReadFile() returned an error: %q", err)
-	} else {
-		utils.Logger.Info("main.readConfig() - ReadFile() succeeded")
+		logger.Errorf("main.readConfig() - ReadFile() returned an error: %q", err)
+		logger.TraceLeave("main.readConfig()")
+		return nil
 	}
 
+	cfg := &config{}
 	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
-		utils.Logger.Fatalf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
-	} else {
-		utils.Logger.Info("main.readConfig() - YAML config file was decoded")
+		logger.Errorf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
+		logger.TraceLeave("main.readConfig()")
+		return nil
 	}
 
 	if cfg.Server.Host == "" {
 		cfg.Server.Host = "localhost"
 	}
 
-	utils.Logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
+	logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
 
 	if cfg.Server.Port == 0 {
 		cfg.Server.Port = 5000
 	}
 
-	utils.Logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
+	logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
 
-
-	utils.Logger.Debug("leaving main.readConfig()")
-	utils.Logger.Debug("")
-	utils.Logger.Debug("")
-
+	logger.TraceLeave("main.readConfig()")
 	return cfg
 }
 
 func findConfigFile() string {
-	utils.Logger.Debug("entering main.findConfigFile()")
+	logger.TraceEnter("main.findConfigFile()")
 
 	if file := doFindConfigFile(homeOctoPi); file != "" {
-		utils.Logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
-
-		utils.Logger.Debug("leaving main.findConfigFile(), returning the file")
+		logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
+		logger.TraceLeave("main.findConfigFile(), returning the file")
 		return file
 	}
 
 	usr, err := user.Current()
 	if err != nil {
-		utils.LogError("main.findConfigFile()", "Current()", err)
-
-		utils.Logger.Debug("leaving main.findConfigFile(), returning an empty string")
+		logger.LogError("main.findConfigFile()", "Current()", err)
+		logger.TraceLeave("main.findConfigFile(), returning an empty string")
 		return ""
 	}
 
 	configFile := doFindConfigFile(usr.HomeDir)
 
-	utils.Logger.Debug("leaving main.findConfigFile(), returning configFile")
+	logger.TraceLeave("main.findConfigFile(), returning configFile")
 	return configFile
 }
 
 func doFindConfigFile(home string) string {
-	utils.Logger.Debug("entering main.doFindConfigFile()")
+	logger.TraceEnter("main.doFindConfigFile()")
 
 	path := filepath.Join(home, configLocation)
-
 	if _, err := os.Stat(path); err == nil {
-		utils.LogError("main.doFindConfigFile()", "Stat()", err)
-
-		utils.Logger.Debug("leaving main.doFindConfigFile(), returning path")
+		logger.LogError("main.doFindConfigFile()", "Stat()", err)
+		logger.TraceLeave("main.doFindConfigFile(), returning path")
 		return path
 	}
 
-	utils.Logger.Debug("leaving main.doFindConfigFile(), returning an empty string")
+	logger.TraceLeave("main.doFindConfigFile(), returning an empty string")
 	return ""
 }
 
-func getSize() (width, height int) {
-	utils.Logger.Debug("entering main.getSize()")
+
+func getSize() (width int, height int, err error) {
+	logger.TraceEnter("main.getSize()")
 
 	if Resolution == "" {
-		utils.Logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
-
-		utils.Logger.Debug("leaving main.getSize()")
+		logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
+		logger.TraceLeave("main.getSize()")
 		return
 	}
 
 	parts := strings.SplitN(Resolution, "x", 2)
 	if len(parts) != 2 {
-		utils.Logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q", utils.EnvResolution, Resolution)
+		logger.Error("main.getSize() - SplitN() - len(parts) != 2")
+		err = errors.New(fmt.Sprintf("%s is malformed\nvalue: %q", utils.EnvResolution, Resolution))
 	}
 
-	var err error
-	width, err = strconv.Atoi(parts[0])
-	if err != nil {
-		utils.LogError("main.getSize()", "Atoi(parts[0])", err)
-		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+	if err == nil {
+		width, err = strconv.Atoi(parts[0])
+		if err != nil {
+			logger.LogError("main.getSize()", "Atoi(parts[0])", err)
+			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(0) failed\nvalue: %q", utils.EnvResolution, Resolution))
+		}
 	}
 
-	height, err = strconv.Atoi(parts[1])
-	if err != nil {
-		utils.LogError("main.getSize()", "Atoi(parts[1])", err)
-		utils.Logger.Fatalf("main.getSize() - malformed %s variable: %q, %s", utils.EnvResolution, Resolution, err)
+	if err == nil {
+		height, err = strconv.Atoi(parts[1])
+		if err != nil {
+			logger.LogError("main.getSize()", "Atoi(parts[1])", err)
+			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(1) failed\nvalue: %q", utils.EnvResolution, Resolution))
+		}
 	}
 
-	utils.Logger.Debug("leaving main.getSize()")
+	logger.TraceLeave("main.getSize()")
 	return
 }

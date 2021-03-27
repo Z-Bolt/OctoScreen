@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -18,9 +19,10 @@ func MustPressedButton(
 	isReleased := make(chan bool)
 	var mutex sync.Mutex
 
-	button, error := gtk.ButtonNewWithLabel(label)
-	if error != nil {
-		panic(error)
+	button, err := gtk.ButtonNewWithLabel(label)
+	if err != nil {
+		logger.LogError("PANIC!!! - MustPressedButton()", "gtk.ButtonNewWithLabel()", err)
+		panic(err)
 	}
 
 	button.SetImage(image)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-var ExecuteErrors = statusMapping{
+var ExecuteErrors = StatusMapping{
 	404: "The command could not be found for source and action",
 	500: "The command didn’t define a command to execute, the command returned a non-zero return code and ignore was not true or some other internal server error occurred",
 }

@@ -4,7 +4,8 @@ import (
 	// "fmt"
 	"strings"
 
-	"github.com/mcuadros/go-octoprint"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -13,7 +14,7 @@ type OctoScreenInfoBox struct {
 }
 
 func CreateOctoScreenInfoBox(
-	client				*octoprint.Client,
+	client				*octoprintApis.Client,
 	octoScreenVersion	string,
 ) *OctoScreenInfoBox {
 	logoImage := utils.MustImageFromFile("logos/octoscreen-isometric-90%.png")

@@ -1,9 +1,10 @@
 package interfaces
 
 import (
-	"github.com/mcuadros/go-octoprint"
+	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 
 type ITemperatureDataDisplay interface {
-	UpdateTemperatureData(temperatureData map[string]octoprint.TemperatureData)
+	UpdateTemperatureData(temperatureData map[string]dataModels.TemperatureData)
 }
