@@ -50,3 +50,8 @@ OCTOSCREEN_LOG_LEVEL=Error
 OCTOSCREEN_RESOLUTION=800x480
 # OCTOSCREEN_RESOLUTION is optional and defaults to 800x480 if missing
 # (defined in globalVars.go)
+
+# Path to the OctoScreen Splash Image.
+# Must be a *.png file, or a directory containing PNG files
+# Default is the directory:
+# OCTOSCREEN_BOOT_SPLASH=/opt/octoscreen/styles/z-bolt/images/boot-splash/

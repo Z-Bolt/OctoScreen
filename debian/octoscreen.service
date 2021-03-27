@@ -8,6 +8,7 @@ Type=notify
 NotifyAccess=all
 EnvironmentFile=/etc/octoscreen/config
 ExecStart=/usr/bin/xinit /usr/bin/OctoScreen -- :0 -nolisten tcp -nocursor
+ExecStartPost=/bin/bash -xc '/usr/bin/systemctl stop --quiet octosplash && exit 0 || exit 0'
 ExecStartPost=/bin/bash /etc/octoscreen/disablescreenblank.sh 0
 StandardOutput=journal
 Restart=always
