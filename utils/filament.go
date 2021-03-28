@@ -32,28 +32,36 @@ func Extrude(
 		return
 	}
 
-	logger.Infof("filament.Extrude() - setting flow rate percentage of %d", flowRatePercentage)
+	if err := SelectTool(client, extruderId); err != nil {
+		// TODO: display error?
+		return
+	}
+
 	if err := SetFlowRate(client, flowRatePercentage); err != nil {
-		logger.LogError("filament.Extrude()", "SetFlowRate()", err)
 		// TODO: display error?
 		return
 	}
 
-	cmd := &octoprintApis.ToolExtrudeRequest{}
-	if isForward {
-		cmd.Amount = length
-	} else {
-		cmd.Amount = -length
-	}
-
-	logger.Infof("filament.Extrude() - sending extrude request with length of: %d", cmd.Amount)
-	if err := cmd.Do(client); err != nil {
-		logger.LogError("filament.Extrude()", "Do(ToolExtrudeRequest)", err)
+	if err := SendExtrudeRrequest(client, isForward, length); err != nil {
 		// TODO: display error?
-		return
 	}
 }
 
+func SelectTool(
+	client					*octoprintApis.Client,
+	extruderId				string,
+) error {
+	cmd := &octoprintApis.ToolSelectRequest{}
+	cmd.Tool = extruderId
+
+	logger.Infof("filament.SelectTool() - changing tool to %s", cmd.Tool)
+	if err := cmd.Do(client); err != nil {
+		logger.LogError("filament.SelectTool()", "Go(ToolSelectRequest)", err)
+		return err
+	}
+
+	return nil
+}
 
 func SetFlowRate(
 	client					*octoprintApis.Client,
@@ -65,6 +73,27 @@ func SetFlowRate(
 	logger.Infof("filament.SetFlowRate() - changing flow rate to %d%%", cmd.Factor)
 	if err := cmd.Do(client); err != nil {
 		logger.LogError("filament.SetFlowRate()", "Go(ToolFlowRateRequest)", err)
+		return err
+	}
+
+	return nil
+}
+
+func SendExtrudeRrequest(
+	client					*octoprintApis.Client,
+	isForward				bool,
+	length					int,
+) error {
+	cmd := &octoprintApis.ToolExtrudeRequest{}
+	if isForward {
+		cmd.Amount = length
+	} else {
+		cmd.Amount = -length
+	}
+
+	logger.Infof("filament.SendExtrudeRrequest() - sending extrude request with length of: %d", cmd.Amount)
+	if err := cmd.Do(client); err != nil {
+		logger.LogError("filament.Extrude()", "Do(ToolExtrudeRequest)", err)
 		return err
 	}
 
