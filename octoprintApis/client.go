@@ -81,10 +81,13 @@ func (this *Client) doRequest(
 ) ([]byte, error) {
 	logger.TraceEnter("Client.doRequest()")
 	logger.Debugf("method: %s", method)
-	logger.Debugf("target: %s",target)
+	logger.Debugf("target: %s", target)
+	logger.Debugf("contentType: %s", contentType)
 
+	url := joinUrl(this.Endpoint, target)
+	logger.Debugf("url: %s", url)
 
-	req, err := http.NewRequest(method, joinUrl(this.Endpoint, target), body)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		logger.LogError("Client.doRequest()", "http.NewRequest()", err)
 		logger.TraceLeave("Client.doRequest()")
@@ -93,12 +96,19 @@ func (this *Client) doRequest(
 
 	req.Header.Add("Host", "localhost:5000")
 	req.Header.Add("Accept", "*/*")
-	req.Header.Add("User-Agent", fmt.Sprintf("go-octoprint/%s", Version))
+
+	userAgent := fmt.Sprintf("go-octoprint/%s", Version)
+	logger.Debugf("userAgent: %s", userAgent)
+	req.Header.Add("User-Agent", userAgent)
+
 	if contentType != "" {
 		req.Header.Add("Content-Type", contentType)
 	}
 
+	// Don't log APIKey due to privacy & security.
+	// logger.Debugf("API key: %s", this.APIKey)
 	req.Header.Add("X-Api-Key", this.APIKey)
+
 	resp, err := this.httpClient.Do(req)
 	if err != nil {
 		logger.LogError("Client.doRequest()", "this.httpClient.Do()", err)
