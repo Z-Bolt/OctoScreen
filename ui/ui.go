@@ -3,8 +3,10 @@ package ui
 import (
 	"fmt"
 	"strings"
+	"strconv"
 	"sync"
 	"time"
+	"os"
 
 	"github.com/coreos/go-systemd/daemon"
 	"github.com/golang-collections/collections/stack"
@@ -19,6 +21,15 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
+const (
+	connectionAttemptsMax          = 8
+	connectionAttemptsDisplayRetry = 3
+	updateTaskTimer                = time.Second * 10
+)
+
+var (
+	errMercyPeriod                 = time.Second * 10
+)
 
 type UI struct {
 	sync.Mutex
@@ -44,10 +55,19 @@ type UI struct {
 	height						int
 	scaleFactor					int
 	connectionAttempts			int
+	
+	autoReconnect               bool
 }
 
 func New(endpoint, key string, width, height int) *UI {
 	logger.TraceEnter("ui.New()")
+	
+	autoReconnect := utils.AutoReconnect
+	
+	if utils.EnvironmentVariableIsSet(utils.EnvAutoReconnect) {
+		autoReconnectBool, _ := strconv.ParseBool(os.Getenv(utils.EnvAutoReconnect))
+		autoReconnect = autoReconnectBool
+	}
 
 	if width == 0 || height == 0 {
 		width = utils.WindowWidth
@@ -68,6 +88,8 @@ func New(endpoint, key string, width, height int) *UI {
 
 		width:						width,
 		height:						height,
+		
+		autoReconnect:              autoReconnect,
 	}
 
 	instance.window.Connect("configure-event", func(win *gtk.Window) {
@@ -100,7 +122,7 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	instance.splashPanel = NewSplashPanel(instance)
-	instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, instance.update)
+	instance.backgroundTask = utils.CreateBackgroundTask(updateTaskTimer, instance.update)
 	instance.initialize()
 
 	logger.TraceLeave("ui.New()")
@@ -150,8 +172,6 @@ func (this *UI) loadStyle() {
 
 	logger.TraceLeave("ui.loadStyle()")
 }
-
-var errMercyPeriod = time.Second * 10
 
 func (this *UI) verifyConnection() {
 	logger.TraceEnter("ui.verifyConnection()")
@@ -213,13 +233,7 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 		case connectionResponse.Current.State.IsOffline():
 			logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - the state is now offline and displaying the splash panel")
 			newUIState = "splash"
-			logger.Info("ui.getUiStateAndMessageFromConnectionResponse() - new UI state is 'splash' and is about to call ConnectRequest.Do()")
-			if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
-				logger.LogError("ui.getUiStateAndMessageFromConnectionResponse()", "s.Current.State is IsOffline, and (ConnectRequest)Do(UI.Client)", err)
-				splashMessage = "Loading..."
-			} else {
-				splashMessage = "Printer is offline, now trying to connect..."
-			}
+			splashMessage = "Printer is offline, waiting for OctoPrint to connect..."
 
 		case connectionResponse.Current.State.IsConnecting():
 			logger.Debug("ui.getUiStateAndMessageFromConnectionResponse() - new state is splash (from IsConnecting)")
@@ -259,16 +273,16 @@ func (this *UI) getUiStateAndMessageFromError(
 		logger.Infof("ui.getUiStateAndMessageFromError() - errMessage is: %q", errMessage)
 
 		if strings.Contains(strings.ToLower(errMessage), "deadline exceeded") {
-			splashMessage = "Printer is offline (deadline exceeded), retrying to connect..."
+			splashMessage = "Printer is offline (deadline exceeded), attempting to reconnect..."
 		} else if strings.Contains(strings.ToLower(errMessage), "connection reset by peer") {
-			splashMessage = "Printer is offline (peer connection reset), retrying to connect..."
+			splashMessage = "Printer is offline (peer connection reset), attempting to reconnect..."
 		} else if strings.Contains(strings.ToLower(errMessage), "unexpected status code: 403") {
-			splashMessage = "Printer is offline (403), retrying to connect..."
+			splashMessage = "Printer is offline (403), attempting to reconnect..."
 		} else {
 			splashMessage = errMessage
 		}
 	} else {
-		splashMessage = "Printer is offline! (retrying to connect...)"
+		splashMessage = "Printer is offline! (attempting to reconnect...)"
 	}
 
 	logger.TraceLeave("ui.getUiStateAndMessageFromError()")
@@ -421,15 +435,23 @@ func (this *UI) validateMenuItems(menuItems []dataModels.MenuItem, name string, 
 	return true
 }
 
+func (this *UI) DoReconnect() bool {
+	logger.Info("UI.DoReconnect() - about to call ConnectRequest.Do()")
+	if err := (&octoprintApis.ConnectRequest{}).Do(this.Client); err != nil {
+		logger.LogError("UI.DoReconnect()", "(ConnectRequest)Do(UI.Client)", err)
+		return false
+	} else {
+		return true
+	}
+}
+
 func (this *UI) update() {
 	logger.TraceEnter("ui.update()")
 
 	this.sdNotify(daemon.SdNotifyWatchdog)
 	
-	if this.connectionAttempts > 8 {
-		logger.Info("ui.update() - this.connectionAttempts > 8")
-		this.splashPanel.putOnHold()
-
+	if this.connectionAttempts > connectionAttemptsMax {
+		logger.Info("ui.update() - this.connectionAttempts > %d", connectionAttemptsMax)
 		logger.TraceLeave("ui.update()")
 		return
 	}
@@ -463,6 +485,16 @@ func (this *UI) update() {
 	}
 
 	this.verifyConnection()
+	
+	if this.UIState == "splash" {
+		if this.connectionAttempts == connectionAttemptsDisplayRetry {
+			logger.Info("ui.update() - this.connectionAttempts == %d", connectionAttemptsDisplayRetry)
+			this.splashPanel.displayReconnect()
+		}
+		if this.ConnectionState.IsOffline() && this.autoReconnect {
+			this.DoReconnect()
+		}
+	}
 
 	logger.TraceLeave("ui.update()")
 }

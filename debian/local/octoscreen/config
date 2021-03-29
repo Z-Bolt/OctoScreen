@@ -45,6 +45,16 @@ OCTOSCREEN_LOG_FILE_PATH=
 OCTOSCREEN_LOG_LEVEL=Error
 
 
+# Controls automatic reconnect behaviour
+# Wether or not OctoScreen should instruct OctoPrint to reconnect to the Printer
+# automatically.
+# Default setting is TRUE, which will, in effect, prevent you from "Disconecting"
+# from your printer via the web interface, as OctoScreen will immediatly attempt
+# to reconnect. Set this to FALSE to allow OctoPrint to manage the connection
+# internally.
+#OCTOSCREEN_AUTO_RECONNECT=FALSE
+
+
 # Resolution of the application, and should be configured to the resolution of your
 # screen, for example 800x480.
 OCTOSCREEN_RESOLUTION=800x480
