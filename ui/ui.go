@@ -19,6 +19,9 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
+// Set at compile time via -ldflags (See: MakeFile)
+var Version string
+var Build   string
 
 type UI struct {
 	sync.Mutex
