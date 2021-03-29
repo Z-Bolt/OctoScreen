@@ -342,12 +342,10 @@ linters:
     - cyclop
     - godot
     - godox
-    - goimports
     - stylecheck
     - gomnd
     - govet
     - ifshort
-    - gofumpt
     - lll
     - misspell
     - nakedret
@@ -360,6 +358,11 @@ linters:
     - wsl
     - errorlint
     - makezero
+# The reports for these are NOT helpful:
+#   "file not `gofumpt`-ed with -extra
+# WTH does that mean?  Dissabling these for now...
+#    - goimports
+#    - gofumpt
   disable-all: true
 #  disable:
 #    # Going to try to disable the ones that seem to be throwing errors, for now.
