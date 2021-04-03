@@ -51,7 +51,7 @@ func CreateSystemCommandButton(
 
 		confirmationMessage := ""
 		if len(cmd.Confirm) != 0 {
-			confirmationMessage = cmd.Confirm
+			confirmationMessage = fmt.Sprintf("%s\n\nDo you wish to proceed?", cmd.Confirm)
 		} else if len(name) != 0 {
 			confirmationMessage = fmt.Sprintf("Do you wish to %s?", name)
 		} else {

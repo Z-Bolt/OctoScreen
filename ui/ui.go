@@ -164,13 +164,17 @@ func (this *UI) verifyConnection() {
 		logger.Debug("ui.verifyConnection() - ConnectionRequest.Do() succeeded")
 		jsonResponse, err := utils.StructToJson(connectionResponse)
 		if err != nil {
-			logger.Debug("ui.verifyConnection() - utils.StructToJson() failed")
+			logger.LogError("ui.verifyConnection()", "utils.StructToJson()", err)
 		} else {
 			logger.Debugf("ui.verifyConnection() - connectionResponse is: %s", jsonResponse)
 		}
 
 		this.ConnectionState = connectionResponse.Current.State
 		newUIState, splashMessage = this.getUiStateAndMessageFromConnectionResponse(connectionResponse, newUIState, splashMessage)
+
+		if this.Settings == nil {
+			this.loadSettings()
+		}
 	} else {
 		logger.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest) returned an error", err)
 		newUIState, splashMessage = this.getUiStateAndMessageFromError(err, newUIState, splashMessage)
@@ -341,6 +345,12 @@ func (this *UI) checkNotification() {
 func (this *UI) loadSettings() {
 	logger.TraceEnter("ui.loadSettings()")
 
+	if this.Settings != nil {
+		logger.Error("ui.loadSettings() - this.Settings has already been set")
+		logger.TraceLeave("ui.loadSettings()")
+		return
+	}
+
 	settingsResponse, err := (&octoprintApis.OctoScreenSettingsRequest{}).Do(this.Client, this.UIState)
 	if err != nil {
 		text := err.Error()
@@ -355,19 +365,26 @@ func (this *UI) loadSettings() {
 		}
 
 		this.OctoPrintPluginIsAvailable = false
-
-		logger.TraceLeave("ui.loadSettings()")
-		return
+		// Use default settings
+		this.Settings = &dataModels.OctoScreenSettingsResponse {
+			FilamentInLength: 100,
+			FilamentOutLength: 100,
+			ToolChanger: false,
+			XAxisInverted: false,
+			YAxisInverted: false,
+			ZAxisInverted: false,
+			MenuStructure: nil,
+		}
 	} else {
 		logger.Info("The call to GetSettings succeeded and the OctoPrint plug-in is available")
 		this.OctoPrintPluginIsAvailable = true
-	}
 
-	if !this.validateMenuItems(settingsResponse.MenuStructure, "", true) {
-		settingsResponse.MenuStructure = nil
-	}
+		if !this.validateMenuItems(settingsResponse.MenuStructure, "", true) {
+			settingsResponse.MenuStructure = nil
+		}
 
-	this.Settings = settingsResponse
+		this.Settings = settingsResponse
+	}
 
 	logger.TraceLeave("ui.loadSettings()")
 }
@@ -425,7 +442,7 @@ func (this *UI) update() {
 	logger.TraceEnter("ui.update()")
 
 	this.sdNotify(daemon.SdNotifyWatchdog)
-	
+
 	if this.connectionAttempts > 8 {
 		logger.Info("ui.update() - this.connectionAttempts > 8")
 		this.splashPanel.putOnHold()
@@ -442,27 +459,11 @@ func (this *UI) update() {
 		this.connectionAttempts = 0
 	}
 
-	if this.Settings == nil {
-		this.loadSettings()
-
-		if this.Settings == nil {
-			this.Settings = &dataModels.OctoScreenSettingsResponse {
-				FilamentInLength: 100,
-				FilamentOutLength: 100,
-				ToolChanger: false,
-				XAxisInverted: false,
-				YAxisInverted: false,
-				ZAxisInverted: false,
-				MenuStructure: nil,
-			}
-		}
-	}
+	this.verifyConnection()
 
 	if this.OctoPrintPluginIsAvailable {
 		this.checkNotification()
 	}
-
-	this.verifyConnection()
 
 	logger.TraceLeave("ui.update()")
 }

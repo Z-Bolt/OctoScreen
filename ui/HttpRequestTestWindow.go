@@ -135,7 +135,7 @@ func (this *HttpRequestTestWindow) sdNotify(state string) {
 
 	_, err := daemon.SdNotify(false, state)
 	if err != nil {
-		logger.Errorf("sdNotify()", "SdNotify()", err)
+		logger.LogError("sdNotify()", "daemon.SdNotify()", err)
 		logger.TraceLeave("sdNotify()")
 		return
 	}
