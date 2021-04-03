@@ -406,7 +406,7 @@ func getRootWindow() (*gdk.Window, error) {
 func getDefaultCursor() (*gdk.Cursor, error) {
 	display, err := gdk.DisplayGetDefault()
 	if err != nil {
-		return nil, error
+		return nil, err
 	}
 
 	// Examples of the different cursors can be found at
