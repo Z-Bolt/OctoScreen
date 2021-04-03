@@ -164,7 +164,7 @@ func (this *UI) verifyConnection() {
 		logger.Debug("ui.verifyConnection() - ConnectionRequest.Do() succeeded")
 		jsonResponse, err := utils.StructToJson(connectionResponse)
 		if err != nil {
-			logger.Debug("ui.verifyConnection() - utils.StructToJson() failed")
+			logger.LogError("ui.verifyConnection()", "utils.StructToJson()", err)
 		} else {
 			logger.Debugf("ui.verifyConnection() - connectionResponse is: %s", jsonResponse)
 		}
