@@ -15,19 +15,15 @@ WORKDIR := $(shell pwd)
 BUILD_PATH := $(WORKDIR)/build
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
-DEBIAN_PACKAGES = STRETCH
+DEBIAN_PACKAGES = BUSTER
 
 BUSTER_NAME := buster
 BUSTER_IMAGE := golang:1.15-buster
-BUSTER_GO_TAGS := gtk_3_24
+BUSTER_GO_TAGS := gtk_3_22,glib_2_58,pango_1_42,gdk_pixbuf_2_38
 
 STRETCH_NAME := stretch
-STRETCH_IMAGE := golang:1.9-stretch
-STRETCH_GO_TAGS := gtk_3_22
-
-JESSIE_NAME := jessie
-JESSIE_IMAGE := golang:1.8-jessie
-JESSIE_GO_TAGS := gtk_3_14
+STRETCH_IMAGE := golang:1.15-stretch
+STRETCH_GO_TAGS := gtk_3_22,glib_2_50,pango_1_40,gdk_pixbuf_2_36
 
 
 # Build information
