@@ -22,10 +22,11 @@ const (
 
 // Optional (but good to have) environment variables
 const (
-	EnvLogLevel    = "OCTOSCREEN_LOG_LEVEL"
-	EnvLogFilePath = "OCTOSCREEN_LOG_FILE_PATH"
-	EnvResolution  = "OCTOSCREEN_RESOLUTION"
-	EnvConfigFile  = "OCTOPRINT_CONFIG_FILE"
+	EnvLogLevel       = "OCTOSCREEN_LOG_LEVEL"
+	EnvLogFilePath    = "OCTOSCREEN_LOG_FILE_PATH"
+	EnvResolution     = "OCTOSCREEN_RESOLUTION"
+	EnvConfigFile     = "OCTOPRINT_CONFIG_FILE"
+	EnvDisplayCursor  = "DISPLAY_CURSOR"
 )
 
 func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
@@ -109,9 +110,12 @@ func DumpEnvironmentVariables() {
 	dumpEnvironmentVariable(EnvConfigFile)
 	dumpEnvironmentVariable(EnvLogFilePath)
 	dumpEnvironmentVariable(EnvLogLevel)
+
 	dumpEnvironmentVariable(EnvResolution)
 	// EnvResolution is optional.  If not set, the window size will
 	// default to the values defined in globalVars.go.
+
+	dumpEnvironmentVariable(EnvDisplayCursor)
 }
 
 func dumpEnvironmentVariable(key string) {

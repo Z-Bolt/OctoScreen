@@ -373,11 +373,15 @@ func getSize() (width int, height int, err error) {
 }
 
 func setCursor() {
-	/*
-	if todo: test for new env setting to be defined and not be false {
+	// For reference, see "How to turn on a pointer"
+	// 	https://github.com/Z-Bolt/OctoScreen/issues/285
+	// and "No mouse pointer when running xinit"
+	// 	https://www.raspberrypi.org/forums/viewtopic.php?t=139546
+
+	displayCursor := strings.ToLower(os.Getenv("DISPLAY_CURSOR"))
+	if displayCursor != "true" {
 		return
 	}
-	*/
 
 	window, err := getRootWindow()
 	if err != nil {
@@ -397,7 +401,7 @@ func getRootWindow() (*gdk.Window, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	window, err := screen.GetRootWindow()
 
 	return window, err
