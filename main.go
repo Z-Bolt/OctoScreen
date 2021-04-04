@@ -7,10 +7,12 @@ import (
 	standardLog "log"
 	"os"
 	"os/user"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
+	"regexp"
 
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
@@ -336,35 +338,75 @@ func doFindConfigFile(home string) string {
 
 func getSize() (width int, height int, err error) {
 	logger.TraceEnter("main.getSize()")
-
+	
 	if Resolution == "" {
 		logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
 		logger.TraceLeave("main.getSize()")
 		return
-	}
+	} else if strings.ToLower(Resolution) == "auto" {
+		
+		logger.Info("Automatically detecting resolution with 'xrandr'.")
+		
+		xrandr, err := exec.LookPath( "xrandr" )
+		
+		if err != nil {
+			logger.Error("Unable to determine 'xrandr' executable path.")
+      err = errors.New("Unable to determine 'xrandr' executable path.")
+			logger.TraceLeave("main.getSize()")
+			return
+		}
+		
+		cmd := exec.Command(
+			xrandr,
+			"-d", ":0.0",
+			"--prop",
+		);
+		
+		output, err := cmd.Output()
+		
+		if err != nil {
+			logger.Errorf("When determining resolution, 'xrandr' returned with an error. Output: %s", output)
+      err = errors.New(fmt.Sprintf("When determining resolution, 'xrandr' returned with an error. Output: %s", output))
+			logger.TraceLeave("main.getSize()")
+			return
+		}
+		
+		/*
+		There is no real error handeling here, as if `xrandr` executes without
+		an error, we are gauranteed an output of this format, so the regex
+		won't fail.
+		*/
+		
+		re := regexp.MustCompile(`current ([0-9]+) x ([0-9]+)`)
+		matches := re.FindStringSubmatch(string(output))
+		
+		width,  _ = strconv.Atoi(matches[1])
+		height, _ = strconv.Atoi(matches[2])
+		
+	} else {
 
-	parts := strings.SplitN(Resolution, "x", 2)
-	if len(parts) != 2 {
-		logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-		err = errors.New(fmt.Sprintf("%s is malformed\nvalue: %q", utils.EnvResolution, Resolution))
-	}
-
-	if err == nil {
+		parts := strings.SplitN(Resolution, "x", 2)
+		if len(parts) != 2 {
+			logger.Error("main.getSize() - SplitN() - len(parts) != 2")
+			err = errors.New(fmt.Sprintf("%s is malformed\nvalue: %q", utils.EnvResolution, Resolution))
+		}
+	
+		var err error
 		width, err = strconv.Atoi(parts[0])
 		if err != nil {
 			logger.LogError("main.getSize()", "Atoi(parts[0])", err)
 			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(0) failed\nvalue: %q", utils.EnvResolution, Resolution))
 		}
-	}
-
-	if err == nil {
+	
 		height, err = strconv.Atoi(parts[1])
 		if err != nil {
 			logger.LogError("main.getSize()", "Atoi(parts[1])", err)
 			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(1) failed\nvalue: %q", utils.EnvResolution, Resolution))
 		}
-	}
-
-	logger.TraceLeave("main.getSize()")
-	return
+  }
+	
+  logger.Info("Determined a screen resolution of: %d x %d", width, height)
+  
+  logger.TraceLeave("main.getSize()")
+  return
 }

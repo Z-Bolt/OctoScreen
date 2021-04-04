@@ -49,9 +49,15 @@ type UI struct {
 func New(endpoint, key string, width, height int) *UI {
 	logger.TraceEnter("ui.New()")
 
-	if width == 0 || height == 0 {
+	if width < 548 || height < 348 {
+		logger.Errorf("Resolution is not within minumum limits.  Resolution must be greater than 548x348.  Target width and height: %dx%d",
+			width,
+			height)
 		width = utils.WindowWidth
 		height = utils.WindowHeight
+		logger.Infof("Using default resolution: %dx%d",
+			width,
+			height)
 	}
 
 	instance := &UI {
@@ -73,21 +79,30 @@ func New(endpoint, key string, width, height int) *UI {
 	instance.window.Connect("configure-event", func(win *gtk.Window) {
 		allocatedWidth:= win.GetAllocatedWidth()
 		allocatedHeight:= win.GetAllocatedHeight()
-		sizeWidth, sizeHeight := win.GetSize()
-
-		if (allocatedWidth > width || allocatedHeight > height) ||
-			(sizeWidth > width || sizeHeight > height) {
-			logger.Errorf("Window resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
-				allocatedWidth,
-				allocatedHeight,
-				sizeWidth,
-				sizeHeight)
-			logger.Errorf("Window resize went past max size.  Target width and height: %dx%d",
-				width,
-				height)
+		windowWidth, windowHeight := win.GetSize()
+		
+		logger.Debugf("OCTOSCREEN_RESOLUTION - User-Configured: %d x %d", width, height)
+		logger.Debugf("OCTOSCREEN_RESOLUTION - getAllocated*(): %d x %d", allocatedWidth, allocatedHeight)
+		logger.Debugf("OCTOSCREEN_RESOLUTION - getSize(): %d x %d", windowWidth, windowHeight)
+		
+		if (allocatedWidth != windowWidth || allocatedHeight > windowHeight) {
+			logger.Infof("Allocated and Window Sizes don't match: ( %d x %d ) != ( %d x %d )",
+				allocatedWidth, allocatedHeight,
+				windowWidth, windowHeight)
+		}
+		if (allocatedWidth > width || allocatedHeight > height) {
+			logger.Errorf("Allocated Size exceeded Configured Size: ( %d x %d ) > ( %d x %d )",
+				allocatedWidth, allocatedHeight,
+				width, height)
+		}
+		if (windowWidth > width || windowHeight > height) {
+			logger.Errorf("Window Size exceeded Configured Size: ( %d x %d ) > ( %d x %d )",
+				windowWidth, windowHeight,
+				width, height)
 		}
 	})
 
+	
 	switch {
 		case width > 480:
 			instance.scaleFactor = 2
@@ -98,6 +113,9 @@ func New(endpoint, key string, width, height int) *UI {
 		default:
 			instance.scaleFactor = 1
 	}
+	
+	// This is what the above equates to, in theory.
+	//instance.scaleFactor = ( 0.002 * float32(width) ) + 1.01386
 
 	instance.splashPanel = NewSplashPanel(instance)
 	instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, instance.update)
