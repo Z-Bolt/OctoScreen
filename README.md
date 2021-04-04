@@ -83,15 +83,15 @@ There are two ways to install OctoScreen: the recommended and supported way is t
 
 For example, to install on a new RaspberryPi with OctoPi:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.1/octoscreen_2.7.1_armhf.deb
-sudo dpkg -i octoscreen_2.7.1_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.2/octoscreen_2.7.2_armhf.deb
+sudo dpkg -i octoscreen_2.7.2_armhf.deb
 ```
 
 Or to update an existing version of OctoScreen:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.1/octoscreen_2.7.1_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.2/octoscreen_2.7.2_armhf.deb
 sudo dpkg -r octoscreen
-sudo dpkg -i octoscreen_2.7.1_armhf.deb
+sudo dpkg -i octoscreen_2.7.2_armhf.deb
 sudo reboot now
 ```
 
@@ -153,6 +153,7 @@ The basic configuration is handled via environment variables, if you are using t
 
 - `OCTOSCREEN_RESOLUTION` - Resolution of the application, and should be configured to the resolution of your screen.  Optimal resolution for OctoScreen is no less than 800x480, so if the physical resolution of your screen is 480x320, it's recommended to set the software resolution 800x533.  If you are using Raspbian you can do it by changing [`hdmi_cvt`](https://www.raspberrypi.org/documentation/configuration/config-txt/video.md) param in `/boot/config.txt` file.  Please see [Setting Up OctoScreen and Your Display](https://github.com/Z-Bolt/OctoScreen/wiki/Setting-Up-OctoScreen-and-Your-Display) and [Installing OctoScreen with a 3.5" 480x320 TFT screen](https://github.com/Z-Bolt/OctoScreen/wiki/Installing-OctoScreen-with-a-3.5%22-480x320-TFT-screen) for more information.
 
+- `DISPLAY_CURSOR` - To display the cursor, add `DISPLAY_CURSOR=true` to your config file.  In order to display the cursor, you will also need to edit `/lib/systemd/system/octoscreen.service` and remove `-nocursor`
 
 
 
