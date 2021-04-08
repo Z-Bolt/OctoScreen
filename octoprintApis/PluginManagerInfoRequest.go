@@ -26,7 +26,7 @@ func (this *PluginManagerInfoRequest) Do(client *Client, uiState string) (*dataM
 		return nil, err
 	}
 
-	bytes, err := client.doJsonRequest("GET", pluginManagerRequestURI, params, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", pluginManagerRequestURI, params, ConnectionErrors, true)
 	if err != nil {
 		logger.LogError("PluginManagerInfoRequest.Do()", "client.doJsonRequest()", err)
 		return nil, err

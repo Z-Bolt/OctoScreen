@@ -19,14 +19,14 @@ type DisconnectRequest struct{}
 func (this *DisconnectRequest) Do(client *Client) error {
 	logger.TraceEnter("DisconnectRequest.Do()")
 
-	bytes := bytes.NewBuffer(nil)
-	if err := this.encode(bytes); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := this.encode(buffer); err != nil {
 		logger.LogError("DisconnectRequest.Do()", "this.encode(bytes)", err)
 		logger.TraceLeave("DisconnectRequest.Do()")
 		return err
 	}
 
-	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
+	_, err := client.doJsonRequest("POST", ConnectionApiUri, buffer, ConnectionErrors, true)
 	if err != nil {
 		logger.LogError("DisconnectRequest.Do()", "client.doJsonRequest(POST)", err)
 	}

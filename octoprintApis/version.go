@@ -15,7 +15,7 @@ type VersionRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *VersionRequest) Do(c *Client) (*dataModels.VersionResponse, error) {
-	bytes, err := c.doJsonRequest("GET", VersionApiUri, nil, nil)
+	bytes, err := c.doJsonRequest("GET", VersionApiUri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}

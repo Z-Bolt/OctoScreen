@@ -52,12 +52,21 @@ func (this *Client) doJsonRequest(
 	target string,
 	body io.Reader,
 	statusMapping StatusMapping,
+	isRequired bool,
 ) ([]byte, error) {
 	logger.TraceEnter("Client.doJsonRequest()")
 
-	bytes, err := this.doRequest(method, target, "application/json", body, statusMapping)
+	bytes, err := this.doRequest(method, target, "application/json", body, statusMapping, isRequired)
 	if err != nil {
-		logger.LogError("Client.doJsonRequest()", "this.doRequest()", err)
+		if isRequired {
+			// Some APIs return an error and the error should be logged.
+			logger.LogError("Client.doJsonRequest()", "this.doRequest()", err)
+		} else {
+			// On the other hand, calls to some APIs are optional, and the result should be logged
+			// as info and leave it up to the caller to determine whether it's an error or not.
+			logger.Infof("Client.doJsonRequest() - this.doRequest() returned %q", err)
+		}
+
 		logger.TraceLeave("Client.doJsonRequest()")
 		return nil, err
 	}
@@ -78,6 +87,7 @@ func (this *Client) doRequest(
 	contentType string,
 	body io.Reader,
 	statusMapping StatusMapping,
+	isRequired bool,
 ) ([]byte, error) {
 	logger.TraceEnter("Client.doRequest()")
 	logger.Debugf("method: %s", method)
@@ -109,22 +119,29 @@ func (this *Client) doRequest(
 	// logger.Debugf("API key: %s", this.APIKey)
 	req.Header.Add("X-Api-Key", this.APIKey)
 
-	resp, err := this.httpClient.Do(req)
+	response, err := this.httpClient.Do(req)
 	if err != nil {
 		logger.LogError("Client.doRequest()", "this.httpClient.Do()", err)
 		logger.TraceLeave("Client.doRequest()")
 		return nil, err
 	}
 
-	response, err := this.handleResponse(resp, statusMapping)
+	bytes, err := this.handleResponse(response, statusMapping)
 	if err != nil {
-		logger.LogError("Client.doRequest()", "this.handleResponse()", err)
+		if isRequired {
+			// Some APIs return an error and the error should be logged.
+			logger.LogError("Client.doRequest()", "this.handleResponse()", err)
+		} else {
+			// On the other hand, calls to some APIs are optional, and the result should be logged
+			// as info and leave it up to the caller to determine whether it's an error or not.
+			logger.Infof("Client.doRequest() - this.handleResponse() returned %q", err)
+		}
 		logger.TraceLeave("Client.doRequest()")
 		return nil, err
 	}
 
 	logger.TraceLeave("Client.doRequest()")
-	return response, err
+	return bytes, err
 }
 
 

@@ -21,11 +21,11 @@ type CommandRequest struct {
 
 // Do sends an API request and returns an error if any.
 func (cmd *CommandRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(b).Encode(cmd); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(buffer).Encode(cmd); err != nil {
 		return err
 	}
 
-	_, err := c.doJsonRequest("POST", PrinterCommandApiUri, b, nil)
+	_, err := c.doJsonRequest("POST", PrinterCommandApiUri, buffer, nil, true)
 	return err
 }

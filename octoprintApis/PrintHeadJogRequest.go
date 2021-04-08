@@ -38,12 +38,12 @@ type PrintHeadJogRequest struct {
 
 // Do sends an API request and returns an error if any.
 func (cmd *PrintHeadJogRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := cmd.encode(b); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := cmd.encode(buffer); err != nil {
 		return err
 	}
 
-	_, err := c.doJsonRequest("POST", PrinterPrintHeadApiUri, b, PrintHeadJobErrors)
+	_, err := c.doJsonRequest("POST", PrinterPrintHeadApiUri, buffer, PrintHeadJobErrors, true)
 
 	return err
 }

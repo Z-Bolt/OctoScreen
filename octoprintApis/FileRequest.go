@@ -39,7 +39,7 @@ func (request *FileRequest) Do(c *Client) (*dataModels.FileResponse, error) {
 		request.Recursive,
 	)
 
-	bytes, err := c.doJsonRequest("GET", uri, nil, FilesLocationGETErrors)
+	bytes, err := c.doJsonRequest("GET", uri, nil, FilesLocationGETErrors, true)
 	if err != nil {
 		return nil, err
 	}

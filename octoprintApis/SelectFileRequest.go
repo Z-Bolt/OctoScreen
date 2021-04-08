@@ -29,13 +29,13 @@ type SelectFileRequest struct {
 
 // Do sends an API request and returns an error if any.
 func (cmd *SelectFileRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := cmd.encode(b); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := cmd.encode(buffer); err != nil {
 		return err
 	}
 
 	uri := fmt.Sprintf("%s/%s/%s", FilesApiUri, cmd.Location, cmd.Path)
-	_, err := c.doJsonRequest("POST", uri, b, FilesLocationPathPOSTErrors)
+	_, err := c.doJsonRequest("POST", uri, buffer, FilesLocationPathPOSTErrors, true)
 	return err
 }
 

@@ -16,15 +16,15 @@ type CustomCommandsRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *CustomCommandsRequest) Do(c *Client) (*dataModels.CustomCommandsResponse, error) {
-	b, err := c.doJsonRequest("GET", PrinterCommandCustomApiUri, nil, nil)
+	bytes, err := c.doJsonRequest("GET", PrinterCommandCustomApiUri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.CustomCommandsResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &dataModels.CustomCommandsResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

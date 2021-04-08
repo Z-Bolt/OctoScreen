@@ -58,7 +58,7 @@ func doCommandRequest(
 		return err
 	}
 
-	_, err := client.doJsonRequest("POST", uri, buffer, statusMapping)
+	_, err := client.doJsonRequest("POST", uri, buffer, statusMapping, true)
 
 	return err
 }

@@ -15,7 +15,7 @@ type JobRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *JobRequest) Do(client *Client) (*dataModels.JobResponse, error) {
-	bytes, err := client.doJsonRequest("GET", JobApiUri, nil, nil)
+	bytes, err := client.doJsonRequest("GET", JobApiUri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}

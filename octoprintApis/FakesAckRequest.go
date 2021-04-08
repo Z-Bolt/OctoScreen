@@ -23,14 +23,14 @@ type FakesAckRequest struct{}
 func (this *FakesAckRequest) Do(client *Client) error {
 	logger.TraceEnter("FakesAckRequest.Do()")
 
-	bytes := bytes.NewBuffer(nil)
-	if err := this.encode(bytes); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := this.encode(buffer); err != nil {
 		logger.LogError("FakesAckRequest.Do()", "this.encode(bytes)", err)
 		logger.TraceLeave("FakesAckRequest.Do()")
 		return err
 	}
 
-	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
+	_, err := client.doJsonRequest("POST", ConnectionApiUri, buffer, ConnectionErrors, true)
 	if err != nil {
 		logger.LogError("FakesAckRequest.Do()", "client.doJsonRequest(POST)", err)
 		logger.LogError("main.findConfigFile()", "Current()", err)

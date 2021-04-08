@@ -16,15 +16,15 @@ type PrinterProfilesRequest struct {
 // Do sends an API request and returns the API response.
 func (cmd *PrinterProfilesRequest) Do(c *Client) (*dataModels.PrinterProfileResponse, error) {
 	uri := fmt.Sprintf("/api/printerprofiles/%s", cmd.Id)
-	b, err := c.doJsonRequest("GET", uri, nil, nil)
+	bytes, err := c.doJsonRequest("GET", uri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.PrinterProfileResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &dataModels.PrinterProfileResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

@@ -64,17 +64,17 @@ func (req *UploadFileRequest) Do(c *Client) (*dataModels.UploadFileResponse, err
 	req.addSelectPrintAndClose()
 
 	uri := fmt.Sprintf("%s/%s", FilesApiUri, req.Location)
-	b, err := c.doRequest("POST", uri, req.w.FormDataContentType(), req.b, FilesLocationPOSTErrors)
+	bytes, err := c.doRequest("POST", uri, req.w.FormDataContentType(), req.b, FilesLocationPOSTErrors, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.UploadFileResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &dataModels.UploadFileResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }
 
 func (req *UploadFileRequest) addSelectPrintAndClose() error {
