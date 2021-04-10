@@ -69,7 +69,7 @@ func (cmd *FullStateRequest) Do(c *Client) (*dataModels.FullStateResponse, error
 	*/
 
 
-	bytes, err := c.doJsonRequest("GET", uri, nil, PrintErrors)
+	bytes, err := c.doJsonRequest("GET", uri, nil, PrintErrors, true)
 	if err != nil {
 		return nil, err
 	}

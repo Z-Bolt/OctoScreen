@@ -20,12 +20,12 @@ type ToolTargetRequest struct {
 
 // Do sends an API request and returns an error if any.
 func (cmd *ToolTargetRequest) Do(c *Client) error {
-	b := bytes.NewBuffer(nil)
-	if err := cmd.encode(b); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := cmd.encode(buffer); err != nil {
 		return err
 	}
 
-	_, err := c.doJsonRequest("POST", PrinterToolApiUri, b, PrintToolErrors)
+	_, err := c.doJsonRequest("POST", PrinterToolApiUri, buffer, PrintToolErrors, true)
 	return err
 }
 

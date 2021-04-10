@@ -29,15 +29,15 @@ type BedStateRequest struct {
 // Do sends an API request and returns the API response.
 func (cmd *BedStateRequest) Do(c *Client) (*dataModels.TemperatureStateResponse, error) {
 	uri := fmt.Sprintf("%s?history=%t&limit=%d", PrinterBedApiUri, cmd.IncludeHistory, cmd.Limit)
-	b, err := c.doJsonRequest("GET", uri, nil, PrintBedErrors)
+	bytes, err := c.doJsonRequest("GET", uri, nil, PrintBedErrors, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.TemperatureStateResponse{}
-	if err := json.Unmarshal(b, &r); err != nil {
+	response := &dataModels.TemperatureStateResponse{}
+	if err := json.Unmarshal(bytes, &response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

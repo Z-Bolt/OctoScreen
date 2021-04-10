@@ -17,7 +17,7 @@ type OctoScreenSettingsRequest struct {
 
 func (this *OctoScreenSettingsRequest) Do(client *Client, uiState string) (*dataModels.OctoScreenSettingsResponse, error) {
 	target := fmt.Sprintf("%s?command=get_settings", PluginZBoltOctoScreenApiUri)
-	bytes, err := client.doJsonRequest("GET", target, nil, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", target, nil, ConnectionErrors, false)
 	if err != nil {
 		return nil, err
 	}

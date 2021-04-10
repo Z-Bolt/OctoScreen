@@ -17,15 +17,16 @@ type SdStateRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *SdStateRequest) Do(c *Client) (*dataModels.SdState, error) {
-	b, err := c.doJsonRequest("GET", PrinterSdApiUri, nil, PrintSdErrors)
+	bytes, err := c.doJsonRequest("GET", PrinterSdApiUri, nil, PrintSdErrors, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.SdState{}
-	if err := json.Unmarshal(b, r); err != nil {
+	// TODO: rename SdState to SdStateResponse or something.
+	response := &dataModels.SdState{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

@@ -46,15 +46,15 @@ func (cmd *ToolStateRequest) Do(c *Client) (*dataModels.TemperatureStateResponse
 		}
 	*/
 
-	b, err := c.doJsonRequest("GET", uri, nil, nil)
+	bytes, err := c.doJsonRequest("GET", uri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.TemperatureStateResponse{}
-	if err := json.Unmarshal(b, &r); err != nil {
+	response := &dataModels.TemperatureStateResponse{}
+	if err := json.Unmarshal(bytes, &response); err != nil {
 		return nil, err
 	}
 
-	return r, err
+	return response, err
 }

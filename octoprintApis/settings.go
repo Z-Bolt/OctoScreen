@@ -15,7 +15,7 @@ type SettingsRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *SettingsRequest) Do(c *Client) (*dataModels.SettingsResponse, error) {
-	bytes, err := c.doJsonRequest("GET", SettingsApiUri, nil, nil)
+	bytes, err := c.doJsonRequest("GET", SettingsApiUri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}

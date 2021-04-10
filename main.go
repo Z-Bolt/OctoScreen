@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 	"github.com/sirupsen/logrus"
 
@@ -122,6 +123,8 @@ func main() {
 	settings.SetProperty("gtk-application-prefer-dark-theme", true)
 
 	utils.DumpEnvironmentVariables()
+
+	setCursor()
 
 	if initSucceeded != true {
 		// readConfig() logs any errors it encounters.  Don't display
@@ -367,4 +370,52 @@ func getSize() (width int, height int, err error) {
 
 	logger.TraceLeave("main.getSize()")
 	return
+}
+
+func setCursor() {
+	// For reference, see "How to turn on a pointer"
+	// 	https://github.com/Z-Bolt/OctoScreen/issues/285
+	// and "No mouse pointer when running xinit"
+	// 	https://www.raspberrypi.org/forums/viewtopic.php?t=139546
+
+	displayCursor := strings.ToLower(os.Getenv("DISPLAY_CURSOR"))
+	if displayCursor != "true" {
+		return
+	}
+
+	window, err := getRootWindow()
+	if err != nil {
+		return
+	}
+
+	cursor, err := getDefaultCursor()
+	if err != nil {
+		return
+	}
+
+	window.SetCursor(cursor)
+}
+
+func getRootWindow() (*gdk.Window, error) {
+	screen, err := gdk.ScreenGetDefault()
+	if err != nil {
+		return nil, err
+	}
+
+	window, err := screen.GetRootWindow()
+
+	return window, err
+}
+
+func getDefaultCursor() (*gdk.Cursor, error) {
+	display, err := gdk.DisplayGetDefault()
+	if err != nil {
+		return nil, err
+	}
+
+	// Examples of the different cursors can be found at
+	// https://developer.gnome.org/gdk3/stable/gdk3-Cursors.html#gdk-cursor-new-from-name
+	cursor, err := gdk.CursorNewFromName(display, "default")
+
+	return cursor, err
 }

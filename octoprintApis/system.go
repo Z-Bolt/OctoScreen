@@ -23,7 +23,7 @@ type SystemCommandsRequest struct{}
 
 // Do sends an API request and returns the API response.
 func (cmd *SystemCommandsRequest) Do(c *Client) (*dataModels.SystemCommandsResponse, error) {
-	bytes, err := c.doJsonRequest("GET", SystemCommandsApiUri, nil, nil)
+	bytes, err := c.doJsonRequest("GET", SystemCommandsApiUri, nil, nil, true)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +68,6 @@ type SystemExecuteCommandRequest struct {
 // Do sends an API request and returns an error if any.
 func (cmd *SystemExecuteCommandRequest) Do(c *Client) error {
 	uri := fmt.Sprintf("%s/%s/%s", SystemCommandsApiUri, cmd.Source, cmd.Action)
-	_, err := c.doJsonRequest("POST", uri, nil, ExecuteErrors)
+	_, err := c.doJsonRequest("POST", uri, nil, ExecuteErrors, true)
 	return err
 }

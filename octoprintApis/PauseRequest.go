@@ -25,7 +25,7 @@ func (cmd *PauseRequest) Do(c *Client) error {
 		return err
 	}
 
-	_, err := c.doJsonRequest("POST", JobApiUri, buffer, JobToolErrors)
+	_, err := c.doJsonRequest("POST", JobApiUri, buffer, JobToolErrors, true)
 	return err
 }
 

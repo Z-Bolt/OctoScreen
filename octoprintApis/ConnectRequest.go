@@ -39,14 +39,14 @@ type ConnectRequest struct {
 func (cmd *ConnectRequest) Do(client *Client) error {
 	logger.TraceEnter("ConnectRequest.Do()")
 
-	bytes := bytes.NewBuffer(nil)
-	if err := cmd.encode(bytes); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := cmd.encode(buffer); err != nil {
 		logger.LogError("ConnectRequest.Do()", "cmd.encode()", err)
 		logger.TraceLeave("ConnectRequest.Do()")
 		return err
 	}
 
-	_, err := client.doJsonRequest("POST", ConnectionApiUri, bytes, ConnectionErrors)
+	_, err := client.doJsonRequest("POST", ConnectionApiUri, buffer, ConnectionErrors, true)
 	if err != nil {
 		logger.LogError("ConnectRequest.go()", "client.doJsonRequest(POST)", err)
 	}

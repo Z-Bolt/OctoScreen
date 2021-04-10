@@ -19,7 +19,7 @@ func (this *NotificationRequest) Do(client *Client, uiState string) (*dataModels
 	}
 
 	target := fmt.Sprintf("%s?command=get_notification", PluginZBoltOctoScreenApiUri)
-	bytes, err := client.doJsonRequest("GET", target, nil, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", target, nil, ConnectionErrors, true)
 	if err != nil {
 		return nil, err
 	}

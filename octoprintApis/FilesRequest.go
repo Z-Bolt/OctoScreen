@@ -29,19 +29,19 @@ func (cmd *FilesRequest) Do(c *Client) (*dataModels.FilesResponse, error) {
 		uri = fmt.Sprintf("%s/%s?recursive=%t", FilesApiUri, cmd.Location, cmd.Recursive)
 	}
 
-	b, err := c.doJsonRequest("GET", uri, nil, FilesLocationGETErrors)
+	bytes, err := c.doJsonRequest("GET", uri, nil, FilesLocationGETErrors, true)
 	if err != nil {
 		return nil, err
 	}
 
-	r := &dataModels.FilesResponse{}
-	if err := json.Unmarshal(b, r); err != nil {
+	response := &dataModels.FilesResponse{}
+	if err := json.Unmarshal(bytes, response); err != nil {
 		return nil, err
 	}
 
-	if len(r.Children) > 0 {
-		r.Files = r.Children
+	if len(response.Children) > 0 {
+		response.Files = response.Children
 	}
 
-	return r, err
+	return response, err
 }

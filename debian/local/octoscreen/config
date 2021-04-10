@@ -50,3 +50,8 @@ OCTOSCREEN_LOG_LEVEL=Error
 OCTOSCREEN_RESOLUTION=800x480
 # OCTOSCREEN_RESOLUTION is optional and defaults to 800x480 if missing
 # (defined in globalVars.go)
+
+
+# To display the cursor, uncomment the following line and set to true.
+#DISPLAY_CURSOR=true
+# You will also need to edit /lib/systemd/system/octoscreen.service and remove "-nocursor"

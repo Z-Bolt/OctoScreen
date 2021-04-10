@@ -100,7 +100,7 @@ func New(endpoint, key string, width, height int) *UI {
 	}
 
 	instance.splashPanel = NewSplashPanel(instance)
-	instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 10, instance.update)
+	instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 20, instance.update)
 	instance.initialize()
 
 	logger.TraceLeave("ui.New()")
@@ -159,7 +159,13 @@ func (this *UI) verifyConnection() {
 	newUIState := "<<uninitialized-state>>"
 	splashMessage := "<<uninitialized-message>>"
 
+	logger.Debug("ui.verifyConnection() - about to call ConnectionRequest.Do()")
+	t1 := time.Now()
 	connectionResponse, err := (&octoprintApis.ConnectionRequest{}).Do(this.Client)
+	t2 := time.Now()
+	logger.Debug("ui.verifyConnection() - finished calling ConnectionRequest.Do()")
+	logger.Debugf("time elapsed: %q", t2.Sub(t1))
+
 	if err == nil {
 		logger.Debug("ui.verifyConnection() - ConnectionRequest.Do() succeeded")
 		jsonResponse, err := utils.StructToJson(connectionResponse)
@@ -176,8 +182,9 @@ func (this *UI) verifyConnection() {
 			this.loadSettings()
 		}
 	} else {
-		logger.LogError("ui.verifyConnection()", "Broke into the else condition because Do(ConnectionRequest) returned an error", err)
+		logger.LogError("ui.verifyConnection()", "Broke into the else condition because ConnectionRequest.Do() returned an error", err)
 		newUIState, splashMessage = this.getUiStateAndMessageFromError(err, newUIState, splashMessage)
+		logger.Debugf("ui.verifyConnection() - newUIState is now: %s", newUIState)
 	}
 
 	this.splashPanel.Label.SetText(splashMessage)

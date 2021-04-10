@@ -24,8 +24,8 @@ func (this *ZOffsetRequest) Do(client *Client) (*dataModels.ZOffsetResponse, err
 		return nil, err
 	}
 
-	// b, err := client.doJsonRequest("POST", URIZBoltRequest, params, ConnectionErrors)
-	bytes, err := client.doJsonRequest("GET", PluginZBoltApiUri, params, ConnectionErrors)
+	// bytes, err := client.doJsonRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	bytes, err := client.doJsonRequest("GET", PluginZBoltApiUri, params, ConnectionErrors, true)
 	if err != nil {
 		logger.LogError("ZOffsetRequest.Do()", "client.doJsonRequest()", err)
 		return nil, err
@@ -53,12 +53,12 @@ type SetZOffsetRequest struct {
 func (this *SetZOffsetRequest) Do(client *Client) error {
 	this.Command = "set_z_offset"
 
-	bytes := bytes.NewBuffer(nil)
-	if err := json.NewEncoder(bytes).Encode(this); err != nil {
+	buffer := bytes.NewBuffer(nil)
+	if err := json.NewEncoder(buffer).Encode(this); err != nil {
 		logger.LogError("SetZOffsetRequest.Do()", "json.NewEncoder(params).Encode(this)", err)
 		return err
 	}
 
-	_, err := client.doJsonRequest("POST", PluginZBoltApiUri, bytes, ConnectionErrors)
+	_, err := client.doJsonRequest("POST", PluginZBoltApiUri, buffer, ConnectionErrors, true)
 	return err
 }

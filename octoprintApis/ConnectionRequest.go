@@ -19,7 +19,7 @@ type ConnectionRequest struct{}
 func (cmd *ConnectionRequest) Do(client *Client) (*dataModels.ConnectionResponse, error) {
 	logger.TraceEnter("ConnectionRequest.Do()")
 
-	bytes, err := client.doJsonRequest("GET", ConnectionApiUri, nil, nil)
+	bytes, err := client.doJsonRequest("GET", ConnectionApiUri, nil, nil, true)
 	if err != nil {
 		logger.LogError("ConnectionRequest.Do()", "client.doJsonRequest(GET)", err)
 		logger.TraceLeave("ConnectionRequest.Do()")
