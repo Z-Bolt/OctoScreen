@@ -1,6 +1,6 @@
 # OctoScreen [![GitHub release](https://img.shields.io/github/release/Z-Bolt/OctoScreen.svg)](https://github.com/Z-Bolt/OctoScreen/releases) [![license](https://img.shields.io/github/license/Z-Bolt/OctoScreen.svg)]()
 
-_OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on GTK+3 and allows you to control your 3D Printer using a [LCD touch screen](https://amzn.to/2L8cRkR), a [Raspberry Pi](https://amzn.to/39LPvvF), and [OctoPrint](https://octoprint.org/).  It's an _X application_ that's executed directly in the X Server without a window manager or browser, and opreates as a frontend for OctoPrint.
+_OctoScreen_ is a LCD touch interface for your OctoPrint server.  It is based on GTK+3 and allows you to control your 3D Printer using a [LCD touch screen](https://amzn.to/2L8cRkR), a [Raspberry Pi](https://amzn.to/39LPvvF), and [OctoPrint](https://octoprint.org/).  It's an _X application_ that's executed directly in the X Server without a window manager or browser, and operates as a frontend for OctoPrint.
 
 <img width="480" src="https://user-images.githubusercontent.com/10328858/101729412-f66ab780-3a6c-11eb-8fd8-8bbf5c8c1dc7.png" />
 Idle
@@ -40,7 +40,7 @@ Actions
 
 
 
-Some of the functionality of OctoScreen incude:
+Some of the functionality of OctoScreen included:
 
 - Print jobs monitoring.
 - Temperature and Filament management.
@@ -182,4 +182,4 @@ The controls are limit to static controls without `inputs`.
 
 GNU Affero General Public License v3.0, see [LICENSE](LICENSE)
 
-This project is a hard fork from [Octiprint-TFT](https://github.com/mcuadros/OctoPrint-TFT) created by [@mcuadros](https://github.com/mcuadros/OctoPrint-TFT)
+This project is a hard fork from [Octoprint-TFT](https://github.com/mcuadros/OctoPrint-TFT) created by [@mcuadros](https://github.com/mcuadros/OctoPrint-TFT)
