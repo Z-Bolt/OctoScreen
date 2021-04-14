@@ -45,8 +45,8 @@ Some of the functionality of OctoScreen included:
 - Print jobs monitoring.
 - Temperature and Filament management.
 - Jogging operations.
-- Wifi connection management.
-- Toolchanger management tools.
+- WiFi connection management.
+- Tool changer management tools.
 
 
 
@@ -171,8 +171,11 @@ The controls are limit to static controls without `inputs`.
 
 
 ------------
+<!--
 ## [Roadmap](https://github.com/Z-Bolt/OctoScreen/projects/2)
-
+-->
+## Roadmap
+https://github.com/Z-Bolt/OctoScreen/wiki/Project-Roadmap
 
 
 
