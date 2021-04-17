@@ -4,11 +4,13 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 type CommandButton struct {
 	*gtk.Button
@@ -24,7 +26,12 @@ func CreateCommandButton(
 	commandDefinition	*dataModels.CommandDefinition,
 	iconName			string,
 ) *CommandButton {
-	base := utils.MustButtonImage(utils.StrEllipsisLen(commandDefinition.Name, 16), iconName + ".svg", nil)
+	style := ""
+	if commandRequiresConfirmation(commandDefinition) {
+		style = "color-warning-sign-yellow"
+	}
+	base := utils.MustButtonImageStyle(utils.StrEllipsisLen(commandDefinition.Name, 16), iconName + ".svg", style, nil)
+
 	instance := &CommandButton {
 		Button:				base,
 		client:				client,
@@ -40,8 +47,12 @@ func CreateCommandButton(
 	return instance
 }
 
+func commandRequiresConfirmation(commandDefinition *dataModels.CommandDefinition) bool {
+	return commandDefinition != nil && len(commandDefinition.Confirm) > 0
+}
+
 func (this *CommandButton) handleClicked() {
-	if len(this.commandDefinition.Confirm) != 0 {
+	if commandRequiresConfirmation(this.commandDefinition) {
 		utils.MustConfirmDialogBox(
 			this.parentWindow,
 			this.commandDefinition.Confirm,

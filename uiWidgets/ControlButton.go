@@ -4,11 +4,13 @@ import (
 	// "fmt"
 
 	"github.com/gotk3/gotk3/gtk"
+
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 type ControlButton struct {
 	*gtk.Button
@@ -24,7 +26,12 @@ func CreateControlButton(
 	controlDefinition	*dataModels.ControlDefinition,
 	iconName			string,
 ) *ControlButton {
-	base := utils.MustButtonImage(utils.StrEllipsisLen(controlDefinition.Name, 16), iconName + ".svg", nil)
+	style := ""
+	if controlRequiresConfirmation(controlDefinition) {
+		style = "color-warning-sign-yellow"
+	}
+	base := utils.MustButtonImageStyle(utils.StrEllipsisLen(controlDefinition.Name, 16), iconName + ".svg", style, nil)
+
 	instance := &ControlButton {
 		Button:				base,
 		client:				client,
@@ -40,8 +47,12 @@ func CreateControlButton(
 	return instance
 }
 
+func controlRequiresConfirmation(controlDefinition *dataModels.ControlDefinition) bool {
+	return controlDefinition != nil && len(controlDefinition.Confirm) > 0
+}
+
 func (this *ControlButton) handleClicked() {
-	if len(this.controlDefinition.Confirm) != 0 {
+	if controlRequiresConfirmation(this.controlDefinition) {
 		utils.MustConfirmDialogBox(
 			this.parentWindow,
 			this.controlDefinition.Confirm,
@@ -54,7 +65,7 @@ func (this *ControlButton) handleClicked() {
 
 func (this *ControlButton) sendCommand() {
 	logger.Infof("ControlButton.sendCommand(), now sending command %q", this.controlDefinition.Name)
-	
+
 	commandRequest := &octoprintApis.CommandRequest{
 		Commands: this.controlDefinition.Commands,
 	}
