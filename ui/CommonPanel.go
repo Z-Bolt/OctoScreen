@@ -9,45 +9,70 @@ import (
 
 	// "github.com/gotk3/gotk3/glib"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
+
 type CommonPanel struct {
+	name				string,
 	UI					*UI
+	// parentPanel			interfaces.IPanel
+	includeBackButton	bool
 	grid				*gtk.Grid
 	preShowCallback		func()
 	backgroundTask		*utils.BackgroundTask
-	// parentPanel			interfaces.IPanel
 	panelWidth			int
 	panelHeight			int
-	includeBackButton	bool
 	backButton			*gtk.Button
 	buttons				[]gtk.IWidget
 }
 
-func NewCommonPanel(ui *UI, parentPanel interfaces.IPanel) CommonPanel {
-	return newPanel(ui, parentPanel, true)
+func NewCommonPanel(
+	name string,
+	ui *UI,
+	//parentPanel interfaces.IPanel,
+) CommonPanel {
+	return newPanel(
+		ui,
+		//parentPanel,
+		true,
+	)
 }
 
-func NewTopLevelCommonPanel(ui *UI, parentPanel interfaces.IPanel) CommonPanel {
-	return newPanel(ui, parentPanel, false)
+func NewTopLevelCommonPanel(
+	name string,
+	ui *UI,
+	//parentPanel interfaces.IPanel,
+) CommonPanel {
+	return newPanel(
+		ui,
+		//parentPanel,
+		false,
+	)
 }
 
-func newPanel(ui *UI, parentPanel interfaces.IPanel, includeBackButton bool) CommonPanel {
+func newPanel(
+	name string,
+	ui *UI,
+	// parentPanel interfaces.IPanel,
+	includeBackButton bool,
+) CommonPanel {
 	grid := utils.MustGrid()
 	grid.SetRowHomogeneous(true)
 	grid.SetColumnHomogeneous(true)
 
 	return CommonPanel {
+		name:				name,
 		UI:					ui,
-		grid:				grid,
 		// parentPanel:		parentPanel,
+		includeBackButton:	includeBackButton,
+		grid:				grid,
 		panelWidth:			4,
 		panelHeight:		3,
-		includeBackButton:	includeBackButton,
 	}
 }
 
@@ -92,6 +117,10 @@ func (this *CommonPanel) Hide() {
 	if this.backgroundTask != nil {
 		this.backgroundTask.Close()
 	}
+}
+
+func (this *CommonPanel) Name() string {
+	return this.name
 }
 
 func (this *CommonPanel) Grid() *gtk.Grid {
