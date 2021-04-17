@@ -30,7 +30,6 @@ type systemPanel struct {
 
 func SystemPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *systemPanel {
 	if systemPanelInstance == nil {
 		instance := &systemPanel {

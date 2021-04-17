@@ -21,7 +21,6 @@ type temperaturePresetsPanel struct {
 
 func TemperaturePresetsPanel(
 	ui						*UI,
-	parentPanel				interfaces.IPanel,
 	selectHotendStepButton	*uiWidgets.SelectToolStepButton,
 ) *temperaturePresetsPanel {
 	if temperaturePresetsPanelInstance == nil {
