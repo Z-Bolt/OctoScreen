@@ -28,7 +28,7 @@ func BedLevelPanel(
 ) *bedLevelPanel {
 	if bedLevelPanelInstance == nil {
 		instance := &bedLevelPanel {
-			CommonPanel: NewCommonPanel(ui),
+			CommonPanel: NewCommonPanel("BedLevelPanel", ui),
 		}
 		instance.initialize()
 		bedLevelPanelInstance = instance

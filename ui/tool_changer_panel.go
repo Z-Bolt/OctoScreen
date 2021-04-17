@@ -23,7 +23,6 @@ type toolChangerPanel struct {
 
 func ToolChangerPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *toolChangerPanel {
 	if toolChangerPanelInstance == nil {
 		this := &toolChangerPanel {

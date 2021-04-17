@@ -14,7 +14,6 @@ type configurationPanel struct {
 
 func ConfigurationPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *configurationPanel {
 	if configurationPanelInstance == nil {
 		instance := &configurationPanel {

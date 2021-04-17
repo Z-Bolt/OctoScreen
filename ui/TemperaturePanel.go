@@ -30,7 +30,6 @@ type temperaturePanel struct {
 
 func TemperaturePanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *temperaturePanel {
 	if temperaturePanelInstance == nil {
 		temperaturePanelInstance = &temperaturePanel{
