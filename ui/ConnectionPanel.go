@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gotk3/gotk3/gtk"
 	"pifke.org/wpasupplicant"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/gotk3/gotk3/gtk"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var connectionPanelInstance *connectionPanel
 
@@ -35,12 +37,11 @@ type connectionPanel struct {
 
 func ConnectionPanel(
 	ui					*UI,
-	parentPanel			interfaces.IPanel,
 	SSID				string,
 ) *connectionPanel {
 	if connectionPanelInstance == nil {
 		instance := &connectionPanel {
-			CommonPanel:		NewCommonPanel(ui, parentPanel),
+			CommonPanel:		NewCommonPanel("ConnectionPanel", ui),
 			cursorPosition:		0,
 		}
 		instance.initialize()

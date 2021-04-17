@@ -4,13 +4,15 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var toolChangerPanelInstance *toolChangerPanel
 
@@ -25,7 +27,7 @@ func ToolChangerPanel(
 ) *toolChangerPanel {
 	if toolChangerPanelInstance == nil {
 		this := &toolChangerPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("ToolChangerPanel", ui),
 		}
 		this.initialize()
 		toolChangerPanelInstance = this
@@ -49,7 +51,7 @@ func (this *toolChangerPanel) initialize() {
 
 func (this *toolChangerPanel) createZCalibrationButton() gtk.IWidget {
 	button := utils.MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
-		this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI, this))
+		this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI))
 	})
 
 	return button

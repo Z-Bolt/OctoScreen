@@ -1,13 +1,14 @@
 package ui
 
 import (
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	// "github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var temperaturePresetsPanelInstance *temperaturePresetsPanel
 
@@ -25,7 +26,7 @@ func TemperaturePresetsPanel(
 ) *temperaturePresetsPanel {
 	if temperaturePresetsPanelInstance == nil {
 		instance := &temperaturePresetsPanel {
-			CommonPanel:			NewCommonPanel(ui, parentPanel),
+			CommonPanel:			NewCommonPanel("temperaturePresetsPanel", ui),
 			selectHotendStepButton:	selectHotendStepButton,
 		}
 		instance.initialize()

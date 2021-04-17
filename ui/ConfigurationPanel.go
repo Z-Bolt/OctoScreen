@@ -1,9 +1,10 @@
 package ui
 
 import (
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var configurationPanelInstance *configurationPanel
 
@@ -17,7 +18,7 @@ func ConfigurationPanel(
 ) *configurationPanel {
 	if configurationPanelInstance == nil {
 		instance := &configurationPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("ConfigurationPanel", ui),
 		}
 		instance.initialize()
 		configurationPanelInstance = instance
@@ -67,17 +68,17 @@ func (this *configurationPanel) initialize() {
 }
 
 func (this *configurationPanel) showBedLevelPanel() {
-	this.UI.GoToPanel(BedLevelPanel(this.UI, this))
+	this.UI.GoToPanel(BedLevelPanel(this.UI))
 }
 
 func (this *configurationPanel) showZOffsetCalibrationPanel() {
-	this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI, this))
+	this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI))
 }
 
 func (this *configurationPanel) showNetworkPanel() {
-	this.UI.GoToPanel(NetworkPanel(this.UI, this))
+	this.UI.GoToPanel(NetworkPanel(this.UI))
 }
 
 func (this *configurationPanel) showSystemPanel() {
-	this.UI.GoToPanel(SystemPanel(this.UI, this))
+	this.UI.GoToPanel(SystemPanel(this.UI))
 }

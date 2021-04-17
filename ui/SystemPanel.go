@@ -3,10 +3,11 @@ package ui
 import (
 	// "time"
 
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var systemPanelInstance *systemPanel = nil
 
@@ -33,7 +34,7 @@ func SystemPanel(
 ) *systemPanel {
 	if systemPanelInstance == nil {
 		instance := &systemPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("SystemPanel", ui),
 		}
 		instance.initialize()
 		instance.preShowCallback = instance.refreshSystemInformationInfoBox

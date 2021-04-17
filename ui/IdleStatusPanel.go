@@ -29,7 +29,7 @@ type idleStatusPanel struct {
 func IdleStatusPanel(ui *UI) *idleStatusPanel {
 	if idleStatusPanelInstance == nil {
 		instance := &idleStatusPanel{
-			CommonPanel: NewTopLevelCommonPanel(ui, nil),
+			CommonPanel: NewTopLevelCommonPanel("IdleStatusPanel", ui),
 		}
 		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, instance.update)
 		instance.initialize()
@@ -88,7 +88,7 @@ func (this *idleStatusPanel) initialize() {
 func (this *idleStatusPanel) showFiles() {
 	logger.TraceEnter("IdleStatusPanel.showFiles()")
 
-	this.UI.GoToPanel(FilesPanel(this.UI, this))
+	this.UI.GoToPanel(FilesPanel(this.UI))
 
 	logger.TraceLeave("IdleStatusPanel.showFiles()")
 }

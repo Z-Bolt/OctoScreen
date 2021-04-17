@@ -2,10 +2,12 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var temperaturePanelInstance *temperaturePanel
 
@@ -32,7 +34,7 @@ func TemperaturePanel(
 ) *temperaturePanel {
 	if temperaturePanelInstance == nil {
 		temperaturePanelInstance = &temperaturePanel{
-			CommonPanel:	NewCommonPanel(ui, parentPanel),
+			CommonPanel:	NewCommonPanel("TemperaturePanel", ui),
 		}
 		temperaturePanelInstance.initialize()
 	}
@@ -84,6 +86,6 @@ func (this *temperaturePanel) initialize() {
 }
 
 func (this *temperaturePanel) showTemperaturePresetsPanel() {
-	temperaturePresetsPanel := TemperaturePresetsPanel(this.UI, this, this.selectHotendStepButton)
+	temperaturePresetsPanel := TemperaturePresetsPanel(this.UI, this.selectHotendStepButton)
 	this.UI.GoToPanel(temperaturePresetsPanel)
 }
