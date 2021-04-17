@@ -55,7 +55,7 @@ func (this *ControlButton) handleClicked() {
 	if controlRequiresConfirmation(this.controlDefinition) {
 		utils.MustConfirmDialogBox(
 			this.parentWindow,
-			this.controlDefinition.Confirm,
+			this.controlDefinition.Confirm + "\n\nAre you sure you want to proceed?",
 			this.sendCommand,
 		)()
 	} else {
