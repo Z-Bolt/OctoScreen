@@ -5,7 +5,7 @@ import (
 
 	"github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
-	// "github.com/Z-Bolt/OctoScreen/utils"
+	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 var systemPanelInstance *systemPanel = nil
@@ -51,7 +51,7 @@ func (this *systemPanel) initialize() {
 	this.octoPrintInfoBox = uiWidgets.CreateOctoPrintInfoBox(this.UI.Client, logoWidth)
 	this.Grid().Attach(this.octoPrintInfoBox,        0, 0, 1, 1)
 
-	this.octoScreenInfoBox = uiWidgets.CreateOctoScreenInfoBox(this.UI.Client, OctoScreenVersion)
+	this.octoScreenInfoBox = uiWidgets.CreateOctoScreenInfoBox(this.UI.Client, utils.OctoScreenVersion)
 	this.Grid().Attach(this.octoScreenInfoBox,       1, 0, 2, 1)
 
 	this.octoScreenPluginInfoBox = uiWidgets.CreateOctoScreenPluginInfoBox(this.UI.Client, this.UI.UIState, this.UI.OctoPrintPluginIsAvailable)
