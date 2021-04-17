@@ -18,7 +18,7 @@ import (
 
 
 type CommonPanel struct {
-	name				string,
+	name				string
 	UI					*UI
 	// parentPanel			interfaces.IPanel
 	includeBackButton	bool
@@ -37,6 +37,7 @@ func NewCommonPanel(
 	//parentPanel interfaces.IPanel,
 ) CommonPanel {
 	return newPanel(
+		name,
 		ui,
 		//parentPanel,
 		true,
@@ -49,6 +50,7 @@ func NewTopLevelCommonPanel(
 	//parentPanel interfaces.IPanel,
 ) CommonPanel {
 	return newPanel(
+		name,
 		ui,
 		//parentPanel,
 		false,
