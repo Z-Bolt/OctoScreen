@@ -523,6 +523,8 @@ func (this *UI) GoToPreviousPanel() {
 func (this *UI) SetUiToPanel(panel interfaces.IPanel) {
 	logger.TraceEnter("ui.SetUiToPanel()")
 
+	logger.Infof("Setting panel to %q", panel.Name())
+
 	stackLength := this.PanelHistory.Len()
 	if stackLength > 0 {
 		currentPanel := this.PanelHistory.Peek().(interfaces.IPanel)
