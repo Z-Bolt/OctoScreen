@@ -40,11 +40,11 @@ func (cmd *SystemCommandsRequest) Do(c *Client) (*dataModels.SystemCommandsRespo
 }
 
 func convertRawConfirm(commandDefinition *dataModels.CommandDefinition) {
-	if commandDefinition == nil || commandDefinition.RawConfirm === nil || len(commandDefinition.RawConfirm) < 1 {
+	if commandDefinition == nil || commandDefinition.RawConfirm == nil || len(commandDefinition.RawConfirm) < 1 {
 		return
 	}
 
-	err = json.Unmarshal(commandDefinition.RawConfirm, &commandDefinition.Confirm)
+	err := json.Unmarshal(commandDefinition.RawConfirm, &commandDefinition.Confirm)
 	if err != nil {
 		logger.LogError("SystemCommandsRequest.convertRawConfirm()", "json.Unmarshal(Custom)", err)
 		commandDefinition.Confirm = ""
