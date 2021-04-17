@@ -169,6 +169,11 @@ The controls are limit to static controls without `inputs`.
 
 
 
+------------
+## Wiki
+For troubleshooting and general information about this project, be sure to check out the Wiki page, located at https://github.com/Z-Bolt/OctoScreen/wiki
+
+
 
 ------------
 <!--
