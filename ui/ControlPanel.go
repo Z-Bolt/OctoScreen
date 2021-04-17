@@ -37,20 +37,32 @@ func ControlPanel(
 func (this *controlPanel) initialize() {
 	defer this.Initialize()
 
-	for _, controlDefinition := range this.getDefaultControls() {
+	defaultControls := this.getDefaultControls()
+	for _, controlDefinition := range defaultControls {
 		icon := strings.ToLower(strings.Replace(controlDefinition.Name, " ", "-", -1))
 		button := uiWidgets.CreateControlButton(this.UI.Client, this.UI.window, controlDefinition, icon)
 		this.AddButton(button)
 	}
 
+
+	// 12 (max) - Back button = 11 available slots to display.
+	const maxSlots = 11
+	currentButtonCount := len(defaultControls)
+
 	for _, controlDefinition := range this.getCustomControls() {
-		button := uiWidgets.CreateControlButton(this.UI.Client, this.UI.window, controlDefinition, "custom-script")
-		this.AddButton(button)
+		if currentButtonCount < maxSlots {
+			button := uiWidgets.CreateControlButton(this.UI.Client, this.UI.window, controlDefinition, "custom-script")
+			this.AddButton(button)
+			currentButtonCount++
+		}
 	}
 
 	for _, commandDefinition := range this.getCommands() {
-		button := uiWidgets.CreateCommandButton(this.UI.Client, this.UI.window, commandDefinition, "custom-script")
-		this.AddButton(button)
+		if currentButtonCount < maxSlots {
+			button := uiWidgets.CreateCommandButton(this.UI.Client, this.UI.window, commandDefinition, "custom-script")
+			this.AddButton(button)
+			currentButtonCount++
+		}
 	}
 }
 

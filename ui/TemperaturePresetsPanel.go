@@ -37,7 +37,13 @@ func TemperaturePresetsPanel(
 
 func (this *temperaturePresetsPanel) initialize() {
 	defer this.Initialize()
+	this.createAllOffButton()
 	this.createTemperaturePresetButtons()
+}
+
+func (this *temperaturePresetsPanel) createAllOffButton() {
+	allOffButton := uiWidgets.CreateCoolDownButton(this.UI.Client, this.UI.GoToPreviousPanel)
+	this.AddButton(allOffButton)
 }
 
 func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
@@ -47,11 +53,12 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 		return
 	}
 
-	this.createAllOffButton()
+	// 12 (max) - Back button - All Off button = 10 available slots to display.
+	const maxSlots = 10
 
 	count := 0
 	for _, temperaturePreset := range settings.Temperature.TemperaturePresets {
-		if count < 10 {
+		if count < maxSlots {
 			temperaturePresetButton := uiWidgets.CreateTemperaturePresetButton(
 				this.UI.Client,
 				this.selectHotendStepButton,
@@ -63,10 +70,4 @@ func (this *temperaturePresetsPanel) createTemperaturePresetButtons() {
 			count++
 		}
 	}
-
-}
-
-func (this *temperaturePresetsPanel) createAllOffButton() {
-	allOffButton := uiWidgets.CreateCoolDownButton(this.UI.Client, this.UI.GoToPreviousPanel)
-	this.AddButton(allOffButton)
 }
