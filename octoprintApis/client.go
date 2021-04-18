@@ -177,9 +177,9 @@ func (this *Client) handleResponse(
 	}
 
 	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode <= 209 {
-		logger.Debugf("Client.handleResponse() - status code %q was within range", httpResponse.StatusCode)
+		logger.Debugf("Client.handleResponse() - status code %d was within range", httpResponse.StatusCode)
 	} else {
-		errMsg := fmt.Sprintf("unexpected status code: %q", httpResponse.StatusCode)
+		errMsg := fmt.Sprintf("unexpected status code: %d", httpResponse.StatusCode)
 		logOptionalMessage(errMsg, isRequired)
 		err = fmt.Errorf(errMsg)
 		body = nil
