@@ -58,21 +58,14 @@ func (this *Client) doJsonRequest(
 
 	bytes, err := this.doRequest(method, target, "application/json", body, statusMapping, isRequired)
 	if err != nil {
-		if isRequired {
-			// Some APIs return an error and the error should be logged.
-			logger.LogError("Client.doJsonRequest()", "this.doRequest()", err)
-		} else {
-			// On the other hand, calls to some APIs are optional, and the result should be logged
-			// as info and leave it up to the caller to determine whether it's an error or not.
-			logger.Infof("Client.doJsonRequest() - this.doRequest() returned %q", err)
-		}
-
+		logOptionalError("Client.doJsonRequest()", "this.doRequest()", err, isRequired)
 		logger.TraceLeave("Client.doJsonRequest()")
 		return nil, err
 	}
 
 	// Use the following only for debugging.
 	if logger.LogLevel() == "debug" {
+		logger.Debug("Client.doJsonRequest() - converting bytes to JSON")
 		json := string(bytes)
 		logger.Debugf("JSON response: %s", json)
 	}
@@ -151,27 +144,27 @@ func (this *Client) handleResponse(
 
 	if statusMapping != nil {
 		if err := statusMapping.Error(httpResponse.StatusCode); err != nil {
-			logOptionalError("Client.handleResponse()", "statusMapping.Error()", err, isRequired)
+			logger.LogError("Client.handleResponse()", "statusMapping.Error()", err)
 			logger.TraceLeave("Client.handleResponse()")
 			return nil, err
 		}
 	}
 
 	if httpResponse.StatusCode == 401 {
-		logOptionalMessage("Client.handleResponse() - StatusCode is 401", isRequired)
+		logger.Error("Client.handleResponse() - StatusCode is 401")
 		logger.TraceLeave("Client.handleResponse()")
 		return nil, ErrUnauthorized
 	}
 
 	if httpResponse.StatusCode == 204 {
-		logOptionalMessage("Client.handleResponse() - StatusCode is 204", isRequired)
+		logger.Error("Client.handleResponse() - StatusCode is 204")
 		logger.TraceLeave("Client.handleResponse()")
 		return nil, nil
 	}
 
 	body, err := ioutil.ReadAll(httpResponse.Body)
 	if err != nil {
-		logOptionalError("Client.handleResponse()", "ioutil.ReadAll()", err, isRequired)
+		logger.LogError("Client.handleResponse()", "ioutil.ReadAll()", err)
 		logger.TraceLeave("Client.handleResponse()")
 		return nil, err
 	}
@@ -179,8 +172,13 @@ func (this *Client) handleResponse(
 	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode <= 209 {
 		logger.Debugf("Client.handleResponse() - status code %d was within range", httpResponse.StatusCode)
 	} else {
-		errMsg := fmt.Sprintf("unexpected status code: %d", httpResponse.StatusCode)
-		logOptionalMessage(errMsg, isRequired)
+		errMsg := fmt.Sprintf("Unexpected status code: %d", httpResponse.StatusCode)
+		if httpResponse.StatusCode == 404 {
+			logOptionalMessage(errMsg, isRequired)
+		} else {
+			logger.Error(errMsg)
+		}
+
 		err = fmt.Errorf(errMsg)
 		body = nil
 	}
