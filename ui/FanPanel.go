@@ -4,10 +4,11 @@ import (
 	// "fmt"
 
 	// "github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	// "github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var fanPanelInstance *fanPanel
 
@@ -17,11 +18,10 @@ type fanPanel struct {
 
 func FanPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *fanPanel {
 	if fanPanelInstance == nil {
 		instance := &fanPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("FanPanel", ui),
 		}
 		instance.initialize()
 		fanPanelInstance = instance

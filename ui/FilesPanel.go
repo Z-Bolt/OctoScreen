@@ -10,7 +10,8 @@ import (
 	"github.com/coreos/go-systemd/daemon"
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
@@ -32,7 +33,6 @@ type filesPanel struct {
 
 func FilesPanel(
 	ui					*UI,
-	parentPanel			interfaces.IPanel,
 ) *filesPanel {
 	if filesPanelInstance == nil {
 		locationHistory := utils.LocationHistory {
@@ -40,7 +40,7 @@ func FilesPanel(
 		}
 
 		instance := &filesPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("FilesPanel", ui),
 			locationHistory: locationHistory,
 		}
 		instance.initialize()

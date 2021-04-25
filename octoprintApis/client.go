@@ -58,21 +58,14 @@ func (this *Client) doJsonRequest(
 
 	bytes, err := this.doRequest(method, target, "application/json", body, statusMapping, isRequired)
 	if err != nil {
-		if isRequired {
-			// Some APIs return an error and the error should be logged.
-			logger.LogError("Client.doJsonRequest()", "this.doRequest()", err)
-		} else {
-			// On the other hand, calls to some APIs are optional, and the result should be logged
-			// as info and leave it up to the caller to determine whether it's an error or not.
-			logger.Infof("Client.doJsonRequest() - this.doRequest() returned %q", err)
-		}
-
+		logOptionalError("Client.doJsonRequest()", "this.doRequest()", err, isRequired)
 		logger.TraceLeave("Client.doJsonRequest()")
 		return nil, err
 	}
 
 	// Use the following only for debugging.
 	if logger.LogLevel() == "debug" {
+		logger.Debug("Client.doJsonRequest() - converting bytes to JSON")
 		json := string(bytes)
 		logger.Debugf("JSON response: %s", json)
 	}
@@ -124,59 +117,103 @@ func (this *Client) doRequest(
 		logger.LogError("Client.doRequest()", "this.httpClient.Do()", err)
 		logger.TraceLeave("Client.doRequest()")
 		return nil, err
+	} else {
+		logger.Debug("Client.doRequest() - httpClient.Do() passed")
 	}
 
-	bytes, err := this.handleResponse(response, statusMapping)
+	bytes, err := this.handleResponse(response, statusMapping, isRequired)
 	if err != nil {
-		if isRequired {
-			// Some APIs return an error and the error should be logged.
-			logger.LogError("Client.doRequest()", "this.handleResponse()", err)
-		} else {
-			// On the other hand, calls to some APIs are optional, and the result should be logged
-			// as info and leave it up to the caller to determine whether it's an error or not.
-			logger.Infof("Client.doRequest() - this.handleResponse() returned %q", err)
-		}
-		logger.TraceLeave("Client.doRequest()")
-		return nil, err
+		logOptionalError("Client.doRequest()", "this.handleResponse()", err, isRequired)
+		bytes = nil
+	} else {
+		logger.Debug("Client.doRequest() - handleResponse() passed")
 	}
 
 	logger.TraceLeave("Client.doRequest()")
 	return bytes, err
 }
 
-
 func (this *Client) handleResponse(
 	httpResponse *http.Response,
 	statusMapping StatusMapping,
+	isRequired bool,
 ) ([]byte, error) {
+	logger.TraceEnter("Client.handleResponse()")
+
 	defer httpResponse.Body.Close()
 
 	if statusMapping != nil {
 		if err := statusMapping.Error(httpResponse.StatusCode); err != nil {
+			logger.LogError("Client.handleResponse()", "statusMapping.Error()", err)
+			logger.TraceLeave("Client.handleResponse()")
 			return nil, err
 		}
 	}
 
 	if httpResponse.StatusCode == 401 {
+		logger.Error("Client.handleResponse() - StatusCode is 401")
+		logger.TraceLeave("Client.handleResponse()")
 		return nil, ErrUnauthorized
 	}
 
 	if httpResponse.StatusCode == 204 {
+		logger.Error("Client.handleResponse() - StatusCode is 204")
+		logger.TraceLeave("Client.handleResponse()")
 		return nil, nil
 	}
 
 	body, err := ioutil.ReadAll(httpResponse.Body)
 	if err != nil {
+		logger.LogError("Client.handleResponse()", "ioutil.ReadAll()", err)
+		logger.TraceLeave("Client.handleResponse()")
 		return nil, err
 	}
 
 	if httpResponse.StatusCode >= 200 && httpResponse.StatusCode <= 209 {
-		return body, nil
+		logger.Debugf("Client.handleResponse() - status code %d was within range", httpResponse.StatusCode)
+	} else {
+		errMsg := fmt.Sprintf("Unexpected status code: %d", httpResponse.StatusCode)
+		if httpResponse.StatusCode == 404 {
+			logOptionalMessage(errMsg, isRequired)
+		} else {
+			logger.Error(errMsg)
+		}
+
+		err = fmt.Errorf(errMsg)
+		body = nil
 	}
 
-	return nil, fmt.Errorf("unexpected status code: %d", httpResponse.StatusCode)
+	logger.TraceLeave("Client.handleResponse()")
+	return body, err
 }
 
+func logOptionalError(
+	currentFunctionName string,
+	functionCalledName string,
+	err error,
+	isRequired bool,
+) {
+	if isRequired {
+		// Some APIs return an error and the error should be logged.
+		logger.LogError(currentFunctionName, functionCalledName, err)
+	} else {
+		// On the other hand, calls to some APIs are optional, and the result should be logged
+		// as info and leave it up to the caller to determine whether it's an error or not.
+		msg := fmt.Sprintf("%s - %s returned %q", currentFunctionName, functionCalledName, err)
+		logger.Info(msg)
+	}
+}
+
+func logOptionalMessage(
+	msg string,
+	isRequired bool,
+) {
+	if isRequired {
+		logger.Error(msg)
+	} else {
+		logger.Info(msg)
+	}
+}
 
 func joinUrl(base, uri string) string {
 	u, _ := url.Parse(uri)

@@ -5,13 +5,15 @@ import (
 	"net"
 	"time"
 
+	"pifke.org/wpasupplicant"
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
-	"pifke.org/wpasupplicant"
 )
+
 
 var networkPanelInstance *networkPanel
 
@@ -25,11 +27,10 @@ type networkPanel struct {
 
 func NetworkPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *networkPanel {
 	if networkPanelInstance == nil {
 		instance := &networkPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("NetworkPanel", ui),
 		}
 		instance.initialize()
 		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 3, instance.update)
@@ -168,7 +169,7 @@ func (this *networkPanel) addNetwork(box *gtk.Box, ssid string) {
 	frame, _ := gtk.FrameNew("")
 
 	clicked := func() {
-		this.UI.GoToPanel(ConnectionPanel(this.UI, this, ssid))
+		this.UI.GoToPanel(ConnectionPanel(this.UI, ssid))
 	}
 
 	image := utils.MustImageFromFileWithSize("network.svg", this.Scaled(25), this.Scaled(25))

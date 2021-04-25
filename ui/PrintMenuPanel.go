@@ -1,9 +1,10 @@
 package ui
 
 import (
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var printMenuPanelInstance *printMenuPanel
 
@@ -13,11 +14,10 @@ type printMenuPanel struct {
 
 func PrintMenuPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *printMenuPanel {
 	if printMenuPanelInstance == nil {
 		instance := &printMenuPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("PrintMenuPanel", ui),
 		}
 		instance.initialize()
 		printMenuPanelInstance = instance
@@ -49,25 +49,25 @@ func (this *printMenuPanel) initialize() {
 }
 
 func (this *printMenuPanel) showMove() {
-	this.UI.GoToPanel(MovePanel(this.UI, this))
+	this.UI.GoToPanel(MovePanel(this.UI))
 }
 
 func (this *printMenuPanel) showFilament() {
-	this.UI.GoToPanel(FilamentPanel(this.UI, this))
+	this.UI.GoToPanel(FilamentPanel(this.UI))
 }
 
 func (this *printMenuPanel) showTemperature() {
-	this.UI.GoToPanel(TemperaturePanel(this.UI, this))
+	this.UI.GoToPanel(TemperaturePanel(this.UI))
 }
 
 func (this *printMenuPanel) showFan() {
-	this.UI.GoToPanel(FanPanel(this.UI, this))
+	this.UI.GoToPanel(FanPanel(this.UI))
 }
 
 func (this *printMenuPanel) showNetwork() {
-	this.UI.GoToPanel(NetworkPanel(this.UI, this))
+	this.UI.GoToPanel(NetworkPanel(this.UI))
 }
 
 func (this *printMenuPanel) showSystem() {
-	this.UI.GoToPanel(SystemPanel(this.UI, this))
+	this.UI.GoToPanel(SystemPanel(this.UI))
 }

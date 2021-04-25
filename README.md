@@ -83,15 +83,15 @@ There are two ways to install OctoScreen: the recommended and supported way is t
 
 For example, to install on a new RaspberryPi with OctoPi:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.2/octoscreen_2.7.2_armhf.deb
-sudo dpkg -i octoscreen_2.7.2_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.3/octoscreen_2.7.3_armhf.deb
+sudo dpkg -i octoscreen_2.7.3_armhf.deb
 ```
 
 Or to update an existing version of OctoScreen:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.2/octoscreen_2.7.2_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.3/octoscreen_2.7.3_armhf.deb
 sudo dpkg -r octoscreen
-sudo dpkg -i octoscreen_2.7.2_armhf.deb
+sudo dpkg -i octoscreen_2.7.3_armhf.deb
 sudo reboot now
 ```
 
@@ -167,6 +167,11 @@ Custom [controls](http://docs.octoprint.org/en/master/configuration/config_yaml.
 The controls are limit to static controls without `inputs`.
 
 
+
+
+------------
+## Wiki
+For troubleshooting and general information about this project, be sure to check out the Wiki page, located at https://github.com/Z-Bolt/OctoScreen/wiki
 
 
 

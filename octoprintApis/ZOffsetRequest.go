@@ -24,7 +24,7 @@ func (this *ZOffsetRequest) Do(client *Client) (*dataModels.ZOffsetResponse, err
 		return nil, err
 	}
 
-	// bytes, err := client.doJsonRequest("POST", URIZBoltRequest, params, ConnectionErrors)
+	// bytes, err := client.doJsonRequest("POST", UriZBoltRequest, params, ConnectionErrors)
 	bytes, err := client.doJsonRequest("GET", PluginZBoltApiUri, params, ConnectionErrors, true)
 	if err != nil {
 		logger.LogError("ZOffsetRequest.Do()", "client.doJsonRequest()", err)

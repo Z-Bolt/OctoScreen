@@ -2,7 +2,8 @@ package ui
 
 import (
 	// "github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
@@ -18,11 +19,10 @@ type movePanel struct {
 
 func MovePanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *movePanel {
 	if movePanelInstance == nil {
 		instance := &movePanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("MovePanel", ui),
 		}
 		instance.initialize()
 		movePanelInstance = instance

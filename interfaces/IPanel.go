@@ -5,6 +5,7 @@ import (
 )
 
 type IPanel interface {
+	Name() string
 	Grid() *gtk.Grid
 	PreShow()
 	Show()

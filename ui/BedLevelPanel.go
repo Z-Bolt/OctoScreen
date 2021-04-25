@@ -4,12 +4,14 @@ import (
 	"fmt"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var bedLevelPanelInstance *bedLevelPanel
 
@@ -23,11 +25,10 @@ type bedLevelPanel struct {
 
 func BedLevelPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *bedLevelPanel {
 	if bedLevelPanelInstance == nil {
 		instance := &bedLevelPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("BedLevelPanel", ui),
 		}
 		instance.initialize()
 		bedLevelPanelInstance = instance

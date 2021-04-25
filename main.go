@@ -122,6 +122,7 @@ func main() {
 	settings, _ := gtk.SettingsGetDefault()
 	settings.SetProperty("gtk-application-prefer-dark-theme", true)
 
+	utils.DumpSystemInformation()
 	utils.DumpEnvironmentVariables()
 
 	setCursor()

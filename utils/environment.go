@@ -10,6 +10,9 @@ import (
 )
 
 
+// OctoScreenVersion is set during compilation.
+var OctoScreenVersion = "2.7.3"
+
 const MISSING_ENV_TOKEN = ">>MISSING<<"
 const INVALID_ENV_TOKEN = "!!!INVALID!!!"
 
@@ -83,6 +86,13 @@ func NameOfMissingRequiredEnvironmentVariable(apiKey string) string {
 	return "UNKNOWN"
 }
 
+func DumpSystemInformation() {
+	logger.Info("System Information...")
+	logger.Infof("OctoScreen version: %q", OctoScreenVersion)
+	// More system stats to come...
+	logger.Info("")
+}
+
 func DumpEnvironmentVariables() {
 	logger.Info("Environment variables...")
 
@@ -101,11 +111,10 @@ func DumpEnvironmentVariables() {
 	// 8. make sure what's dumped to the log is correct, for both when present and when missing.
 	dumpObfuscatedEnvironmentVariable(EnvAPIKey)
 
-
 	dumpEnvironmentVariable(EnvStylePath)
+	logger.Info("")
 
 	// Optional environment variables
-	logger.Info("")
 	logger.Info("Optional environment variables:")
 	dumpEnvironmentVariable(EnvConfigFile)
 	dumpEnvironmentVariable(EnvLogFilePath)
@@ -116,6 +125,7 @@ func DumpEnvironmentVariables() {
 	// default to the values defined in globalVars.go.
 
 	dumpEnvironmentVariable(EnvDisplayCursor)
+	logger.Info("")
 }
 
 func dumpEnvironmentVariable(key string) {

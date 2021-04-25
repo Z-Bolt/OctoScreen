@@ -1,11 +1,12 @@
 package ui
 
 import (
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
 )
+
 
 type customItemsPanel struct {
 	CommonPanel
@@ -14,11 +15,10 @@ type customItemsPanel struct {
 
 func CustomItemsPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 	items			[]dataModels.MenuItem,
 ) *customItemsPanel {
 	instance := &customItemsPanel {
-		CommonPanel: NewCommonPanel(ui, parentPanel),
+		CommonPanel: NewCommonPanel("CustomItemsPanel", ui),
 		items:       items,
 	}
 	instance.initialize()

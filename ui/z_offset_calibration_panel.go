@@ -6,13 +6,15 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var zOffsetCalibrationPanelInstance *zOffsetCalibrationPanel
 
@@ -43,11 +45,10 @@ type zOffsetCalibrationPanel struct {
 
 func ZOffsetCalibrationPanel(
 	ui 					*UI,
-	parentPanel 		interfaces.IPanel,
 ) *zOffsetCalibrationPanel {
 	if zOffsetCalibrationPanelInstance == nil {
 		instane := &zOffsetCalibrationPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("ZOffsetCalibrationPanel", ui),
 		}
 		instane.cPoint = pointCoordinates {
 			x: 20,

@@ -6,10 +6,12 @@ import (
 	// "time"
 
 	"github.com/gotk3/gotk3/gtk"
-	"github.com/Z-Bolt/OctoScreen/interfaces"
+
+	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
+
 
 var filamentPanelInstance *filamentPanel
 
@@ -34,11 +36,10 @@ type filamentPanel struct {
 
 func FilamentPanel(
 	ui				*UI,
-	parentPanel		interfaces.IPanel,
 ) *filamentPanel {
 	if filamentPanelInstance == nil {
 		instance := &filamentPanel {
-			CommonPanel: NewCommonPanel(ui, parentPanel),
+			CommonPanel: NewCommonPanel("FilamentPanel", ui),
 		}
 		instance.initialize()
 		filamentPanelInstance = instance
@@ -120,5 +121,5 @@ func (this *filamentPanel) initialize() {
 }
 
 func (this *filamentPanel) showTemperaturePanel() {
-	this.UI.GoToPanel(TemperaturePanel(this.UI, this))
+	this.UI.GoToPanel(TemperaturePanel(this.UI))
 }

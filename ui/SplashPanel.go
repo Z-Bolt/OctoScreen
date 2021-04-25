@@ -3,6 +3,7 @@ package ui
 
 import (
 	"github.com/gotk3/gotk3/gtk"
+
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -15,7 +16,7 @@ type SplashPanel struct {
 
 func NewSplashPanel(ui *UI) *SplashPanel {
 	instane := &SplashPanel {
-		CommonPanel: NewCommonPanel(ui, nil),
+		CommonPanel: NewCommonPanel("SplashPanel", ui),
 	}
 	instane.initialize()
 
@@ -108,7 +109,7 @@ func (this *SplashPanel) releaseFromHold() {
 func (this *SplashPanel) showNetwork() {
 	logger.TraceEnter("SplashPanel.showNetwork()")
 
-	this.UI.GoToPanel(NetworkPanel(this.UI, this))
+	this.UI.GoToPanel(NetworkPanel(this.UI))
 
 	logger.TraceLeave("SplashPanel.showNetwork()")
 }
@@ -116,7 +117,7 @@ func (this *SplashPanel) showNetwork() {
 func (this *SplashPanel) showSystem() {
 	logger.TraceEnter("SplashPanel.showSystem()")
 
-	this.UI.GoToPanel(SystemPanel(this.UI, this))
+	this.UI.GoToPanel(SystemPanel(this.UI))
 
 	logger.TraceLeave("SplashPanel.showSystem()")
 }

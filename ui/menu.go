@@ -19,53 +19,53 @@ func getPanel(
 	switch menuItem.Panel {
 		// The standard "top four" panels that are in the idleStatus panel
 		case "home":
-			return HomePanel(ui, parentPanel)
+			return HomePanel(ui)
 
 		case "menu":
 			fallthrough
 		case "custom_items":
-			return CustomItemsPanel(ui, parentPanel, menuItem.Items)
+			return CustomItemsPanel(ui, menuItem.Items)
 
 		case "filament":
-			return FilamentPanel(ui, parentPanel)
+			return FilamentPanel(ui)
 
 		case "configuration":
-			return ConfigurationPanel(ui, parentPanel)
+			return ConfigurationPanel(ui)
 
 
 
 		case "files":
-			return FilesPanel(ui, parentPanel)
+			return FilesPanel(ui)
 
 		case "temperature":
-			return TemperaturePanel(ui, parentPanel)
+			return TemperaturePanel(ui)
 
 		case "control":
-			return ControlPanel(ui, parentPanel)
+			return ControlPanel(ui)
 
 		case "network":
-			return NetworkPanel(ui, parentPanel)
+			return NetworkPanel(ui)
 
 		case "move":
-			return MovePanel(ui, parentPanel)
+			return MovePanel(ui)
 
 		case "tool-changer":
-			return ToolChangerPanel(ui, parentPanel)
+			return ToolChangerPanel(ui)
 
 		case "system":
-			return SystemPanel(ui, parentPanel)
+			return SystemPanel(ui)
 
 		case "fan":
-			return FanPanel(ui, parentPanel)
+			return FanPanel(ui)
 
 		case "bed-level":
-			return BedLevelPanel(ui, parentPanel)
+			return BedLevelPanel(ui)
 
 		case "z-offset-calibration":
-			return ZOffsetCalibrationPanel(ui, parentPanel)
+			return ZOffsetCalibrationPanel(ui)
 
 		case "print-menu":
-			return PrintMenuPanel(ui, parentPanel)
+			return PrintMenuPanel(ui)
 
 
 		case "filament_multitool":
@@ -76,19 +76,19 @@ func getPanel(
 			logger.Warnf("WARNING! the '%s' panel has been deprecated.  Please use the 'filament' panel instead.", menuItem.Panel)
 			logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
 			logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
-			return FilamentPanel(ui, parentPanel)
+			return FilamentPanel(ui)
 
 		case "toolchanger":
 			logger.Warn("WARNING! the 'toolchanger' panel has been renamed to 'tool-changer'.  Please use the 'tool-changer' panel instead.")
 			logger.Warnf("Support for the %s panel remains in this release, but will be removed in a future.", menuItem.Panel)
 			logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
-			return ToolChangerPanel(ui, parentPanel)
+			return ToolChangerPanel(ui)
 
 		case "nozzle-calibration":
 			logger.Warn("WARNING! the 'nozzle-calibration' panel has been deprecated.  Please use the 'z-offset-calibration' panel instead.")
 			logger.Warn("Support for the nozzle-calibration panel remains in this release, but will be removed in a future.")
 			logger.Warn("Please update the custom menu structure in your OctoScreen settings in OctoPrint.")
-			return ZOffsetCalibrationPanel(ui, parentPanel)
+			return ZOffsetCalibrationPanel(ui)
 
 		default:
 			logLevel := logger.LogLevel()

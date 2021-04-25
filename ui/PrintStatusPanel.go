@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gotk3/gotk3/gtk"
+
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
@@ -39,7 +40,7 @@ type printStatusPanel struct {
 func PrintStatusPanel(ui *UI) *printStatusPanel {
 	if printStatusPanelInstance == nil {
 		instance := &printStatusPanel{
-			CommonPanel: NewTopLevelCommonPanel(ui, nil),
+			CommonPanel: NewTopLevelCommonPanel("PrintStatusPanel", ui),
 		}
 
 		// TODO: revisit... some set the background task and then initialize
@@ -192,7 +193,7 @@ func (this *printStatusPanel) createControlButton() gtk.IWidget {
 		"printing-control.svg",
 		"color3",
 		func() {
-			this.UI.GoToPanel(PrintMenuPanel(this.UI, this))
+			this.UI.GoToPanel(PrintMenuPanel(this.UI))
 		},
 	)
 	return this.menuButton
