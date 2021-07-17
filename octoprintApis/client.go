@@ -140,7 +140,10 @@ func (this *Client) handleResponse(
 ) ([]byte, error) {
 	logger.TraceEnter("Client.handleResponse()")
 
-	defer httpResponse.Body.Close()
+	defer func() {
+		io.Copy(ioutil.Discard, httpResponse.Body)
+		httpResponse.Body.Close()
+	}()
 
 	if statusMapping != nil {
 		if err := statusMapping.Error(httpResponse.StatusCode); err != nil {
