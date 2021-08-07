@@ -287,7 +287,7 @@ func ImageFromUrl(imageUrl string) (*gtk.Image, error) {
 	}
 	defer pixbufLoader.Close()
 
-	writeLength, writeErr := pixbufLoader.Write(buf.Bytes())
+	writeLength, writeErr := pixbufLoader.Write(buffer.Bytes())
 	if writeErr != nil {
 		return nil, writeErr
 	} else if writeLength < 1 {
