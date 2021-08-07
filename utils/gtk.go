@@ -261,14 +261,18 @@ func ImageFromUrl(imageUrl string) (*gtk.Image, error) {
 		return nil, errors.New("imageUrl is empty")
 	}
 
-	response, getErr:= http.Get(imageUrl)
+	httpResponse, getErr:= http.Get(imageUrl)
 	if getErr != nil {
 		return nil, getErr
 	}
-	defer response.Body.Close()
 
-	buf := new(bytes.Buffer)
-	readLength, readErr := buf.ReadFrom(response.Body)
+	defer func() {
+		io.Copy(ioutil.Discard, httpResponse.Body)
+		httpResponse.Body.Close()
+	}()
+
+	buffer := new(bytes.Buffer)
+	readLength, readErr := buffer.ReadFrom(httpResponse.Body)
 	if readErr != nil {
 		return nil, readErr
 	} else if readLength < 1 {
