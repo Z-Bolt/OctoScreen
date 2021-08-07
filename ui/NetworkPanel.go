@@ -3,6 +3,8 @@ package ui
 import (
 	"fmt"
 	"net"
+	"os"
+	"strconv"
 	"time"
 
 	"pifke.org/wpasupplicant"
