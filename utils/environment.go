@@ -11,7 +11,7 @@ import (
 
 
 // OctoScreenVersion is set during compilation.
-var OctoScreenVersion = "2.7.3"
+var OctoScreenVersion = "2.7.4"
 
 const MISSING_ENV_TOKEN = ">>MISSING<<"
 const INVALID_ENV_TOKEN = "!!!INVALID!!!"

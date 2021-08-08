@@ -2,6 +2,8 @@ package ui
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -43,9 +45,24 @@ func PrintStatusPanel(ui *UI) *printStatusPanel {
 			CommonPanel: NewTopLevelCommonPanel("PrintStatusPanel", ui),
 		}
 
+		// Default timeout of 20 seconds.
+		durration := time.Second * 20
+
+		// Experimental, set the timeout based on config setting, but only if the config is pressent.
+		updateFrequency := os.Getenv("EXPERIMENTAL_PRINT_UPDATE_FREQUENCY")
+		if updateFrequency != "" {
+			logger.Infof("Ui.New() - EXPERIMENTAL_PRINT_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
+			val, err := strconv.Atoi(updateFrequency)
+			if err == nil {
+				durration = time.Second * time.Duration(val)
+			} else {
+				logger.LogError("Ui.New()", "strconv.Atoi()", err)
+			}
+		}
+
 		// TODO: revisit... some set the background task and then initialize
 		// and others initialize and then set the background task
-		instance.backgroundTask = utils.CreateBackgroundTask(time.Second * 2, instance.update)
+		instance.backgroundTask = utils.CreateBackgroundTask(durration, instance.update)
 		instance.initialize()
 		printStatusPanelInstance = instance
 	}

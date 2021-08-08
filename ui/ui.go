@@ -107,9 +107,9 @@ func New(endpoint, key string, width, height int) *UI {
 	durration := time.Second * 20
 
 	// Experimental, set the timeout based on config setting, but only if the config is pressent.
-	updateFrequency := os.Getenv("EXPERIMENTAL_UPDATE_FREQUENCY")
+	updateFrequency := os.Getenv("EXPERIMENTAL_UI_UPDATE_FREQUENCY")
 	if updateFrequency != "" {
-		logger.Infof("Ui.New() - EXPERIMENTAL_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
+		logger.Infof("Ui.New() - EXPERIMENTAL_UI_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
 		val, err := strconv.Atoi(updateFrequency)
 		if err == nil {
 			durration = time.Second * time.Duration(val)
