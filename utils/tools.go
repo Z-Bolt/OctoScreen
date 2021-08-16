@@ -273,3 +273,21 @@ func HotendTemperatureIsTooLow(
 
 	return false
 }
+
+func GetPluginInfo(client *octoprintApis.Client, pluginName string) *dataModels.Plugin {
+	request := octoprintApis.PluginManagerInfoRequest{}
+
+	pluginManagerInfoResponse, err := request.Do(client, "")
+	if err != nil {
+		logger.LogError("GetPluginInfo()", "PluginManagerInfoRequest.Do()", err)
+		return nil
+	} else {
+		for i := 0; i < len(pluginManagerInfoResponse.Plugins); i++ {
+			plugin := pluginManagerInfoResponse.Plugins[i]
+			if strings.Compare(plugin.Key, pluginName) == 0 {
+				return &plugin
+			}
+		}
+	}
+	return nil
+}

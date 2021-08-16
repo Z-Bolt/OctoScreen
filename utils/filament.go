@@ -99,3 +99,18 @@ func SendExtrudeRrequest(
 
 	return nil
 }
+
+func FilamentManagerPluginIsInstalled(
+	client *octoprintApis.Client,
+) bool {
+	plugin := GetPluginInfo(client, "filamentmanager")
+	if plugin == nil {
+		return false
+	}
+
+	if (plugin.IsEnabled == false) {
+		return false
+	}
+
+	return true
+}

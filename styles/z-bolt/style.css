@@ -125,6 +125,43 @@ button.color-none {
 	border-bottom: 8px solid #E6D300;
 }
 
+.color-black {
+	border-bottom: 8px solid black;
+}
+.color-white {
+	border-bottom: 8px solid white;
+}
+.color-red {
+	border-bottom: 8px solid red;
+}
+.color-green {
+	border-bottom: 8px solid green;
+}
+.color-blue {
+	border-bottom: 8px solid blue;
+}
+.color-brown {
+	border-bottom: 8px solid brown;
+}
+.color-yellow {
+	border-bottom: 8px solid yellow;
+}
+.color-gold {
+	border-bottom: 8px solid gold;
+}
+.color-pink {
+	border-bottom: 8px solid pink;
+}
+.color-grey {
+	border-bottom: 8px solid grey;
+}
+.color-lime {
+	border-bottom: 8px solid lime;
+}
+.color-orange {
+	border-bottom: 8px solid orange;
+}
+
 
 
 

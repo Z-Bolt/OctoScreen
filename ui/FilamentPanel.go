@@ -8,6 +8,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -31,6 +32,7 @@ type filamentPanel struct {
 
 	// Third row
 	temperatureButton			*gtk.Button
+	filamentManagerButton		*gtk.Button
 	selectExtruderStepButton	*uiWidgets.SelectToolStepButton
 }
 
@@ -109,17 +111,50 @@ func (this *filamentPanel) initialize() {
 
 
 	// Third row
+	column := 0
 	this.temperatureButton = utils.MustButtonImageStyle("Temperature", "heat-up.svg", "color1", this.showTemperaturePanel)
-	this.Grid().Attach(this.temperatureButton, 0, 2, 1, 1)
+	this.Grid().Attach(this.temperatureButton, column, 2, 1, 1)
+	column++
 
 	// The select tool step button is needed by some of the other controls (to get the name/ID of the tool
 	// to send the command to), but only display it if multiple extruders are present.
 	extruderCount := utils.GetExtruderCount(this.UI.Client)
 	if extruderCount > 1 {
-		this.Grid().Attach(this.selectExtruderStepButton, 1, 2, 1, 1)
+		this.Grid().Attach(this.selectExtruderStepButton, column, 2, 1, 1)
+		column++
+	}
+
+	if utils.FilamentManagerPluginIsInstalled(this.UI.Client) {
+		this.addFilamentManagerButton(column)
+		column++
 	}
 }
 
 func (this *filamentPanel) showTemperaturePanel() {
 	this.UI.GoToPanel(TemperaturePanel(this.UI))
+}
+
+func (this *filamentPanel) addFilamentManagerButton(column int) {
+	// if we only have 1 tool head, skip the view for multiple toolheads
+	request := &octoprintApis.FilamentManagerSelectionsRequest {}
+	response, _ := request.Do(this.UI.Client)
+
+	if response != nil {
+		if len(response.Selections) == 1 {
+			this.filamentManagerButton = utils.MustButtonImageStyle(
+				"Filament Manager", "printing-control.svg", "",
+				func() {
+					this.UI.GoToPanel(FilamentManagerToolPanel(
+						this.UI,
+						response.Selections[0]))
+				})
+		} else {
+			this.filamentManagerButton = utils.MustButtonImageStyle(
+				"Filament Manager", "printing-control.svg", "",
+				func() {
+					this.UI.GoToPanel(FilamentManagerPanel(this.UI))
+				})
+		}
+		this.Grid().Attach(this.filamentManagerButton, column, 2, 1, 1)
+	}
 }
