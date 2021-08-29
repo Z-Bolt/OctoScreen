@@ -21,6 +21,7 @@ type filamentManagerToolPanel struct {
 	listBox					*gtk.Box
 	toolName				*gtk.Label
 	selected				*gtk.Label
+	material				*gtk.Label
 	vendor					*gtk.Label
 	used					*gtk.Label
 	cost					*gtk.Label
@@ -100,6 +101,7 @@ func (this *filamentManagerToolPanel) updateLabels() {
 
 	this.toolName.SetText(fmt.Sprintf("Tool %d", this.tool.Tool))
 	this.selected.SetText(fmt.Sprintf("Spool: %s", this.tool.Spool.Name))
+	this.material.SetText(fmt.Sprintf("Material: %s", this.tool.Spool.Profile.Material))
 	this.vendor.SetText(fmt.Sprintf("Brand: %s", this.tool.Spool.Profile.Vendor))
 	this.used.SetText(fmt.Sprintf("Used: %.0fg/%.0fg",
 		this.tool.Spool.Used, this.tool.Spool.Weight))
@@ -179,6 +181,10 @@ func (this *filamentManagerToolPanel) createInfoBar() gtk.IWidget {
 	this.selected.SetHAlign(gtk.ALIGN_START)
 	this.selected.SetMarginTop(25)
 	infoBar.Add(this.selected)
+
+	this.material = utils.MustLabel("Material")
+	this.material.SetHAlign(gtk.ALIGN_START)
+	infoBar.Add(this.material)
 
 	this.vendor = utils.MustLabel("Vendor")
 	this.vendor.SetHAlign(gtk.ALIGN_START)
