@@ -45,14 +45,14 @@ func FilamentPanel(
 		}
 		instance.initialize()
 		filamentPanelInstance = instance
+	} else {
+		filamentPanelInstance.drawPanel()
 	}
 
 	return filamentPanelInstance
 }
 
-func (this *filamentPanel) initialize() {
-	defer this.Initialize()
-
+func (this *filamentPanel) drawPanel() {
 	// Create the step buttons first, since they are needed by some of the other controls.
 	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Client)
 	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
@@ -128,6 +128,11 @@ func (this *filamentPanel) initialize() {
 		this.addFilamentManagerButton(column)
 		column++
 	}
+}
+
+func (this *filamentPanel) initialize() {
+	defer this.Initialize()
+	this.drawPanel()
 }
 
 func (this *filamentPanel) showTemperaturePanel() {
