@@ -57,6 +57,9 @@ func init() {
 	Resolution = os.Getenv(utils.EnvResolution)
 	setBaseUrl(cfg)
 
+	systemDHeartbeat := utils.GetSystemDHeartbeatInstance()
+	systemDHeartbeat.Start()
+
 	initSucceeded = true
 	logger.TraceLeave("OctoScreen - main.init()")
 	logger.Debug("-")

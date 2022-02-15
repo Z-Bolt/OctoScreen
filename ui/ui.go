@@ -147,8 +147,6 @@ func (this *UI) initialize() {
 	this.grid = utils.MustGrid()
 	overlay.Add(this.grid)
 
-	this.sdNotify(daemon.SdNotifyReady)
-
 	logger.TraceLeave("ui.initialize()")
 }
 
@@ -466,8 +464,6 @@ func (this *UI) validateMenuItems(menuItems []dataModels.MenuItem, name string, 
 func (this *UI) update() {
 	logger.TraceEnter("ui.update()")
 
-	this.sdNotify(daemon.SdNotifyWatchdog)
-
 	if this.connectionAttempts > 8 {
 		logger.Info("ui.update() - this.connectionAttempts > 8")
 		this.splashPanel.putOnHold()
@@ -491,17 +487,6 @@ func (this *UI) update() {
 	}
 
 	logger.TraceLeave("ui.update()")
-}
-
-func (this *UI) sdNotify(state string) {
-	logger.TraceEnter("ui.sdNotify()")
-
-	_, err := daemon.SdNotify(false, state)
-	if err != nil {
-		logger.Errorf("ui.sdNotify()", "SdNotify()", err)
-	}
-
-	logger.TraceLeave("ui.sdNotify()")
 }
 
 func (this *UI) GoToPanel(panel interfaces.IPanel) {

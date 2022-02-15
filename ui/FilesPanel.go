@@ -94,9 +94,6 @@ func (this *filesPanel) createBackButton() *gtk.Button {
 }
 
 func (this *filesPanel) doLoadFiles() {
-	
-	this.UI.sdNotify(daemon.SdNotifyWatchdog)
-	
 	utils.EmptyTheContainer(&this.listBox.Container)
 	atRootLevel := this.displayRootLocations()
 	/*
