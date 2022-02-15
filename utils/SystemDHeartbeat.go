@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-systemd/daemon"
+
 	"github.com/Z-Bolt/OctoScreen/logger"
 )
 
@@ -21,7 +22,6 @@ func GetSystemDHeartbeatInstance() (*systemDHeartbeat) {
 		_, err := daemon.SdNotify(false, daemon.SdNotifyReady)
 		if err != nil {
 			logger.Errorf("SystemDHeartbeat.GetSystemDHeartbeatInstance() - SdNotify() returned an error: %q", err)
-			return
 		}
 
 		systemDHeartbeatOnce.Do(func() {

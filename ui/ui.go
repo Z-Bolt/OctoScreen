@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/coreos/go-systemd/daemon"
 	"github.com/golang-collections/collections/stack"
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coreos/go-systemd/daemon"
 	"github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 
