@@ -47,12 +47,21 @@ type UI struct {
 	connectionAttempts			int
 }
 
-func New(endpoint, key string, width, height int) *UI {
+func New() *UI {
 	logger.TraceEnter("ui.New()")
 
-	if width == 0 || height == 0 {
-		width = utils.WindowWidth
-		height = utils.WindowHeight
+	octoScreenConfig := utils.GetOctoScreenConfigInstance()
+	endpoint := octoScreenConfig.OctoPrintConfig.Server.Host
+	key := octoScreenConfig.OctoPrintConfig.API.Key
+	width := octoScreenConfig.Width
+	height := octoScreenConfig.Height
+
+	if width == 0 {
+		panic("the window's width was not specified")
+	}
+
+	if height == 0 {
+		panic("the window's height was not specified")
 	}
 
 	instance := &UI {
@@ -152,7 +161,7 @@ func (this *UI) initialize() {
 func (this *UI) loadStyle() {
 	logger.TraceEnter("ui.loadStyle()")
 
-	cssProvider := utils.MustCSSProviderFromFile(utils.CSSFilename)
+	cssProvider := utils.MustCssProviderFromFile(utils.CssFileName)
 
 	screenDefault, err := gdk.ScreenGetDefault()
 	if err != nil {

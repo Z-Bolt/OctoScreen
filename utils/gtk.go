@@ -302,23 +302,30 @@ func ImageFromUrl(imageUrl string) (*gtk.Image, error) {
 
 
 // MustCSSProviderFromFile returns a new gtk.CssProvider for a given css file, if error panics.
-func MustCSSProviderFromFile(css string) *gtk.CssProvider {
+func MustCssProviderFromFile(cssFileName string) *gtk.CssProvider {
 	cssProvider, err := gtk.CssProviderNew()
 	if err != nil {
-		logger.LogError("PANIC!!! - MustCSSProviderFromFile()", "gtk.CssProviderNew()", err)
+		logger.LogError("PANIC!!! - MustCssProviderFromFile()", "gtk.CssProviderNew()", err)
 		panic(err)
 	}
 
-	if err := cssProvider.LoadFromPath(filepath.Join(StylePath, css)); err != nil {
-		logger.LogError("PANIC!!! - MustCSSProviderFromFile()", "cssProvider.LoadFromPath()", err)
+	cssFilePath := cssFilePath(cssFileName)
+	if err := cssProvider.LoadFromPath(cssFilePath); err != nil {
+		logger.LogError("PANIC!!! - MustCssProviderFromFile()", "cssProvider.LoadFromPath()", err)
 		panic(err)
 	}
 
 	return cssProvider
 }
 
+func cssFilePath(cssFileName string) string {
+	octoScreenConfigInstance := GetOctoScreenConfigInstance()
+	return filepath.Join(octoScreenConfigInstance.CssStyleFilePath, cssFileName)
+}
+
 func imagePath(imageFileName string) string {
-	return filepath.Join(StylePath, ImageFolder, imageFileName)
+	octoScreenConfigInstance := GetOctoScreenConfigInstance()
+	return filepath.Join(octoScreenConfigInstance.CssStyleFilePath, ImageFolder, imageFileName)
 }
 
 // MustOverlay returns a new gtk.Overlay, if error panics.

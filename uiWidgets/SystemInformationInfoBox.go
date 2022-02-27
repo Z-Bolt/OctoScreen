@@ -2,7 +2,7 @@ package uiWidgets
 
 import (
 	"fmt"
-	"os"
+	// "os"
 	// "strings"
 
 	"github.com/dustin/go-humanize"
@@ -108,13 +108,14 @@ func (this *SystemInformationInfoBox) refreshLoadAverageLabel() {
 */
 
 func (this *SystemInformationInfoBox) refreshOctoScreenResolutionLabel() {
-	envResolution := os.Getenv(utils.EnvResolution)
-	if envResolution == "" {
-		envResolution = ">>MISSING<<"
+	octoScreenConfig := utils.GetOctoScreenConfigInstance()
+	resolution := octoScreenConfig.Resolution
+	if resolution == "" {
+		resolution = ">>MISSING<<"
 	}
 	octoScreenResolutionString := fmt.Sprintf(
 		"OCTOSCREEN_RESOLUTION configuration setting: %s",
-		envResolution,
+		resolution,
 	)
 	this.octoScreenResolutionLabel.SetText(octoScreenResolutionString)
 }

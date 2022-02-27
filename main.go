@@ -1,16 +1,16 @@
 package main
 
 import (
-	"errors"
+	// "errors"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	standardLog "log"
-	"os"
-	"os/user"
-	"path/filepath"
+	// "os"
+	// "os/user"
+	// "path/filepath"
 	"runtime"
-	"strconv"
-	"strings"
+	// "strconv"
+	// "strings"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
@@ -21,50 +21,8 @@ import (
 	"github.com/Z-Bolt/OctoScreen/ui"
 	"github.com/Z-Bolt/OctoScreen/utils"
 
-	"gopkg.in/yaml.v1"
+	// "gopkg.in/yaml.v1"
 )
-
-
-var (
-	BaseURL    string
-	APIKey     string
-	ConfigFile string
-	Resolution string
-	initSucceeded bool
-)
-
-
-func init() {
-	logger.Debug("-")
-	logger.Debug("-")
-	logger.TraceEnter("OctoScreen - main.init()")
-	initSucceeded = false
-
-	ConfigFile = os.Getenv(utils.EnvConfigFile)
-	if ConfigFile == "" {
-		ConfigFile = findConfigFile()
-	}
-
-	cfg := readConfig(ConfigFile)
-	if cfg == nil {
-		initSucceeded = false
-		return
-	}
-
-	setApiKey(cfg)
-	setLogLevel()
-	utils.StylePath = os.Getenv(utils.EnvStylePath)
-	Resolution = os.Getenv(utils.EnvResolution)
-	setBaseUrl(cfg)
-
-	systemDHeartbeat := utils.GetSystemDHeartbeatInstance()
-	systemDHeartbeat.Start()
-
-	initSucceeded = true
-	logger.TraceLeave("OctoScreen - main.init()")
-	logger.Debug("-")
-	logger.Debug("-")
-}
 
 
 func main() {
@@ -121,49 +79,26 @@ func main() {
 	logger.Debug("+")
 	logger.TraceEnter("OctoScreen - main.main()")
 
-	gtk.Init(nil)
-	settings, _ := gtk.SettingsGetDefault()
-	settings.SetProperty("gtk-application-prefer-dark-theme", true)
+	startSystemDHeartbeat()
+
+	initializeGtk()
+
+	octoScreenConfig := utils.GetOctoScreenConfigInstance()
+
+	if octoScreenConfig.RequiredConfigsAreSet() != true {
+		message := fmt.Sprintf("Required setting is not set: %s", octoScreenConfig.MissingRequiredConfigName())
+		panic(message)
+	}
+
+	setLogLevel(octoScreenConfig.LogLevel)
 
 	utils.DumpSystemInformation()
 	utils.DumpEnvironmentVariables()
+	octoScreenConfig.DumpConfigs()
 
-	setCursor()
+	setCursor(octoScreenConfig.DisplayCursor)
 
-	if initSucceeded != true {
-		// readConfig() logs any errors it encounters.  Don't display
-		// the error here, because the error could be long, and we don't
-		// want to display a long message and have the screen resize.
-		fatalErrorWindow := ui.CreateFatalErrorWindow(
-			"Initialization failed:",
-			"readConfig() failed, see log for errors",
-		)
-		fatalErrorWindow.ShowAll()
-	} else {
-		if utils.RequiredEnvironmentVariablesAreSet(APIKey) {
-			width, height, err := getSize()
-			if err == nil {
-				// width and height come from EnvResolution/OCTOSCREEN_RESOLUTION
-				// and aren't required - if not set, ui.New() will use the default
-				// values (defined in globalVars.go).
-				_ = ui.New(BaseURL, APIKey, width, height)
-			} else {
-				// But if there is an error while parsing OCTOSCREEN_RESOLUTION,
-				// then display the error.
-				fatalErrorWindow := ui.CreateFatalErrorWindow(
-					"getSize() failed",
-					err.Error(),
-				)
-				fatalErrorWindow.ShowAll()
-			}
-		} else {
-			fatalErrorWindow := ui.CreateFatalErrorWindow(
-				"Required environment variable is not set:",
-				utils.NameOfMissingRequiredEnvironmentVariable(APIKey),
-			)
-			fatalErrorWindow.ShowAll()
-		}
-	}
+	_ = ui.New()
 
 	gtk.Main()
 
@@ -172,10 +107,18 @@ func main() {
 	logger.Debug("+")
 }
 
+func startSystemDHeartbeat() {
+	systemDHeartbeat := utils.GetSystemDHeartbeatInstance()
+	systemDHeartbeat.Start()
+}
 
-func setLogLevel() {
-	logLevel := strings.ToLower(os.Getenv(utils.EnvLogLevel))
+func initializeGtk() {
+	gtk.Init(nil)
+	gtkSettings, _ := gtk.SettingsGetDefault()
+	gtkSettings.SetProperty("gtk-application-prefer-dark-theme", true)
+}
 
+func setLogLevel(logLevel string) {
 	switch logLevel {
 		case "debug":
 			logger.SetLogLevel(logrus.DebugLevel)
@@ -186,10 +129,6 @@ func setLogLevel() {
 		case "warn":
 			logger.SetLogLevel(logrus.WarnLevel)
 
-		case "":
-			logLevel = "error"
-			os.Setenv(utils.EnvLogLevel, "error")
-			fallthrough
 		case "error":
 			logger.SetLogLevel(logrus.ErrorLevel)
 
@@ -202,188 +141,13 @@ func setLogLevel() {
 	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
 }
 
-func setBaseUrl(cfg *config) {
-	BaseURL = os.Getenv(utils.EnvBaseURL)
-	if BaseURL == "" {
-		if cfg.Server.Host != "" {
-			BaseURL = fmt.Sprintf("http://%s:%d", cfg.Server.Host, cfg.Server.Port)
-		} else {
-			BaseURL = "http://0.0.0.0:5000"
-		}
-	} else {
-		url := strings.ToLower(BaseURL)
-		if !strings.HasPrefix(url, "http://") && !strings.HasPrefix(url, "https://") {
-			logger.Warn("WARNING!  OCTOPRINT_HOST requires the transport protocol ('http://' or 'https://') but is missing.  'http://' is being added to BaseURL.");
-			BaseURL = fmt.Sprintf("http://%s", BaseURL)
-		}
-	}
-
-	logger.Infof("main.setBaseUrl() - using %q as server address", BaseURL)
-}
-
-func setApiKey(cfg *config) {
-	logger.TraceEnter("main.setApiKey()")
-
-	APIKey = os.Getenv(utils.EnvAPIKey)
-	if APIKey == "" {
-		logger.Debug("main.setApiKey() - APIKey is empty, now using cfg.API.Key")
-		APIKey = cfg.API.Key
-	}
-
-	if APIKey == "" {
-		logger.Debug("main.setApiKey() - APIKey is empty!")
-	} else {
-		obfuscatedApiKey := utils.GetObfuscatedValue(APIKey)
-		logger.Debugf("main.setApiKey() - APIKey is %q", obfuscatedApiKey)
-	}
-
-	logger.TraceLeave("main.setApiKey()")
-}
-
-
-var (
-	configLocation = ".octoprint/config.yaml"
-	homeOctoPi     = "/home/pi/"
-)
-
-type config struct {
-	// API Settings.
-	API struct {
-		// Key is the current API key needed for accessing the API.
-		Key string
-	}
-
-	// Server settings.
-	Server struct {
-		// Hosts define the host to which to bind the server, defaults to "0.0.0.0".
-		Host string
-
-		// Port define the port to which to bind the server, defaults to 5000.
-		Port int
-	}
-}
-
-func readConfig(configFile string) *config {
-	logger.TraceEnter("main.readConfig()")
-
-	if configFile == "" {
-		logger.Info("main.readConfig() - configFile is empty")
-		logger.TraceLeave("main.readConfig()")
-		return nil
-	}
-
-	logger.Infof("Path to OctoPrint's config file: %q", configFile)
-
-	data, err := ioutil.ReadFile(configFile)
-	if err != nil {
-		logger.Errorf("main.readConfig() - ReadFile() returned an error: %q", err)
-		logger.TraceLeave("main.readConfig()")
-		return nil
-	}
-
-	cfg := &config{}
-	if err := yaml.Unmarshal([]byte(data), cfg); err != nil {
-		logger.Errorf("main.readConfig() - error decoding YAML config file %q: %s", configFile, err)
-		logger.TraceLeave("main.readConfig()")
-		return nil
-	}
-
-	if cfg.Server.Host == "" {
-		cfg.Server.Host = "localhost"
-	}
-
-	logger.Infof("main.readConfig() - server host is: %q", cfg.Server.Host)
-
-	if cfg.Server.Port == 0 {
-		cfg.Server.Port = 5000
-	}
-
-	logger.Infof("main.readConfig() - server port is: %d", cfg.Server.Port)
-
-	logger.TraceLeave("main.readConfig()")
-	return cfg
-}
-
-func findConfigFile() string {
-	logger.TraceEnter("main.findConfigFile()")
-
-	if file := doFindConfigFile(homeOctoPi); file != "" {
-		logger.Info("main.findConfigFile() - doFindConfigFile() found a file")
-		logger.TraceLeave("main.findConfigFile(), returning the file")
-		return file
-	}
-
-	usr, err := user.Current()
-	if err != nil {
-		logger.LogError("main.findConfigFile()", "Current()", err)
-		logger.TraceLeave("main.findConfigFile(), returning an empty string")
-		return ""
-	}
-
-	configFile := doFindConfigFile(usr.HomeDir)
-
-	logger.TraceLeave("main.findConfigFile(), returning configFile")
-	return configFile
-}
-
-func doFindConfigFile(home string) string {
-	logger.TraceEnter("main.doFindConfigFile()")
-
-	path := filepath.Join(home, configLocation)
-	if _, err := os.Stat(path); err == nil {
-		logger.LogError("main.doFindConfigFile()", "Stat()", err)
-		logger.TraceLeave("main.doFindConfigFile(), returning path")
-		return path
-	}
-
-	logger.TraceLeave("main.doFindConfigFile(), returning an empty string")
-	return ""
-}
-
-
-func getSize() (width int, height int, err error) {
-	logger.TraceEnter("main.getSize()")
-
-	if Resolution == "" {
-		logger.Info("main.getSize() - Resolution is empty, returning 0 for width and height, and will default to the default values defined in globalVars.go")
-		logger.TraceLeave("main.getSize()")
-		return
-	}
-
-	parts := strings.SplitN(Resolution, "x", 2)
-	if len(parts) != 2 {
-		logger.Error("main.getSize() - SplitN() - len(parts) != 2")
-		err = errors.New(fmt.Sprintf("%s is malformed\nvalue: %q", utils.EnvResolution, Resolution))
-	}
-
-	if err == nil {
-		width, err = strconv.Atoi(parts[0])
-		if err != nil {
-			logger.LogError("main.getSize()", "Atoi(parts[0])", err)
-			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(0) failed\nvalue: %q", utils.EnvResolution, Resolution))
-		}
-	}
-
-	if err == nil {
-		height, err = strconv.Atoi(parts[1])
-		if err != nil {
-			logger.LogError("main.getSize()", "Atoi(parts[1])", err)
-			err = errors.New(fmt.Sprintf("%s is malformed\nAtoi(1) failed\nvalue: %q", utils.EnvResolution, Resolution))
-		}
-	}
-
-	logger.TraceLeave("main.getSize()")
-	return
-}
-
-func setCursor() {
+func setCursor(displayCursor bool) {
 	// For reference, see "How to turn on a pointer"
 	// 	https://github.com/Z-Bolt/OctoScreen/issues/285
 	// and "No mouse pointer when running xinit"
 	// 	https://www.raspberrypi.org/forums/viewtopic.php?t=139546
 
-	displayCursor := strings.ToLower(os.Getenv("DISPLAY_CURSOR"))
-	if displayCursor != "true" {
+	if displayCursor != true {
 		return
 	}
 

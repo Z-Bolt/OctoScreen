@@ -2,7 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"os"
+	// "os"
 	"sort"
 	"strings"
 	"time"
@@ -499,7 +499,9 @@ func (this *filesPanel) addThumbnail(
 	if fileResponse.Thumbnail != "" {
 		logger.Debugf("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
 
-		thumbnailUrl := fmt.Sprintf("%s/%s", os.Getenv(utils.EnvBaseURL), fileResponse.Thumbnail)
+		octoScreenConfig := utils.GetOctoScreenConfigInstance()
+		octoPrintConfig := octoScreenConfig.OctoPrintConfig
+		thumbnailUrl := fmt.Sprintf("%s/%s", octoPrintConfig.Server.Host, fileResponse.Thumbnail)
 		logger.Debugf("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
 
 		previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
