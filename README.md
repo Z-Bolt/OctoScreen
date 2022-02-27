@@ -83,15 +83,15 @@ There are two ways to install OctoScreen: the recommended and supported way is t
 
 For example, to install on a new RaspberryPi with OctoPi:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.4/octoscreen_2.7.4_armhf.deb
-sudo dpkg -i octoscreen_2.7.4_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.8.0/octoscreen_2.8.0_armhf.deb
+sudo dpkg -i octoscreen_2.8.0_armhf.deb
 ```
 
 Or to update an existing version of OctoScreen:
 ```sh
-wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.7.4/octoscreen_2.7.4_armhf.deb
+wget https://github.com/Z-Bolt/OctoScreen/releases/download/v2.8.0/octoscreen_2.8.0_armhf.deb
 sudo dpkg -r octoscreen
-sudo dpkg -i octoscreen_2.7.4_armhf.deb
+sudo dpkg -i octoscreen_2.8.0_armhf.deb
 sudo reboot now
 ```
 

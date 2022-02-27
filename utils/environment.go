@@ -11,25 +11,25 @@ import (
 
 
 // OctoScreenVersion is set during compilation.
-var OctoScreenVersion = "2.7.4"
+var OctoScreenVersion = "2.8.0"
 
 const MISSING_ENV_TOKEN = ">>MISSING<<"
 const INVALID_ENV_TOKEN = "!!!INVALID!!!"
 
 // Required environment variables
 const (
-	EnvStylePath   = "OCTOSCREEN_STYLE_PATH"
-	EnvBaseURL     = "OCTOPRINT_HOST"
-	EnvAPIKey      = "OCTOPRINT_APIKEY"
+	EnvStylePath        = "OCTOSCREEN_STYLE_PATH"
+	EnvOctoPrintHost    = "OCTOPRINT_HOST"
+	EnvOctoPrintApiKey  = "OCTOPRINT_APIKEY"
 )
 
 // Optional (but good to have) environment variables
 const (
-	EnvLogLevel       = "OCTOSCREEN_LOG_LEVEL"
-	EnvLogFilePath    = "OCTOSCREEN_LOG_FILE_PATH"
-	EnvResolution     = "OCTOSCREEN_RESOLUTION"
-	EnvConfigFile     = "OCTOPRINT_CONFIG_FILE"
-	EnvDisplayCursor  = "DISPLAY_CURSOR"
+	EnvLogLevel         = "OCTOSCREEN_LOG_LEVEL"
+	EnvLogFilePath      = "OCTOSCREEN_LOG_FILE_PATH"
+	EnvResolution       = "OCTOSCREEN_RESOLUTION"
+	EnvConfigFilePath   = "OCTOPRINT_CONFIG_FILE"
+	EnvDisplayCursor    = "DISPLAY_CURSOR"
 )
 
 func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
@@ -37,7 +37,7 @@ func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
 		return false
 	}
 
-	if( !environmentVariableIsSet(EnvBaseURL) ) {
+	if( !environmentVariableIsSet(EnvOctoPrintHost) ) {
 		return false
 	}
 
@@ -49,7 +49,7 @@ func RequiredEnvironmentVariablesAreSet(apiKey string) bool {
 	// and due to GoLang's rules, /main/utils doesn't have access to globals in /main,
 	// so APIKey has to be passed into RequiredEnvironmentVariablesAreSet().
 	//
-	// if( !environmentVariableIsSet(EnvAPIKey) ) {
+	// if( !environmentVariableIsSet(EnvOctoPrintApiKey) ) {
 	// 	return false
 	// }
 	if apiKey == "" {
@@ -68,19 +68,19 @@ func NameOfMissingRequiredEnvironmentVariable(apiKey string) string {
 		return EnvStylePath
 	}
 
-	if( !environmentVariableIsSet(EnvBaseURL) ) {
-		return EnvBaseURL
+	if( !environmentVariableIsSet(EnvOctoPrintHost) ) {
+		return EnvOctoPrintHost
 	}
 
 	// Similar comment as to the one that's in RequiredEnvironmentVariablesAreSet()...
 	// Since the runtime value of APIKey is set in main.init(), and can be set by either
 	// being defined in OctoScreen's config file or in OctoPrint's config file,
 	// the value needs to be passed into NameOfMissingRequiredEnvironmentVariable().
-	// if( !environmentVariableIsSet(EnvAPIKey) ) {
-	// 	return EnvAPIKey
+	// if( !environmentVariableIsSet(EnvOctoPrintApiKey) ) {
+	// 	return EnvOctoPrintApiKey
 	// }
 	if apiKey == "" {
-		return EnvAPIKey
+		return EnvOctoPrintApiKey
 	}
 
 	return "UNKNOWN"
@@ -98,7 +98,7 @@ func DumpEnvironmentVariables() {
 
 	// Required environment variables
 	logger.Info("Required environment variables:")
-	dumpEnvironmentVariable(EnvBaseURL)
+	dumpEnvironmentVariable(EnvOctoPrintHost)
 
 	// TODO: revisit this!
 	// 1. remove OCTOPRINT_APIKEY from option settings
@@ -109,14 +109,14 @@ func DumpEnvironmentVariables() {
 	// 6. dump api key (obfuscated though)
 	// 7. update docs
 	// 8. make sure what's dumped to the log is correct, for both when present and when missing.
-	dumpObfuscatedEnvironmentVariable(EnvAPIKey)
+	dumpObfuscatedEnvironmentVariable(EnvOctoPrintApiKey)
 
 	dumpEnvironmentVariable(EnvStylePath)
 	logger.Info("")
 
 	// Optional environment variables
 	logger.Info("Optional environment variables:")
-	dumpEnvironmentVariable(EnvConfigFile)
+	dumpEnvironmentVariable(EnvConfigFilePath)
 	dumpEnvironmentVariable(EnvLogFilePath)
 	dumpEnvironmentVariable(EnvLogLevel)
 

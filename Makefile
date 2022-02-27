@@ -32,7 +32,7 @@ JESSIE_GO_TAGS := gtk_3_14
 
 # Build information
 #GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
-VERSION := 2.7.4
+VERSION := 2.8.0
 BUILD_DATE ?= $(shell date --utc +%Y%m%d-%H:%M:%S)
 #BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 
