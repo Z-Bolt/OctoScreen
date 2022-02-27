@@ -10,12 +10,12 @@ import (
 	// "github.com/Z-Bolt/OctoScreen/utils"
 )
 
-var movePanelInstance *movePanel
-
 type movePanel struct {
 	CommonPanel
 	amountToMoveStepButton    *uiWidgets.AmountToMoveStepButton
 }
+
+var movePanelInstance *movePanel
 
 func MovePanel(
 	ui				*UI,

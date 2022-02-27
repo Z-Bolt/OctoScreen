@@ -15,12 +15,12 @@ type SplashPanel struct {
 }
 
 func NewSplashPanel(ui *UI) *SplashPanel {
-	instane := &SplashPanel {
+	instance := &SplashPanel {
 		CommonPanel: NewCommonPanel("SplashPanel", ui),
 	}
-	instane.initialize()
+	instance.initialize()
 
-	return instane
+	return instance
 }
 
 func (this *SplashPanel) initialize() {

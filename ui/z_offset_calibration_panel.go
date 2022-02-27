@@ -47,17 +47,17 @@ func ZOffsetCalibrationPanel(
 	ui 					*UI,
 ) *zOffsetCalibrationPanel {
 	if zOffsetCalibrationPanelInstance == nil {
-		instane := &zOffsetCalibrationPanel {
+		instance := &zOffsetCalibrationPanel {
 			CommonPanel: NewCommonPanel("ZOffsetCalibrationPanel", ui),
 		}
-		instane.cPoint = pointCoordinates {
+		instance.cPoint = pointCoordinates {
 			x: 20,
 			y: 20,
 			z: 0,
 		}
-		instane.initialize()
+		instance.initialize()
 
-		zOffsetCalibrationPanelInstance = instane
+		zOffsetCalibrationPanelInstance = instance
 	}
 
 	return zOffsetCalibrationPanelInstance
