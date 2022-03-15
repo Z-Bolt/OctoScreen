@@ -238,7 +238,7 @@ func (this *filesPanel) addRootLocation(location dataModels.Location) {
 func (this *filesPanel) createRootLocationButton(location dataModels.Location) *gtk.Button {
 	var itemImage *gtk.Image
 	if location == dataModels.Local {
-		itemImage = utils.MustImageFromFileWithSize("octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
+		itemImage = utils.MustImageFromFileWithSize("logos/octoprint-tentacle.svg", this.Scaled(35), this.Scaled(35))
 	} else {
 		itemImage = utils.MustImageFromFileWithSize("sd.svg", this.Scaled(35), this.Scaled(35))
 	}
