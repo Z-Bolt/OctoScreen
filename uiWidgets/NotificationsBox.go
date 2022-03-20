@@ -30,14 +30,14 @@ func NewNotificationsBox() *NotificationsBox {
 	return instance
 }
 
-func (this *NotificationsBox) Show(style, msg string, durration time.Duration) {
+func (this *NotificationsBox) Show(style, msg string, duration time.Duration) {
 	defer this.Box.ShowAll()
 
 	eventBox := this.newEventBox(style, msg)
 	this.Box.Add(eventBox)
 
 	go func() {
-		time.Sleep(durration)
+		time.Sleep(duration)
 		glib.IdleAdd(eventBox.Destroy)
 	}()
 }

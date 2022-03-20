@@ -112,7 +112,7 @@ func New() *UI {
 	instance.splashPanel = NewSplashPanel(instance)
 
 	// Default timeout of 20 seconds.
-	durration := time.Second * 20
+	duration := time.Second * 20
 
 	// Experimental, set the timeout based on config setting, but only if the config is pressent.
 	updateFrequency := os.Getenv("EXPERIMENTAL_UI_UPDATE_FREQUENCY")
@@ -120,13 +120,13 @@ func New() *UI {
 		logger.Infof("Ui.New() - EXPERIMENTAL_UI_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
 		val, err := strconv.Atoi(updateFrequency)
 		if err == nil {
-			durration = time.Second * time.Duration(val)
+			duration = time.Second * time.Duration(val)
 		} else {
 			logger.LogError("Ui.New()", "strconv.Atoi()", err)
 		}
 	}
 
-	instance.backgroundTask = utils.CreateBackgroundTask(durration, instance.update)
+	instance.backgroundTask = utils.CreateBackgroundTask(duration, instance.update)
 	instance.initialize()
 
 	logger.TraceLeave("ui.New()")

@@ -27,9 +27,9 @@ func GetSystemDHeartbeatInstance() (*systemDHeartbeat) {
 		systemDHeartbeatOnce.Do(func() {
 			systemDHeartbeatInstance = &systemDHeartbeat{}
 
-			// TODO: read the durration time from env settings
-			durration := time.Second * 5
-			systemDHeartbeatInstance.backgroundTask = CreateBackgroundTask(durration, func() {
+			// TODO: read the duration time from env settings
+			duration := time.Second * 5
+			systemDHeartbeatInstance.backgroundTask = CreateBackgroundTask(duration, func() {
 				systemDHeartbeatInstance.sendHeartbeat()
 			})
 		})
