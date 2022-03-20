@@ -12,7 +12,7 @@ const (
 )
 
 // The states are based on:
-// https://github.com/foosel/OctoPrint/blob/77753ca02602d3a798d6b0a22535e6fd69ff448a/src/octoprint/util/comm.py#L549
+// https://github.com/OctoPrint/OctoPrint/blob/master/src/octoprint/util/comm.py
 
 func (s ConnectionState) IsOperational() bool {
 	return strings.HasPrefix(string(s), "Operational")
