@@ -134,8 +134,8 @@ func setLogLevel(logLevel string) {
 
 		default:
 			// unknown log level
-			logLevel = "error"
 			logger.Errorf("main.setLogLevel() - unknown logLevel: %q, defaulting to error", logLevel)
+			logLevel = "error"
 	}
 
 	standardLog.Printf("main.SetLogLevel() - logLevel is now set to: %q", logLevel)
