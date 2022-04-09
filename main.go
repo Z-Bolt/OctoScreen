@@ -98,7 +98,7 @@ func main() {
 
 	setCursor(octoScreenConfig.DisplayCursor)
 
-	_ = ui.New()
+	_ = ui.CreateUi()
 
 	gtk.Main()
 

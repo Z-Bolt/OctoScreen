@@ -47,7 +47,7 @@ type UI struct {
 	connectionAttempts			int
 }
 
-func New() *UI {
+func CreateUi() *UI {
 	logger.TraceEnter("ui.New()")
 
 	octoScreenConfig := utils.GetOctoScreenConfigInstance()
