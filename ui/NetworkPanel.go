@@ -187,7 +187,7 @@ func (this *networkPanel) addNetwork(box *gtk.Box, ssid string) {
 	frame, _ := gtk.FrameNew("")
 
 	clicked := func() {
-		this.UI.GoToPanel(GetConnectionPanelInstance(this.UI, ssid))
+		this.UI.GoToPanel(GetConnectToNetworkPanelInstance(this.UI, ssid))
 	}
 
 	image := utils.MustImageFromFileWithSize("network.svg", this.Scaled(25), this.Scaled(25))

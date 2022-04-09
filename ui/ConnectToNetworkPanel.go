@@ -25,7 +25,7 @@ var keyBoardChars = []byte{
 	'±', '§', '\\', ' ',
 }
 
-type connectionPanel struct {
+type connectToNetworkPanel struct {
 	CommonPanel
 	pass				*gtk.Entry
 	cursorPosition		int
@@ -33,27 +33,26 @@ type connectionPanel struct {
 	SSIDLabel			*gtk.Label
 }
 
-var connectionPanelInstance *connectionPanel
+var connectToNetworkPanelInstance *connectToNetworkPanel
 
-func GetConnectionPanelInstance(
+func GetConnectToNetworkPanelInstance(
 	ui					*UI,
 	SSID				string,
-) *connectionPanel {
-	if connectionPanelInstance == nil {
-		instance := &connectionPanel {
+) *connectToNetworkPanel {
+	if connectToNetworkPanelInstance == nil {
+		instance := &connectToNetworkPanel {
 			CommonPanel:		CreateCommonPanel("ConnectionPanel", ui),
 			cursorPosition:		0,
 		}
 		instance.initialize()
-		connectionPanelInstance = instance
+		connectToNetworkPanelInstance = instance
+		connectToNetworkPanelInstance.setSSID(SSID)
 	}
 
-	connectionPanelInstance.setSSID(SSID)
-
-	return connectionPanelInstance
+	return connectToNetworkPanelInstance
 }
 
-func (this *connectionPanel) initialize() {
+func (this *connectToNetworkPanel) initialize() {
 	layoutBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
 	layoutBox.SetHExpand(true)
 
@@ -63,13 +62,13 @@ func (this *connectionPanel) initialize() {
 	this.Grid().Add(layoutBox)
 }
 
-func (this *connectionPanel) setSSID(SSID string) {
+func (this *connectToNetworkPanel) setSSID(SSID string) {
 	this.SSID = SSID
 	str := fmt.Sprintf("Enter password for \"%s\": ", utils.StrEllipsisLen(this.SSID, 18))
 	this.SSIDLabel.SetText(str)
 }
 
-func (this *connectionPanel) createTopBar() *gtk.Box {
+func (this *connectToNetworkPanel) createTopBar() *gtk.Box {
 	this.pass, _ = gtk.EntryNew()
 	this.pass.SetProperty("height-request", this.Scaled(40))
 	this.pass.SetProperty("width-request", this.Scaled(150))
@@ -98,7 +97,7 @@ func (this *connectionPanel) createTopBar() *gtk.Box {
 	return topBar
 }
 
-func (this *connectionPanel) createActionBar() *gtk.Box {
+func (this *connectToNetworkPanel) createActionBar() *gtk.Box {
 	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
 	backspaceButton := utils.MustButton(image, func() {
 		this.UI.GoToPreviousPanel()
@@ -114,7 +113,7 @@ func (this *connectionPanel) createActionBar() *gtk.Box {
 	return actionBar
 }
 
-func (this *connectionPanel) createKeyboardWindow() *gtk.ScrolledWindow {
+func (this *connectToNetworkPanel) createKeyboardWindow() *gtk.ScrolledWindow {
 	keysGrid := utils.MustGrid()
 	keysGrid.SetRowHomogeneous(true)
 	keysGrid.SetColumnHomogeneous(true)
@@ -127,7 +126,10 @@ func (this *connectionPanel) createKeyboardWindow() *gtk.ScrolledWindow {
 	row := this.Scaled(3)
 
 	for i, k := range keyBoardChars {
-		buttonHander := &keyButtonHander{char: k, connectionPanel: this}
+		buttonHander := &keyButtonHander{
+			char: k,
+			connectToNetworkPanel: this,
+		}
 		button := utils.MustButtonText(string(k), buttonHander.clicked)
 		ctx, _ := button.GetStyleContext()
 		ctx.AddClass("keyboard")
@@ -138,7 +140,7 @@ func (this *connectionPanel) createKeyboardWindow() *gtk.ScrolledWindow {
 	return keyboardWindow
 }
 
-func (this *connectionPanel) createConnectToNetworkButton() *gtk.Button {
+func (this *connectToNetworkPanel) createConnectToNetworkButton() *gtk.Button {
 	var button *gtk.Button
 
 	button = utils.MustButtonText("Connect", func() {
@@ -173,11 +175,14 @@ func (this *connectionPanel) createConnectToNetworkButton() *gtk.Button {
 
 
 type keyButtonHander struct {
-	char				byte
-	connectionPanel		*connectionPanel
+	char					byte
+	connectToNetworkPanel	*connectToNetworkPanel
 }
 
 func (this *keyButtonHander) clicked() {
-	this.connectionPanel.pass.InsertText(string(this.char), this.connectionPanel.cursorPosition)
-	this.connectionPanel.cursorPosition++
+	this.connectToNetworkPanel.pass.InsertText(
+		string(this.char),
+		this.connectToNetworkPanel.cursorPosition
+	)
+	this.connectToNetworkPanel.cursorPosition++
 }
