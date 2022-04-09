@@ -14,18 +14,18 @@ import (
 )
 
 
-var controlPanelInstance *controlPanel
-
 type controlPanel struct {
 	CommonPanel
 }
 
-func ControlPanel(
+var controlPanelInstance *controlPanel
+
+func GetControlPanelInstance(
 	ui 				*UI,
 ) *controlPanel {
 	if controlPanelInstance == nil {
 		instance := &controlPanel {
-			CommonPanel: NewCommonPanel("ControlPanel", ui),
+			CommonPanel: CreateCommonPanel("ControlPanel", ui),
 		}
 		instance.initialize()
 		controlPanelInstance = instance

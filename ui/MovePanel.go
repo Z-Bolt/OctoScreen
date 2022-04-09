@@ -17,12 +17,12 @@ type movePanel struct {
 
 var movePanelInstance *movePanel
 
-func MovePanel(
+func GetMovePanelInstance(
 	ui				*UI,
 ) *movePanel {
 	if movePanelInstance == nil {
 		instance := &movePanel {
-			CommonPanel: NewCommonPanel("MovePanel", ui),
+			CommonPanel: CreateCommonPanel("MovePanel", ui),
 		}
 		instance.initialize()
 		movePanelInstance = instance

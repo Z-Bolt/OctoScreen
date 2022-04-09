@@ -16,8 +16,6 @@ import (
 )
 
 
-var idleStatusPanelInstance *idleStatusPanel
-
 type idleStatusPanel struct {
 	CommonPanel
 
@@ -28,10 +26,12 @@ type idleStatusPanel struct {
 	bedButton			*uiWidgets.ToolButton
 }
 
-func IdleStatusPanel(ui *UI) *idleStatusPanel {
+var idleStatusPanelInstance *idleStatusPanel
+
+func GetIdleStatusPanelInstance(ui *UI) *idleStatusPanel {
 	if idleStatusPanelInstance == nil {
 		instance := &idleStatusPanel{
-			CommonPanel: NewTopLevelCommonPanel("IdleStatusPanel", ui),
+			CommonPanel: CreateTopLevelCommonPanel("IdleStatusPanel", ui),
 		}
 
 		// Default timeout of 20 seconds.
@@ -106,7 +106,7 @@ func (this *idleStatusPanel) initialize() {
 func (this *idleStatusPanel) showFiles() {
 	logger.TraceEnter("IdleStatusPanel.showFiles()")
 
-	this.UI.GoToPanel(FilesPanel(this.UI))
+	this.UI.GoToPanel(GetFilesPanelInstance(this.UI))
 
 	logger.TraceLeave("IdleStatusPanel.showFiles()")
 }

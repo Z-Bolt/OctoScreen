@@ -14,8 +14,6 @@ import (
 )
 
 
-var connectionPanelInstance *connectionPanel
-
 var keyBoardChars = []byte{
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 	'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -35,13 +33,15 @@ type connectionPanel struct {
 	SSIDLabel			*gtk.Label
 }
 
-func ConnectionPanel(
+var connectionPanelInstance *connectionPanel
+
+func GetConnectionPanelInstance(
 	ui					*UI,
 	SSID				string,
 ) *connectionPanel {
 	if connectionPanelInstance == nil {
 		instance := &connectionPanel {
-			CommonPanel:		NewCommonPanel("ConnectionPanel", ui),
+			CommonPanel:		CreateCommonPanel("ConnectionPanel", ui),
 			cursorPosition:		0,
 		}
 		instance.initialize()

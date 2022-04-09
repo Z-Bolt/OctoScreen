@@ -11,18 +11,18 @@ import (
 )
 
 
-var homePanelInstance *homePanel
-
 type homePanel struct {
 	CommonPanel
 }
 
-func HomePanel(
+var homePanelInstance *homePanel
+
+func GetHomePanelInstance(
 	ui				*UI,
 ) *homePanel {
 	if homePanelInstance == nil {
 		instance := &homePanel {
-			CommonPanel: NewCommonPanel("HomePanel", ui),
+			CommonPanel: CreateCommonPanel("HomePanel", ui),
 		}
 		instance.initialize()
 		homePanelInstance = instance

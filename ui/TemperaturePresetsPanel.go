@@ -10,22 +10,21 @@ import (
 )
 
 
-var temperaturePresetsPanelInstance *temperaturePresetsPanel
-
 type temperaturePresetsPanel struct {
 	CommonPanel
 
 	selectHotendStepButton	*uiWidgets.SelectToolStepButton
-
 }
 
-func TemperaturePresetsPanel(
+var temperaturePresetsPanelInstance *temperaturePresetsPanel
+
+func GetTemperaturePresetsPanelInstance(
 	ui						*UI,
 	selectHotendStepButton	*uiWidgets.SelectToolStepButton,
 ) *temperaturePresetsPanel {
 	if temperaturePresetsPanelInstance == nil {
 		instance := &temperaturePresetsPanel {
-			CommonPanel:			NewCommonPanel("temperaturePresetsPanel", ui),
+			CommonPanel:			CreateCommonPanel("temperaturePresetsPanel", ui),
 			selectHotendStepButton:	selectHotendStepButton,
 		}
 		instance.initialize()

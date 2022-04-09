@@ -6,18 +6,18 @@ import (
 )
 
 
-var printMenuPanelInstance *printMenuPanel
-
 type printMenuPanel struct {
 	CommonPanel
 }
 
-func PrintMenuPanel(
+var printMenuPanelInstance *printMenuPanel
+
+func GetPrintMenuPanelInstance(
 	ui				*UI,
 ) *printMenuPanel {
 	if printMenuPanelInstance == nil {
 		instance := &printMenuPanel {
-			CommonPanel: NewCommonPanel("PrintMenuPanel", ui),
+			CommonPanel: CreateCommonPanel("PrintMenuPanel", ui),
 		}
 		instance.initialize()
 		printMenuPanelInstance = instance
@@ -49,25 +49,25 @@ func (this *printMenuPanel) initialize() {
 }
 
 func (this *printMenuPanel) showMove() {
-	this.UI.GoToPanel(MovePanel(this.UI))
+	this.UI.GoToPanel(GetMovePanelInstance(this.UI))
 }
 
 func (this *printMenuPanel) showFilament() {
-	this.UI.GoToPanel(FilamentPanel(this.UI))
+	this.UI.GoToPanel(GetFilamentPanelInstance(this.UI))
 }
 
 func (this *printMenuPanel) showTemperature() {
-	this.UI.GoToPanel(TemperaturePanel(this.UI))
+	this.UI.GoToPanel(GetTemperaturePanelInstance(this.UI))
 }
 
 func (this *printMenuPanel) showFan() {
-	this.UI.GoToPanel(FanPanel(this.UI))
+	this.UI.GoToPanel(GetFanPanelInstance(this.UI))
 }
 
 func (this *printMenuPanel) showNetwork() {
-	this.UI.GoToPanel(NetworkPanel(this.UI))
+	this.UI.GoToPanel(GetNetworkPanelInstance(this.UI))
 }
 
 func (this *printMenuPanel) showSystem() {
-	this.UI.GoToPanel(SystemPanel(this.UI))
+	this.UI.GoToPanel(GetSystemPanelInstance(this.UI))
 }

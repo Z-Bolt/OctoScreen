@@ -14,19 +14,19 @@ import (
 )
 
 
-var toolChangerPanelInstance *toolChangerPanel
-
 type toolChangerPanel struct {
 	CommonPanel
 	//activeTool int
 }
 
-func ToolChangerPanel(
+var toolChangerPanelInstance *toolChangerPanel
+
+func GetToolChangerPanelInstance(
 	ui				*UI,
 ) *toolChangerPanel {
 	if toolChangerPanelInstance == nil {
 		this := &toolChangerPanel {
-			CommonPanel: NewCommonPanel("ToolChangerPanel", ui),
+			CommonPanel: CreateCommonPanel("ToolChangerPanel", ui),
 		}
 		this.initialize()
 		toolChangerPanelInstance = this
@@ -50,7 +50,7 @@ func (this *toolChangerPanel) initialize() {
 
 func (this *toolChangerPanel) createZCalibrationButton() gtk.IWidget {
 	button := utils.MustButtonImageStyle("Z Offsets", "z-calibration.svg", "color2", func() {
-		this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI))
+		this.UI.GoToPanel(GetZOffsetCalibrationPanelInstance(this.UI))
 	})
 
 	return button

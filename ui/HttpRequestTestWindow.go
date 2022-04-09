@@ -28,7 +28,6 @@ type HttpRequestTestWindow struct {
 	UpdateCount					int
 }
 
-
 func CreateHttpRequestTestWindow(
 	endpoint string,
 	key string,
@@ -36,7 +35,6 @@ func CreateHttpRequestTestWindow(
 	height int,
 ) *HttpRequestTestWindow {
 	logger.TraceEnter("CreateHttpRequestTestWindow()")
-
 
 	instance := &HttpRequestTestWindow {
 		Window: nil,

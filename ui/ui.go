@@ -109,7 +109,7 @@ func New() *UI {
 			instance.scaleFactor = 1
 	}
 
-	instance.splashPanel = NewSplashPanel(instance)
+	instance.splashPanel = CreateSplashPanel(instance)
 
 	// Default timeout of 20 seconds.
 	duration := time.Second * 20
@@ -333,11 +333,11 @@ func (this *UI) setUiState(
 	switch newUiState {
 		case "idle":
 			logger.Info("ui.setUiState() - printer is ready")
-			this.GoToPanel(IdleStatusPanel(this))
+			this.GoToPanel(GetIdleStatusPanelInstance(this))
 
 		case "printing":
 			logger.Info("ui.setUiState() - printing a job")
-			this.GoToPanel(PrintStatusPanel(this))
+			this.GoToPanel(GetPrintStatusPanelInstance(this))
 
 		case "splash":
 			this.GoToPanel(this.splashPanel)

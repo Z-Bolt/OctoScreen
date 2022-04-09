@@ -6,18 +6,18 @@ import (
 )
 
 
-var configurationPanelInstance *configurationPanel
-
 type configurationPanel struct {
 	CommonPanel
 }
 
-func ConfigurationPanel(
+var configurationPanelInstance *configurationPanel
+
+func GetConfigurationPanelInstance(
 	ui				*UI,
 ) *configurationPanel {
 	if configurationPanelInstance == nil {
 		instance := &configurationPanel {
-			CommonPanel: NewCommonPanel("ConfigurationPanel", ui),
+			CommonPanel: CreateCommonPanel("ConfigurationPanel", ui),
 		}
 		instance.initialize()
 		configurationPanelInstance = instance
@@ -67,17 +67,17 @@ func (this *configurationPanel) initialize() {
 }
 
 func (this *configurationPanel) showBedLevelPanel() {
-	this.UI.GoToPanel(BedLevelPanel(this.UI))
+	this.UI.GoToPanel(GetBedLevelPanelInstance(this.UI))
 }
 
 func (this *configurationPanel) showZOffsetCalibrationPanel() {
-	this.UI.GoToPanel(ZOffsetCalibrationPanel(this.UI))
+	this.UI.GoToPanel(GetZOffsetCalibrationPanelInstance(this.UI))
 }
 
 func (this *configurationPanel) showNetworkPanel() {
-	this.UI.GoToPanel(NetworkPanel(this.UI))
+	this.UI.GoToPanel(GetNetworkPanelInstance(this.UI))
 }
 
 func (this *configurationPanel) showSystemPanel() {
-	this.UI.GoToPanel(SystemPanel(this.UI))
+	this.UI.GoToPanel(GetSystemPanelInstance(this.UI))
 }

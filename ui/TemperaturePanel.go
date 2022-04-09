@@ -9,8 +9,6 @@ import (
 )
 
 
-var temperaturePanelInstance *temperaturePanel
-
 type temperaturePanel struct {
 	CommonPanel
 
@@ -28,12 +26,14 @@ type temperaturePanel struct {
 	presetsButton					*gtk.Button
 }
 
-func TemperaturePanel(
+var temperaturePanelInstance *temperaturePanel
+
+func GetTemperaturePanelInstance(
 	ui				*UI,
 ) *temperaturePanel {
 	if temperaturePanelInstance == nil {
 		temperaturePanelInstance = &temperaturePanel{
-			CommonPanel:	NewCommonPanel("TemperaturePanel", ui),
+			CommonPanel: CreateCommonPanel("TemperaturePanel", ui),
 		}
 		temperaturePanelInstance.initialize()
 	}
@@ -85,6 +85,6 @@ func (this *temperaturePanel) initialize() {
 }
 
 func (this *temperaturePanel) showTemperaturePresetsPanel() {
-	temperaturePresetsPanel := TemperaturePresetsPanel(this.UI, this.selectHotendStepButton)
+	temperaturePresetsPanel := GetTemperaturePresetsPanelInstance(this.UI, this.selectHotendStepButton)
 	this.UI.GoToPanel(temperaturePresetsPanel)
 }

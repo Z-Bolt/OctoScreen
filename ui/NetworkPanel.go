@@ -17,8 +17,6 @@ import (
 )
 
 
-var networkPanelInstance *networkPanel
-
 type networkPanel struct {
 	CommonPanel
 	listBox					*gtk.Box
@@ -27,12 +25,14 @@ type networkPanel struct {
 	overrideForDebugging	bool
 }
 
-func NetworkPanel(
+var networkPanelInstance *networkPanel
+
+func GetNetworkPanelInstance(
 	ui				*UI,
 ) *networkPanel {
 	if networkPanelInstance == nil {
 		instance := &networkPanel {
-			CommonPanel: NewCommonPanel("NetworkPanel", ui),
+			CommonPanel: CreateCommonPanel("NetworkPanel", ui),
 		}
 		instance.initialize()
 
@@ -187,7 +187,7 @@ func (this *networkPanel) addNetwork(box *gtk.Box, ssid string) {
 	frame, _ := gtk.FrameNew("")
 
 	clicked := func() {
-		this.UI.GoToPanel(ConnectionPanel(this.UI, ssid))
+		this.UI.GoToPanel(GetConnectionPanelInstance(this.UI, ssid))
 	}
 
 	image := utils.MustImageFromFileWithSize("network.svg", this.Scaled(25), this.Scaled(25))

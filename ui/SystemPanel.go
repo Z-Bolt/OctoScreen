@@ -9,8 +9,6 @@ import (
 )
 
 
-var systemPanelInstance *systemPanel = nil
-
 type systemPanel struct {
 	CommonPanel
 
@@ -28,12 +26,14 @@ type systemPanel struct {
 	restartOctoPrintButton		*uiWidgets.SystemCommandButton
 }
 
-func SystemPanel(
+var systemPanelInstance *systemPanel = nil
+
+func GetSystemPanelInstance(
 	ui				*UI,
 ) *systemPanel {
 	if systemPanelInstance == nil {
 		instance := &systemPanel {
-			CommonPanel: NewCommonPanel("SystemPanel", ui),
+			CommonPanel: CreateCommonPanel("SystemPanel", ui),
 		}
 		instance.initialize()
 		instance.preShowCallback = instance.refreshSystemInformationInfoBox

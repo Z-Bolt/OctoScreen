@@ -10,18 +10,18 @@ import (
 )
 
 
-var fanPanelInstance *fanPanel
-
 type fanPanel struct {
 	CommonPanel
 }
 
-func FanPanel(
+var fanPanelInstance *fanPanel
+
+func GetFanPanelInstance(
 	ui				*UI,
 ) *fanPanel {
 	if fanPanelInstance == nil {
 		instance := &fanPanel {
-			CommonPanel: NewCommonPanel("FanPanel", ui),
+			CommonPanel: CreateCommonPanel("FanPanel", ui),
 		}
 		instance.initialize()
 		fanPanelInstance = instance

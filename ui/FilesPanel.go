@@ -19,8 +19,6 @@ import (
 )
 
 
-var filesPanelInstance *filesPanel
-
 type filesPanel struct {
 	CommonPanel
 
@@ -30,7 +28,9 @@ type filesPanel struct {
 	locationHistory		utils.LocationHistory
 }
 
-func FilesPanel(
+var filesPanelInstance *filesPanel
+
+func GetFilesPanelInstance(
 	ui					*UI,
 ) *filesPanel {
 	if filesPanelInstance == nil {
@@ -39,7 +39,7 @@ func FilesPanel(
 		}
 
 		instance := &filesPanel {
-			CommonPanel: NewCommonPanel("FilesPanel", ui),
+			CommonPanel: CreateCommonPanel("FilesPanel", ui),
 			locationHistory: locationHistory,
 		}
 		instance.initialize()

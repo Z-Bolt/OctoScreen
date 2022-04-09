@@ -13,8 +13,6 @@ import (
 )
 
 
-var filamentPanelInstance *filamentPanel
-
 type filamentPanel struct {
 	CommonPanel
 
@@ -34,12 +32,14 @@ type filamentPanel struct {
 	selectExtruderStepButton	*uiWidgets.SelectToolStepButton
 }
 
-func FilamentPanel(
+var filamentPanelInstance *filamentPanel
+
+func GetFilamentPanelInstance(
 	ui				*UI,
 ) *filamentPanel {
 	if filamentPanelInstance == nil {
 		instance := &filamentPanel {
-			CommonPanel: NewCommonPanel("FilamentPanel", ui),
+			CommonPanel: CreateCommonPanel("FilamentPanel", ui),
 		}
 		instance.initialize()
 		filamentPanelInstance = instance
@@ -121,5 +121,5 @@ func (this *filamentPanel) initialize() {
 }
 
 func (this *filamentPanel) showTemperaturePanel() {
-	this.UI.GoToPanel(TemperaturePanel(this.UI))
+	this.UI.GoToPanel(GetTemperaturePanelInstance(this.UI))
 }

@@ -54,7 +54,7 @@ func TurnAllHeatersOff(
 	}
 	err := bedTargetRequest.Do(client)
 	if err != nil {
-		logger.LogError("CoolDownButton.handleClicked()", "Do(BedTargetRequest)", err)
+		logger.LogError("CoolDownButton.TurnAllHeatersOff()", "Do(BedTargetRequest)", err)
 		return
 	}
 
@@ -68,7 +68,7 @@ func TurnAllHeatersOff(
 		}
 		err = toolTargetRequest.Do(client)
 		if err != nil {
-			logger.LogError("TemperaturePresetsPanel.setTemperaturesToPreset()", "Do(ToolTargetRequest)", err)
+			logger.LogError("CoolDownButton.TurnAllHeatersOff()", "Do(ToolTargetRequest)", err)
 		}
 	}
 }

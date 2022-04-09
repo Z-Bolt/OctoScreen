@@ -14,9 +14,9 @@ type SplashPanel struct {
 	RetryButton		*gtk.Button
 }
 
-func NewSplashPanel(ui *UI) *SplashPanel {
+func CreateSplashPanel(ui *UI) *SplashPanel {
 	instance := &SplashPanel {
-		CommonPanel: NewCommonPanel("SplashPanel", ui),
+		CommonPanel: CreateCommonPanel("SplashPanel", ui),
 	}
 	instance.initialize()
 
@@ -109,7 +109,7 @@ func (this *SplashPanel) releaseFromHold() {
 func (this *SplashPanel) showNetwork() {
 	logger.TraceEnter("SplashPanel.showNetwork()")
 
-	this.UI.GoToPanel(NetworkPanel(this.UI))
+	this.UI.GoToPanel(GetNetworkPanelInstance(this.UI))
 
 	logger.TraceLeave("SplashPanel.showNetwork()")
 }
@@ -117,7 +117,7 @@ func (this *SplashPanel) showNetwork() {
 func (this *SplashPanel) showSystem() {
 	logger.TraceEnter("SplashPanel.showSystem()")
 
-	this.UI.GoToPanel(SystemPanel(this.UI))
+	this.UI.GoToPanel(GetSystemPanelInstance(this.UI))
 
 	logger.TraceLeave("SplashPanel.showSystem()")
 }

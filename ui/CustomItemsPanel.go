@@ -13,12 +13,12 @@ type customItemsPanel struct {
 	items			[]dataModels.MenuItem
 }
 
-func CustomItemsPanel(
+func CreateCustomItemsPanel(
 	ui				*UI,
 	items			[]dataModels.MenuItem,
 ) *customItemsPanel {
 	instance := &customItemsPanel {
-		CommonPanel: NewCommonPanel("CustomItemsPanel", ui),
+		CommonPanel: CreateCommonPanel("CustomItemsPanel", ui),
 		items:       items,
 	}
 	instance.initialize()

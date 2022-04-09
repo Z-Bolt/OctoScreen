@@ -31,12 +31,12 @@ type CommonPanel struct {
 	buttons				[]gtk.IWidget
 }
 
-func NewCommonPanel(
+func CreateCommonPanel(
 	name string,
 	ui *UI,
 	//parentPanel interfaces.IPanel,
 ) CommonPanel {
-	return newPanel(
+	return newCommonPanel(
 		name,
 		ui,
 		//parentPanel,
@@ -44,12 +44,12 @@ func NewCommonPanel(
 	)
 }
 
-func NewTopLevelCommonPanel(
+func CreateTopLevelCommonPanel(
 	name string,
 	ui *UI,
 	//parentPanel interfaces.IPanel,
 ) CommonPanel {
-	return newPanel(
+	return newCommonPanel(
 		name,
 		ui,
 		//parentPanel,
@@ -57,7 +57,7 @@ func NewTopLevelCommonPanel(
 	)
 }
 
-func newPanel(
+func newCommonPanel(
 	name string,
 	ui *UI,
 	// parentPanel interfaces.IPanel,

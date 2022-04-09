@@ -17,8 +17,6 @@ import (
 )
 
 
-var printStatusPanelInstance *printStatusPanel
-
 type printStatusPanel struct {
 	CommonPanel
 
@@ -39,10 +37,12 @@ type printStatusPanel struct {
 	menuButton			*gtk.Button
 }
 
-func PrintStatusPanel(ui *UI) *printStatusPanel {
+var printStatusPanelInstance *printStatusPanel
+
+func GetPrintStatusPanelInstance(ui *UI) *printStatusPanel {
 	if printStatusPanelInstance == nil {
 		instance := &printStatusPanel{
-			CommonPanel: NewTopLevelCommonPanel("PrintStatusPanel", ui),
+			CommonPanel: CreateTopLevelCommonPanel("PrintStatusPanel", ui),
 		}
 
 		// Default timeout of 20 seconds.
@@ -128,7 +128,7 @@ func (this *printStatusPanel) showTools() {
 
 func (this *printStatusPanel) createCompleteButton() *gtk.Button {
 	this.completeButton = utils.MustButtonImageStyle("Complete", "complete.svg", "color3", func() {
-		this.UI.GoToPanel(IdleStatusPanel(this.UI))
+		this.UI.GoToPanel(GetIdleStatusPanelInstance(this.UI))
 	})
 
 	return this.completeButton
@@ -210,7 +210,7 @@ func (this *printStatusPanel) createControlButton() gtk.IWidget {
 		"printing-control.svg",
 		"color3",
 		func() {
-			this.UI.GoToPanel(PrintMenuPanel(this.UI))
+			this.UI.GoToPanel(GetPrintMenuPanelInstance(this.UI))
 		},
 	)
 	return this.menuButton
