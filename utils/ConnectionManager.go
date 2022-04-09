@@ -50,13 +50,9 @@ func (this *connectionManager) InitializeConnectionState() {
 func (this *connectionManager) UpdateStatus() {
 	logger.TraceEnter("ConnectionManager.UpdateStatus()")
 
-	if this.IsConnectedToOctoPrint != true || this.IsConnectedToPrinter != true {
-		this.ConnectAttempts++
-
+	if this.IsConnected() != true {
 		if this.ConnectAttempts > MAX_CONNECTION_ATTEMPTS {
-			// this.IsRunning = false
-			logger.TraceLeave("ConnectionManager.UpdateStatus()")
-			return
+			this.ConnectAttempts++
 		}
 
 		logger.Debug("ConnectionManager.UpdateStatus() - about to call ConnectionRequest.Do()")
@@ -137,5 +133,7 @@ func (this *connectionManager) UpdateStatus() {
 	logger.TraceLeave("ConnectionManager.UpdateStatus()")
 }
 
-
-
+func (this *connectionManager) IsConnected() bool {
+	// TODO: should this be named IsFullyConnected?
+	return this.IsConnectedToOctoPrint == true && this.IsConnectedToPrinter == true;
+}
