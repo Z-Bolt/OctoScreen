@@ -140,14 +140,14 @@ func (this *octoScreenConfig) setWidthAndHeight() {
 	if width != -1 {
 		this.Width = width
 	} else {
-		logger.Warn(fmt.Sprintf("window width setting was not set, defaulting to the dafault value (%d)", DefaultWindowWidth))
+		logger.Warn(fmt.Sprintf("window width setting was not set, defaulting to the default value (%d)", DefaultWindowWidth))
 		this.Width = DefaultWindowWidth
 	}
 
 	if height != -1 {
 		this.Height = height
 	} else {
-		logger.Warn(fmt.Sprintf("window height setting was not set, defaulting to the dafault value (%d)", DefaultWindowHeight))
+		logger.Warn(fmt.Sprintf("window height setting was not set, defaulting to the default value (%d)", DefaultWindowHeight))
 		this.Height = DefaultWindowHeight
 	}
 
