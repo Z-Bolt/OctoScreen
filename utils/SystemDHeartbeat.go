@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
@@ -27,8 +29,21 @@ func GetSystemDHeartbeatInstance() (*systemDHeartbeat) {
 		systemDHeartbeatOnce.Do(func() {
 			systemDHeartbeatInstance = &systemDHeartbeat{}
 
-			// TODO: read the duration time from env settings
+			// Default timeout of 5 seconds
 			duration := time.Second * 5
+
+			// Experimental, set the timeout based on config setting, but only if the config is pressent.
+			updateFrequency := os.Getenv("EXPERIMENTAL_SYSTEMD_HEARTBEAT_UPDATE_FREQUENCY")
+			if updateFrequency != "" {
+				logger.Infof("SystemDHeartbeat.GetSystemDHeartbeatInstance() - EXPERIMENTAL_SYSTEMD_HEARTBEAT_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
+				val, err := strconv.Atoi(updateFrequency)
+				if err == nil {
+					duration = time.Second * time.Duration(val)
+				} else {
+					logger.LogError("SystemDHeartbeat.GetSystemDHeartbeatInstance()", "strconv.Atoi()", err)
+				}
+			}
+
 			systemDHeartbeatInstance.backgroundTask = CreateBackgroundTask(duration, func() {
 				systemDHeartbeatInstance.sendHeartbeat()
 			})
