@@ -41,7 +41,7 @@ func GetConnectToNetworkPanelInstance(
 ) *connectToNetworkPanel {
 	if connectToNetworkPanelInstance == nil {
 		instance := &connectToNetworkPanel {
-			CommonPanel:		CreateCommonPanel("ConnectionPanel", ui),
+			CommonPanel:		CreateCommonPanel("ConnectToNetworkPanel", ui),
 			cursorPosition:		0,
 		}
 		instance.initialize()
@@ -182,7 +182,7 @@ type keyButtonHander struct {
 func (this *keyButtonHander) clicked() {
 	this.connectToNetworkPanel.pass.InsertText(
 		string(this.char),
-		this.connectToNetworkPanel.cursorPosition
+		this.connectToNetworkPanel.cursorPosition,
 	)
 	this.connectToNetworkPanel.cursorPosition++
 }
