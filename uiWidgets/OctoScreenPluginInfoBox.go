@@ -18,6 +18,8 @@ func CreateOctoScreenPluginInfoBox(
 	uiState							string,
 	octoPrintPluginIsInstalled		bool,
 ) *OctoScreenPluginInfoBox {
+	logger.TraceEnter("OctoScreenPluginInfoBox.CreateOctoScreenPluginInfoBox()")
+
 	logoImage := utils.MustImageFromFile("logos/puzzle-piece.png")
 	str1 := "OctoScreen plugin"
 
@@ -58,6 +60,8 @@ func CreateOctoScreenPluginInfoBox(
 	instance := &OctoScreenPluginInfoBox {
 		SystemInfoBox:			base,
 	}
+
+	logger.TraceLeave("OctoScreenPluginInfoBox.CreateOctoScreenPluginInfoBox()")
 
 	return instance
 }
