@@ -32,9 +32,8 @@ func GetBedLevelPanelInstance(
 		}
 		instance.initialize()
 		bedLevelPanelInstance = instance
+		bedLevelPanelInstance.homed = false
 	}
-
-	bedLevelPanelInstance.homed = false
 
 	return bedLevelPanelInstance
 }

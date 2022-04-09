@@ -85,6 +85,5 @@ func (this *temperaturePanel) initialize() {
 }
 
 func (this *temperaturePanel) showTemperaturePresetsPanel() {
-	temperaturePresetsPanel := GetTemperaturePresetsPanelInstance(this.UI, this.selectHotendStepButton)
-	this.UI.GoToPanel(temperaturePresetsPanel)
+	this.UI.GoToPanel(GetTemperaturePresetsPanelInstance(this.UI, this.selectHotendStepButton))
 }

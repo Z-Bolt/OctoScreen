@@ -4,6 +4,7 @@ import (
 	// "time"
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -44,6 +45,8 @@ func GetSystemPanelInstance(
 }
 
 func (this *systemPanel) initialize() {
+	logger.TraceEnter("SystemPanel.initialize()")
+
 	defer this.Initialize()
 
 	// First row
@@ -90,6 +93,8 @@ func (this *systemPanel) initialize() {
 		"color-warning-sign-yellow",
 	)
 	this.Grid().Attach(this.restartOctoPrintButton,  2, 2, 1, 1)
+
+	logger.TraceLeave("SystemPanel.initialize()")
 }
 
 

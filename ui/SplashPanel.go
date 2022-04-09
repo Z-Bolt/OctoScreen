@@ -8,6 +8,7 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
+
 type SplashPanel struct {
 	CommonPanel
 	Label			*gtk.Label
