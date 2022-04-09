@@ -18,20 +18,24 @@ func CreateOctoPrintInfoBox(
 	client				*octoprintApis.Client,
 	logoWidth			int,
 ) *OctoPrintInfoBox {
+	logger.TraceEnter("OctoPrintInfoBox.CreateOctoPrintInfoBox()")
+
 	logoHeight := int(float64(logoWidth) * 1.25)
 	logoImage := utils.MustImageFromFileWithSize("logos/logo-octoprint.png", logoWidth, logoHeight)
 
-	server := ""
-	apiVersion := ""
-	versionResponse, err := (&octoprintApis.VersionRequest{}).Do(client)
-	if err != nil {
-		logger.LogError("OctoPrintInfoBox.CreateOctoPrintInfoBox()", "VersionRequest.Do()", err)
-	} else if versionResponse == nil {
-		server = "Unknown?"
-		apiVersion = "Unknown?"
-	} else {
-		server = versionResponse.Server
-		apiVersion = versionResponse.API
+	server := "Unknown?"
+	apiVersion := "Unknown?"
+
+	connectionManager := utils.GetConnectionManagerInstance(client)
+	if connectionManager.IsConnectedToOctoPrint == true {
+		// Only call if we're connected to OctoPrint
+		versionResponse, err := (&octoprintApis.VersionRequest{}).Do(client)
+		if err != nil {
+			logger.LogError("OctoPrintInfoBox.CreateOctoPrintInfoBox()", "VersionRequest.Do()", err)
+		} else if versionResponse != nil {
+			server = versionResponse.Server
+			apiVersion = versionResponse.API
+		}
 	}
 
 	base := CreateSystemInfoBox(
@@ -39,12 +43,14 @@ func CreateOctoPrintInfoBox(
 		logoImage,
 		"OctoPrint",
 		server,
-		fmt.Sprintf("(API   %s)", apiVersion),   // Use 3 spaces... 1 space doesn't have enough kerning.
+		fmt.Sprintf("(API   %s)", apiVersion),   // Use 3 spaces here... 1 space doesn't have enough kerning.
 	)
 
 	instance := &OctoPrintInfoBox {
 		SystemInfoBox:			base,
 	}
+
+	logger.TraceLeave("OctoPrintInfoBox.CreateOctoPrintInfoBox()")
 
 	return instance
 }
