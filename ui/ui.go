@@ -48,7 +48,7 @@ type UI struct {
 }
 
 func CreateUi() *UI {
-	logger.TraceEnter("ui.New()")
+	logger.TraceEnter("ui.CreateUi()")
 
 	octoScreenConfig := utils.GetOctoScreenConfigInstance()
 	endpoint := octoScreenConfig.OctoPrintConfig.Server.Host
@@ -117,19 +117,20 @@ func CreateUi() *UI {
 	// Experimental, set the timeout based on config setting, but only if the config is pressent.
 	updateFrequency := os.Getenv("EXPERIMENTAL_UI_UPDATE_FREQUENCY")
 	if updateFrequency != "" {
-		logger.Infof("Ui.New() - EXPERIMENTAL_UI_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
+		logger.Infof("ui.CreateUi() - EXPERIMENTAL_UI_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
 		val, err := strconv.Atoi(updateFrequency)
 		if err == nil {
 			duration = time.Second * time.Duration(val)
 		} else {
-			logger.LogError("Ui.New()", "strconv.Atoi()", err)
+			logger.LogError("ui.CreateUi()", "strconv.Atoi()", err)
 		}
 	}
 
-	instance.backgroundTask = utils.CreateBackgroundTask(duration, instance.update)
+	instance.backgroundTask = utils.CreateBackgroundTask(duration, instance.Update)
 	instance.initialize()
 
-	logger.TraceLeave("ui.New()")
+	logger.TraceLeave("ui.CreateUi()")
+
 	return instance
 }
 
@@ -220,7 +221,6 @@ func (this *UI) verifyConnection() {
 	logger.TraceLeave("ui.verifyConnection()")
 }
 
-
 func (this *UI) getUiStateAndMessageFromConnectionResponse(
 	connectionResponse *dataModels.ConnectionResponse,
 	newUIState string,
@@ -273,9 +273,9 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 	}
 
 	logger.TraceLeave("ui.getUiStateAndMessageFromConnectionResponse()")
+
 	return newUIState, splashMessage
 }
-
 
 func (this *UI) getUiStateAndMessageFromError(
 	err error,
@@ -307,9 +307,9 @@ func (this *UI) getUiStateAndMessageFromError(
 	}
 
 	logger.TraceLeave("ui.getUiStateAndMessageFromError()")
+
 	return newUIState, splashMessage
 }
-
 
 func (this *UI) setUiState(
 	newUiState string,
@@ -348,7 +348,6 @@ func (this *UI) setUiState(
 
 	logger.TraceLeave("ui.setUiState()")
 }
-
 
 func (this *UI) checkNotification() {
 	logger.TraceEnter("ui.checkNotification()")
@@ -469,18 +468,18 @@ func (this *UI) validateMenuItems(menuItems []dataModels.MenuItem, name string, 
 	return true
 }
 
-func (this *UI) update() {
-	logger.TraceEnter("ui.update()")
+func (this *UI) Update() {
+	logger.TraceEnter("ui.Update()")
 
 	if this.connectionAttempts > 8 {
-		logger.Info("ui.update() - this.connectionAttempts > 8")
+		logger.Info("ui.Update() - this.connectionAttempts > 8")
 		this.splashPanel.putOnHold()
 
-		logger.TraceLeave("ui.update()")
+		logger.TraceLeave("ui.Update()")
 		return
 	}
 
-	logger.Infof("ui.update() - this.UIState is: %q", this.UIState)
+	logger.Infof("ui.Update() - this.UIState is: %q", this.UIState)
 
 	if this.UIState == "splash" {
 		this.connectionAttempts++
@@ -494,7 +493,7 @@ func (this *UI) update() {
 		this.checkNotification()
 	}
 
-	logger.TraceLeave("ui.update()")
+	logger.TraceLeave("ui.Update()")
 }
 
 func (this *UI) GoToPanel(panel interfaces.IPanel) {
@@ -565,7 +564,7 @@ func (this *UI) errToUser(err error) string {
 	text := strings.ToLower(err.Error())
 	if strings.Contains(text, "connection refused") {
 		logger.TraceLeave("ui.errToUser() - connection refused")
-		return "Unable to connect to OctoPrint, check if it running."
+		return "Unable to connect to OctoPrint, check if it is running."
 	} else if strings.Contains(text, "request canceled") {
 		logger.TraceLeave("ui.errToUser() - request canceled")
 		return "Loading..."
@@ -574,7 +573,11 @@ func (this *UI) errToUser(err error) string {
 		return "Loading..."
 	}
 
-	msg := fmt.Sprintf("ui.errToUser() - unexpected error: %s", text)
-	logger.TraceLeave(msg)
-	return fmt.Sprintf("Unexpected Error: %s", text)
+	logger.Errorf("ui.errToUser() - unexpected error: %s", text)
+
+	unexpectedErrorMsg := fmt.Sprintf("Unexpected Error: %s", text)
+
+	logger.TraceLeave("ui.errToUser()")
+
+	return unexpectedErrorMsg
 }
