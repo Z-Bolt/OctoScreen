@@ -3,9 +3,9 @@ package ui
 import (
 	"fmt"
 	"net"
-	"os"
-	"strconv"
-	"time"
+	// "os"
+	// "strconv"
+	// "time"
 
 	"pifke.org/wpasupplicant"
 	"github.com/gotk3/gotk3/gtk"
@@ -35,23 +35,8 @@ func GetNetworkPanelInstance(
 			CommonPanel: CreateCommonPanel("NetworkPanel", ui),
 		}
 		instance.initialize()
+		instance.createBackgroundTask()
 
-		// Default timeout of 30 seconds.
-		duration := time.Second * 30
-
-		// Experimental, set the timeout based on config setting, but only if the config is pressent.
-		updateFrequency := os.Getenv("EXPERIMENTAL_NETWORK_UPDATE_FREQUENCY")
-		if updateFrequency != "" {
-			logger.Infof("Ui.New() - EXPERIMENTAL_NETWORK_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
-			val, err := strconv.Atoi(updateFrequency)
-			if err == nil {
-				duration = time.Second * time.Duration(val)
-			} else {
-				logger.LogError("Ui.New()", "strconv.Atoi()", err)
-			}
-		}
-
-		instance.backgroundTask = utils.CreateBackgroundTask(duration, instance.update)
 		networkPanelInstance = instance
 	}
 
@@ -66,15 +51,25 @@ func (this *networkPanel) initialize() {
 	this.overrideForDebugging = false;
 }
 
+func (this *networkPanel) createBackgroundTask() {
+	logger.TraceEnter("NetworkPanel.createBackgroundTask()")
+
+	// Default timeout of 30 seconds.
+	duration := utils.GetExperimentalFrequency(30, "EXPERIMENTAL_NETWORK_UPDATE_FREQUENCY")
+	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
+
+	logger.TraceLeave("NetworkPanel.createBackgroundTask()")
+}
+
 func (this *networkPanel) update() {
-	logger.TraceEnter("networkPanel.update()")
+	logger.TraceEnter("NetworkPanel.update()")
 
 	utils.EmptyTheContainer(&this.listBox.Container)
 	this.setNetStatusText()
 	this.setNetworkItems()
 	this.listBox.ShowAll()
 
-	logger.TraceLeave("networkPanel.update()")
+	logger.TraceLeave("NetworkPanel.update()")
 }
 
 func (this *networkPanel) setNetStatusText() {

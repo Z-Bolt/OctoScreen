@@ -2,8 +2,8 @@ package ui
 
 import (
 	"fmt"
-	"os"
-	"strconv"
+	// "os"
+	// "strconv"
 	"strings"
 	"sync"
 	"time"
@@ -35,7 +35,7 @@ type UI struct {
 
 	NotificationsBox			*uiWidgets.NotificationsBox
 
-	splashPanel					*SplashPanel
+	// splashPanel					*SplashPanel
 	backgroundTask				*utils.BackgroundTask
 	grid						*gtk.Grid
 	window						*gtk.Window
@@ -80,62 +80,63 @@ func CreateUi() *UI {
 		height:						height,
 	}
 
-	instance.window.Connect("configure-event", func(win *gtk.Window) {
-		allocatedWidth:= win.GetAllocatedWidth()
-		allocatedHeight:= win.GetAllocatedHeight()
-		sizeWidth, sizeHeight := win.GetSize()
-
-		if (allocatedWidth > width || allocatedHeight > height) ||
-			(sizeWidth > width || sizeHeight > height) {
-			logger.Errorf("Window resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
-				allocatedWidth,
-				allocatedHeight,
-				sizeWidth,
-				sizeHeight)
-			logger.Errorf("Window resize went past max size.  Target width and height: %dx%d",
-				width,
-				height)
-		}
-	})
-
-	switch {
-		case width > 480:
-			instance.scaleFactor = 2
-
-		case width > 1000:
-			instance.scaleFactor = 3
-
-		default:
-			instance.scaleFactor = 1
-	}
-
-	instance.splashPanel = CreateSplashPanel(instance)
-
-	// Default timeout of 20 seconds.
-	duration := time.Second * 20
-
-	// Experimental, set the timeout based on config setting, but only if the config is pressent.
-	updateFrequency := os.Getenv("EXPERIMENTAL_UI_UPDATE_FREQUENCY")
-	if updateFrequency != "" {
-		logger.Infof("ui.CreateUi() - EXPERIMENTAL_UI_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
-		val, err := strconv.Atoi(updateFrequency)
-		if err == nil {
-			duration = time.Second * time.Duration(val)
-		} else {
-			logger.LogError("ui.CreateUi()", "strconv.Atoi()", err)
-		}
-	}
-
-	instance.backgroundTask = utils.CreateBackgroundTask(duration, instance.Update)
-	instance.initialize()
+	instance.initialize1()
 
 	logger.TraceLeave("ui.CreateUi()")
 
 	return instance
 }
 
-func (this *UI) initialize() {
-	logger.TraceEnter("ui.initialize()")
+func (this *UI) initialize1() {
+	logger.TraceEnter("ui.initialize1()")
+
+	this.window.Connect("configure-event", func(win *gtk.Window) {
+		allocatedWidth:= win.GetAllocatedWidth()
+		allocatedHeight:= win.GetAllocatedHeight()
+		sizeWidth, sizeHeight := win.GetSize()
+
+		if (allocatedWidth > this.width || allocatedHeight > this.height) ||
+			(sizeWidth > this.width || sizeHeight > this.height) {
+			logger.Errorf(
+				"Window resize went past max size.  allocatedWidth:%d allocatedHeight:%d sizeWidth:%d sizeHeight:%d",
+				allocatedWidth,
+				allocatedHeight,
+				sizeWidth,
+				sizeHeight,
+			)
+			logger.Errorf(
+				"Window resize went past max size.  Target width and height: %dx%d",
+				this.width,
+				this.height,
+			)
+		}
+	})
+
+	switch {
+		case this.width > 480:
+			this.scaleFactor = 2
+
+		case this.width > 1000:
+			this.scaleFactor = 3
+
+		default:
+			this.scaleFactor = 1
+	}
+
+	// this.splashPanel = NewSplashPanel(this)
+
+	this.initialize2()
+
+	// this.GoToPanel(NewSplashPanel(this))
+	// this.GoToPanel(IdleStatusPanel(this))
+	// this.GoToPanel(ConnectToNetworkPanel(this))
+	this.GoToPanel(GetConnectionPanelInstance(this))
+
+	logger.TraceLeave("ui.initialize1()")
+}
+
+func (this *UI) initialize2() {
+	logger.TraceEnter("ui.initialize2()")
 
 	defer this.window.ShowAll()
 	this.loadStyle()
@@ -144,7 +145,9 @@ func (this *UI) initialize() {
 	this.window.SetDefaultSize(this.width, this.height)
 	this.window.SetResizable(false)
 
+	this.createBackgroundTask()
 	this.window.Connect("show", this.backgroundTask.Start)
+
 	this.window.Connect("destroy", func() {
 		logger.Debug("window destroy callback was called, now executing MainQuit()")
 		gtk.MainQuit()
@@ -156,8 +159,29 @@ func (this *UI) initialize() {
 	this.grid = utils.MustGrid()
 	overlay.Add(this.grid)
 
-	logger.TraceLeave("ui.initialize()")
+	// connectionManager := utils.GetConnectionManagerInstance(this.Client)
+	// connectionManager.AttemptToConnect()
+
+	logger.TraceLeave("ui.initialize2()")
 }
+
+func (this *UI) createBackgroundTask() {
+	logger.TraceEnter("ui.createBackgroundTask()")
+
+	// Default timeout of 10 seconds.
+	duration := utils.GetExperimentalFrequency(10, "EXPERIMENTAL_UI_UPDATE_FREQUENCY")
+	this.backgroundTask = utils.CreateBackgroundTask(duration, this.Update)
+	
+	logger.TraceLeave("ui.createBackgroundTask()")
+}
+
+
+
+
+
+
+
+
 
 func (this *UI) loadStyle() {
 	logger.TraceEnter("ui.loadStyle()")
@@ -176,8 +200,51 @@ func (this *UI) loadStyle() {
 	logger.TraceLeave("ui.loadStyle()")
 }
 
-var errMercyPeriod = time.Second * 10
+func (this *UI) Update() {
+	logger.TraceEnter("ui.update()")
 
+	/*
+	if this.connectionAttempts > 8 {
+		logger.Info("ui.update() - this.connectionAttempts > 8")
+		this.splashPanel.putOnHold()
+
+		logger.TraceLeave("ui.update()")
+		return
+	}
+
+	logger.Infof("ui.update() - this.UIState is: %q", this.UIState)
+
+	if this.UIState == "splash" {
+		this.connectionAttempts++
+	} else {
+		this.connectionAttempts = 0
+	}
+
+	this.verifyConnection()
+
+	if this.OctoPrintPluginIsAvailable {
+		this.checkNotification()
+	}
+	*/
+
+	connectionManager := utils.GetConnectionManagerInstance(this.Client)
+	if connectionManager.IsConnectedToOctoPrint == true {
+		if this.Settings == nil {
+			this.loadSettings()
+		}
+	}
+
+
+
+	logger.TraceLeave("ui.update()")
+}
+
+
+
+
+
+
+/*
 func (this *UI) verifyConnection() {
 	logger.TraceEnter("ui.verifyConnection()")
 
@@ -212,7 +279,7 @@ func (this *UI) verifyConnection() {
 		logger.Debugf("ui.verifyConnection() - newUIState is now: %s", newUIState)
 	}
 
-	this.splashPanel.Label.SetText(splashMessage)
+	// this.splashPanel.Label.SetText(splashMessage)
 
 	defer func() {
 		this.setUiState(newUIState, splashMessage)
@@ -220,7 +287,9 @@ func (this *UI) verifyConnection() {
 
 	logger.TraceLeave("ui.verifyConnection()")
 }
+*/
 
+/*
 func (this *UI) getUiStateAndMessageFromConnectionResponse(
 	connectionResponse *dataModels.ConnectionResponse,
 	newUIState string,
@@ -273,10 +342,25 @@ func (this *UI) getUiStateAndMessageFromConnectionResponse(
 	}
 
 	logger.TraceLeave("ui.getUiStateAndMessageFromConnectionResponse()")
-
 	return newUIState, splashMessage
 }
+*/
 
+// **********************************
+
+
+
+
+
+
+
+
+
+// var errMercyPeriod = time.Second * 10
+
+
+
+/*
 func (this *UI) getUiStateAndMessageFromError(
 	err error,
 	newUIState string,
@@ -307,17 +391,18 @@ func (this *UI) getUiStateAndMessageFromError(
 	}
 
 	logger.TraceLeave("ui.getUiStateAndMessageFromError()")
-
 	return newUIState, splashMessage
 }
+*/
 
+/*
 func (this *UI) setUiState(
 	newUiState string,
 	splashMessage string,
 ) {
 	logger.TraceEnter("ui.setUiState()")
 
-	this.splashPanel.Label.SetText(splashMessage)
+	// this.splashPanel.Label.SetText(splashMessage)
 
 	if newUiState == this.UIState {
 		logger.Infof("ui.setUiState() - newUiState and ui.UIState are the same (%q)", this.UIState)
@@ -333,14 +418,14 @@ func (this *UI) setUiState(
 	switch newUiState {
 		case "idle":
 			logger.Info("ui.setUiState() - printer is ready")
-			this.GoToPanel(GetIdleStatusPanelInstance(this))
+			this.GoToPanel(IdleStatusPanel(this))
 
 		case "printing":
 			logger.Info("ui.setUiState() - printing a job")
-			this.GoToPanel(GetPrintStatusPanelInstance(this))
+			this.GoToPanel(PrintStatusPanel(this))
 
-		case "splash":
-			this.GoToPanel(this.splashPanel)
+		// case "splash":
+		//	this.GoToPanel(this.splashPanel)
 
 		default:
 			logger.Errorf("ERROR: ui.setUiState() - unknown newUiState case: %q", newUiState)
@@ -348,7 +433,9 @@ func (this *UI) setUiState(
 
 	logger.TraceLeave("ui.setUiState()")
 }
+*/
 
+/*
 func (this *UI) checkNotification() {
 	logger.TraceEnter("ui.checkNotification()")
 
@@ -371,6 +458,8 @@ func (this *UI) checkNotification() {
 
 	logger.TraceLeave("ui.checkNotification()")
 }
+*/
+
 
 func (this *UI) loadSettings() {
 	logger.TraceEnter("ui.loadSettings()")
@@ -468,34 +557,6 @@ func (this *UI) validateMenuItems(menuItems []dataModels.MenuItem, name string, 
 	return true
 }
 
-func (this *UI) Update() {
-	logger.TraceEnter("ui.Update()")
-
-	if this.connectionAttempts > 8 {
-		logger.Info("ui.Update() - this.connectionAttempts > 8")
-		this.splashPanel.putOnHold()
-
-		logger.TraceLeave("ui.Update()")
-		return
-	}
-
-	logger.Infof("ui.Update() - this.UIState is: %q", this.UIState)
-
-	if this.UIState == "splash" {
-		this.connectionAttempts++
-	} else {
-		this.connectionAttempts = 0
-	}
-
-	this.verifyConnection()
-
-	if this.OctoPrintPluginIsAvailable {
-		this.checkNotification()
-	}
-
-	logger.TraceLeave("ui.Update()")
-}
-
 func (this *UI) GoToPanel(panel interfaces.IPanel) {
 	logger.TraceEnter("ui.GoToPanel()")
 
@@ -573,11 +634,7 @@ func (this *UI) errToUser(err error) string {
 		return "Loading..."
 	}
 
-	logger.Errorf("ui.errToUser() - unexpected error: %s", text)
-
-	unexpectedErrorMsg := fmt.Sprintf("Unexpected Error: %s", text)
-
-	logger.TraceLeave("ui.errToUser()")
-
-	return unexpectedErrorMsg
+	msg := fmt.Sprintf("ui.errToUser() - unexpected error: %s", text)
+	logger.TraceLeave(msg)
+	return fmt.Sprintf("Unexpected Error: %s", text)
 }

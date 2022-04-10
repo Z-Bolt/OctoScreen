@@ -3,10 +3,10 @@ package ui
 import (
 	// "encoding/json"
 	// "fmt"
-	"os"
-	"strconv"
+	// "os"
+	// "strconv"
 	// "sync"
-	"time"
+	// "time"
 
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
@@ -34,28 +34,25 @@ func GetIdleStatusPanelInstance(ui *UI) *idleStatusPanel {
 			CommonPanel: CreateTopLevelCommonPanel("IdleStatusPanel", ui),
 		}
 
-		// Default timeout of 20 seconds.
-		duration := time.Second * 20
-
-		// Experimental, set the timeout based on config setting, but only if the config is pressent.
-		updateFrequency := os.Getenv("EXPERIMENTAL_IDLE_UPDATE_FREQUENCY")
-		if updateFrequency != "" {
-			logger.Infof("Ui.New() - EXPERIMENTAL_IDLE_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
-			val, err := strconv.Atoi(updateFrequency)
-			if err == nil {
-				duration = time.Second * time.Duration(val)
-			} else {
-				logger.LogError("Ui.New()", "strconv.Atoi()", err)
-			}
-		}
-
-		instance.backgroundTask = utils.CreateBackgroundTask(duration, instance.update)
+		// TODO: revisit... in some places the background task is created and then initialize() is called,
+		// and others places initialize() is called and then the background task is created
+		instance.createBackgroundTask()
 		instance.initialize()
 
 		idleStatusPanelInstance = instance
 	}
 
 	return idleStatusPanelInstance
+}
+
+func (this *idleStatusPanel) createBackgroundTask() {
+	logger.TraceEnter("IdleStatusPanel.createBackgroundTask()")
+
+	// Default timeout of 20 seconds.
+	duration := utils.GetExperimentalFrequency(20, "EXPERIMENTAL_IDLE_UPDATE_FREQUENCY")
+	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
+
+	logger.TraceLeave("IdleStatusPanel.createBackgroundTask()")
 }
 
 func (this *idleStatusPanel) initialize() {

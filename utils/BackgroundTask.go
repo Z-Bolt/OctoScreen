@@ -1,8 +1,10 @@
 package utils
 
 import (
-	"time"
+	"os"
+	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gotk3/gotk3/glib"
 	"github.com/Z-Bolt/OctoScreen/logger"
@@ -75,4 +77,30 @@ func (this *BackgroundTask) execute() {
 	if err != nil {
 		logger.LogFatalError("BackgroundTask.execute()", "IdleAdd()", err)
 	}
+}
+
+
+func GetExperimentalFrequency(
+	defaultTimeout				int,
+	experimentalConfigName		string,
+) time.Duration {
+	duration := time.Second * time.Duration(defaultTimeout)
+
+	// Experimental, set the timeout based on config setting, but only if the config is pressent.
+	updateFrequency := os.Getenv(experimentalConfigName)
+	if updateFrequency != "" {
+		logger.Infof(
+			"BackgroundTask.GetExperimentalFrequency() - '%s' is present, frequency is %s",
+			experimentalConfigName,
+			updateFrequency,
+		)
+		val, err := strconv.Atoi(updateFrequency)
+		if err == nil {
+			duration = time.Second * time.Duration(val)
+		} else {
+			logger.LogError("BackgroundTask.GetExperimentalFrequency()", "strconv.Atoi()", err)
+		}
+	}
+	
+	return duration
 }

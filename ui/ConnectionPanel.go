@@ -2,11 +2,11 @@ package ui
 
 import (
 	"fmt"
-	"os"
-	"strconv"
+	// "os"
+	// "strconv"
 	// "strings"
 	// "sync"
-	"time"
+	// "time"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
@@ -45,6 +45,7 @@ func GetConnectionPanelInstance(
 			IsCheckingConnection: true,
 		}
 		instance.initialize()
+		instance.createBackgroundTask()
 		connectionPanelInstance = instance
 	}
 
@@ -97,8 +98,6 @@ func (this *connectionPanel) initialize() {
 	box.Add(this.ActionBar)
 	this.Grid().Add(box)
 
-	this.createBackgroundTask()
-
 	logger.TraceLeave("ConnectionPanel.initialize()")
 }
 
@@ -108,7 +107,7 @@ func (this *connectionPanel) createActionBar() {
 	this.ActionBar = utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	this.ActionBar.SetHAlign(gtk.ALIGN_END)
 
-	this.RetryButton = utils.MustButtonImageStyle("Retry", "refresh.svg", "color-none", this.attemptToConnect)
+	this.RetryButton = utils.MustButtonImageStyle("Retry", "refresh.svg", "color-none", this.initializeConnectionState)
 	this.RetryButton.SetProperty("width-request", this.Scaled(100))
 
 	this.ActionBar.Add(this.RetryButton)
@@ -132,25 +131,12 @@ func (this *connectionPanel) displayButtons(display bool) {
 func (this *connectionPanel) createBackgroundTask() {
 	logger.TraceEnter("ConnectionPanel.createBackgroundTask()")
 
-	// Default timeout of 10 seconds.
-	duration := time.Second * 10
+	this.initializeConnectionState()
 
-	// Experimental, set the timeout based on config setting, but only if the config is pressent.
-	updateFrequency := os.Getenv("EXPERIMENTAL_CONNECTION_PANEL_UPDATE_FREQUENCY")
-	if updateFrequency != "" {
-		logger.Infof("ConnectionPanel.createBackgroundTask() - EXPERIMENTAL_CONNECTION_PANEL_UPDATE_FREQUENCY is present, frequency is %s", updateFrequency)
-		val, err := strconv.Atoi(updateFrequency)
-		if err == nil {
-			duration = time.Second * time.Duration(val)
-		} else {
-			logger.LogError("ConnectionPanel.createBackgroundTask()", "strconv.Atoi()", err)
-		}
-	}
-
+	// Default timeout of 5 seconds.
+	duration := utils.GetExperimentalFrequency(5, "EXPERIMENTAL_CONNECTION_PANEL_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
 	this.backgroundTask.Start()
-
-	this.attemptToConnect()
 
 	logger.TraceLeave("ConnectionPanel.createBackgroundTask()")
 }
@@ -159,48 +145,53 @@ func (this *connectionPanel) update() {
 	logger.TraceEnter("ConnectionPanel.update()")
 
 	connectionManager := utils.GetConnectionManagerInstance(this.UI.Client)
-	connectionManager.UpdateStatus()
+	// connectionManager.UpdateStatus()
 
 	msg := ""
 	if connectionManager.IsConnectedToOctoPrint != true {
-		if connectionManager.ConnectAttempts > utils.MAX_CONNECTION_ATTEMPTS {
+		if connectionManager.ConnectAttempts >= utils.MAX_CONNECTION_ATTEMPTS {
 			msg = fmt.Sprintf("Unable to connect to OctoPrint")
 			this.displayButtons(true)
+		} else if connectionManager.ConnectAttempts == 0 {
+			msg = fmt.Sprintf("Attempting to connect to OctoPrint")
 		} else {
-			msg = fmt.Sprintf("Attempting to connect to OctoPrint...%d", connectionManager.ConnectAttempts)
+			msg = fmt.Sprintf("Attempting to connect to OctoPrint...%d", connectionManager.ConnectAttempts + 1)
 		}
 	} else if connectionManager.IsConnectedToPrinter != true {
-		if connectionManager.ConnectAttempts > utils.MAX_CONNECTION_ATTEMPTS {
+		if connectionManager.ConnectAttempts >= utils.MAX_CONNECTION_ATTEMPTS {
 			msg = fmt.Sprintf("Unable to connect to the printer")
 			this.displayButtons(true)
+		} else if connectionManager.ConnectAttempts == 0 {
+			msg = fmt.Sprintf("Attempting to connect to the printer")
 		} else {
-			msg = fmt.Sprintf("Attempting to connect to the printer...%d", connectionManager.ConnectAttempts)
+			msg = fmt.Sprintf("Attempting to connect to the printer...%d", connectionManager.ConnectAttempts + 1)
 		}
+	}
+	
+	if msg != "" {
+		this.Label.SetText(msg)
+		connectionManager.UpdateStatus()
 	} else {
 		currentPanel := this.UI.PanelHistory.Peek().(interfaces.IPanel)
 		if currentPanel.Name() == "ConnectionPanel" {
 			this.UI.Update()
 			this.UI.GoToPanel(GetIdleStatusPanelInstance(this.UI))
-			logger.TraceLeave("ConnectionPanel.update()")
 		}
-		return
 	}
-
-	this.Label.SetText(msg)
 
 	logger.TraceLeave("ConnectionPanel.update()")
 }
 
-func (this *connectionPanel) attemptToConnect() {
-	logger.TraceEnter("ConnectionPanel.attemptToConnect()")
+func (this *connectionPanel) initializeConnectionState() {
+	logger.TraceEnter("ConnectionPanel.initializeConnectionState()")
 
 	this.displayButtons(false)
 
 	this.Label.SetText("Attempting to connect to OctoPrint")
 	connectionManager := utils.GetConnectionManagerInstance(this.UI.Client)
-	connectionManager.InitializeConnectionState()
+	connectionManager.ReInitializeConnectionState()
 
-	logger.TraceLeave("ConnectionPanel.attemptToConnect()")
+	logger.TraceLeave("ConnectionPanel.initializeConnectionState()")
 }
 
 func (this *connectionPanel) showSystem() {
