@@ -35,7 +35,6 @@ func GetNetworkPanelInstance(
 			CommonPanel: CreateCommonPanel("NetworkPanel", ui),
 		}
 		instance.initialize()
-		instance.createBackgroundTask()
 
 		networkPanelInstance = instance
 	}
@@ -49,16 +48,6 @@ func (this *networkPanel) initialize() {
 
 	// TODO: make sure overrideForDebugging is set to false before checking in.
 	this.overrideForDebugging = false;
-}
-
-func (this *networkPanel) createBackgroundTask() {
-	logger.TraceEnter("NetworkPanel.createBackgroundTask()")
-
-	// Default timeout of 30 seconds.
-	duration := utils.GetExperimentalFrequency(30, "EXPERIMENTAL_NETWORK_UPDATE_FREQUENCY")
-	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
-
-	logger.TraceLeave("NetworkPanel.createBackgroundTask()")
 }
 
 func (this *networkPanel) update() {

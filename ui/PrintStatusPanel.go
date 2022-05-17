@@ -35,30 +35,22 @@ type printStatusPanel struct {
 	pauseButton			*gtk.Button
 	stopButton			*gtk.Button
 	menuButton			*gtk.Button
+
+	backgroundTask		*utils.BackgroundTask
 }
 
 var printStatusPanelInstance *printStatusPanel
 
 func GetPrintStatusPanelInstance(ui *UI) *printStatusPanel {
 	if printStatusPanelInstance == nil {
-		instance := &printStatusPanel{
+		printStatusPanelInstance = &printStatusPanel{
 			CommonPanel: CreateTopLevelCommonPanel("PrintStatusPanel", ui),
 		}
-
-		// TODO: revisit... in some places the background task is created and then initialize() is called,
-		// and others places initialize() is called and then the background task is created
-		instance.createBackgroundTask()
-		instance.initialize()
-		printStatusPanelInstance = instance
+		printStatusPanelInstance.initialize()
+		printStatusPanelInstance.createBackgroundTask()
 	}
 
 	return printStatusPanelInstance
-}
-
-func (this *printStatusPanel) createBackgroundTask() {
-	// Default timeout of 20 seconds.
-	duration := utils.GetExperimentalFrequency(20, "EXPERIMENTAL_PRINT_UPDATE_FREQUENCY")
-	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
 }
 
 func (this *printStatusPanel) initialize() {
@@ -207,6 +199,19 @@ func (this *printStatusPanel) createControlButton() gtk.IWidget {
 	return this.menuButton
 }
 
+func (this *printStatusPanel) createBackgroundTask() {
+	logger.TraceEnter("PrintStatusPanel.createBackgroundTask()")
+
+	// Default timeout of 1 second.
+	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_PRINT_UPDATE_FREQUENCY")
+	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
+	// Update the UI every second, but the data is only updated once every 10 seconds.
+	// See OctoPrintResponseManager.update(). 
+	this.backgroundTask.Start()
+
+	logger.TraceLeave("PrintStatusPanel.createBackgroundTask()")
+}
+
 func (this *printStatusPanel) update() {
 	logger.TraceEnter("PrintStatusPanel.update()")
 
@@ -219,32 +224,45 @@ func (this *printStatusPanel) update() {
 func (this *printStatusPanel) updateTemperature() {
 	logger.TraceEnter("PrintStatusPanel.updateTemperature()")
 
-	fullStateResponse, err := (&octoprintApis.FullStateRequest{Exclude: []string{"sd"}}).Do(this.UI.Client)
-	if err != nil {
-		logger.LogError("PrintStatusPanel.updateTemperature()", "Do(StateRequest)", err)
-		logger.TraceLeave("PrintStatusPanel.updateTemperature()")
+	octoPrintResponseManager := GetOctoPrintResponseManagerInstance(this.UI)
+	if octoPrintResponseManager.IsConnected() != true {
+		// If not connected, do nothing and leave.
+		logger.TraceLeave("PrintStatusPanel.updateTemperature() (not connected)")
 		return
 	}
 
-	this.doUpdateState(&fullStateResponse.State)
+	this.doUpdateState(&octoPrintResponseManager.FullStateResponse.State)
 
-	for tool, currentTemperatureData := range fullStateResponse.Temperature.CurrentTemperatureData {
+	for tool, currentTemperatureData := range octoPrintResponseManager.FullStateResponse.Temperature.CurrentTemperatureData {
 		text := utils.GetTemperatureDataString(currentTemperatureData)
 		switch tool {
 			case "bed":
+				logger.Debug("Updating the UI's bed temp")
+				// this.bedButton.SetTemperatures(currentTemperatureData)
 				this.bedButton.SetLabel(text)
 
 			case "tool0":
+				logger.Debug("Updating the UI's tool0 temp")
+				// this.tool0Button.SetTemperatures(currentTemperatureData)
 				this.tool0Button.SetLabel(text)
 
 			case "tool1":
+				logger.Debug("Updating the UI's tool1 temp")
+				// this.tool1Button.SetTemperatures(currentTemperatureData)
 				this.tool1Button.SetLabel(text)
 
 			case "tool2":
+				logger.Debug("Updating the UI's tool2 temp")
+				// this.tool2Button.SetTemperatures(currentTemperatureData)
 				this.tool2Button.SetLabel(text)
 
 			case "tool3":
+				logger.Debug("Updating the UI's tool3 temp")
+				// this.tool3Button.SetTemperatures(currentTemperatureData)
 				this.tool3Button.SetLabel(text)
+
+			default:
+				logger.Errorf("PrintStatusPanel.updateTemperature() - GetOctoPrintResponseManagerInstance() returned an unknown tool: %q", tool)
 		}
 	}
 

@@ -40,13 +40,12 @@ func GetConnectionPanelInstance(
 	ui				*UI,
 ) *connectionPanel {
 	if connectionPanelInstance == nil {
-		instance := &connectionPanel {
+		connectionPanelInstance = &connectionPanel {
 			CommonPanel: CreateCommonPanel("ConnectionPanel", ui),
 			IsCheckingConnection: true,
 		}
-		instance.initialize()
-		instance.createBackgroundTask()
-		connectionPanelInstance = instance
+		connectionPanelInstance.initialize()
+		connectionPanelInstance.createBackgroundTask()
 	}
 
 	return connectionPanelInstance

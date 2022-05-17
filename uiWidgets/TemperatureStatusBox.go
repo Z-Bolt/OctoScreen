@@ -72,12 +72,6 @@ func CreateTemperatureStatusBox(
 		}
 	}
 
-	if utils.UpdateTemperaturesBackgroundTask == nil {
-		utils.CreateUpdateTemperaturesBackgroundTask(instance, client)
-	} else {
-		utils.RegisterTemperatureStatusBox(instance, client)
-	}
-
 	return instance
 }
 

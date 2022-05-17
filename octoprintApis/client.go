@@ -32,7 +32,7 @@ type Client struct {
 
 // NewClient returns a new OctoPrint API client with provided base URL and API
 // Key. If baseURL does not have a trailing slash, one is added automatically. If
-// `Access Control` is enabled at OctoPrint configuration an apiKey should be
+// 'Access Control' is enabled at OctoPrint configuration an apiKey should be
 // provided (http://docs.octoprint.org/en/master/api/general.html#authorization).
 func NewClient(endpoint, apiKey string) *Client {
 	return &Client {

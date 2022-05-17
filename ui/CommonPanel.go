@@ -24,7 +24,7 @@ type CommonPanel struct {
 	includeBackButton	bool
 	grid				*gtk.Grid
 	preShowCallback		func()
-	backgroundTask		*utils.BackgroundTask
+	///backgroundTask		*utils.BackgroundTask
 	panelWidth			int
 	panelHeight			int
 	backButton			*gtk.Button
@@ -73,8 +73,10 @@ func newCommonPanel(
 		// parentPanel:		parentPanel,
 		includeBackButton:	includeBackButton,
 		grid:				grid,
+		// preShowCallback:
 		panelWidth:			4,
 		panelHeight:		3,
+		// buttons:
 	}
 }
 
@@ -103,24 +105,7 @@ func (this *CommonPanel) AddButton(button gtk.IWidget) {
 	this.buttons = append(this.buttons, button)
 }
 
-func (this *CommonPanel) PreShow() {
-	if this.preShowCallback != nil {
-		this.preShowCallback()
-	}
-}
-
-func (this *CommonPanel) Show() {
-	if this.backgroundTask != nil {
-		this.backgroundTask.Start()
-	}
-}
-
-func (this *CommonPanel) Hide() {
-	if this.backgroundTask != nil {
-		this.backgroundTask.Close()
-	}
-}
-
+// Begin IPanel implementation
 func (this *CommonPanel) Name() string {
 	return this.name
 }
@@ -128,6 +113,29 @@ func (this *CommonPanel) Name() string {
 func (this *CommonPanel) Grid() *gtk.Grid {
 	return this.grid
 }
+
+func (this *CommonPanel) PreShow() {
+	if this.preShowCallback != nil {
+		this.preShowCallback()
+	}
+}
+
+func (this *CommonPanel) Show() {
+	/**
+	if this.backgroundTask != nil {
+		this.backgroundTask.Start()
+	}
+	**/
+}
+
+func (this *CommonPanel) Hide() {
+	/**
+	if this.backgroundTask != nil {
+		this.backgroundTask.Close()
+	}
+	**/
+}
+// End IPanel implementation
 
 func (this *CommonPanel) Scaled(s int) int {
 	return s * this.UI.scaleFactor

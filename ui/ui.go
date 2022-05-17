@@ -36,7 +36,7 @@ type UI struct {
 	NotificationsBox			*uiWidgets.NotificationsBox
 
 	// splashPanel					*SplashPanel
-	backgroundTask				*utils.BackgroundTask
+	///backgroundTask				*utils.BackgroundTask
 	grid						*gtk.Grid
 	window						*gtk.Window
 	time						time.Time
@@ -145,8 +145,8 @@ func (this *UI) initialize2() {
 	this.window.SetDefaultSize(this.width, this.height)
 	this.window.SetResizable(false)
 
-	this.createBackgroundTask()
-	this.window.Connect("show", this.backgroundTask.Start)
+	///this.createBackgroundTask()
+	///this.window.Connect("show", this.backgroundTask.Start)
 
 	this.window.Connect("destroy", func() {
 		logger.Debug("window destroy callback was called, now executing MainQuit()")
@@ -162,9 +162,11 @@ func (this *UI) initialize2() {
 	// connectionManager := utils.GetConnectionManagerInstance(this.Client)
 	// connectionManager.AttemptToConnect()
 
+	GetOctoPrintResponseManagerInstance(this)
+
 	logger.TraceLeave("ui.initialize2()")
 }
-
+/**
 func (this *UI) createBackgroundTask() {
 	logger.TraceEnter("ui.createBackgroundTask()")
 
@@ -174,13 +176,7 @@ func (this *UI) createBackgroundTask() {
 	
 	logger.TraceLeave("ui.createBackgroundTask()")
 }
-
-
-
-
-
-
-
+**/
 
 
 func (this *UI) loadStyle() {

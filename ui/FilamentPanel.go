@@ -8,6 +8,7 @@ import (
 	"github.com/gotk3/gotk3/gtk"
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
+	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -15,6 +16,8 @@ import (
 
 type filamentPanel struct {
 	CommonPanel
+
+	backgroundTask				*utils.BackgroundTask
 
 	// First row
 	filamentExtrudeButton		*uiWidgets.FilamentExtrudeButton
@@ -38,11 +41,11 @@ func GetFilamentPanelInstance(
 	ui				*UI,
 ) *filamentPanel {
 	if filamentPanelInstance == nil {
-		instance := &filamentPanel {
+		filamentPanelInstance = &filamentPanel {
 			CommonPanel: CreateCommonPanel("FilamentPanel", ui),
 		}
-		instance.initialize()
-		filamentPanelInstance = instance
+		filamentPanelInstance.initialize()
+		filamentPanelInstance.createBackgroundTask()
 	}
 
 	return filamentPanelInstance
@@ -118,6 +121,42 @@ func (this *filamentPanel) initialize() {
 	if extruderCount > 1 {
 		this.Grid().Attach(this.selectExtruderStepButton, 1, 2, 1, 1)
 	}
+}
+
+func (this *filamentPanel) createBackgroundTask() {
+	logger.TraceEnter("FilamentPanel.createBackgroundTask()")
+
+	// Default timeout of 1 second.
+	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_IDLE_UPDATE_FREQUENCY")
+	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
+	// Update the UI every second, but the data is only updated once every 10 seconds.
+	// See OctoPrintResponseManager.update(). 
+	this.backgroundTask.Start()
+
+	logger.TraceLeave("FilamentPanel.createBackgroundTask()")
+}
+
+func (this *filamentPanel) update() {
+	logger.TraceEnter("FilamentPanel.update()")
+
+	this.updateTemperature()
+
+	logger.TraceLeave("FilamentPanel.update()")
+}
+
+func (this *filamentPanel) updateTemperature() {
+	logger.TraceEnter("FilamentPanel.updateTemperature()")
+
+	octoPrintResponseManager := GetOctoPrintResponseManagerInstance(this.UI)
+	if octoPrintResponseManager.IsConnected() != true {
+		// If not connected, do nothing and leave.
+		logger.TraceLeave("FilamentPanel.updateTemperature() (not connected)")
+		return
+	}
+
+	this.temperatureStatusBox.UpdateTemperatureData(octoPrintResponseManager.FullStateResponse.Temperature.CurrentTemperatureData)
+
+	logger.TraceLeave("FilamentPanel.updateTemperature()")
 }
 
 func (this *filamentPanel) showTemperaturePanel() {
