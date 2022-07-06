@@ -230,8 +230,6 @@ func (this *UI) Update() {
 		}
 	}
 
-
-
 	logger.TraceLeave("ui.update()")
 }
 
@@ -587,6 +585,23 @@ func (this *UI) GoToPreviousPanel() {
 	logger.TraceLeave("ui.GoToPreviousPanel()")
 }
 
+func (this *UI) GetCurrentPanel() interfaces.IPanel {
+	logger.TraceEnter("ui.GetCurrentPanel()")
+
+	currentPanel := interfaces.IPanel(nil)
+
+	stackLength := this.PanelHistory.Len()
+	if stackLength > 0 {
+		currentPanel = this.PanelHistory.Peek().(interfaces.IPanel)
+	} else {
+		logger.Error("ui.GetCurrentPanel() was called, but PanelHistory is empty")
+	}
+
+	logger.TraceLeave("ui.GetCurrentPanel()")
+
+	return currentPanel
+}
+
 func (this *UI) SetUiToPanel(panel interfaces.IPanel) {
 	logger.TraceEnter("ui.SetUiToPanel()")
 
@@ -594,7 +609,7 @@ func (this *UI) SetUiToPanel(panel interfaces.IPanel) {
 
 	stackLength := this.PanelHistory.Len()
 	if stackLength > 0 {
-		currentPanel := this.PanelHistory.Peek().(interfaces.IPanel)
+		currentPanel := this.GetCurrentPanel()
 		this.RemovePanelFromUi(currentPanel)
 	}
 

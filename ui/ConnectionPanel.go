@@ -39,6 +39,8 @@ var connectionPanelInstance *connectionPanel
 func GetConnectionPanelInstance(
 	ui				*UI,
 ) *connectionPanel {
+	logger.TraceEnter("ConnectionPanel.GetConnectionPanelInstance()")
+
 	if connectionPanelInstance == nil {
 		connectionPanelInstance = &connectionPanel {
 			CommonPanel: CreateCommonPanel("ConnectionPanel", ui),
@@ -48,6 +50,7 @@ func GetConnectionPanelInstance(
 		connectionPanelInstance.createBackgroundTask()
 	}
 
+	logger.TraceLeave("ConnectionPanel.GetConnectionPanelInstance()")
 	return connectionPanelInstance
 }
 
@@ -168,6 +171,7 @@ func (this *connectionPanel) update() {
 	}
 	
 	if msg != "" {
+		logger.Debugf("%s", msg)
 		this.Label.SetText(msg)
 		connectionManager.UpdateStatus()
 	} else {

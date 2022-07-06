@@ -84,7 +84,6 @@ func main() {
 	initializeGtk()
 
 	octoScreenConfig := utils.GetOctoScreenConfigInstance()
-
 	if octoScreenConfig.RequiredConfigsAreSet() != true {
 		message := fmt.Sprintf("Required setting is not set: %s", octoScreenConfig.MissingRequiredConfigName())
 		panic(message)
