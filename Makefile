@@ -15,20 +15,24 @@ WORKDIR := $(shell pwd)
 BUILD_PATH := $(WORKDIR)/build
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
-DEBIAN_PACKAGES = STRETCH
+DEBIAN_PACKAGES = BUSTER
+ARCH = armhf
+# ARCH = amd64
 
+BULLSEYE_NAME := bullseye
+BULLSEYE_IMAGE := golang:1.19-bullseye
+BULLSEYE_GO_TAGS := "gtk_3_24 glib_deprecated glib_2_66"
+
+# Buster's gtk 3.24.5 doesn't work with gtk_3_24 tag
+# Using gtk_3_22 produces some deprecation warnings, but it compiles
+# More info: https://github.com/gotk3/gotk3/issues/874
 BUSTER_NAME := buster
-BUSTER_IMAGE := golang:1.15-buster
-BUSTER_GO_TAGS := gtk_3_24
+BUSTER_IMAGE := golang:1.19-buster
+BUSTER_GO_TAGS := "gtk_3_22 glib_deprecated glib_2_58 pango_1_42"
 
 STRETCH_NAME := stretch
-STRETCH_IMAGE := golang:1.9-stretch
-STRETCH_GO_TAGS := gtk_3_22
-
-JESSIE_NAME := jessie
-JESSIE_IMAGE := golang:1.8-jessie
-JESSIE_GO_TAGS := gtk_3_14
-
+STRETCH_IMAGE := golang:1.19rc1-stretch
+STRETCH_GO_TAGS := "gtk_3_22 glib_deprecated glib_2_50 cairo_1_14 pango_1_40"
 
 # Build information
 #GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)
@@ -55,22 +59,24 @@ build: | build-environment $(DEBIAN_PACKAGES)
 $(DEBIAN_PACKAGES):
 	docker build \
 		--build-arg IMAGE=${${@}_IMAGE} \
+		--build-arg TARGET_ARCH=${ARCH} \
 		--build-arg GO_TAGS=${${@}_GO_TAGS} \
-		-t ${DOCKER_IMAGE_BUILD}:${${@}_NAME} . \
+		-t ${DOCKER_IMAGE_BUILD}:${${@}_NAME}-${ARCH} . \
 		&& \
-	docker run -it --rm \
+	docker run --rm \
+		-e TARGET_ARCH=${ARCH} \
 		-v ${BUILD_PATH}/${${@}_NAME}:/build \
-		${DOCKER_IMAGE_BUILD}:${${@}_NAME} \
+		${DOCKER_IMAGE_BUILD}:${${@}_NAME}-${ARCH} \
 		make build-internal
 
 build-internal: prepare-internal
 	#go build --tags ${GO_TAGS} -v -o /build/bin/${BINARY_NAME} main.go
 	cd $(WORKDIR); \
-	debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc; \
+	debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc -a${TARGET_ARCH}; \
 	cp ../*.deb /build/;
 
 prepare-internal:
-	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) empty; \
+	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) --controlmaint empty; \
 	cd $(WORKDIR)/..; \
 	tar -czf octoscreen_$(VERSION).orig.tar.gz --exclude-vcs OctoScreen
 

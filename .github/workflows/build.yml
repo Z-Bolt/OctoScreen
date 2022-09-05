@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  push:
+    branches: [$default-branch]
+  pull_request:
+    branches: [$default-branch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        debian_packages: [BULLSEYE, BUSTER, STRETCH]
+        arch: [armhf, amd64]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: make build DEBIAN_PACKAGES=${{ matrix.debian_packages }} ARCH=${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: deb-${{ matrix.debian_packages }}-${{ matrix.arch }}
+          path: build/**/*.deb

@@ -1,21 +1,51 @@
 #!/usr/bin/make -f
 
+SHELL := /bin/bash
+
 export DH_VERBOSE := 1
 export DH_GOPKG := github.com/Z-Bolt/OctoScreen
+export DH_GOLANG_BUILDPKG := github.com/Z-Bolt/OctoScreen
 export DH_GOLANG_INSTALL_ALL := 1
-export DH_GOLANG_EXCLUDES := vendor
+
 export GOCACHE := $(GOPATH)/pkg
+export GOPROXY := https://proxy.golang.org
+export GO111MODULE := on
+
+# Workaround for dh-golang before https://salsa.debian.org/go-team/packages/dh-golang/-/commit/8b121b42e5597c9d156d2f811810d1d86787d449
+_DH_GOLANG_VERSION := $(shell dpkg-query --show --showformat '$${Version}' dh-golang)
+_DH_GOLANG_WITH_CROSSBUILD_SUPPORT := $(shell dpkg --compare-versions $(_DH_GOLANG_VERSION) lt 1.43 2> /dev/null; echo $$?)
+
+ifeq ($(_DH_GOLANG_WITH_CROSSBUILD_SUPPORT),0)
+	export GOOS := linux
+	ifeq ($(DEB_HOST_ARCH),armhf)
+		export GOARCH := arm
+		export GOARM := 7
+	else
+		export GOARCH := $(DEB_HOST_ARCH)
+	endif
+
+	export CGO_ENABLED := 1
+	export CC := $(DEB_HOST_MULTIARCH)-gcc
+	export PKG_CONFIG_PATH := /usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig
+endif
+
 
 %:
 	dh $@ --buildsystem=golang --with=golang,systemd
 
 override_dh_auto_build:
-	dh_auto_build -O--buildsystem=golang -O--no-parallel -- \
-		--tags $(GO_TAGS) \
+	dh_auto_build -O--buildsystem=golang -- \
+		--tags "$(GO_TAGS)" \
 		-ldflags "\
 			-X $(DH_GOPKG)/ui.Version=$(VERSION) \
 			-X $(DH_GOPKG)/ui.Build=$(BUILD_DATE)\
 		"
+	if [[ $(_DH_GOLANG_WITH_CROSSBUILD_SUPPORT) != 1 ]]; then \
+		if [[ "$(DEB_BUILD_ARCH)" != "$(DEB_HOST_ARCH)" ]]; then \
+			mv $(CURDIR)/obj-$(DEB_HOST_MULTIARCH)/bin/$(GOOS)_$(GOARCH)/* $(CURDIR)/obj-$(DEB_HOST_MULTIARCH)/bin/; \
+			rm -r $(CURDIR)/obj-$(DEB_HOST_MULTIARCH)/bin/$(GOOS)_$(GOARCH); \
+		fi; \
+	fi
 
 override_dh_golang:
 	# The dh_golang is used to add the Built-using field to the deb. This is only for reference.
@@ -26,6 +56,7 @@ override_dh_install:
 	mkdir -p $(CURDIR)/debian/octoscreen/opt/octoscreen/
 	cp -r styles $(CURDIR)/debian/octoscreen/opt/octoscreen/
 	rm -rf $(CURDIR)/debian/octoscreen/usr/share/gocode
+	chmod -x "debian/octoscreen.install" # Make sure octoscreen.install isn't executable
 	dh_install -XLICENSE
 
 override_dh_auto_test:
