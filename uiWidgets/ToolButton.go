@@ -60,10 +60,7 @@ func CreateToolButton(
 		printer: printer,
 	}
 
-	_, err := instance.Connect("clicked", instance.clicked)
-	if err != nil {
-		logger.LogError("ToolButton.CreateToolButton()", "t.Connect('clicked', t.clicked)", err)
-	}
+	instance.Connect("clicked", instance.clicked)
 
 	return instance
 }

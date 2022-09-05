@@ -1,9 +1,5 @@
 package uiWidgets
 
-import (
-	"github.com/Z-Bolt/OctoScreen/logger"
-)
-
 type ManualZCalibrationStepButton struct {
 	*StepButton
 }
@@ -12,16 +8,12 @@ func CreateManualZCalibrationStepButton(
 	colorVariation		int,
 	clicked				func(),
 ) *ManualZCalibrationStepButton {
-	base, err := CreateStepButton(
+	base := CreateStepButton(
 		colorVariation,
 		clicked,
 		Step{"Start Manual\nZ Calibration", "z-calibration.svg", nil, false},
 		Step{"Stop Manual\nZ Calibration",  "z-calibration.svg", nil, true},
 	)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateManualZCalibrationStepButton()", "CreateStepButton()", err)
-		panic(err)
-	}
 
 	instance := &ManualZCalibrationStepButton{
 		StepButton: base,

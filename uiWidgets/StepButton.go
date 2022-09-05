@@ -21,7 +21,7 @@ type StepButton struct {
 	*gtk.Button
 	sync.RWMutex
 
-	Steps					[]Step
+	Steps			[]Step
 	CurrentStepIndex		int
 	clicked					func()
 }
@@ -30,7 +30,7 @@ func CreateStepButton(
 	colorVariation			int,
 	clicked					func(),
 	steps 					...Step,
-) (*StepButton, error) {
+) *StepButton {
 	stepCount := len(steps)
 	if stepCount < 1 {
 		logger.Error("PANIC!!! - CreateStepButton() - len(steps) < 1")
@@ -39,14 +39,14 @@ func CreateStepButton(
 
 	base := utils.MustButtonImageUsingFilePath(steps[0].Label, steps[0].ImageFileName, nil)
 	if stepCount > 1 {
-		ctx, _ := base.GetStyleContext()
-		colorClass := fmt.Sprintf("color-dash-%d", colorVariation)
-		ctx.AddClass(colorClass)
+	ctx, _ := base.GetStyleContext()
+	colorClass := fmt.Sprintf("color-dash-%d", colorVariation)
+	ctx.AddClass(colorClass)
 	}
 
 	instance := &StepButton{
-		Button:				base,
-		Steps:				steps,
+		Button:			base,
+		Steps:			steps,
 		CurrentStepIndex:	-1,
 		clicked:			clicked,
 	}
@@ -59,9 +59,9 @@ func CreateStepButton(
 		instance.CurrentStepIndex = 0
 	}
 
-	_, err := instance.Button.Connect("clicked", instance.handleClick)
+	instance.Button.Connect("clicked", instance.handleClick)
 
-	return instance, err
+	return instance
 }
 
 func (this *StepButton) Value() interface{} {
@@ -102,5 +102,5 @@ func (this *StepButton) handleClick() {
 
 	if this.clicked != nil {
 		this.clicked()
-	}
+}
 }

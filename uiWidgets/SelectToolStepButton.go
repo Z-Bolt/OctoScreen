@@ -15,11 +15,11 @@ type SelectToolStepButton struct {
 	*StepButton
 }
 
-func (this *SelectToolStepButton) Value() string  {
+func (this *SelectToolStepButton) Value() string {
 	return this.StepButton.Value().(string)
 }
 
-func (this *SelectToolStepButton) Index() int  {
+func (this *SelectToolStepButton) Index() int {
 	value := strings.Replace(this.Value(), "tool", "", -1)
 	index, _ := strconv.Atoi(value)
 

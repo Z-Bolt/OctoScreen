@@ -5,18 +5,16 @@ import (
 	// "strconv"
 	// "strings"
 
-	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-
 func CreateSelectHotendStepButton(
-	client				*octoprintApis.Client,
-	includeBed			bool,
-	colorVariation		int,
-	clicked				func(),
+	client *octoprintApis.Client,
+	includeBed bool,
+	colorVariation int,
+	clicked func(),
 ) *SelectToolStepButton {
 	hotendCount := utils.GetHotendCount(client)
 
@@ -26,12 +24,12 @@ func CreateSelectHotendStepButton(
 		if i == 0 && hotendCount == 1 {
 			label = "Hotend"
 		} else {
-			label = fmt.Sprintf("Hotend %d", i + 1)
+			label = fmt.Sprintf("Hotend %d", i+1)
 		}
 
-		step := Step {
+		step := Step{
 			label,
-			utils.GetHotendFileName(i + 1, hotendCount),
+			utils.GetHotendFileName(i+1, hotendCount),
 			nil,
 			fmt.Sprintf("tool%d", i),
 		}
@@ -43,15 +41,11 @@ func CreateSelectHotendStepButton(
 		steps = append(steps, Step{"Bed", "bed.svg", nil, "bed"})
 	}
 
-	base, err := CreateStepButton(
+	base := CreateStepButton(
 		colorVariation,
 		clicked,
 		steps...,
 	)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateSelectHotendStepButton()", "CreateStepButton()", err)
-		panic(err)
-	}
 
 	instance := &SelectToolStepButton{
 		StepButton: base,

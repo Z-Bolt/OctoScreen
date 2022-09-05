@@ -90,11 +90,7 @@ func (this *zOffsetCalibrationPanel) initialize() {
 // First row
 func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
 	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, false, 1, nil)
-	_, err := this.selectHotendStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
-	if err != nil {
-		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateSelectToolStepButton()", "selectHotendStepButton.Connect()", err)
-		panic(err)
-	}
+	this.selectHotendStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 
 	hotendCount := utils.GetHotendCount(this.UI.Client)
 	if hotendCount > 1 {
@@ -131,11 +127,7 @@ func (this *zOffsetCalibrationPanel) selectToolStepButtonHandleClick() {
 
 func (this *zOffsetCalibrationPanel) CreateDecreaseZOffsetButton() {
 	this.decreaseZOffsetButton = uiWidgets.CreateIncreaseZOffsetButton(false)
-	_, err := this.decreaseZOffsetButton.Connect("clicked", this.decreaseZOffsetButtonClicked)
-	if err != nil {
-		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateDecreaseZOffsetButton()", "decreaseZOffsetButton.Connect()", err)
-		panic(err)
-	}
+	this.decreaseZOffsetButton.Connect("clicked", this.decreaseZOffsetButtonClicked)
 	this.Grid().Attach(this.decreaseZOffsetButton, 1, 0, 1, 1)
 }
 
@@ -149,11 +141,7 @@ func (this *zOffsetCalibrationPanel) decreaseZOffsetButtonClicked() {
 
 func (this *zOffsetCalibrationPanel) CreateIncreaseZOffsetButton() {
 	this.increaseZOffsetButton = uiWidgets.CreateIncreaseZOffsetButton(true)
-	_, err := this.increaseZOffsetButton.Connect("clicked", this.increaseZOffsetButtonClicked)
-	if err != nil {
-		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateIncreaseZOffsetButton()", "increaseZOffsetButton.Connect()", err)
-		panic(err)
-	}
+	this.increaseZOffsetButton.Connect("clicked", this.increaseZOffsetButtonClicked)
 	this.Grid().Attach(this.increaseZOffsetButton, 2, 0, 1, 1)
 }
 
@@ -182,11 +170,7 @@ func (this *zOffsetCalibrationPanel) CreateZOffsetLabel() *gtk.Label {
 // Third row
 func (this *zOffsetCalibrationPanel) CreateManualZCalibrationStepButton() {
 	this.manualZCalibrationStepButton = uiWidgets.CreateManualZCalibrationStepButton(2, nil)
-	_, err := this.manualZCalibrationStepButton.Connect("clicked", this.manualZCalibrationStepButtonHandleClick)
-	if err != nil {
-		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateManualZCalibrationStepButton()", "manualZCalibrationStepButton.Connect()", err)
-		panic(err)
-	}
+	this.manualZCalibrationStepButton.Connect("clicked", this.manualZCalibrationStepButtonHandleClick)
 
 	this.Grid().Attach(this.manualZCalibrationStepButton, 0, 2, 1, 1)
 }

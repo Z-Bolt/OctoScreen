@@ -37,11 +37,7 @@ func CreateTemperatureIncreaseButton(
 		selectHotendStepButton:			selectHotendStepButton,
 		isIncrease:						isIncrease,
 	}
-	_, err := instance.Button.Connect("clicked", instance.handleClicked)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateTemperatureIncreaseButton()", "instance.Button.Connect()", err)
-		panic(err)
-	}
+	instance.Button.Connect("clicked", instance.handleClicked)
 
 	return instance
 }

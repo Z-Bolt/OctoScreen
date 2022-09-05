@@ -1,9 +1,5 @@
 package uiWidgets
 
-import (
-	"github.com/Z-Bolt/OctoScreen/logger"
-)
-
 type TemperatureAmountStepButton struct {
 	*StepButton
 }
@@ -12,7 +8,7 @@ func CreateTemperatureAmountStepButton(
 	colorVariation		int,
 	clicked				func(),
 ) *TemperatureAmountStepButton {
-	base, err := CreateStepButton(
+	base := CreateStepButton(
 		colorVariation,
 		clicked,
 		Step{"10°C", "move-step.svg", nil, 10.0},
@@ -21,10 +17,6 @@ func CreateTemperatureAmountStepButton(
 		Step{" 1°C", "move-step.svg", nil,  1.0},
 		Step{" 5°C", "move-step.svg", nil,  5.0},
 	)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateTemperatureAmountStepButton()", "CreateStepButton()", err)
-		panic(err)
-	}
 
 	instance := &TemperatureAmountStepButton{
 		StepButton: base,
