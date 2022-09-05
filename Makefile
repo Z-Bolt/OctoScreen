@@ -13,6 +13,7 @@ GOTEST = $(GOCMD) test -v
 # Environment
 WORKDIR := $(shell pwd)
 BUILD_PATH := $(WORKDIR)/build
+GOCACHE_PATH = $(WORKDIR)/gocache
 DOCKER_IMAGE_BUILD = mcuadros/octoprint-tft-build
 
 DEBIAN_PACKAGES = BUSTER
@@ -53,6 +54,7 @@ export
 
 build-environment:
 	mkdir -p ${BUILD_PATH}
+	mkdir -p ${GOCACHE_PATH}
 
 build: | build-environment $(DEBIAN_PACKAGES)
 
@@ -65,14 +67,15 @@ $(DEBIAN_PACKAGES):
 		&& \
 	docker run --rm \
 		-e TARGET_ARCH=${ARCH} \
-		-v ${BUILD_PATH}/${${@}_NAME}:/build \
+		-v ${BUILD_PATH}/${${@}_NAME}-${ARCH}:/build \
+		-v ${GOCACHE_PATH}/${${@}_NAME}-${ARCH}:/gocache \
 		${DOCKER_IMAGE_BUILD}:${${@}_NAME}-${ARCH} \
 		make build-internal
 
 build-internal: prepare-internal
 	#go build --tags ${GO_TAGS} -v -o /build/bin/${BINARY_NAME} main.go
 	cd $(WORKDIR); \
-	debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc -a${TARGET_ARCH}; \
+	GOCACHE=/gocache debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc -a${TARGET_ARCH}; \
 	cp ../*.deb /build/;
 
 prepare-internal:

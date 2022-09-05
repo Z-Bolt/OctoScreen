@@ -7,7 +7,6 @@ export DH_GOPKG := github.com/Z-Bolt/OctoScreen
 export DH_GOLANG_BUILDPKG := github.com/Z-Bolt/OctoScreen
 export DH_GOLANG_INSTALL_ALL := 1
 
-export GOCACHE := $(GOPATH)/pkg
 export GOPROXY := https://proxy.golang.org
 export GO111MODULE := on
 
@@ -28,7 +27,6 @@ ifeq ($(_DH_GOLANG_WITH_CROSSBUILD_SUPPORT),0)
 	export CC := $(DEB_HOST_MULTIARCH)-gcc
 	export PKG_CONFIG_PATH := /usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig
 endif
-
 
 %:
 	dh $@ --buildsystem=golang --with=golang,systemd
