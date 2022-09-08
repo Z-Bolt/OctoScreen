@@ -44,7 +44,7 @@ func (this *printMenuPanel) initialize() {
 	networkButton := utils.MustButtonImageStyle("Network",         "network.svg",        "color1", this.showNetwork)
 	this.Grid().Attach(networkButton,     1, 1, 1, 1)
 
-	systemButton := utils.MustButtonImageStyle("System",           "info.svg",           "color3", this.showSystem)
+	systemButton := utils.MustButtonImageStyle("System",           "info.svg",           "color2", this.showSystem)
 	this.Grid().Attach(systemButton,      2, 1, 1, 1)
 }
 

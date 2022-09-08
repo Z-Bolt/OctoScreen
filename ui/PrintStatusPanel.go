@@ -20,23 +20,29 @@ import (
 type printStatusPanel struct {
 	CommonPanel
 
-	progressBar			*gtk.ProgressBar
+	tool0Button				*uiWidgets.ToolPrintingButton
+	tool1Button				*uiWidgets.ToolPrintingButton
+	tool2Button				*uiWidgets.ToolPrintingButton
+	tool3Button				*uiWidgets.ToolPrintingButton
+	bedButton  				*uiWidgets.ToolPrintingButton
 
-	tool0Button			*uiWidgets.ToolPrintingButton
-	tool1Button			*uiWidgets.ToolPrintingButton
-	tool2Button			*uiWidgets.ToolPrintingButton
-	tool3Button			*uiWidgets.ToolPrintingButton
-	bedButton  			*uiWidgets.ToolPrintingButton
+	fileLabelWithImage		*utils.LabelWithImage
+	timeLabelWithImage		*utils.LabelWithImage
+	timeLeftLabelWithImage	*utils.LabelWithImage
+	// layerLabelWithImage	*utils.LabelWithImage
+	// The info for the current / total layers is not available
+	// See https://community.octoprint.org/t/layer-number-and-total-layers-from-api/8005/4
+	// and https://docs.octoprint.org/en/master/api/datamodel.html#sec-api-datamodel-jobs-job
+	// darn.
+	
+	progressBar				*gtk.ProgressBar
 
-	fileLabel			*utils.LabelWithImage
-	timeLabel			*utils.LabelWithImage
-	timeLeftLabel		*utils.LabelWithImage
-	completeButton		*gtk.Button
-	pauseButton			*gtk.Button
-	stopButton			*gtk.Button
-	menuButton			*gtk.Button
+	pauseButton				*gtk.Button
+	cancelButton			*gtk.Button
+	controlButton			*gtk.Button
+	completeButton			*gtk.Button
 
-	backgroundTask		*utils.BackgroundTask
+	backgroundTask			*utils.BackgroundTask
 }
 
 var printStatusPanelInstance *printStatusPanel
@@ -66,10 +72,126 @@ func (this *printStatusPanel) initialize() {
 
 	this.Grid().Attach(this.createCompleteButton(), 1, 2, 3, 1)
 
-	this.showTools()
+	this.createToolButtons()
 }
 
-func (this *printStatusPanel) showTools() {
+
+func (this *printStatusPanel) createInfoBox() *gtk.Box {
+	this.fileLabelWithImage = utils.MustLabelWithImage("file-gcode.svg", "")
+	ctx, _ := this.fileLabelWithImage.GetStyleContext()
+	ctx.AddClass("printing-status-label")
+
+	this.timeLabelWithImage = utils.MustLabelWithImage("time.svg", "Print Time:")
+	ctx, _ = this.timeLabelWithImage.GetStyleContext()
+	ctx.AddClass("printing-status-label")
+
+	this.timeLeftLabelWithImage = utils.MustLabelWithImage("time.svg", "Print Time Left:")
+	ctx, _ = this.timeLeftLabelWithImage.GetStyleContext()
+	ctx.AddClass("printing-status-label")
+
+	// this.layerLabelWithImage = utils.MustLabelWithImage("time.svg", "")
+	// ctx, _ = this.layerLabelWithImage.GetStyleContext()
+	// ctx.AddClass("printing-status-label")
+
+	infoBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
+	infoBox.SetHAlign(gtk.ALIGN_START)
+	infoBox.SetHExpand(true)
+	infoBox.SetVExpand(true)
+	infoBox.SetVAlign(gtk.ALIGN_CENTER)
+	infoBox.Add(this.fileLabelWithImage)
+	infoBox.Add(this.timeLabelWithImage)
+	infoBox.Add(this.timeLeftLabelWithImage)
+	// infoBox.Add(this.layerLabelWithImage)
+
+	return infoBox
+}
+
+func (this *printStatusPanel) createProgressBar() *gtk.ProgressBar {
+	this.progressBar = utils.MustProgressBar()
+	this.progressBar.SetShowText(true)
+	this.progressBar.SetMarginTop(10)
+	this.progressBar.SetMarginEnd(this.Scaled(20))
+	this.progressBar.SetVAlign(gtk.ALIGN_CENTER)
+	this.progressBar.SetVExpand(true)
+
+	ctx, _ := this.progressBar.GetStyleContext()
+	ctx.AddClass("printing-progress-bar")
+
+	return this.progressBar
+}
+
+func (this *printStatusPanel) createPauseButton() gtk.IWidget {
+	/*
+	this.pauseButton = utils.MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
+		defer this.updateTemperature()
+
+		logger.Info("Pausing/Resuming job")
+		cmd := &octoprintApis.PauseRequest{Action: dataModels.Toggle}
+		err := cmd.Do(this.UI.Client)
+		logger.Info("Pausing/Resuming job 2, Do() was just called")
+
+		if err != nil {
+			logger.LogError("PrintStatusPanel.createPauseButton()", "Do(PauseRequest)", err)
+			return
+		}
+
+		logger.Info("Pausing/Resuming job 2c")
+	})
+	*/
+
+	this.pauseButton = utils.MustButtonImage(
+		"Pause",
+		"pause.svg",
+		this.handlePauseClicked,
+	)
+
+	return this.pauseButton
+}
+
+func (this *printStatusPanel) createCancelButton() gtk.IWidget {
+	this.cancelButton = utils.MustButtonImageStyle(
+		"Cancel",
+		"stop.svg",
+		"color-warning-sign-yellow",
+		this.handleCancelClicked,
+	)
+
+	return this.cancelButton
+}
+
+func (this *printStatusPanel) createControlButton() gtk.IWidget {
+	this.controlButton = utils.MustButtonImageStyle(
+		"Control",
+		"printing-control.svg",
+		"color3",
+		this.handleControlClicked,
+	)
+
+	return this.controlButton
+}
+
+func (this *printStatusPanel) createCompleteButton() *gtk.Button {
+	this.completeButton = utils.MustButtonImageStyle(
+		"Complete",
+		"complete.svg",
+		"color3",
+		this.handleCompleteClicked,
+	)
+
+	return this.completeButton
+}
+
+
+
+
+
+
+
+
+
+
+
+func (this *printStatusPanel) createToolButtons() {
 	// Note: The creation and initialization of the tool buttons in IdleStatusPanel and
 	// PrintStatusPanel look similar, but there are subtle differences between the two
 	// and they can't be reused.
@@ -107,96 +229,6 @@ func (this *printStatusPanel) showTools() {
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 	}
-}
-
-func (this *printStatusPanel) createCompleteButton() *gtk.Button {
-	this.completeButton = utils.MustButtonImageStyle("Complete", "complete.svg", "color3", func() {
-		this.UI.GoToPanel(GetIdleStatusPanelInstance(this.UI))
-	})
-
-	return this.completeButton
-}
-
-func (this *printStatusPanel) createProgressBar() *gtk.ProgressBar {
-	this.progressBar = utils.MustProgressBar()
-	this.progressBar.SetShowText(true)
-	this.progressBar.SetMarginTop(10)
-	this.progressBar.SetMarginEnd(this.Scaled(20))
-	this.progressBar.SetVAlign(gtk.ALIGN_CENTER)
-	this.progressBar.SetVExpand(true)
-
-	ctx, _ := this.progressBar.GetStyleContext()
-	ctx.AddClass("printing-progress-bar")
-
-	return this.progressBar
-}
-
-func (this *printStatusPanel) createInfoBox() *gtk.Box {
-	this.fileLabel = utils.MustLabelWithImage("file-gcode.svg", "")
-	ctx, _ := this.fileLabel.GetStyleContext()
-	ctx.AddClass("printing-status-label")
-
-	this.timeLabel = utils.MustLabelWithImage("time.svg", "")
-	ctx, _ = this.timeLabel.GetStyleContext()
-	ctx.AddClass("printing-status-label")
-
-	this.timeLeftLabel = utils.MustLabelWithImage("time.svg", "")
-	ctx, _ = this.timeLeftLabel.GetStyleContext()
-	ctx.AddClass("printing-status-label")
-
-	infoBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	infoBox.SetHAlign(gtk.ALIGN_START)
-	infoBox.SetHExpand(true)
-	infoBox.SetVExpand(true)
-	infoBox.SetVAlign(gtk.ALIGN_CENTER)
-	infoBox.Add(this.fileLabel)
-	infoBox.Add(this.timeLabel)
-	infoBox.Add(this.timeLeftLabel)
-
-	return infoBox
-}
-
-func (this *printStatusPanel) createPauseButton() gtk.IWidget {
-	this.pauseButton = utils.MustButtonImageStyle("Pause", "pause.svg", "color-warning-sign-yellow", func() {
-		defer this.updateTemperature()
-
-		logger.Info("Pausing/Resuming job")
-		cmd := &octoprintApis.PauseRequest{Action: dataModels.Toggle}
-		err := cmd.Do(this.UI.Client)
-		logger.Info("Pausing/Resuming job 2, Do() was just called")
-
-		if err != nil {
-			logger.LogError("PrintStatusPanel.createPauseButton()", "Do(PauseRequest)", err)
-			return
-		}
-
-		logger.Info("Pausing/Resuming job 2c")
-	})
-
-	return this.pauseButton
-}
-
-func (this *printStatusPanel) createCancelButton() gtk.IWidget {
-	this.stopButton = utils.MustButtonImageStyle(
-		"Cancel",
-		"stop.svg",
-		"color-warning-sign-yellow",
-		confirmStopDialogBox(this.UI.window, "Are you sure you want to cancel the current print?", this),
-	)
-
-	return this.stopButton
-}
-
-func (this *printStatusPanel) createControlButton() gtk.IWidget {
-	this.menuButton = utils.MustButtonImageStyle(
-		"Control",
-		"printing-control.svg",
-		"color3",
-		func() {
-			this.UI.GoToPanel(GetPrintMenuPanelInstance(this.UI))
-		},
-	)
-	return this.menuButton
 }
 
 func (this *printStatusPanel) createBackgroundTask() {
@@ -273,12 +305,12 @@ func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterStat
 	switch {
 		case printerState.Flags.Printing:
 			this.pauseButton.SetSensitive(true)
-			this.stopButton.SetSensitive(true)
+			this.cancelButton.SetSensitive(true)
 
 			this.pauseButton.Show()
-			this.stopButton.Show()
-			if this.menuButton != nil {
-				this.menuButton.Show()
+			this.cancelButton.Show()
+			if this.controlButton != nil {
+				this.controlButton.Show()
 			}
 			this.backButton.Show()
 			this.completeButton.Hide()
@@ -288,12 +320,12 @@ func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterStat
 			resumeImage := utils.MustImageFromFile("resume.svg")
 			this.pauseButton.SetImage(resumeImage)
 			this.pauseButton.SetSensitive(true)
-			this.stopButton.SetSensitive(true)
+			this.cancelButton.SetSensitive(true)
 
 			this.pauseButton.Show()
-			this.stopButton.Show()
-			if this.menuButton != nil {
-				this.menuButton.Show()
+			this.cancelButton.Show()
+			if this.controlButton != nil {
+				this.controlButton.Show()
 			}
 			this.backButton.Show()
 			this.completeButton.Hide()
@@ -301,12 +333,12 @@ func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterStat
 
 		case printerState.Flags.Ready:
 			this.pauseButton.SetSensitive(false)
-			this.stopButton.SetSensitive(false)
+			this.cancelButton.SetSensitive(false)
 
 			this.pauseButton.Hide()
-			this.stopButton.Hide()
-			if this.menuButton != nil {
-				this.menuButton.Hide()
+			this.cancelButton.Hide()
+			if this.controlButton != nil {
+				this.controlButton.Hide()
 			}
 			this.backButton.Hide()
 			this.completeButton.Show()
@@ -318,7 +350,7 @@ func (this *printStatusPanel) doUpdateState(printerState *dataModels.PrinterStat
 			}
 
 			this.pauseButton.SetSensitive(false)
-			this.stopButton.SetSensitive(false)
+			this.cancelButton.SetSensitive(false)
 	}
 
 	this.pauseButton.SetLabel("Pause")
@@ -344,7 +376,7 @@ func (this *printStatusPanel) updateJob() {
 		jobFileName = utils.TruncateString(jobFileName, 20)
 	}
 
-	this.fileLabel.Label.SetLabel(jobFileName)
+	this.fileLabelWithImage.Label.SetLabel(jobFileName)
 	this.progressBar.SetFraction(jobResponse.Progress.Completion / 100)
 
 	var timeSpent, timeLeft string
@@ -365,13 +397,68 @@ func (this *printStatusPanel) updateJob() {
 			timeLeft = fmt.Sprintf("Left: %s", printTimeLeft)
 	}
 
-	this.timeLabel.Label.SetLabel(timeSpent)
-	this.timeLeftLabel.Label.SetLabel(timeLeft)
+	this.timeLabelWithImage.Label.SetLabel(timeSpent)
+	this.timeLeftLabelWithImage.Label.SetLabel(timeLeft)
 
 	logger.TraceLeave("PrintStatusPanel.updateJob()")
 }
 
-func confirmStopDialogBox(
+
+
+
+func (this *printStatusPanel) handlePauseClicked() {
+	logger.TraceEnter("PrintStatusPanel.handlePauseClicked()")
+
+	// TODO: is this needed?
+	// defer this.updateTemperature()
+
+	cmd := &octoprintApis.PauseRequest{Action: dataModels.Toggle}
+	err := cmd.Do(this.UI.Client)
+	if err != nil {
+		logger.LogError("PrintStatusPanel.handlePauseClicked()", "Do(PauseRequest)", err)
+		return
+	}
+
+	label, _ := this.pauseButton.GetLabel()
+	if label == "Pause" {
+		this.pauseButton.SetLabel("Resume")
+		resumeImage := utils.MustImageFromFile("resume.svg")
+		this.pauseButton.SetImage(resumeImage)
+	} else {
+		this.pauseButton.SetLabel("Pause")
+		pauseImage := utils.MustImageFromFile("pause.svg")
+		this.pauseButton.SetImage(pauseImage)
+	}
+
+	// this.pauseButton.SetSensitive(true)
+	// this.pauseButton.Show()
+
+	logger.TraceLeave("PrintStatusPanel.handlePauseClicked()")
+}
+
+func (this *printStatusPanel) handleCancelClicked() {
+	this.confirmCancelDialogBox(this.UI.window, "Are you sure you want to cancel the current print?", this)
+}
+
+func (this *printStatusPanel) handleControlClicked() {
+	// TODO:
+	this.UI.GoToPanel(GetPrintMenuPanelInstance(this.UI))
+	// call this.UI.GoToPanel()
+	// or all this.UI.Goback() ?
+}
+
+func (this *printStatusPanel) handleCompleteClicked() {
+	// TODO:
+	this.UI.GoToPanel(GetIdleStatusPanelInstance(this.UI))
+	// call this.UI.GoToPanel()
+	// or call this.UI.Goback() ?
+}
+
+
+
+
+
+func (this *printStatusPanel) confirmCancelDialogBox(
 	parentWindow		*gtk.Window,
 	message				string,
 	printStatusPanel	*printStatusPanel,
@@ -400,10 +487,121 @@ func confirmStopDialogBox(
 		userResponse := dialogBox.Run()
 		if userResponse == int(gtk.RESPONSE_YES) {
 			logger.Warn("Stopping job")
-			if err := (&octoprintApis.CancelRequest{}).Do(printStatusPanel.UI.Client); err != nil {
-				logger.LogError("PrintStatusPanel.confirmStopDialogBox()", "Do(CancelRequest)", err)
-				return
+			err := (&octoprintApis.CancelRequest{}).Do(printStatusPanel.UI.Client)
+			if err == nil {
+				// TODO: remove
+				logger.Warn("err was nil")
+
+
+				// pauseButton			*gtk.Button
+				// stopButton			*gtk.Button
+				// controlButton		*gtk.Button
+				printStatusPanel.pauseButton.SetSensitive(false)
+				printStatusPanel.cancelButton.SetSensitive(false)
+				printStatusPanel.controlButton.SetSensitive(false)
+			} else {
+				logger.LogError("PrintStatusPanel.confirmCancelDialogBox()", "Do(CancelRequest)", err)
 			}
 		}
 	}
 }
+
+func formattedDuration(duration time.Duration) string {
+	hours := duration / time.Hour
+	duration -= hours * time.Hour
+
+	minutes := duration / time.Minute
+	duration -= minutes * time.Minute
+
+	seconds := duration / time.Second
+
+	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
+}
+
+
+/*
+TODO issues:
+
+1. start a print
+as the printer is warming up, click Cancel
+-> all three buttons turn gray, but then the Cancel button becomes enabled again
+-> the status is "Printing" I think...
+
+
+2 is either...
+2a. start a print
+as the printer is warming up, click Cancel
+we're eventually taken to the Idle screen
+-> the hotend and bed buttons are disabed
+    -OR-
+2b. start a print
+the printer IS warmed up, AND starts printing
+click Cancel
+we're eventually taken to the Idle screen
+-> the hotend and bed buttons are disabed
+
+...this might (maybe?) be due to going to the Idle panel, but the state not being "operational" yet
+
+
+3. with the printer cold (or cold-ish)
+start a print
+-> some of the time, the print times are displayed
+-> but some of the time, the print times are not displayed
+...need to:
+	* a) not display the clock icons until the time (text) is displayed
+	* b) figure out why the time (values/text) appears some of the time and doesn't appear some of the time
+
+
+4. Start a print
+click the Pause button
+then click the Cancel button
+then confirm
+
+-> when paused, and then canceled, the app might get into a weird state
+	...will need to play around with this and dig ino this some more
+
+
+
+
+
+	PAUSE   STOP   CONTROL
+
+a) panel is created
+	enabled enabled enabled
+
+b) user clicks cancel
+	confirm
+	disabled disabled disabled
+
+c) user clicks pause
+	unknown printerState.Text: Pausing
+	Pause button changes to Resume
+	enabled enabled enabled
+
+d) user clicks pause, then clicks cancel
+	re-enable re-enable re-enable
+	go to Idle panel
+
+e) user clicks pause, then clicks resume
+	Resume button changes to Pause
+	re-enable re-enable re-enable
+
+
+...don't go away until state is "operational"
+z) panel goes away amd switches to a different panel
+	re-enable re-enable re-enable
+	go to Idle panel
+
+
+
+
+don't forget the happy path:
+a) panel is displayed
+	enabled enabled enabled
+b) finish
+
+c) what to display?
+	congratulations?
+
+
+*/
