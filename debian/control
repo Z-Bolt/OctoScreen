@@ -5,7 +5,7 @@ Maintainer: Debian Go Packaging Team <pkg-go-maintainers@lists.alioth.debian.org
 Uploaders: Máximo Cuadros <aleksei.wm@gmail.com>
 Build-Depends: debhelper (>= 9),
                dh-golang,
-               dh-systemd,
+               debhelper (>= 9.20160709),
                libcairo2-dev (>= 1.14.0),
                libgtk-3-dev (>= 3.14)
 Standards-Version: 4.1.1
