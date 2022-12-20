@@ -3,7 +3,7 @@ Section: devel
 Priority: optional
 Maintainer: Debian Go Packaging Team <pkg-go-maintainers@lists.alioth.debian.org>
 Uploaders: Máximo Cuadros <aleksei.wm@gmail.com>
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper (>= 9.20160709),
                dh-golang,
                libcairo2-dev (>= 1.14.0),
                libgtk-3-dev (>= 3.14)
