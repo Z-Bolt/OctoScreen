@@ -75,8 +75,8 @@ $(DEBIAN_PACKAGES):
 build-internal: prepare-internal
 	#go build --tags ${GO_TAGS} -v -o /build/bin/${BINARY_NAME} main.go
 	cd $(WORKDIR); \
-	GOCACHE=/gocache debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc -a${TARGET_ARCH}; \
-	cp ../*.deb /build/;
+	GOCACHE=/gocache debuild --prepend-path=/usr/local/go/bin/ --preserve-env -us -uc -a${TARGET_ARCH} \
+	&& cp ../*.deb /build/;
 
 prepare-internal:
 	dch --create -v $(VERSION)-1 --package $(PACKAGE_NAME) --controlmaint empty; \
