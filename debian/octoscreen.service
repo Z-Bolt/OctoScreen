@@ -14,5 +14,5 @@ Restart=always
 WatchdogSec=40s
 
 [Install]
-WantedBy=graphical.target
+WantedBy=graphical.target octoprint.service
 Alias=display-manager.service
