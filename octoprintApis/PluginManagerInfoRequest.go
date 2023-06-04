@@ -17,7 +17,7 @@ type PluginManagerInfoRequest struct {
 }
 
 // Do -
-func (this *PluginManagerInfoRequest) Do(client *Client, uiState string) (*dataModels.PluginManagerInfoResponse, error) {
+func (this *PluginManagerInfoRequest) Do(client *Client) (*dataModels.PluginManagerInfoResponse, error) {
 	this.Command = "get_settings"
 
 	params := bytes.NewBuffer(nil)

@@ -15,7 +15,7 @@ type OctoScreenSettingsRequest struct {
 	Command string `json:"command"`
 }
 
-func (this *OctoScreenSettingsRequest) Do(client *Client, uiState string) (*dataModels.OctoScreenSettingsResponse, error) {
+func (this *OctoScreenSettingsRequest) Do(client *Client) (*dataModels.OctoScreenSettingsResponse, error) {
 	target := fmt.Sprintf("%s?command=get_settings", PluginZBoltOctoScreenApiUri)
 	bytes, err := client.doJsonRequest("GET", target, nil, ConnectionErrors, false)
 	if err != nil {

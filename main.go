@@ -142,9 +142,9 @@ func setLogLevel(logLevel string) {
 
 func setCursor(displayCursor bool) {
 	// For reference, see "How to turn on a pointer"
-	// 	https://github.com/Z-Bolt/OctoScreen/issues/285
-	// and "No mouse pointer when running xinit"
-	// 	https://www.raspberrypi.org/forums/viewtopic.php?t=139546
+	// (https://github.com/Z-Bolt/OctoScreen/issues/285)
+	// ...and "No mouse pointer when running xinit"
+	// (https://www.raspberrypi.org/forums/viewtopic.php?t=139546)
 
 	if displayCursor != true {
 		return
