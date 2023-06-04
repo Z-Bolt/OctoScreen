@@ -14,6 +14,8 @@ type JobResponse struct {
 	// Progress contains information regarding the progress of the current job.
 	Progress ProgressInformation `json:"progress"`
 
-	//State StateInformation `json:"state"`
+	// State StateInformation `json:"state"`
+	// State PrinterState `json:"state"`
 	State string `json:"state"`
+	// State can't be a PrinterState - it needs to be a string.
 }

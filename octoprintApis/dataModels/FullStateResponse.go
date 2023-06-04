@@ -10,4 +10,6 @@ type FullStateResponse struct {
 
 	// State is the printer’s general state.
 	State PrinterState `json:"state"`
+	// State string `json:"state"`
+	// State can't be a string - it needs to be a PrinterState.
 }
