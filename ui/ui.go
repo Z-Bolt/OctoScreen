@@ -29,14 +29,11 @@ type UI struct {
 	ConnectionState				dataModels.ConnectionState
 	Settings					*dataModels.OctoScreenSettingsResponse
 
-	UIState						string
+	UiState						UiState
+	WaitingForUserToContinue	bool
 
 	OctoPrintPluginIsAvailable	bool
-
 	NotificationsBox			*uiWidgets.NotificationsBox
-
-	// splashPanel					*SplashPanel
-	///backgroundTask				*utils.BackgroundTask
 	grid						*gtk.Grid
 	window						*gtk.Window
 	time						time.Time
@@ -70,12 +67,10 @@ func CreateUi() *UI {
 		NotificationsBox:			uiWidgets.NewNotificationsBox(),
 		OctoPrintPluginIsAvailable:	false,
 		Settings:					nil,
-
-		UIState:					"__uninitialized__",
-
+		UiState:					Uninitialized,
+		WaitingForUserToContinue:	false,
 		window:						utils.MustWindow(gtk.WINDOW_TOPLEVEL),
 		time:						time.Now(),
-
 		width:						width,
 		height:						height,
 	}
@@ -125,8 +120,7 @@ func (this *UI) initialize1() {
 	}
 
 	this.initialize2()
-
-	this.GoToPanel(GetConnectionPanelInstance(this))
+	GoToConnectionPanel(this)
 
 	logger.TraceLeave("ui.initialize1()")
 }
@@ -196,7 +190,7 @@ func (this *UI) loadSettings() {
 		return
 	}
 
-	settingsResponse, err := (&octoprintApis.OctoScreenSettingsRequest{}).Do(this.Client, this.UIState)
+	settingsResponse, err := (&octoprintApis.OctoScreenSettingsRequest{}).Do(this.Client)
 	if err != nil {
 		text := err.Error()
 		if strings.Contains(strings.ToLower(text), "unexpected status code: 404") {

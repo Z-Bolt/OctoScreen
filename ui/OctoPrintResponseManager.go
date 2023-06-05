@@ -176,7 +176,7 @@ func (this *octoPrintResponseManager) update() {
 		logger.LogError("OctoPrintResponseManager.update()", "Do(FullStateRequest)", err)
 	
 		connectionManager.ReInitializeConnectionState()
-		this.UI.GoToPanel(GetConnectionPanelInstance(this.UI))
+		GoToConnectionPanel(this.UI)
 	
 		logger.TraceLeave("OctoPrintResponseManager.update()")
 		return
@@ -186,17 +186,13 @@ func (this *octoPrintResponseManager) update() {
 		logger.Error("OctoPrintResponseManager.update() - fullStateResponse.Temperature.CurrentTemperatureData is invalid")
 	
 		connectionManager.ReInitializeConnectionState()
-		this.UI.GoToPanel(GetConnectionPanelInstance(this.UI))
+		GoToConnectionPanel(this.UI)
 	
 		logger.TraceLeave("OctoPrintResponseManager.update()")
 		return
 	}
 
-
 	this.FullStateResponse = *fullStateResponse
-
-	// connectionManager.UpdateStatus()
-
 
 	logger.TraceLeave("OctoPrintResponseManager.update()")
 }

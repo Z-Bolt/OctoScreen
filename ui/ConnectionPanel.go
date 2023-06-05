@@ -36,10 +36,8 @@ type connectionPanel struct {
 
 var connectionPanelInstance *connectionPanel
 
-func GetConnectionPanelInstance(
-	ui				*UI,
-) *connectionPanel {
-	logger.TraceEnter("ConnectionPanel.GetConnectionPanelInstance()")
+func getConnectionPanelInstance(ui *UI) *connectionPanel {
+	logger.TraceEnter("ConnectionPanel.getConnectionPanelInstance()")
 
 	if connectionPanelInstance == nil {
 		connectionPanelInstance = &connectionPanel {
@@ -50,8 +48,16 @@ func GetConnectionPanelInstance(
 		connectionPanelInstance.createBackgroundTask()
 	}
 
-	logger.TraceLeave("ConnectionPanel.GetConnectionPanelInstance()")
+	logger.TraceLeave("ConnectionPanel.getConnectionPanelInstance()")
 	return connectionPanelInstance
+}
+
+func GoToConnectionPanel(ui *UI) {
+	if ui.UiState != Connecting {
+		ui.UiState = Connecting
+		instance := getConnectionPanelInstance(ui)
+		ui.GoToPanel(instance)
+	}
 }
 
 func (this *connectionPanel) initialize() {
@@ -171,15 +177,60 @@ func (this *connectionPanel) update() {
 	}
 	
 	if msg != "" {
-		logger.Debugf("%s", msg)
+		logger.Debugf("Attempting to connect.  The message is: '%s'", msg)
 		this.Label.SetText(msg)
 		connectionManager.UpdateStatus()
-	} else {
-		currentPanel := this.UI.PanelHistory.Peek().(interfaces.IPanel)
-		if currentPanel.Name() == "ConnectionPanel" {
-			this.UI.Update()
-			this.UI.GoToPanel(GetIdleStatusPanelInstance(this.UI))
-		}
+		logger.TraceLeave("ConnectionPanel.update()")
+		return
+	}
+	
+	octoPrintResponseManager := GetOctoPrintResponseManagerInstance(this.UI)
+	if octoPrintResponseManager.IsConnected() != true {
+		// If not connected, do nothing and leave.
+		logger.Debugf("Not connected, now leaving")
+		logger.TraceLeave("ConnectionPanel.update()")
+		return
+	}
+
+	currentPanel := this.UI.PanelHistory.Peek().(interfaces.IPanel)
+	currentPanelName := currentPanel.Name()
+
+	logger.Debugf("ConnectionPanel.update() - current panel is '%s'", currentPanelName)
+	logger.Debugf("ConnectionPanel.update() - current response state is '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
+
+	if octoPrintResponseManager.FullStateResponse.State.Text == "" {
+		// ?????, do nothing and leave.
+		logger.Warnf("ConnectionPanel.update() - FullStateResponse.State.Text is empty")
+		logger.TraceLeave("ConnectionPanel.update()")
+		return
+	}
+
+	this.UI.Update()
+
+	switch octoPrintResponseManager.FullStateResponse.State.Text {
+		case "Operational": // aka Idle
+			if this.UI.UiState != Idle {
+				if this.UI.WaitingForUserToContinue != true {
+					this.UI.UiState = Idle
+					GoToIdleStatusPanel(this.UI)
+				}
+			}
+
+		case "Printing":
+			if this.UI.UiState != Printing {
+				this.UI.UiState = Printing
+				this.UI.WaitingForUserToContinue = true
+				GoToPrintStatusPanel(this.UI)
+			}
+
+		case "Paused":
+			break
+
+		default:
+			logger.Debugf("unknown FullStateResponse.State: '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
+			logger.Debugf("State flags is: '%+v'", octoPrintResponseManager.FullStateResponse.State.Flags)
+			logger.Debugf("UiState is: '%s'", this.UI.UiState)
+			logger.Panicf("unknown FullStateResponse.State: '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
 	}
 
 	logger.TraceLeave("ConnectionPanel.update()")

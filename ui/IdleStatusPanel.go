@@ -30,7 +30,7 @@ type idleStatusPanel struct {
 
 var idleStatusPanelInstance *idleStatusPanel
 
-func GetIdleStatusPanelInstance(ui *UI) *idleStatusPanel {
+func getIdleStatusPanelInstance(ui *UI) *idleStatusPanel {
 	if idleStatusPanelInstance == nil {
 		idleStatusPanelInstance = &idleStatusPanel{
 			CommonPanel: CreateTopLevelCommonPanel("IdleStatusPanel", ui),
@@ -40,6 +40,11 @@ func GetIdleStatusPanelInstance(ui *UI) *idleStatusPanel {
 	}
 
 	return idleStatusPanelInstance
+}
+
+func GoToIdleStatusPanel(ui *UI) {
+	instance := getIdleStatusPanelInstance(ui)
+	ui.GoToPanel(instance)
 }
 
 func (this *idleStatusPanel) initialize() {

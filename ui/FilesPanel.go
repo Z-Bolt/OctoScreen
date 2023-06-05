@@ -447,6 +447,8 @@ func (this *filesPanel) createListItemButton(
 				logger.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
 				return
 			}
+
+			this.UI.GoToPreviousPanel()
 		}))
 	}
 
