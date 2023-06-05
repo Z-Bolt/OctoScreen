@@ -58,7 +58,7 @@ func getPrintStatusPanelInstance(ui *UI) *printStatusPanel {
 	if printStatusPanelInstance == nil {
 		printStatusPanelInstance = &printStatusPanel {
 			CommonPanel: CreateTopLevelCommonPanel("PrintStatusPanel", ui),
-			PrintWasCanceled: false
+			PrintWasCanceled: false,
 		}
 		printStatusPanelInstance.initialize()
 		printStatusPanelInstance.createBackgroundTask()
