@@ -10,7 +10,7 @@ func (this UiState) String() string {
 
 var (
 	Uninitialized	= UiState{""}
-	connecting		= UiState{"connecting"}
-	idle			= UiState{"idle"}
-	printing		= UiState{"printing"}
+	Connecting		= UiState{"connecting"}
+	Idle			= UiState{"idle"}
+	Printing		= UiState{"printing"}
 )
