@@ -15,7 +15,6 @@ type OctoScreenPluginInfoBox struct {
 
 func CreateOctoScreenPluginInfoBox(
 	client							*octoprintApis.Client,
-	uiState							string,
 	octoPrintPluginIsInstalled		bool,
 ) *OctoScreenPluginInfoBox {
 	logger.TraceEnter("OctoScreenPluginInfoBox.CreateOctoScreenPluginInfoBox()")
@@ -25,7 +24,7 @@ func CreateOctoScreenPluginInfoBox(
 
 	str2 := ""
 	if octoPrintPluginIsInstalled {
-		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client, uiState)
+		pluginManagerInfoResponse, err := (&octoprintApis.PluginManagerInfoRequest{}).Do(client)
 		if err != nil {
 			logger.LogError("CreateOctoScreenPluginInfoBox()", "PluginManagerInfoRequest.Do()", err)
 			str2 = "Error"
