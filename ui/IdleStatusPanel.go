@@ -23,6 +23,7 @@ type idleStatusPanel struct {
 	tool1Button			*uiWidgets.ToolButton
 	tool2Button			*uiWidgets.ToolButton
 	tool3Button			*uiWidgets.ToolButton
+	tool4Button			*uiWidgets.ToolButton
 	bedButton			*uiWidgets.ToolButton
 
 	backgroundTask		*utils.BackgroundTask
@@ -115,6 +116,7 @@ func (this *idleStatusPanel) showTools() {
 	this.tool1Button = uiWidgets.CreateToolButton( 2, this.UI.Client)
 	this.tool2Button = uiWidgets.CreateToolButton( 3, this.UI.Client)
 	this.tool3Button = uiWidgets.CreateToolButton( 4, this.UI.Client)
+	this.tool4Button = uiWidgets.CreateToolButton( 5, this.UI.Client)
 	this.bedButton   = uiWidgets.CreateToolButton(-1, this.UI.Client)
 
 	switch hotendCount {
@@ -143,6 +145,14 @@ func (this *idleStatusPanel) showTools() {
 			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 			this.Grid().Attach(this.bedButton,   0, 2, 2, 1)
+
+		case 5:
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
+			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
+			this.Grid().Attach(this.tool4Button, 0, 2, 1, 1)
+			this.Grid().Attach(this.bedButton,   1, 2, 1, 1)
 	}
 
 	logger.TraceLeave("IdleStatusPanel.showTools()")
@@ -200,6 +210,10 @@ func (this *idleStatusPanel) updateTemperature() {
 			case "tool3":
 				logger.Debug("Updating the UI's tool3 temp")
 				this.tool3Button.SetTemperatures(currentTemperatureData)
+
+			case "tool4":
+				logger.Debug("Updating the UI's tool4 temp")
+				this.tool4Button.SetTemperatures(currentTemperatureData)
 
 			default:
 				logger.Errorf("IdleStatusPanel.updateTemperature() - GetOctoPrintResponseManagerInstance() returned an unknown tool: %q", tool)

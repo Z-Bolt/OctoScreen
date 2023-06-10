@@ -223,6 +223,9 @@ func (this *connectionPanel) update() {
 				GoToPrintStatusPanel(this.UI)
 			}
 
+		case "Cancelling":
+			break
+
 		case "Paused":
 			break
 

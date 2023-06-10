@@ -49,6 +49,8 @@ func CreateToolheadButtons(toolheadCount int) []*gtk.Button {
 		toolheadButtons = append(toolheadButtons, toolheadButton)
 	}
 
+	// TODO: maybe add support for a 5th hotend?
+
 	return toolheadButtons
 }
 

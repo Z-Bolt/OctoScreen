@@ -13,6 +13,7 @@ import (
 
 var cachedExtruderCount = -1
 var cachedHasSharedNozzle = false
+const MAX_EXTRUDER_COUNT = 5
 
 func getCachedPrinterProfileData(client *octoprintApis.Client) {
 	if cachedExtruderCount != -1 {
@@ -32,8 +33,8 @@ func getCachedPrinterProfileData(client *octoprintApis.Client) {
 	}
 
 	cachedExtruderCount = printerProfile.Extruder.Count
-	if cachedExtruderCount > 4 {
-		cachedExtruderCount = 4
+	if cachedExtruderCount > MAX_EXTRUDER_COUNT {
+		cachedExtruderCount = MAX_EXTRUDER_COUNT
 	}
 
 	cachedHasSharedNozzle = printerProfile.Extruder.HasSharedNozzle
@@ -55,8 +56,8 @@ func GetHotendCount(client *octoprintApis.Client) int {
 
 	if cachedHasSharedNozzle {
 		return 1
-	} else if cachedExtruderCount > 4 {
-		return 4
+	} else if cachedExtruderCount > MAX_EXTRUDER_COUNT {
+		return MAX_EXTRUDER_COUNT
 	}
 
 	return cachedExtruderCount
@@ -69,10 +70,6 @@ func GetHasSharedNozzle(client *octoprintApis.Client) bool {
 
 	return cachedHasSharedNozzle
 }
-
-
-
-
 
 
 
@@ -165,6 +162,20 @@ func GetCurrentTemperatureData(client *octoprintApis.Client) (map[string]dataMod
 		logger.TraceLeave("Tools.GetCurrentTemperatureData()")
 		return nil, err
 	}
+
+
+	/*
+	// Comment out the following to test for multiple hotends:
+	currentTemperatureData := make(map[string]dataModels.TemperatureData)
+	currentTemperatureData["bed"] = dataModels.TemperatureData{Actual:0.1, Target:0, Offset:0}
+    currentTemperatureData["tool0"] = dataModels.TemperatureData{Actual:10.1, Target:0, Offset:0}
+    currentTemperatureData["tool1"] = dataModels.TemperatureData{Actual:20.1, Target:0, Offset:0}
+    currentTemperatureData["tool2"] = dataModels.TemperatureData{Actual:30.1, Target:0, Offset:0}
+    currentTemperatureData["tool3"] = dataModels.TemperatureData{Actual:40.1, Target:0, Offset:0}
+    currentTemperatureData["tool4"] = dataModels.TemperatureData{Actual:50.1, Target:0, Offset:0}
+	return currentTemperatureData, nil
+	*/
+
 
 	logger.TraceLeave("Tools.GetCurrentTemperatureData()")
 	return temperatureDataResponse.TemperatureStateResponse.CurrentTemperatureData, nil

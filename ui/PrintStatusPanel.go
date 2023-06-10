@@ -28,6 +28,7 @@ type printStatusPanel struct {
 	tool1Button				*uiWidgets.ToolPrintingButton
 	tool2Button				*uiWidgets.ToolPrintingButton
 	tool3Button				*uiWidgets.ToolPrintingButton
+	tool4Button				*uiWidgets.ToolPrintingButton
 	bedButton  				*uiWidgets.ToolPrintingButton
 
 	// Statistics/Info
@@ -95,6 +96,7 @@ func (this *printStatusPanel) createToolButtons() {
 	this.tool1Button = uiWidgets.CreateToolPrintingButton( 2)
 	this.tool2Button = uiWidgets.CreateToolPrintingButton( 3)
 	this.tool3Button = uiWidgets.CreateToolPrintingButton( 4)
+	this.tool4Button = uiWidgets.CreateToolPrintingButton( 5)
 	this.bedButton   = uiWidgets.CreateToolPrintingButton(-1)
 
 	switch hotendCount {
@@ -118,6 +120,17 @@ func (this *printStatusPanel) createToolButtons() {
 			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
 			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
+			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
+
+		case 5:
+			this.Grid().Attach(this.tool0Button, 0, 0, 1, 1)
+			this.Grid().Attach(this.tool1Button, 1, 0, 1, 1)
+			this.Grid().Attach(this.tool2Button, 0, 1, 1, 1)
+			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
+			// this.Grid().Attach(this.tool4Button, 0, 2, 1, 1)
+			// this.Grid().Attach(this.bedButton,   1, 2, 1, 1)
+			// ...there's not enough sceen realestate for the 5th toolhead button,
+			// ...so use the same layout as the "4 toolhead" version:
 			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 	}
 }
@@ -293,6 +306,10 @@ func (this *printStatusPanel) updateToolTemperatures(temperature *dataModels.Tem
 			case "tool3":
 				logger.Debug("Updating the UI's tool3 temp")
 				this.tool3Button.SetLabel(text)
+
+			case "tool4":
+				logger.Debug("Updating the UI's tool4 temp")
+				this.tool4Button.SetLabel(text)
 
 			default:
 				logger.Errorf("PrintStatusPanel.updateToolTemperatures() - GetOctoPrintResponseManagerInstance() returned an unknown tool: %q", tool)

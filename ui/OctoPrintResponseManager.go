@@ -192,6 +192,20 @@ func (this *octoPrintResponseManager) update() {
 		return
 	}
 
+
+	/*
+	// Comment out the following to test for multiple hotends:
+	currentTemperatureData := make(map[string]dataModels.TemperatureData)
+	currentTemperatureData["bed"] = dataModels.TemperatureData{Actual:60.1, Target:0, Offset:0}
+    currentTemperatureData["tool0"] = dataModels.TemperatureData{Actual:110.1, Target:0, Offset:0}
+    currentTemperatureData["tool1"] = dataModels.TemperatureData{Actual:120.1, Target:0, Offset:0}
+    currentTemperatureData["tool2"] = dataModels.TemperatureData{Actual:130.1, Target:0, Offset:0}
+    currentTemperatureData["tool3"] = dataModels.TemperatureData{Actual:140.1, Target:0, Offset:0}
+    currentTemperatureData["tool4"] = dataModels.TemperatureData{Actual:150.1, Target:0, Offset:0}
+	fullStateResponse.Temperature.CurrentTemperatureData = currentTemperatureData
+	*/
+
+
 	this.FullStateResponse = *fullStateResponse
 
 	logger.TraceLeave("OctoPrintResponseManager.update()")
