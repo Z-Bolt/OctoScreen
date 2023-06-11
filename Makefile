@@ -21,19 +21,15 @@ ARCH = armhf
 # ARCH = amd64
 
 BULLSEYE_NAME := bullseye
-BULLSEYE_IMAGE := golang:1.19-bullseye
+BULLSEYE_IMAGE := golang:1.20-bullseye
 BULLSEYE_GO_TAGS := "gtk_3_24 glib_deprecated glib_2_66"
 
 # Buster's gtk 3.24.5 doesn't work with gtk_3_24 tag
 # Using gtk_3_22 produces some deprecation warnings, but it compiles
 # More info: https://github.com/gotk3/gotk3/issues/874
 BUSTER_NAME := buster
-BUSTER_IMAGE := golang:1.19-buster
+BUSTER_IMAGE := golang:1.20-buster
 BUSTER_GO_TAGS := "gtk_3_22 glib_deprecated glib_2_58 pango_1_42"
-
-STRETCH_NAME := stretch
-STRETCH_IMAGE := golang:1.19rc1-stretch
-STRETCH_GO_TAGS := "gtk_3_22 glib_deprecated glib_2_50 cairo_1_14 pango_1_40"
 
 # Build information
 #GIT_COMMIT = $(shell git rev-parse HEAD | cut -c1-7)

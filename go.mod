@@ -1,6 +1,6 @@
 module github.com/Z-Bolt/OctoScreen
 
-go 1.19
+go 1.20
 
 require (
 	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
