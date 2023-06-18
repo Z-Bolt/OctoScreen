@@ -180,7 +180,7 @@ func (this *printStatusPanel) createProgressBar() *gtk.ProgressBar {
 }
 
 func (this *printStatusPanel) createToolBarButtons() {
-	this.pauseButton = utils.MustButtonImage(
+	this.pauseButton = utils.MustButtonImageUsingFilePath(
 		"Pause",
 		"pause.svg",
 		this.handlePauseClicked,

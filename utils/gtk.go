@@ -129,18 +129,21 @@ func MustLabelWithImage(imageFileName, format string, args ...interface{}) *Labe
 
 // MustButtonImageStyle returns a new gtk.Button with the given label, image and clicked callback, if error panics.
 func MustButtonImageStyle(buttonlabel, imageFileName string, style string, clicked func()) *gtk.Button {
-	button := MustButtonImage(buttonlabel, imageFileName, clicked)
+	button := MustButtonImageUsingFilePath(buttonlabel, imageFileName, clicked)
 	ctx, _ := button.GetStyleContext()
 	ctx.AddClass(style)
 
 	return button
 }
-
-func MustButtonImage(buttonlabel, imageFileName string, clicked func()) *gtk.Button {
+func MustButtonImageUsingFilePath(buttonLabel string, imageFileName string, clicked func()) *gtk.Button {
 	image := MustImageFromFile(imageFileName)
-	button, err := gtk.ButtonNewWithLabel(buttonlabel)
+	return MustButtonImageUsingImage(buttonLabel, image, clicked)
+}
+
+func MustButtonImageUsingImage(buttonLabel string, image *gtk.Image, clicked func()) *gtk.Button {
+	button, err := gtk.ButtonNewWithLabel(buttonLabel)
 	if err != nil {
-		logger.LogError("PANIC!!! - MustButtonImage()", "gtk.ButtonNewWithLabel()", err)
+		logger.LogError("PANIC!!! - MustButtonImageUsingFilePath()", "gtk.ButtonNewWithLabel()", err)
 		panic(err)
 	}
 

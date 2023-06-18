@@ -142,7 +142,7 @@ func (this *bedLevelPanel) defineLevelingPoints() {
 func (this *bedLevelPanel) createLevelButton(placement string) *gtk.Button {
 	imageFileName := fmt.Sprintf("bed-level-parts/bed-corner-%s.svg", placement)
 	noLabel := ""
-	button := utils.MustButtonImage(noLabel, imageFileName, func() {
+	button := utils.MustButtonImageUsingFilePath(noLabel, imageFileName, func() {
 		this.goHomeIfRequired()
 
 		cmd := &octoprintApis.CommandRequest{}
@@ -180,7 +180,7 @@ func (this *bedLevelPanel) goHomeIfRequired() {
 }
 
 func (this *bedLevelPanel) createAutoLevelButton(gcode string) *gtk.Button {
-	button := utils.MustButtonImage("Auto Level", "bed-level.svg", func() {
+	button := utils.MustButtonImageUsingFilePath("Auto Level", "bed-level.svg", func() {
 		cmd := &octoprintApis.CommandRequest{}
 		cmd.Commands = []string{
 			gcode,

@@ -14,7 +14,7 @@ func CreateToolPrintingButton(
 ) *ToolPrintingButton {
 	imageFileName := ToolImageFileName(index)
 	instance := &ToolPrintingButton{
-		Button:  utils.MustButtonImage("", imageFileName, nil),
+		Button:  utils.MustButtonImageUsingFilePath("", imageFileName, nil),
 	}
 
 	ctx, _ := instance.GetStyleContext()

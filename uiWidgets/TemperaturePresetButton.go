@@ -26,7 +26,7 @@ func CreateTemperaturePresetButton(
 	callback					func(),
 ) *TemperaturePresetButton {
 	presetName := utils.StrEllipsisLen(temperaturePreset.Name, 10)
-	base := utils.MustButtonImage(presetName, imageFileName, nil)
+	base := utils.MustButtonImageUsingFilePath(presetName, imageFileName, nil)
 
 	instance := &TemperaturePresetButton{
 		Button:						base,

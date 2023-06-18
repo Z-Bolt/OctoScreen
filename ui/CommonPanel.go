@@ -92,7 +92,7 @@ func (this *CommonPanel) Initialize() {
 		this.AddButton(box)
 	}
 
-	this.backButton = utils.MustButtonImage("Back", "back.svg", this.UI.GoToPreviousPanel)
+	this.backButton = utils.MustButtonImageUsingFilePath("Back", "back.svg", this.UI.GoToPreviousPanel)
 	if this.includeBackButton {
 		this.AddButton(this.backButton)
 	}

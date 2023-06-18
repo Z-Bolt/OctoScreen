@@ -55,7 +55,7 @@ func CreateToolButton(
 	toolName := ToolName(index)
 
 	instance := &ToolButton{
-		Button:  utils.MustButtonImage("", imageFileName, nil),
+		Button:  utils.MustButtonImageUsingFilePath("", imageFileName, nil),
 		tool:    toolName,
 		printer: printer,
 	}

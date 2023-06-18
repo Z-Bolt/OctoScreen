@@ -21,7 +21,7 @@ func CreateCoolDownButton(
 	client						*octoprintApis.Client,
 	callback					func(),
 ) *CoolDownButton {
-	base := utils.MustButtonImage("All Off", "cool-down.svg", nil)
+	base := utils.MustButtonImageUsingFilePath("All Off", "cool-down.svg", nil)
 
 	instance := &CoolDownButton{
 		Button:						base,
