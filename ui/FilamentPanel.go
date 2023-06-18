@@ -9,6 +9,7 @@ import (
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
+	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
@@ -31,8 +32,9 @@ type filamentPanel struct {
 	filamentUnloadButton		*uiWidgets.FilamentLoadButton
 
 	// Third row
-	temperatureButton			*gtk.Button
 	selectExtruderStepButton	*uiWidgets.SelectToolStepButton
+	temperatureButton			*gtk.Button
+	filamentManagerButton		*gtk.Button
 }
 
 var filamentPanelInstance *filamentPanel
@@ -55,10 +57,9 @@ func (this *filamentPanel) initialize() {
 	defer this.Initialize()
 
 	// Create the step buttons first, since they are needed by some of the other controls.
-	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Client)
-	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton()
-	this.selectExtruderStepButton = uiWidgets.CreateSelectExtruderStepButton(this.UI.Client, false)
-
+	this.flowRateStepButton = uiWidgets.CreateFlowRateStepButton(this.UI.Client, 1, nil)
+	this.amountToExtrudeStepButton = uiWidgets.CreateAmountToExtrudeStepButton(2, nil)
+	this.selectExtruderStepButton = uiWidgets.CreateSelectExtruderStepButton(this.UI.Client, false, 3, nil)
 
 	// First row
 	this.filamentExtrudeButton = uiWidgets.CreateFilamentExtrudeButton(
@@ -112,14 +113,17 @@ func (this *filamentPanel) initialize() {
 
 
 	// Third row
-	this.temperatureButton = utils.MustButtonImageStyle("Temperature", "heat-up.svg", "color1", this.showTemperaturePanel)
-	this.Grid().Attach(this.temperatureButton, 0, 2, 1, 1)
-
 	// The select tool step button is needed by some of the other controls (to get the name/ID of the tool
 	// to send the command to), but only display it if multiple extruders are present.
 	extruderCount := utils.GetExtruderCount(this.UI.Client)
 	if extruderCount > 1 {
-		this.Grid().Attach(this.selectExtruderStepButton, 1, 2, 1, 1)
+		this.Grid().Attach(this.selectExtruderStepButton, 0, 2, 1, 1)
+	}
+
+	this.addTemperatureButton(1)
+
+	if utils.FilamentManagerPluginIsInstalled(this.UI.Client) {
+		this.addFilamentManagerButton(2)
 	}
 }
 
@@ -161,4 +165,33 @@ func (this *filamentPanel) updateTemperature() {
 
 func (this *filamentPanel) showTemperaturePanel() {
 	this.UI.GoToPanel(GetTemperaturePanelInstance(this.UI))
+}
+
+func (this *filamentPanel) addTemperatureButton(column int) {
+	this.temperatureButton = utils.MustButtonImageStyle("Temperature", "heat-up.svg", "color1", this.showTemperaturePanel)
+	this.Grid().Attach(this.temperatureButton, column, 2, 1, 1)
+}
+
+func (this *filamentPanel) addFilamentManagerButton(column int) {
+	// If we only have 1 tool head, skip the view for multiple toolheads.
+	filamentManagerSelectionsRequest := &octoprintApis.FilamentManagerSelectionsRequest {}
+	filamentManagerSelectionsResponse, _ := filamentManagerSelectionsRequest.Do(this.UI.Client)
+
+	filamentManagerSpoolsRequest := &octoprintApis.FilamentManagerSpoolsRequest {}
+	filamentManagerSpoolsResponse, _ := filamentManagerSpoolsRequest.Do(this.UI.Client)
+
+
+	if filamentManagerSelectionsResponse != nil {
+		this.filamentManagerButton = utils.MustButtonImageStyle(
+			"Filament Manager", "filament-manager.svg", "color2",
+			func() {
+				filamentManagerPanelInstance := GetFilamentManagerPanelInstance(
+					this.UI,
+					filamentManagerSelectionsResponse,
+					filamentManagerSpoolsResponse,
+				)
+				this.UI.GoToPanel(filamentManagerPanelInstance)
+			})
+		this.Grid().Attach(this.filamentManagerButton, column, 2, 1, 1)
+	}
 }
