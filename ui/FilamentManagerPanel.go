@@ -27,8 +27,8 @@ type filamentManagerPanel struct {
 	scrolledWindow					*gtk.ScrolledWindow
 	filamentManagerListBoxRows		[]*uiWidgets.FilamentManagerListBoxRow
 
-	filamentManagerSelections		*dataModels.FilamentManagerSelections
-	filamentManagerSpools			*dataModels.FilamentManagerSpools
+	filamentManagerSelections		*dataModels.FilamentManagerSelectionsResponse
+	filamentManagerSpools			*dataModels.FilamentManagerSpoolsResponse
 	spoolSelectionIds				[MAX_EXTRUDER_COUNT]int // Support up to 5 extruders.
 }
 
@@ -36,8 +36,8 @@ var filamentManagerPanelInstance *filamentManagerPanel
 
 func GetFilamentManagerPanelInstance(
 	ui							*UI,
-	filamentManagerSelections	*dataModels.FilamentManagerSelections,
-	filamentManagerSpools		*dataModels.FilamentManagerSpools,
+	filamentManagerSelections	*dataModels.FilamentManagerSelectionsResponse,
+	filamentManagerSpools		*dataModels.FilamentManagerSpoolsResponse,
 ) *filamentManagerPanel {
 	if filamentManagerPanelInstance == nil {
 		filamentManagerPanelInstance = &filamentManagerPanel {
@@ -52,8 +52,8 @@ func GetFilamentManagerPanelInstance(
 }
 
 func (this *filamentManagerPanel) initializeData(
-	filamentManagerSelections	*dataModels.FilamentManagerSelections,
-	filamentManagerSpools		*dataModels.FilamentManagerSpools,
+	filamentManagerSelections	*dataModels.FilamentManagerSelectionsResponse,
+	filamentManagerSpools		*dataModels.FilamentManagerSpoolsResponse,
 ) {
 	logger.TraceEnter("FilamentManagerPanel.initializeData()")
 

@@ -19,9 +19,9 @@ type DeleteFileRequest struct {
 }
 
 // Do sends an API request and returns error if any.
-func (req *DeleteFileRequest) Do(c *Client) error {
-	uri := fmt.Sprintf("%s/%s/%s", FilesApiUri, req.Location, req.Path)
-	if _, err := c.doJsonRequest("DELETE", uri, nil, FilesLocationDeleteErrors, true); err != nil {
+func (this *DeleteFileRequest) Do(client *Client) error {
+	uri := fmt.Sprintf("%s/%s/%s", FilesApiUri, this.Location, this.Path)
+	if _, err := client.doJsonRequest("DELETE", uri, nil, FilesLocationDeleteErrors, true); err != nil {
 		return err
 	}
 
