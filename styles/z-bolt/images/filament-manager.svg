@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Spools" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="62.227px" height="62.889px" viewBox="0 0 62.227 62.889" enable-background="new 0 0 62.227 62.889" xml:space="preserve">
+	<g id="Spool-Left">
+		<ellipse id="Outter_ring_4_" stroke="#FFFFFF" stroke-width="3.0024" stroke-miterlimit="10" cx="16.4" cy="31.589" rx="14.548" ry="29.188"/>
+		<ellipse id="Inner_ring_4_" stroke="#FFFFFF" stroke-width="3.0024" stroke-miterlimit="10" cx="16.4" cy="31.59" rx="6.791" ry="13.625"/>
+	</g>
+	<g id="Spool-Center">
+		<ellipse id="Outter_ring_3_" stroke="#FFFFFF" stroke-width="3.0024" stroke-miterlimit="10" cx="31.114" cy="31.589" rx="14.548" ry="29.188"/>
+		<ellipse id="Inner_ring_3_" stroke="#FFFFFF" stroke-width="3.0024" stroke-miterlimit="10" cx="31.114" cy="31.59" rx="6.791" ry="13.625"/>
+	</g>
+	<g id="Spool-Right">
+		<ellipse id="Outter_ring" stroke="#FFFFFF" stroke-width="3.0024" stroke-miterlimit="10" cx="45.828" cy="31.589" rx="14.548" ry="29.188"/>
+		<ellipse id="Inner_ring" stroke="#FFFFFF" stroke-width="3.0024" stroke-miterlimit="10" cx="45.828" cy="31.59" rx="6.791" ry="13.625"/>
+	</g>
+</svg>

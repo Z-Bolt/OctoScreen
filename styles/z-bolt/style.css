@@ -1,3 +1,9 @@
+.window-background-color {
+	background-color: #13181C;
+}
+
+
+
 window {
 	background-color: #13181C;
 	-gtk-icon-shadow: none;
@@ -37,8 +43,20 @@ progress {
 
 
 /* File browser *********************************************************** */
-.list-item-nth-child-even {
+.list-item-nth-child-even-background-color {
 	background-color: #34383C;
+}
+
+.list-item-nth-child-even-foreground-color {
+	color: #34383C;
+}
+
+.list-item-nth-child-odd-background-color {
+	background-color: #13181C;
+}
+
+.list-item-nth-child-odd-foreground-color {
+	color: #13181C;
 }
 
 .labels-box {
@@ -48,7 +66,6 @@ progress {
 .preview-image-list-item {
 	margin-bottom: 15px;
 }
-
 
 .list-box-row {
 	margin: 0;
@@ -103,7 +120,6 @@ button.color-none {
 
 .color-dash-1 {
 	background-image: linear-gradient(to right, #560FD1 60%, rgba(255, 255, 255, 0) 20%);
-
 	background-position: bottom;
 	background-size: 70px 8px;
 	background-repeat: repeat-x;
@@ -111,7 +127,13 @@ button.color-none {
 
 .color-dash-2 {
 	background-image: linear-gradient(to right, #C8ADF8 60%, rgba(255, 255, 255, 0) 20%);
+	background-position: bottom;
+	background-size: 70px 8px;
+	background-repeat: repeat-x;
+}
 
+.color-dash-3 {
+	background-image: linear-gradient(to right, rgb(187, 72, 253) 60%, rgba(255, 255, 255, 0) 20%);
 	background-position: bottom;
 	background-size: 70px 8px;
 	background-repeat: repeat-x;
@@ -124,9 +146,6 @@ button.color-none {
 .color-warning-sign-yellow-dark {
 	border-bottom: 8px solid #E6D300;
 }
-
-
-
 
 button.active {
 	background-color: #20303D;
@@ -333,9 +352,17 @@ button.keyboard {
 }
 
 
+.text-shadow-none {
+	text-shadow: none;
+}
 
 
 
+
+
+
+
+/* J-A-B */
 
 /*
 These solid background colors are only meant to aid in testing.
@@ -343,33 +370,80 @@ Do not use any of these in production.
 */
 .red-background {
 	background-color: red;
+	background-color: #550000;
 }
 
 .green-background {
 	background-color: green;
+	background-color: #005500;
 }
 
 .blue-background {
 	background-color: blue;
 }
 
+
+.cyan-background {
+	background-color: cyan;
+}
+
+.magenta-background {
+	background-color: magenta;
+}
+
 .yellow-background {
 	background-color: yellow;
 }
 
+.black-background {
+	background-color: black;
+}
+
+.white-background {
+	background-color: black;
+}
+
+
 .orange-background {
 	background-color: orange;
+}
+
+.pink-background {
+	background-color: pink;
 }
 
 .purple-background {
 	background-color: purple;
 }
 
-.cyan-background {
-	background-color: cyan;
+.red-foreground {
+	color: red;
 }
 
+.green-foreground {
+	color: green;
+}
 
-.red-foreground {
-	color: red
+.blue-foreground {
+	color: blue;
+}
+
+.white-foreground {
+	color: white;
+}
+
+.black-foreground {
+	color: black;
+}
+
+.blue-foreground {
+	color: blue;
+}
+
+.not-a-white-foreground {
+	color: red;
+}
+
+.blue-foreground {
+	color: blue;
 }
