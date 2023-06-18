@@ -23,7 +23,7 @@ func ImageNewFromSvg(svg string) (*gtk.Image, error) {
 
 
 
-// TODO: these were lifted from the ltest verson of GOTK3.  Update GOTK3 and then remove these.
+// TODO: these were lifted from the latest version of GOTK3.  Update GOTK3 and then remove these.
 // PixbufNewFromDataOnly is a convenient alternative to PixbufNewFromData() and also a wrapper around gdk_pixbuf_new_from_data().
 func PixbufNewFromDataOnly(pixbufData []byte) (*gdk.Pixbuf, error) {
 	pixbufLoader, err := gdk.PixbufLoaderNew()

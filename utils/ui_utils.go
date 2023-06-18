@@ -50,6 +50,7 @@ func CreateToolheadButtons(toolheadCount int) []*gtk.Button {
 	}
 
 	// TODO: maybe add support for a 5th hotend?
+	// ...maybe... right now tool_changer_panel is the only consumer of this.
 
 	return toolheadButtons
 }

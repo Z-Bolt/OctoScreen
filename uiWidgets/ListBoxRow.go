@@ -37,7 +37,6 @@ func CreateListBoxRow(
 // 		Object hierarchy:
 //			gtk.ListBoxRow (base)
 //				gtk.Box (rowContentsBox)
-													// TODO: remove this func (this *ListBoxRow) AddContent(widget gtk.IWidget) {
 func (this *ListBoxRow) Add(widget gtk.IWidget) {
 	this.rowContentsBox.Add(widget)
 }
