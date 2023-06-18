@@ -13,10 +13,13 @@ type FlowRateStepButton struct {
 }
 
 func CreateFlowRateStepButton(
-	client			*octoprintApis.Client,
+	client				*octoprintApis.Client,
+	colorVariation		int,
+	clicked				func(),
 ) *FlowRateStepButton {
 	base, err := CreateStepButton(
-		1,
+		colorVariation,
+		clicked,
 		Step{"Normal (100%)", "speed-normal.svg", nil, 100},
 		Step{"Fast (125%)",   "speed-fast.svg",   nil, 125},
 		Step{"Slow (75%)",    "speed-slow.svg",   nil,  75},

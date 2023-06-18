@@ -35,7 +35,7 @@ func (this *movePanel) initialize() {
 	defer this.Initialize()
 
 	// Create the step button first, since it is needed by some of the other controls.
-	this.amountToMoveStepButton = uiWidgets.CreateAmountToMoveStepButton()
+	this.amountToMoveStepButton = uiWidgets.CreateAmountToMoveStepButton(1, nil)
 
 	xAxisInverted, yAxisInverted, zAxisInverted := false, false, false
 	if this.UI.Settings != nil {

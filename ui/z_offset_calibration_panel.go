@@ -87,11 +87,9 @@ func (this *zOffsetCalibrationPanel) initialize() {
 }
 
 
-
-
 // First row
 func (this *zOffsetCalibrationPanel) CreateSelectToolStepButton() {
-	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, false)
+	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, false, 1, nil)
 	_, err := this.selectHotendStepButton.Connect("clicked", this.selectToolStepButtonHandleClick)
 	if err != nil {
 		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateSelectToolStepButton()", "selectHotendStepButton.Connect()", err)
@@ -181,10 +179,9 @@ func (this *zOffsetCalibrationPanel) CreateZOffsetLabel() *gtk.Label {
 }
 
 
-
 // Third row
 func (this *zOffsetCalibrationPanel) CreateManualZCalibrationStepButton() {
-	this.manualZCalibrationStepButton = uiWidgets.CreateManualZCalibrationStepButton()
+	this.manualZCalibrationStepButton = uiWidgets.CreateManualZCalibrationStepButton(2, nil)
 	_, err := this.manualZCalibrationStepButton.Connect("clicked", this.manualZCalibrationStepButtonHandleClick)
 	if err != nil {
 		logger.LogError("PANIC!!! - zOffsetCalibrationPanel.CreateManualZCalibrationStepButton()", "manualZCalibrationStepButton.Connect()", err)

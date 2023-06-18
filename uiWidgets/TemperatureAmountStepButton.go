@@ -8,9 +8,13 @@ type TemperatureAmountStepButton struct {
 	*StepButton
 }
 
-func CreateTemperatureAmountStepButton() *TemperatureAmountStepButton {
+func CreateTemperatureAmountStepButton(
+	colorVariation		int,
+	clicked				func(),
+) *TemperatureAmountStepButton {
 	base, err := CreateStepButton(
-		1,
+		colorVariation,
+		clicked,
 		Step{"10°C", "move-step.svg", nil, 10.0},
 		Step{"20°C", "move-step.svg", nil, 20.0},
 		Step{"50°C", "move-step.svg", nil, 50.0},

@@ -49,8 +49,8 @@ func (this *temperaturePanel) initialize() {
 	defer this.Initialize()
 
 	// Create the step buttons first, since they are needed by some of the other controls.
-	this.temperatureAmountStepButton = uiWidgets.CreateTemperatureAmountStepButton()
-	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, true)
+	this.selectHotendStepButton = uiWidgets.CreateSelectHotendStepButton(this.UI.Client, true, 1, nil)
+	this.temperatureAmountStepButton = uiWidgets.CreateTemperatureAmountStepButton(2, nil)
 
 
 	// First row

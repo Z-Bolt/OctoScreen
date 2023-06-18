@@ -8,9 +8,13 @@ type AmountToExtrudeStepButton struct {
 	*StepButton
 }
 
-func CreateAmountToExtrudeStepButton() *AmountToExtrudeStepButton {
+func CreateAmountToExtrudeStepButton(
+	colorVariation					int,
+	clicked							func(),
+) *AmountToExtrudeStepButton {
 	base, err := CreateStepButton(
-		2,
+		colorVariation,
+		clicked,
 		Step{" 20mm", "move-step.svg", nil,  20},
 		Step{" 50mm", "move-step.svg", nil,  50},
 		Step{"100mm", "move-step.svg", nil, 100},
