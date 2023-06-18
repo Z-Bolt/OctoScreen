@@ -27,8 +27,8 @@ type filamentManagerPanel struct {
 	scrolledWindow					*gtk.ScrolledWindow
 	filamentManagerListBoxRows		[]*uiWidgets.FilamentManagerListBoxRow
 
-	filamentManagerSelections		*dataModels.FilamentManagerSelectionsResponse
-	filamentManagerSpools			*dataModels.FilamentManagerSpoolsResponse
+	filamentManagerSelections		[]*dataModels.FilamentManagerSelection
+	filamentManagerSpools			[]*dataModels.FilamentManagerSpool
 	spoolSelectionIds				[MAX_EXTRUDER_COUNT]int // Support up to 5 extruders.
 }
 
@@ -36,8 +36,8 @@ var filamentManagerPanelInstance *filamentManagerPanel
 
 func GetFilamentManagerPanelInstance(
 	ui							*UI,
-	filamentManagerSelections	*dataModels.FilamentManagerSelectionsResponse,
-	filamentManagerSpools		*dataModels.FilamentManagerSpoolsResponse,
+	filamentManagerSelections	[]*dataModels.FilamentManagerSelection,
+	filamentManagerSpools		[]*dataModels.FilamentManagerSpool,
 ) *filamentManagerPanel {
 	if filamentManagerPanelInstance == nil {
 		filamentManagerPanelInstance = &filamentManagerPanel {
@@ -52,8 +52,8 @@ func GetFilamentManagerPanelInstance(
 }
 
 func (this *filamentManagerPanel) initializeData(
-	filamentManagerSelections	*dataModels.FilamentManagerSelectionsResponse,
-	filamentManagerSpools		*dataModels.FilamentManagerSpoolsResponse,
+	filamentManagerSelections	[]*dataModels.FilamentManagerSelection,
+	filamentManagerSpools		[]*dataModels.FilamentManagerSpool,
 ) {
 	logger.TraceEnter("FilamentManagerPanel.initializeData()")
 
@@ -71,8 +71,8 @@ func (this *filamentManagerPanel) initializeData(
 		this.spoolSelectionIds[i] = -1
 	}
 
-	for i := 0; i < len(this.filamentManagerSelections.Selections); i++ {
-		selection := this.filamentManagerSelections.Selections[i]
+	for i := 0; i < len(this.filamentManagerSelections); i++ {
+		selection := this.filamentManagerSelections[i]
 		toolIndex := selection.Tool
 		if toolIndex < 0 || toolIndex >= MAX_EXTRUDER_COUNT {
 			logger.Errorf("FilamentManagerPanel.initializeData() - toolIndex [%d] is invalid", i)
@@ -104,8 +104,13 @@ func (this *filamentManagerPanel) initializeUi() {
 		this.Grid().Attach(this.selectExtruderStepButton, 0, 0, 1, 1)
 	}
 
-	// Create the list.
-	// The list UI elemtn starts at column 1 row 0, and is 3 wide x 2 high.
+	this.createListBoxAndRows()
+
+	logger.TraceLeave("FilamentManagerPanel.initializeUi()")
+}
+
+func (this *filamentManagerPanel) createListBoxAndRows() {
+	// The list UI element starts at column 1 row 0, and is 3 wide x 2 high.
 	this.listBox = utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	this.listBox.SetVExpand(true)
 	ctx1, _ := this.listBox.GetStyleContext()
@@ -119,8 +124,8 @@ func (this *filamentManagerPanel) initializeUi() {
 
 	this.Grid().Attach(this.scrolledWindow, 1, 0, 3, 2)
 
-	for i := 0; i < len(this.filamentManagerSpools.Spools); i++ {
-		spool := this.filamentManagerSpools.Spools[i]
+	for i := 0; i < len(this.filamentManagerSpools); i++ {
+		spool := this.filamentManagerSpools[i]
 		
 		// When initializing, use the first extruder.
 		spoolIsSelected := (this.spoolSelectionIds[0] == spool.Id)
@@ -130,8 +135,6 @@ func (this *filamentManagerPanel) initializeUi() {
 
 		this.filamentManagerListBoxRows = append(this.filamentManagerListBoxRows, filamentManagerListBoxRow)
 	}
-
-	logger.TraceLeave("FilamentManagerPanel.initializeUi()")
 }
 
 func (this *filamentManagerPanel) handleExtruderStepClick() {
@@ -141,7 +144,7 @@ func (this *filamentManagerPanel) handleExtruderStepClick() {
 	this.logFilamentManagerSpools()
 
 	currentStepIndex := this.selectExtruderStepButton.CurrentStepIndex
-	// ...this is also the curent tool index
+	// ...this is also the curent tool index.
 
 	currentSelectedSpoolId := this.spoolSelectionIds[currentStepIndex]
 
@@ -230,7 +233,7 @@ func (this *filamentManagerPanel) updateData(currentStepIndex int, rowIndex int)
 		filamentManagerSelection := new(dataModels.FilamentManagerSelection)
 		filamentManagerSelection.Tool = toolId
 		filamentManagerSelection.Spool.Id = -1
-		this.filamentManagerSelections.Selections = append(this.filamentManagerSelections.Selections, filamentManagerSelection)
+		this.filamentManagerSelections = append(this.filamentManagerSelections, filamentManagerSelection)
 
 		logger.Debugf("FilamentManagerPanel.updateData() - dumping logFilamentManagerSelections() again")
 		this.logFilamentManagerSelections()
@@ -310,9 +313,9 @@ func (this *filamentManagerPanel) findFilamentManagerSelectionFromToolId(toolId 
 		return nil
 	}
 
-	maxSelections := len(this.filamentManagerSelections.Selections)
+	maxSelections := len(this.filamentManagerSelections)
 	for i := 0; i < maxSelections; i++ {
-		filamentManagerSelection := this.filamentManagerSelections.Selections[i]
+		filamentManagerSelection := this.filamentManagerSelections[i]
 
 		// filamentManagerSelection.Tool is an int (the index) and not "tool0"
 		if filamentManagerSelection.Tool == toolId {
@@ -324,13 +327,13 @@ func (this *filamentManagerPanel) findFilamentManagerSelectionFromToolId(toolId 
 }
 
 func (this *filamentManagerPanel) findfilamentManagerSpoolFromSpoolId(spoolId int) *dataModels.FilamentManagerSpool {
-	maxSpools := len(this.filamentManagerSpools.Spools)
+	maxSpools := len(this.filamentManagerSpools)
 	if spoolId < 0 || spoolId >= maxSpools {
 		return nil
 	}
 
 	for i := 0; i < maxSpools; i++ {
-		filamentManagerSpool := this.filamentManagerSpools.Spools[i]
+		filamentManagerSpool := this.filamentManagerSpools[i]
 
 		// filamentManagerSelection.Tool is an int (the index) and not "tool0"
 		if filamentManagerSpool.Id == spoolId {
@@ -342,12 +345,12 @@ func (this *filamentManagerPanel) findfilamentManagerSpoolFromSpoolId(spoolId in
 }
 
 func (this *filamentManagerPanel) findFilamentManagerSpoolFromListItemRowIndex(rowIndex int) *dataModels.FilamentManagerSpool {
-	maxSpools := len(this.filamentManagerSpools.Spools)
+	maxSpools := len(this.filamentManagerSpools)
 	if rowIndex < 0 || rowIndex >= maxSpools {
 		return nil
 	}
 
-	return this.filamentManagerSpools.Spools[rowIndex]
+	return this.filamentManagerSpools[rowIndex]
 }
 
 
@@ -356,8 +359,8 @@ func (this *filamentManagerPanel) findFilamentManagerSpoolFromListItemRowIndex(r
 func (this *filamentManagerPanel) logFilamentManagerSelections() {
 	logger.TraceEnter("FilamentManagerPanel.logFilamentManagerSelections()")
 
-	for i := 0; i < len(this.filamentManagerSelections.Selections); i++ {
-		filamentManagerSelection := this.filamentManagerSelections.Selections[i]
+	for i := 0; i < len(this.filamentManagerSelections); i++ {
+		filamentManagerSelection := this.filamentManagerSelections[i]
 		logger.Infof("logFilamentManagerSelections() - filamentManagerSelection[%d]: %v", i, filamentManagerSelection)
 	}
 
@@ -368,8 +371,8 @@ func (this *filamentManagerPanel) logFilamentManagerSelections() {
 func (this *filamentManagerPanel) logFilamentManagerSpools() {
 	logger.TraceEnter("FilamentManagerPanel.logFilamentManagerSpools()")
 
-	for i := 0; i < len(this.filamentManagerSpools.Spools); i++ {
-		filamentManagerSpool := this.filamentManagerSpools.Spools[i]
+	for i := 0; i < len(this.filamentManagerSpools); i++ {
+		filamentManagerSpool := this.filamentManagerSpools[i]
 		logger.Infof("logFilamentManagerSpools() - filamentManagerSpool[%d]: %v", i, filamentManagerSpool)
 	}
 

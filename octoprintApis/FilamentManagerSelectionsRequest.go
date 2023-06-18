@@ -8,10 +8,9 @@ import (
 )
 
 
-// Fetch the current selections from the FilamentManager Plugin
+// Fetch the current selections from the FilamentManager Plugin.
 type FilamentManagerSelectionsRequest struct {}
 
-// Do sends an API request and returns the API response
 func (this *FilamentManagerSelectionsRequest) Do(client *Client) (*dataModels.FilamentManagerSelectionsResponse, error) {
 	logger.TraceEnter("FilamentManagerSelectionsRequest.Do()")
 

@@ -180,15 +180,14 @@ func (this *filamentPanel) addFilamentManagerButton(column int) {
 	filamentManagerSpoolsRequest := &octoprintApis.FilamentManagerSpoolsRequest {}
 	filamentManagerSpoolsResponse, _ := filamentManagerSpoolsRequest.Do(this.UI.Client)
 
-
 	if filamentManagerSelectionsResponse != nil {
 		this.filamentManagerButton = utils.MustButtonImageStyle(
 			"Filament Manager", "filament-manager.svg", "color2",
 			func() {
 				filamentManagerPanelInstance := GetFilamentManagerPanelInstance(
 					this.UI,
-					filamentManagerSelectionsResponse,
-					filamentManagerSpoolsResponse,
+					filamentManagerSelectionsResponse.Selections,
+					filamentManagerSpoolsResponse.Spools,
 				)
 				this.UI.GoToPanel(filamentManagerPanelInstance)
 			})

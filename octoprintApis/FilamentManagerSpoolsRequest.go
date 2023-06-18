@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/Z-Bolt/OctoScreen/logger"
-
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 )
 

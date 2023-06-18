@@ -1,5 +1,6 @@
 package dataModels
 
+
 // ConnectionResponse is the response from a connection command.
 type FilamentManagerSpool struct {
 	// Cost of the spool
