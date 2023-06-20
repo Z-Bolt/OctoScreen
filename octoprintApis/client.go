@@ -35,14 +35,11 @@ type Client struct {
 // 'Access Control' is enabled at OctoPrint configuration an apiKey should be
 // provided (http://docs.octoprint.org/en/master/api/general.html#authorization).
 func NewClient(endpoint, apiKey string) *Client {
-	// Default timeout of 15 seconds.
-	duration := utils.GetExperimentalFrequency(15, "EXPERIMENTAL_HTTP_CLIENT_TIMEOUT")
-
 	return &Client {
 		Endpoint: endpoint,
 		APIKey:   apiKey,
 		httpClient: &http.Client {
-			Timeout: duration,
+			Timeout: time.Second * 15,
 			Transport: &http.Transport {
 				DisableKeepAlives: true,
 			},
