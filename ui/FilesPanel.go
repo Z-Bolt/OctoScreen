@@ -22,8 +22,7 @@ import (
 type filesPanel struct {
 	CommonPanel
 
-	listBox				*gtk.Box
-	scrolledWindow		*gtk.ScrolledWindow
+	scrollableListBox	*uiWidgets.ScrollableListBox
 	actionFooter		*uiWidgets.ActionFooter
 	locationHistory		utils.LocationHistory
 }
@@ -38,29 +37,20 @@ func GetFilesPanelInstance(
 			Locations: []dataModels.Location{},
 		}
 
-		instance := &filesPanel {
+		filesPanelInstance := &filesPanel {
 			CommonPanel: CreateCommonPanel("FilesPanel", ui),
 			locationHistory: locationHistory,
 		}
-		instance.initialize()
-		filesPanelInstance = instance
+		filesPanelInstance.initializeUi()
+		filesPanelInstance.initializeData()
 	}
 
 	return filesPanelInstance
 }
 
-func (this *filesPanel) initialize() {
-	this.listBox = utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	this.listBox.SetVExpand(true)
-
-	scroll, _ := gtk.ScrolledWindowNew(nil, nil)
-	scroll.SetProperty("overlay-scrolling", false)
-	scroll.Add(this.listBox)
-
-	box := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	box.Add(scroll)
-
-
+func (this *filesPanel) initializeUi() {
+	this.scrollableListBox = uiWidgets.CreateScrollableListBox()
+	this.Grid().Attach(this.scrollableListBox, 0, 0, 4, 2)
 
 	this.actionFooter = uiWidgets.CreateActionFooter(
 		this.Scaled(40),
@@ -68,33 +58,16 @@ func (this *filesPanel) initialize() {
 		this.doLoadFiles,
 		this.goBack,
 	)
-	box.Add(this.actionFooter)
+	this.Grid().Attach(this.actionFooter, 2, 2, 2, 1)
+}
 
-	this.Grid().Add(box)
-
+func (this *filesPanel) initializeData() {
 	this.doLoadFiles()
 }
 
-
-func (this *filesPanel) createListBoxAndRows() {
-	// The list UI element starts at column 1 row 0, and is 3 wide x 2 high.
-	this.listBox = utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	this.listBox.SetVExpand(true)
-	// ctx1, _ := this.listBox.GetStyleContext()
-	// ctx1.AddClass("red-background")
-
-	this.scrolledWindow, _ = gtk.ScrolledWindowNew(nil, nil)
-	this.scrolledWindow.SetProperty("overlay-scrolling", false)
-	// ctx2, _ := this.scrolledWindow.GetStyleContext()
-	// ctx2.AddClass("green-background")
-	this.scrolledWindow.Add(this.listBox)
-
-}
-
-
-
 func (this *filesPanel) doLoadFiles() {
-	utils.EmptyTheContainer(&this.listBox.Container)
+	utils.EmptyTheContainer(this.scrollableListBox.ListBoxContainer())
+
 	atRootLevel := this.displayRootLocations()
 	// If we are at the "root" level (where the option for Local (OctoPrint) and SD are displayed),
 	// but SD is not ready, push us up into Local so the user doesn't have to work harder than
@@ -113,7 +86,7 @@ func (this *filesPanel) doLoadFiles() {
 		this.addSortedFiles(sortedFiles)
 	}
 
-	this.listBox.ShowAll()
+	this.scrollableListBox.ShowAll()
 }
 
 func (this *filesPanel) sdIsReady() bool {
@@ -224,7 +197,7 @@ func (this *filesPanel) addMessage(message string) {
 	listItemFrame, _ := gtk.FrameNew("")
 	listItemFrame.Add(listItemBox)
 
-	this.listBox.Add(listItemFrame)
+	this.scrollableListBox.Add(listItemFrame)
 }
 
 func (this *filesPanel) addRootLocation(location dataModels.Location) {
@@ -233,7 +206,7 @@ func (this *filesPanel) addRootLocation(location dataModels.Location) {
 	listBoxRow, _ := gtk.ListBoxRowNew()
 	listBoxRow.Add(rootLocationButton)
 
-	this.listBox.Add(listBoxRow)
+	this.scrollableListBox.Add(listBoxRow)
 }
 
 func (this *filesPanel) createRootLocationButton(location dataModels.Location) *gtk.Button {
@@ -343,7 +316,7 @@ func (this *filesPanel) addItem(
 	}
 	listBoxRow.Add(listItemButton)
 
-	this.listBox.Add(listBoxRow)
+	this.scrollableListBox.Add(listBoxRow)
 }
 
 func (this *filesPanel) createInfoAndActionRow(
@@ -408,9 +381,9 @@ func (this *filesPanel) createPreviewRow(fileResponse *dataModels.FileResponse) 
 }
 
 func (this *filesPanel) createListItemButton(
-	fileResponse *dataModels.FileResponse,
-	index int,
-	isFolder bool,
+	fileResponse		*dataModels.FileResponse,
+	index				int,
+	isFolder			bool,
 ) *gtk.Button {
 	listItemButton, _ := gtk.ButtonNew()
 	listItemButtonStyleContext, _ := listItemButton.GetStyleContext()
@@ -549,8 +522,8 @@ func (this *filesPanel) createPrintImage() *gtk.Image {
 }
 
 func (this *filesPanel) createActionImage(
-	imageFileName string,
-	colorClass string,
+	imageFileName		string,
+	colorClass			string,
 ) *gtk.Image {
 	image := utils.MustImageFromFileWithSize(
 		imageFileName,

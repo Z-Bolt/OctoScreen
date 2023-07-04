@@ -6,7 +6,7 @@ import (
 	// "strings"
 
 	// "github.com/gotk3/gotk3/gdk"
-	"github.com/gotk3/gotk3/gtk"
+	// "github.com/gotk3/gotk3/gtk"
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
@@ -23,8 +23,7 @@ type filamentManagerPanel struct {
 	CommonPanel
 
 	selectExtruderStepButton		*uiWidgets.SelectToolStepButton
-	listBox							*gtk.Box
-	scrolledWindow					*gtk.ScrolledWindow
+	scrollableListBox				*uiWidgets.ScrollableListBox
 	filamentManagerListBoxRows		[]*uiWidgets.FilamentManagerListBoxRow
 
 	filamentManagerSelections		[]*dataModels.FilamentManagerSelection
@@ -110,19 +109,8 @@ func (this *filamentManagerPanel) initializeUi() {
 }
 
 func (this *filamentManagerPanel) createListBoxAndRows() {
-	// The list UI element starts at column 1 row 0, and is 3 wide x 2 high.
-	this.listBox = utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	this.listBox.SetVExpand(true)
-	ctx1, _ := this.listBox.GetStyleContext()
-	ctx1.AddClass("red-background")
-
-	this.scrolledWindow, _ = gtk.ScrolledWindowNew(nil, nil)
-	this.scrolledWindow.SetProperty("overlay-scrolling", false)
-	ctx2, _ := this.scrolledWindow.GetStyleContext()
-	ctx2.AddClass("green-background")
-	this.scrolledWindow.Add(this.listBox)
-
-	this.Grid().Attach(this.scrolledWindow, 1, 0, 3, 2)
+	this.scrollableListBox = uiWidgets.CreateScrollableListBox()
+	this.Grid().Attach(this.scrollableListBox, 1, 0, 3, 2)
 
 	for i := 0; i < len(this.filamentManagerSpools); i++ {
 		spool := this.filamentManagerSpools[i]
@@ -131,7 +119,7 @@ func (this *filamentManagerPanel) createListBoxAndRows() {
 		spoolIsSelected := (this.spoolSelectionIds[0] == spool.Id)
 
 		filamentManagerListBoxRow := uiWidgets.CreateFilamentManagerListBoxRow(spool, i, spoolIsSelected, this.handleRowButtonClick)
-		this.listBox.Add(filamentManagerListBoxRow)
+		this.scrollableListBox.Add(filamentManagerListBoxRow)
 
 		this.filamentManagerListBoxRows = append(this.filamentManagerListBoxRows, filamentManagerListBoxRow)
 	}
