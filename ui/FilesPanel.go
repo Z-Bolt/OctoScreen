@@ -14,7 +14,7 @@ import (
 	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
-	// "github.com/Z-Bolt/OctoScreen/uiWidgets"
+	"github.com/Z-Bolt/OctoScreen/uiWidgets"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
@@ -23,8 +23,8 @@ type filesPanel struct {
 	CommonPanel
 
 	listBox				*gtk.Box
-	refreshButton		*gtk.Button
-	backButton			*gtk.Button
+	scrolledWindow		*gtk.ScrolledWindow
+	actionFooter		*uiWidgets.ActionFooter
 	locationHistory		utils.LocationHistory
 }
 
@@ -59,71 +59,72 @@ func (this *filesPanel) initialize() {
 
 	box := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	box.Add(scroll)
-	box.Add(this.createActionFooter())
+
+
+
+	this.actionFooter = uiWidgets.CreateActionFooter(
+		this.Scaled(40),
+		this.Scaled(40),
+		this.doLoadFiles,
+		this.goBack,
+	)
+	box.Add(this.actionFooter)
+
 	this.Grid().Add(box)
 
 	this.doLoadFiles()
 }
 
-func (this *filesPanel) createActionFooter() *gtk.Box {
-	actionBar := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actionBar.SetHAlign(gtk.ALIGN_END)
-	actionBar.SetHExpand(true)
-	actionBar.SetMarginTop(5)
-	actionBar.SetMarginBottom(5)
-	actionBar.SetMarginEnd(5)
 
-	this.refreshButton = this.createRefreshButton()
-	actionBar.Add(this.refreshButton)
+func (this *filesPanel) createListBoxAndRows() {
+	// The list UI element starts at column 1 row 0, and is 3 wide x 2 high.
+	this.listBox = utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
+	this.listBox.SetVExpand(true)
+	// ctx1, _ := this.listBox.GetStyleContext()
+	// ctx1.AddClass("red-background")
 
-	this.backButton = this.createBackButton()
-	actionBar.Add(this.backButton)
+	this.scrolledWindow, _ = gtk.ScrolledWindowNew(nil, nil)
+	this.scrolledWindow.SetProperty("overlay-scrolling", false)
+	// ctx2, _ := this.scrolledWindow.GetStyleContext()
+	// ctx2.AddClass("green-background")
+	this.scrolledWindow.Add(this.listBox)
 
-	return actionBar
 }
 
-func (this *filesPanel) createRefreshButton() *gtk.Button {
-	image := utils.MustImageFromFileWithSize("refresh.svg", this.Scaled(40), this.Scaled(40))
-	return utils.MustButton(image, this.doLoadFiles)
-}
 
-func (this *filesPanel) createBackButton() *gtk.Button {
-	image := utils.MustImageFromFileWithSize("back.svg", this.Scaled(40), this.Scaled(40))
-	return utils.MustButton(image, this.goBack)
-}
 
 func (this *filesPanel) doLoadFiles() {
 	utils.EmptyTheContainer(&this.listBox.Container)
 	atRootLevel := this.displayRootLocations()
-	/*
-	 * If we are at `root` (display the option for SD AND Local), but SD is not
-	 * ready, push us up and into Local so the user doesn't have to work harder
-	 * than they have to.
-	 */
+	// If we are at the "root" level (where the option for Local (OctoPrint) and SD are displayed),
+	// but SD is not ready, push us up into Local so the user doesn't have to work harder than
+	// they have to.
 	if atRootLevel && !this.sdIsReady() {
 		atRootLevel = false
 		this.locationHistory = utils.LocationHistory {
 			Locations: []dataModels.Location{dataModels.Local},
 		}
 	}
+
 	if atRootLevel {
 		this.addRootLocations()
 	} else {
 		sortedFiles := this.getSortedFiles()
 		this.addSortedFiles(sortedFiles)
 	}
+
 	this.listBox.ShowAll()
 }
 
 func (this *filesPanel) sdIsReady() bool {
 	err := (&octoprintApis.SdRefreshRequest {}).Do(this.UI.Client)
-	if err == nil {
-		sdState, err := (&octoprintApis.SdStateRequest {}).Do(this.UI.Client)
-		if err == nil && sdState.IsReady == true {
-			return true
-		} else {
-			return false
-		}
+	if err != nil {
+		return false
+	}
+
+	sdState, err := (&octoprintApis.SdStateRequest {}).Do(this.UI.Client)
+	if err == nil && sdState.IsReady == true {
+		return true
 	} else {
 		return false
 	}
@@ -352,7 +353,6 @@ func (this *filesPanel) createInfoAndActionRow(
 ) *gtk.Box {
 	infoAndActionRow := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 
-
 	// Column 1: Folder or File icon
 	var itemImage *gtk.Image
 	if isFolder {
@@ -369,15 +369,16 @@ func (this *filesPanel) createInfoAndActionRow(
 
 	infoLabel := utils.MustLabel("")
 	infoLabel.SetHAlign(gtk.ALIGN_START)
+
+	uploadedSize := humanize.Bytes(uint64(fileResponse.Size))
+	markup := ""
 	if isFolder {
-		infoLabel.SetMarkup(fmt.Sprintf("<small>Size: <b>%s</b></small>",
-			humanize.Bytes(uint64(fileResponse.Size)),
-		))
+		markup = fmt.Sprintf("<small>Size: <b>%s</b></small>", uploadedSize)
 	} else {
-		infoLabel.SetMarkup(fmt.Sprintf("<small>Uploaded: <b>%s</b> - Size: <b>%s</b></small>",
-			humanize.Time(fileResponse.Date.Time), humanize.Bytes(uint64(fileResponse.Size)),
-		))
+		uploadedTime := humanize.Time(fileResponse.Date.Time)
+		markup = fmt.Sprintf("<small>Uploaded: <b>%s</b> - Size: <b>%s</b></small>", uploadedTime, uploadedSize)
 	}
+	infoLabel.SetMarkup(markup)
 
 	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
 	infoAndActionRow.Add(labelsBox)
@@ -463,9 +464,11 @@ func (this *filesPanel) createLabelsBox(
 	if nameLabel != nil {
 		labelsBox.Add(nameLabel)
 	}
+
 	if infoLabel != nil {
 		labelsBox.Add(infoLabel)
 	}
+
 	labelsBox.SetVExpand(false)
 	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
 	labelsBox.SetHAlign(gtk.ALIGN_START)
@@ -498,37 +501,41 @@ func (this *filesPanel) addThumbnail(
 	fileResponse *dataModels.FileResponse,
 	listItemBox *gtk.Box,
 ) {
-	if fileResponse.Thumbnail != "" {
-		logger.Debugf("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
-
-		octoScreenConfig := utils.GetOctoScreenConfigInstance()
-		octoPrintConfig := octoScreenConfig.OctoPrintConfig
-		thumbnailUrl := fmt.Sprintf("%s/%s", octoPrintConfig.Server.Host, fileResponse.Thumbnail)
-		logger.Debugf("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
-
-		previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
-		if imageFromUrlErr == nil {
-			logger.Debugf("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
-
-			bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
-
-			// Initially was setting the horizontal alignment with CSS, but different resolutions
-			// (eg 800x480 vs 480x320) didn't align correctly, so I added a blank SVG to offset
-			// the preview thumbnail image.
-			spacerImage := utils.MustImageFromFileWithSize("blank.svg", this.Scaled(35), this.Scaled(35))
-			bottomBox.Add(spacerImage)
-
-			// Still need some CSS for the bottom margin.
-			previewImageStyleContext, _ := previewImage.GetStyleContext()
-			previewImageStyleContext.AddClass("preview-image-list-item")
-
-			// OK, now add the preview image.
-			bottomBox.Add(previewImage)
-
-			// ...and finally add everything to the bottom box/container.
-			listItemBox.Add(bottomBox)
-		}
+	if fileResponse.Thumbnail == "" {
+		return;
 	}
+
+	logger.Debugf("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
+
+	octoScreenConfig := utils.GetOctoScreenConfigInstance()
+	octoPrintConfig := octoScreenConfig.OctoPrintConfig
+	thumbnailUrl := fmt.Sprintf("%s/%s", octoPrintConfig.Server.Host, fileResponse.Thumbnail)
+	logger.Debugf("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
+
+	previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
+	if imageFromUrlErr != nil {
+		return
+	}
+
+	logger.Debugf("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
+
+	bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
+
+	// Initially was setting the horizontal alignment with CSS, but different resolutions
+	// (eg 800x480 vs 480x320) didn't align correctly, so I added a blank SVG to offset
+	// the preview thumbnail image.
+	spacerImage := utils.MustImageFromFileWithSize("blank.svg", this.Scaled(35), this.Scaled(35))
+	bottomBox.Add(spacerImage)
+
+	// Still need some CSS for the bottom margin.
+	previewImageStyleContext, _ := previewImage.GetStyleContext()
+	previewImageStyleContext.AddClass("preview-image-list-item")
+
+	// OK, now add the preview image.
+	bottomBox.Add(previewImage)
+
+	// ...and finally add everything to the bottom box/container.
+	listItemBox.Add(bottomBox)
 }
 
 func (this *filesPanel) createOpenLocationImage(index int) *gtk.Image {
@@ -556,8 +563,6 @@ func (this *filesPanel) createActionImage(
 
 	return image
 }
-
-
 
 /*
 func (this *filesPanel) isReady() bool {
