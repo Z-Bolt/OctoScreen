@@ -133,8 +133,8 @@ func (this *filesPanel) goBack() {
 	if this.displayRootLocations() {
 		this.UI.GoToPreviousPanel()
 	} else if this.locationHistory.IsRoot() {
-		this.locationHistory.GoBack()
 		if this.sdIsReady() {
+			this.locationHistory.GoBack()
 			this.doLoadFiles()
 		} else {
 			this.UI.GoToPreviousPanel()
