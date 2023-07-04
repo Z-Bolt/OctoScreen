@@ -27,7 +27,7 @@ func CreateAmountToExtrudeStepButton(
 		panic(err)
 	}
 
-	instance := &AmountToExtrudeStepButton{
+	instance := &AmountToExtrudeStepButton {
 		StepButton: base,
 	}
 

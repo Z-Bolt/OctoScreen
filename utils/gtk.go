@@ -128,8 +128,8 @@ func MustLabelWithImage(imageFileName, format string, args ...interface{}) *Labe
 }
 
 // MustButtonImageStyle returns a new gtk.Button with the given label, image and clicked callback, if error panics.
-func MustButtonImageStyle(buttonlabel, imageFileName string, style string, clicked func()) *gtk.Button {
-	button := MustButtonImageUsingFilePath(buttonlabel, imageFileName, clicked)
+func MustButtonImageStyle(buttonLabel, imageFileName string, style string, clicked func()) *gtk.Button {
+	button := MustButtonImageUsingFilePath(buttonLabel, imageFileName, clicked)
 	ctx, _ := button.GetStyleContext()
 	ctx.AddClass(style)
 
