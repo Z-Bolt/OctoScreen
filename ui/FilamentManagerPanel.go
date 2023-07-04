@@ -126,7 +126,7 @@ func (this *filamentManagerPanel) createListBoxAndRows() {
 
 	for i := 0; i < len(this.filamentManagerSpools); i++ {
 		spool := this.filamentManagerSpools[i]
-		
+
 		// When initializing, use the first extruder.
 		spoolIsSelected := (this.spoolSelectionIds[0] == spool.Id)
 
@@ -144,15 +144,15 @@ func (this *filamentManagerPanel) handleExtruderStepClick() {
 	this.logFilamentManagerSpools()
 
 	currentStepIndex := this.selectExtruderStepButton.CurrentStepIndex
-	// ...this is also the curent tool index.
+	// ...this is also the current tool index.
 
 	currentSelectedSpoolId := this.spoolSelectionIds[currentStepIndex]
 
-	litemItemIndex := this.findListItemRowIndexFromSpoolId(currentSelectedSpoolId)
-	// It's OK if litemItemIndex is -1...
+	listItemIndex := this.findListItemRowIndexFromSpoolId(currentSelectedSpoolId)
+	// It's OK if listItemIndex is -1...
 	// ...when it's -1 that means there are no selected spools, and the list becomes unchecked.
 
-	this.updateRadioButtons(litemItemIndex)
+	this.updateRadioButtons(listItemIndex)
 
 	logger.TraceLeave("FilamentManagerPanel.handleExtruderStepClick()")
 }
@@ -167,7 +167,7 @@ func (this *filamentManagerPanel) handleRowButtonClick(sender *uiWidgets.SvgImag
 
 		currentStepIndex := this.selectExtruderStepButton.CurrentStepIndex
 		logger.Debugf("FilamentManagerPanel.handleRowButtonClick() - currentStepIndex: %d", currentStepIndex)
-			
+
 		this.updateRadioButtons(rowIndex)
 		this.updateData(currentStepIndex, rowIndex)
 		this.sendUpdateToOctoPrint(currentStepIndex)
@@ -207,7 +207,7 @@ func (this *filamentManagerPanel) updateData(currentStepIndex int, rowIndex int)
 	// rowIndex is the newly selected spool ID.
 	logger.Debugf("FilamentManagerPanel.updateData() - rowIndex: %d", rowIndex)
 
-	// currentStepIndex is AKA the curent tool index.
+	// currentStepIndex is AKA the current tool index.
 	toolId := currentStepIndex
 	logger.Debugf("FilamentManagerPanel.updateData() - toolId: %d", toolId)
 
@@ -282,7 +282,7 @@ func (this *filamentManagerPanel) sendUpdateToOctoPrint(currentStepIndex int) {
 
 	logger.Debugf("FilamentManagerPanel.sendUpdateToOctoPrint() - response: %v", response)
 
-	// NOTE: The UI in OctoScreen does not upadate the change, and one needs to
+	// NOTE: The UI in OctoScreen does not update the change, and one needs to
 	// manually refresh the web page in order to see the change.
 
 	logger.TraceLeave("FilamentManagerPanel.sendUpdateToOctoPrint()")
@@ -326,7 +326,7 @@ func (this *filamentManagerPanel) findFilamentManagerSelectionFromToolId(toolId 
 	return nil
 }
 
-func (this *filamentManagerPanel) findfilamentManagerSpoolFromSpoolId(spoolId int) *dataModels.FilamentManagerSpool {
+func (this *filamentManagerPanel) findFilamentManagerSpoolFromSpoolId(spoolId int) *dataModels.FilamentManagerSpool {
 	maxSpools := len(this.filamentManagerSpools)
 	if spoolId < 0 || spoolId >= maxSpools {
 		return nil
