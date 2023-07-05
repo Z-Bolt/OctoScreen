@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dustin/go-humanize"
+	// "github.com/dustin/go-humanize"
 	"github.com/gotk3/gotk3/gtk"
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
@@ -37,12 +37,13 @@ func GetFilesPanelInstance(
 			Locations: []dataModels.Location{},
 		}
 
-		filesPanelInstance := &filesPanel {
+		instance := &filesPanel {
 			CommonPanel: CreateCommonPanel("FilesPanel", ui),
 			locationHistory: locationHistory,
 		}
-		filesPanelInstance.initializeUi()
-		filesPanelInstance.initializeData()
+		instance.initializeUi()
+		instance.initializeData()
+		filesPanelInstance = instance
 	}
 
 	return filesPanelInstance
@@ -184,8 +185,8 @@ func (this *filesPanel) addRootLocations() {
 }
 
 func (this *filesPanel) addMessage(message string) {
-	nameLabel := this.createNameLabel(message)
-	labelsBox := this.createLabelsBox(nameLabel, nil)
+	nameLabel := uiWidgets.CreateNameLabel(message)
+	labelsBox := uiWidgets.CreateLabelsBox(nameLabel, nil)
 	labelsBox.SetMarginStart(10)
 
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -226,21 +227,21 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 	} else {
 		name = "  SD Card"
 	}
-	nameLabel := this.createNameLabel(name)
+	nameLabel := uiWidgets.CreateNameLabel(name)
 
 	infoLabel := utils.MustLabel("")
 	infoLabel.SetHAlign(gtk.ALIGN_START)
 	infoLabel.SetMarkup("<small> </small>")
 
-	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
+	labelsBox := uiWidgets.CreateLabelsBox(nameLabel, infoLabel)
 	topBox.Add(labelsBox)
 
 
 	var actionImage *gtk.Image
 	if location == dataModels.Local {
-		actionImage = this.createOpenLocationImage(0)
+		actionImage = uiWidgets.CreateOpenLocationImage(0, this.Scaled(40), this.Scaled(40))
 	} else {
-		actionImage = this.createOpenLocationImage(1)
+		actionImage = uiWidgets.CreateOpenLocationImage(1, this.Scaled(40), this.Scaled(40))
 	}
 
 	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -338,31 +339,18 @@ func (this *filesPanel) createInfoAndActionRow(
 
 	// Column 2: File name and file info
 	name := fileResponse.Name
-	nameLabel := this.createNameLabel(name)
-
-	infoLabel := utils.MustLabel("")
-	infoLabel.SetHAlign(gtk.ALIGN_START)
-
-	uploadedSize := humanize.Bytes(uint64(fileResponse.Size))
-	markup := ""
-	if isFolder {
-		markup = fmt.Sprintf("<small>Size: <b>%s</b></small>", uploadedSize)
-	} else {
-		uploadedTime := humanize.Time(fileResponse.Date.Time)
-		markup = fmt.Sprintf("<small>Uploaded: <b>%s</b> - Size: <b>%s</b></small>", uploadedTime, uploadedSize)
-	}
-	infoLabel.SetMarkup(markup)
-
-	labelsBox := this.createLabelsBox(nameLabel, infoLabel)
+	nameLabel := uiWidgets.CreateNameLabel(name)
+	infoLabel := uiWidgets.CreateInfoLabel(fileResponse, isFolder)
+	labelsBox := uiWidgets.CreateLabelsBox(nameLabel, infoLabel)
 	infoAndActionRow.Add(labelsBox)
 
 
 	// Column 3: printer image
 	var actionImage *gtk.Image
 	if isFolder {
-		actionImage = this.createOpenLocationImage(index)
+		actionImage = uiWidgets.CreateOpenLocationImage(index, this.Scaled(40), this.Scaled(40))
 	} else {
-		actionImage = this.createPrintImage()
+		actionImage = uiWidgets.CreatePrintImage(this.Scaled(40), this.Scaled(40))
 	}
 
 	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
@@ -429,37 +417,6 @@ func (this *filesPanel) createListItemButton(
 	return listItemButton
 }
 
-func (this *filesPanel) createLabelsBox(
-	nameLabel *gtk.Label,
-	infoLabel *gtk.Label,
-) *gtk.Box {
-	labelsBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	if nameLabel != nil {
-		labelsBox.Add(nameLabel)
-	}
-
-	if infoLabel != nil {
-		labelsBox.Add(infoLabel)
-	}
-
-	labelsBox.SetVExpand(false)
-	labelsBox.SetVAlign(gtk.ALIGN_CENTER)
-	labelsBox.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := labelsBox.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
-
-	return labelsBox
-}
-
-func (this *filesPanel) createNameLabel(name string) *gtk.Label {
-	nameLabel := utils.MustLabel(name)
-	nameLabel.SetMarkup(fmt.Sprintf("<big>%s</big>", utils.TruncateString(name, 30)))
-	nameLabel.SetHExpand(true)
-	nameLabel.SetHAlign(gtk.ALIGN_START)
-
-	return nameLabel
-}
-
 func (this *filesPanel) createListItemBox() *gtk.Box {
 	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	listItemBox.SetMarginTop(0)
@@ -511,31 +468,6 @@ func (this *filesPanel) addThumbnail(
 	listItemBox.Add(bottomBox)
 }
 
-func (this *filesPanel) createOpenLocationImage(index int) *gtk.Image {
-	colorClass := fmt.Sprintf("color%d", (index % 4) + 1)
-
-	return this.createActionImage("open.svg", colorClass)
-}
-
-func (this *filesPanel) createPrintImage() *gtk.Image {
-	return this.createActionImage("print.svg", "color-warning-sign-yellow")
-}
-
-func (this *filesPanel) createActionImage(
-	imageFileName		string,
-	colorClass			string,
-) *gtk.Image {
-	image := utils.MustImageFromFileWithSize(
-		imageFileName,
-		this.Scaled(40),
-		this.Scaled(40),
-	)
-
-	imageStyleContext, _ := image.GetStyleContext()
-	imageStyleContext.AddClass(colorClass)
-
-	return image
-}
 
 /*
 func (this *filesPanel) isReady() bool {

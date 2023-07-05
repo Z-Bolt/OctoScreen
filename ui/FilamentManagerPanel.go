@@ -39,12 +39,13 @@ func GetFilamentManagerPanelInstance(
 	filamentManagerSpools		[]*dataModels.FilamentManagerSpool,
 ) *filamentManagerPanel {
 	if filamentManagerPanelInstance == nil {
-		filamentManagerPanelInstance = &filamentManagerPanel {
+		instance := &filamentManagerPanel {
 			CommonPanel: CreateCommonPanel("FilamentManagerPanel", ui),
 		}
 
-		filamentManagerPanelInstance.initializeData(filamentManagerSelections, filamentManagerSpools)
-		filamentManagerPanelInstance.initializeUi()
+		instance.initializeData(filamentManagerSelections, filamentManagerSpools)
+		instance.initializeUi()
+		filamentManagerPanelInstance = instance
 	}
 
 	return filamentManagerPanelInstance
@@ -103,15 +104,18 @@ func (this *filamentManagerPanel) initializeUi() {
 		this.Grid().Attach(this.selectExtruderStepButton, 0, 0, 1, 1)
 	}
 
-	this.createListBoxAndRows()
+	this.createListBox()
+	this.createListBoxRows()
 
 	logger.TraceLeave("FilamentManagerPanel.initializeUi()")
 }
 
-func (this *filamentManagerPanel) createListBoxAndRows() {
+func (this *filamentManagerPanel) createListBox() {
 	this.scrollableListBox = uiWidgets.CreateScrollableListBox()
 	this.Grid().Attach(this.scrollableListBox, 1, 0, 3, 2)
+}
 
+func (this *filamentManagerPanel) createListBoxRows() {
 	for i := 0; i < len(this.filamentManagerSpools); i++ {
 		spool := this.filamentManagerSpools[i]
 
@@ -342,7 +346,6 @@ func (this *filamentManagerPanel) findFilamentManagerSpoolFromListItemRowIndex(r
 }
 
 
-
 // Some helper routines for debugging.
 func (this *filamentManagerPanel) logFilamentManagerSelections() {
 	logger.TraceEnter("FilamentManagerPanel.logFilamentManagerSelections()")
@@ -354,7 +357,6 @@ func (this *filamentManagerPanel) logFilamentManagerSelections() {
 
 	logger.TraceLeave("FilamentManagerPanel.logFilamentManagerSelections()")
 }
-
 
 func (this *filamentManagerPanel) logFilamentManagerSpools() {
 	logger.TraceEnter("FilamentManagerPanel.logFilamentManagerSpools()")

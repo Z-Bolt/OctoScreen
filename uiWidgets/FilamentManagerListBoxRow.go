@@ -147,7 +147,7 @@ func (this *FilamentManagerListBoxRow) getSpoolColor() string {
 	if strings.Contains(name, "silver") {
 		return "silver"
 	}
-	
+
 	// Default to passing the background color of the row.
 	if this.rowIndex % 2 != 0 {
 		// .list-item-nth-child-even-background-color
@@ -171,15 +171,15 @@ func (this *FilamentManagerListBoxRow) createSpoolInfoBox() *gtk.Box {
 	materialLabel := utils.MustLabel("<small>Material: %s</small>", this.FilamentManagerSpool.Profile.Material)
 	materialLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(materialLabel)
-	
+
 	vendorLabel := utils.MustLabel("<small>Vendor: %s</small>", this.FilamentManagerSpool.Profile.Vendor)
 	vendorLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(vendorLabel)
-	
+
 	weightLabel := utils.MustLabel("<small>Weight: %.0fg</small>", this.FilamentManagerSpool.Weight)
 	weightLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(weightLabel)
-	
+
 	remainingLabel := utils.MustLabel("<small>Remaining: %.0fg</small>", this.FilamentManagerSpool.Weight - this.FilamentManagerSpool.Used)
 	remainingLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(remainingLabel)
@@ -198,12 +198,12 @@ func (this *FilamentManagerListBoxRow) createSpoolInfoBox() *gtk.Box {
 	return spoolInfoBox;
 }
 
+
+
 /*
 TODO:
 
-
 * when a spool is checked, call the API to update Filament Manager
-
 
 * make sure this works (updating the check list) when there is only 1 extruder
 	...that the dashes aren't present
@@ -214,11 +214,7 @@ TODO:
 * make sure this works when there are multiple extruders, but a single toolhead
 * make sure that when there is only 1 extruder
 
-
-
-
 * change the entire row to be a button?
-
 
 * the back button isn't under the scroll bar
 	maybe make the panel more like the files panel
