@@ -27,7 +27,6 @@ func CreateFilamentManagerListBoxRow(
 	filamentManagerSpool	*dataModels.FilamentManagerSpool,
 	spoolIsSelected			bool,
 	rowIndex				int,
-	padding					int,
 	rowClickHandler			func (button *gtk.Button, index int),
 ) *FilamentManagerListBoxRow {
 	const ROW_PADDING = 0

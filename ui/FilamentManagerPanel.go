@@ -135,7 +135,6 @@ func (this *filamentManagerPanel) createListBoxRows(extruderCount int) {
 			spool,
 			spoolIsSelected,
 			i,
-			0,
 			this.handleRowClick,
 		)
 		this.filamentManagerListBoxRows = append(this.filamentManagerListBoxRows, filamentManagerListBoxRow)
