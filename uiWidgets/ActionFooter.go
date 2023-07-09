@@ -7,7 +7,8 @@ import (
 )
 
 type ActionFooter struct {
-	*gtk.Box
+	gtk.Box
+
 	refreshButton				*gtk.Button
 	backButton					*gtk.Button
 }
@@ -21,7 +22,7 @@ func CreateActionFooter(
 	base := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 
 	instance := &ActionFooter {
-		Box:				base,
+		Box:				*base,
 	}
 
 	instance.SetHAlign(gtk.ALIGN_END)

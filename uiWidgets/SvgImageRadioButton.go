@@ -9,7 +9,7 @@ import (
 
 
 type SvgImageRadioButton struct {
-	*gtk.Button
+	gtk.Button
 
 	image						*gtk.Image
 	selectedImage				*gtk.Image
@@ -31,7 +31,7 @@ func CreateSvgImageRadioButton(
 	buttonCssClassName			string,
 	labelCssClassName			string,
 	selectedLabelCssClassName	string,
-	
+
 	index						int,
 	isSelected					bool,
 	clicked 					func(*SvgImageRadioButton),
@@ -48,7 +48,7 @@ func CreateSvgImageRadioButton(
 	styleContext.AddClass("text-shadow-none")
 
 	instance := &SvgImageRadioButton {
-		Button:						base,
+		Button:						*base,
 
 		image:						image,
 		selectedImage:				selectedImage,
