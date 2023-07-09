@@ -1,12 +1,11 @@
 package ui
 
 import (
-	// "log"
 	"fmt"
 	// "strings"
 
 	// "github.com/gotk3/gotk3/gdk"
-	// "github.com/gotk3/gotk3/gtk"
+	"github.com/gotk3/gotk3/gtk"
 
 	// "github.com/Z-Bolt/OctoScreen/interfaces"
 	"github.com/Z-Bolt/OctoScreen/logger"
@@ -97,35 +96,50 @@ func (this *filamentManagerPanel) initializeUi() {
 		return;
 	}
 
-	this.selectExtruderStepButton = uiWidgets.CreateSelectExtruderStepButton(this.UI.Client, false, 3, this.handleExtruderStepClick)
+	this.selectExtruderStepButton = uiWidgets.CreateSelectExtruderStepButton(
+		this.UI.Client,
+		false,
+		3,
+		this.handleExtruderStepClick,
+	)
 
 	extruderCount := utils.GetExtruderCount(this.UI.Client)
-	if extruderCount > 1 {
+	if extruderCount >= 2 {
 		this.Grid().Attach(this.selectExtruderStepButton, 0, 0, 1, 1)
 	}
 
-	this.createListBox()
-	this.createListBoxRows()
+	this.createListBox(extruderCount)
+	this.createListBoxRows(extruderCount)
 
 	logger.TraceLeave("FilamentManagerPanel.initializeUi()")
 }
 
-func (this *filamentManagerPanel) createListBox() {
+func (this *filamentManagerPanel) createListBox(extruderCount int) {
 	this.scrollableListBox = uiWidgets.CreateScrollableListBox()
-	this.Grid().Attach(this.scrollableListBox, 1, 0, 3, 2)
+	if extruderCount >= 2 {
+		this.Grid().Attach(this.scrollableListBox, 1, 0, 3, 2)
+	} else {
+		this.Grid().Attach(this.scrollableListBox, 0, 0, 4, 2)
+	}
 }
 
-func (this *filamentManagerPanel) createListBoxRows() {
+func (this *filamentManagerPanel) createListBoxRows(extruderCount int) {
 	for i := 0; i < len(this.filamentManagerSpools); i++ {
 		spool := this.filamentManagerSpools[i]
 
 		// When initializing, use the first extruder.
 		spoolIsSelected := (this.spoolSelectionIds[0] == spool.Id)
 
-		filamentManagerListBoxRow := uiWidgets.CreateFilamentManagerListBoxRow(spool, i, spoolIsSelected, this.handleRowButtonClick)
-		this.scrollableListBox.Add(filamentManagerListBoxRow)
-
+		filamentManagerListBoxRow := uiWidgets.CreateFilamentManagerListBoxRow(
+			extruderCount,
+			spool,
+			spoolIsSelected,
+			i,
+			0,
+			this.handleRowClick,
+		)
 		this.filamentManagerListBoxRows = append(this.filamentManagerListBoxRows, filamentManagerListBoxRow)
+		this.scrollableListBox.Add(filamentManagerListBoxRow)
 	}
 }
 
@@ -136,29 +150,40 @@ func (this *filamentManagerPanel) handleExtruderStepClick() {
 	this.logFilamentManagerSpools()
 
 	currentStepIndex := this.selectExtruderStepButton.CurrentStepIndex
-	// ...this is also the current tool index.
+	// ...currentStepIndex is also the current tool index.
+	logger.Debugf("FilamentManagerPanel.handleExtruderStepClick() - currentStepIndex: %d", currentStepIndex)
 
 	currentSelectedSpoolId := this.spoolSelectionIds[currentStepIndex]
+	spoolName := "none"
+	if currentSelectedSpoolId >= 0 {
+		filamentManagerSpool := this.findFilamentManagerSpoolFromSpoolId(currentSelectedSpoolId)
+		spoolName = filamentManagerSpool.Name
+	}
+	logger.Debugf("FilamentManagerPanel.handleExtruderStepClick() - currentSelectedSpoolId: %d (%s)", currentSelectedSpoolId, spoolName)
 
 	listItemIndex := this.findListItemRowIndexFromSpoolId(currentSelectedSpoolId)
 	// It's OK if listItemIndex is -1...
 	// ...when it's -1 that means there are no selected spools, and the list becomes unchecked.
+	logger.Debugf("FilamentManagerPanel.handleExtruderStepClick() - listItemIndex: %d", listItemIndex)
 
 	this.updateRadioButtons(listItemIndex)
 
 	logger.TraceLeave("FilamentManagerPanel.handleExtruderStepClick()")
 }
 
-func (this *filamentManagerPanel) handleRowButtonClick(sender *uiWidgets.SvgImageRadioButton) {
-	logger.TraceEnter("FilamentManagerPanel.handleRowButtonClick()")
+func (this *filamentManagerPanel) handleRowClick(button *gtk.Button, rowIndex int) {
+	logger.TraceEnter("FilamentManagerPanel.handleRowClick()")
 
-	isSelected := sender.IsSelected;
-	if isSelected == true {
-		rowIndex := sender.Index;
-		logger.Debugf("FilamentManagerPanel.handleRowButtonClick() - rowIndex: %d", rowIndex)
+	filamentManagerListBoxRow := this.filamentManagerListBoxRows[rowIndex]
+	svgImageRadioButton := filamentManagerListBoxRow.SvgImageRadioButton
+	isSelected := svgImageRadioButton.IsSelected
+
+	if isSelected != true {
+		rowIndex := filamentManagerListBoxRow.RowIndex
+		logger.Debugf("FilamentManagerPanel.handleRowClick() - rowIndex: %d", rowIndex)
 
 		currentStepIndex := this.selectExtruderStepButton.CurrentStepIndex
-		logger.Debugf("FilamentManagerPanel.handleRowButtonClick() - currentStepIndex: %d", currentStepIndex)
+		logger.Debugf("FilamentManagerPanel.handleRowClick() - currentStepIndex: %d", currentStepIndex)
 
 		this.updateRadioButtons(rowIndex)
 		this.updateData(currentStepIndex, rowIndex)
@@ -168,11 +193,13 @@ func (this *filamentManagerPanel) handleRowButtonClick(sender *uiWidgets.SvgImag
 		this.logFilamentManagerSpools()
 	}
 
-	logger.TraceLeave("FilamentManagerPanel.handleRowButtonClick()")
+	logger.TraceLeave("FilamentManagerPanel.handleRowClick()")
 }
 
 func (this *filamentManagerPanel) updateRadioButtons(rowIndex int) {
 	logger.TraceEnter("FilamentManagerPanel.updateRadioButtons()")
+
+	logger.Debugf("FilamentManagerPanel.updateRadioButtons() rowIndex is: %d", rowIndex)
 
 	for i := 0; i < len(this.filamentManagerListBoxRows); i++ {
 		filamentManagerListBoxRow := this.filamentManagerListBoxRows[i]
@@ -181,10 +208,12 @@ func (this *filamentManagerPanel) updateRadioButtons(rowIndex int) {
 
 		if i != rowIndex {
 			if isSelected == true {
+				logger.Debugf("FilamentManagerPanel.updateRadioButtons() unselecting %d", i)
 				svgImageRadioButton.Unselect()
 			}
 		} else {
 			if isSelected == false {
+				logger.Debugf("FilamentManagerPanel.updateRadioButtons() now selecting %d", i)
 				svgImageRadioButton.Select()
 			}
 		}
@@ -217,7 +246,7 @@ func (this *filamentManagerPanel) updateData(currentStepIndex int, rowIndex int)
 
 	newFilamentManagerSelection := this.findFilamentManagerSelectionFromToolId(toolId)
 	if newFilamentManagerSelection == nil {
-		// If nil is returned, then that means this was a FilamentManagerSelection that hasn't been set yet.
+		// If nil is returned, that means this was a FilamentManagerSelection that hasn't been set yet.
 
 		logger.Debugf("FilamentManagerPanel.updateData() - dumping logFilamentManagerSelections()")
 		this.logFilamentManagerSelections()
@@ -244,6 +273,7 @@ func (this *filamentManagerPanel) sendUpdateToOctoPrint(currentStepIndex int) {
 
 	this.logFilamentManagerSelections()
 	this.logFilamentManagerSpools()
+
 	toolId := currentStepIndex
 	filamentManagerSelection := this.findFilamentManagerSelectionFromToolId(toolId)
 	if filamentManagerSelection == nil {
@@ -274,8 +304,8 @@ func (this *filamentManagerPanel) sendUpdateToOctoPrint(currentStepIndex int) {
 
 	logger.Debugf("FilamentManagerPanel.sendUpdateToOctoPrint() - response: %v", response)
 
-	// NOTE: The UI in OctoScreen does not update the change, and one needs to
-	// manually refresh the web page in order to see the change.
+	// NOTE: The UI in OctoScreen does not update the change in OctoPrint's browser window,
+	// and one needs to manually refresh the web page in order to see the change.
 
 	logger.TraceLeave("FilamentManagerPanel.sendUpdateToOctoPrint()")
 }

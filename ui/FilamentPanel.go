@@ -116,7 +116,7 @@ func (this *filamentPanel) initialize() {
 	// The select tool step button is needed by some of the other controls (to get the name/ID of the tool
 	// to send the command to), but only display it if multiple extruders are present.
 	extruderCount := utils.GetExtruderCount(this.UI.Client)
-	if extruderCount > 1 {
+	if extruderCount >= 2 {
 		this.Grid().Attach(this.selectExtruderStepButton, 0, 2, 1, 1)
 	}
 
