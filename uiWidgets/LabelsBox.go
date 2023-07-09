@@ -6,38 +6,6 @@ import (
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
-/*
-type LabelsBox struct {
-	*gtk.Box
-}
-
-func CreateLabelsBox(
-	nameLabel		*gtk.Label,
-	infoLabel		*gtk.Label,
-) *LabelsBox {
-	base := utils.MustBox(gtk.ORIENTATION_VERTICAL, 5)
-	instance := &LabelsBox {
-		Box:		base,
-	}
-
-	if nameLabel != nil {
-		instance.Add(nameLabel)
-	}
-
-	if infoLabel != nil {
-		instance.Add(infoLabel)
-	}
-
-	instance.SetVExpand(false)
-	instance.SetVAlign(gtk.ALIGN_CENTER)
-	instance.SetHAlign(gtk.ALIGN_START)
-	labelsBoxStyleContext, _ := instance.GetStyleContext()
-	labelsBoxStyleContext.AddClass("labels-box")
-
-	return instance
-}
-*/
-
 func CreateLabelsBox(
 	nameLabel		*gtk.Label,
 	infoLabel		*gtk.Label,
