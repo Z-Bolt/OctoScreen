@@ -14,33 +14,37 @@ import (
 
 
 type FilamentManagerListBoxRow struct {
-	*ListBoxRow
+	ClickableListBoxRow
 
-	SvgImageRadioButton			*SvgImageRadioButton
-	FilamentManagerSpool		*dataModels.FilamentManagerSpool
-	rowIndex					int
+	FilamentManagerSpool				*dataModels.FilamentManagerSpool
+	FilamentSpoolImage					*gtk.Image
+	FilamentSpoolWithCheckMarkImage		*gtk.Image
+	SvgImageRadioButton					*SvgImageRadioButton
 }
 
 func CreateFilamentManagerListBoxRow(
-	filamentManagerSpool		*dataModels.FilamentManagerSpool,
-	rowIndex					int,
-	spoolIsSelected				bool,
-	clicked 					func(*SvgImageRadioButton),
+	extruderCount			int,
+	filamentManagerSpool	*dataModels.FilamentManagerSpool,
+	spoolIsSelected			bool,
+	rowIndex				int,
+	padding					int,
+	rowClickHandler			func (button *gtk.Button, index int),
 ) *FilamentManagerListBoxRow {
 	const ROW_PADDING = 0
-	base := CreateListBoxRow(rowIndex, ROW_PADDING)
+	base := CreateClickableListBoxRow(rowIndex, ROW_PADDING, rowClickHandler)
 
 	instance := &FilamentManagerListBoxRow {
-		ListBoxRow:				base,
-		SvgImageRadioButton:	nil,
-		FilamentManagerSpool:	filamentManagerSpool,
-		rowIndex:				rowIndex,
+		ClickableListBoxRow:				*base,
+		FilamentManagerSpool:				filamentManagerSpool,
+		FilamentSpoolImage:					nil,
+		FilamentSpoolWithCheckMarkImage:	nil,
+		SvgImageRadioButton:				nil,
 	}
 
-	instance.SvgImageRadioButton = instance.createSvgImageRadioButton(spoolIsSelected, clicked)
+	instance.SvgImageRadioButton = instance.createSvgImageRadioButton(spoolIsSelected, nil)
 	instance.Add(instance.SvgImageRadioButton)
 
-	spoolInfoBox := instance.createSpoolInfoBox()
+	spoolInfoBox := instance.createSpoolInfoBox(extruderCount)
 	instance.Add(spoolInfoBox)
 
 	return instance
@@ -48,7 +52,7 @@ func CreateFilamentManagerListBoxRow(
 
 func (this *FilamentManagerListBoxRow) createSvgImageRadioButton(
 	isSelected					bool,
-	clicked 					func(*SvgImageRadioButton),
+	clicked 					func (*SvgImageRadioButton),
 ) *SvgImageRadioButton {
 	spoolColor := this.getSpoolColor()
 	filamentSpoolImage, _ := utils.CreateFilamentSpoolImage(spoolColor)
@@ -57,7 +61,7 @@ func (this *FilamentManagerListBoxRow) createSvgImageRadioButton(
 	buttonCssClassName := ""
 	labelCssClassName := ""
 	selectedLabelCssClassName := "white-foreground"
-	if this.rowIndex % 2 == 0 {
+	if this.RowIndex % 2 == 0 {
 		buttonCssClassName = "list-item-nth-child-odd-background-color"
 		labelCssClassName = "list-item-nth-child-odd-foreground-color"
 	} else {
@@ -74,7 +78,7 @@ func (this *FilamentManagerListBoxRow) createSvgImageRadioButton(
 		labelCssClassName,
 		selectedLabelCssClassName,
 
-		this.rowIndex,
+		this.RowIndex,
 		isSelected,
 		clicked,
 	)
@@ -149,7 +153,7 @@ func (this *FilamentManagerListBoxRow) getSpoolColor() string {
 	}
 
 	// Default to passing the background color of the row.
-	if this.rowIndex % 2 != 0 {
+	if this.RowIndex % 2 != 0 {
 		// .list-item-nth-child-even-background-color
 		return "#34383C"
 	} else {
@@ -158,13 +162,32 @@ func (this *FilamentManagerListBoxRow) getSpoolColor() string {
 	}
 }
 
-func (this *FilamentManagerListBoxRow) createSpoolInfoBox() *gtk.Box {
+func (this *FilamentManagerListBoxRow) createSpoolImage() *gtk.Image {
+	spoolColor := this.getSpoolColor()
+	filamentSpoolImage, _ := utils.CreateFilamentSpoolImage(spoolColor)
+
+	return filamentSpoolImage
+}
+
+func (this *FilamentManagerListBoxRow) createSpoolInfoBox(extruderCount int) *gtk.Box {
 	spoolInfoBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
 	spoolInfoBox.SetHAlign(gtk.ALIGN_START)
+	spoolInfoBox.SetMarginStart(10)
 	spoolInfoBox.SetMarginTop(5)
 	spoolInfoBox.SetMarginBottom(5)
 
-	nameLabel := utils.MustLabel("<big>%s</big>", utils.TruncateString(this.FilamentManagerSpool.Name, 25))
+	// Warning: this has to potential to expand the screen if the name is too long.
+	// If bug reports come in, the name will need to be truncated more.
+	truncatedName := ""
+	if extruderCount >= 2 {
+		// If there are multiple extruders, the extruder step button will be visible, and the
+		// width available to display the name will be less.
+		truncatedName = utils.TruncateString(this.FilamentManagerSpool.Name, 30)
+	} else {
+		truncatedName = utils.TruncateString(this.FilamentManagerSpool.Name, 45)
+	}
+
+	nameLabel := utils.MustLabel("<big>%s</big>", truncatedName)
 	nameLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(nameLabel)
 
@@ -195,29 +218,9 @@ func (this *FilamentManagerListBoxRow) createSpoolInfoBox() *gtk.Box {
 	percentageUsedLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(percentageUsedLabel)
 
+	costLabel := utils.MustLabel("<small>Cost: %.0f</small>", this.FilamentManagerSpool.Cost)
+	costLabel.SetHAlign(gtk.ALIGN_START)
+	spoolInfoBox.Add(costLabel)
+
 	return spoolInfoBox;
 }
-
-
-
-/*
-TODO:
-
-* when a spool is checked, call the API to update Filament Manager
-
-* make sure this works (updating the check list) when there is only 1 extruder
-	...that the dashes aren't present
-	...that the "circle-1" doesn't appear
-	...or, should the button not appear at all?
-		...what do the other panels do?
-			...do they display the extruder button when there is only 1 extruder?
-* make sure this works when there are multiple extruders, but a single toolhead
-* make sure that when there is only 1 extruder
-
-* change the entire row to be a button?
-
-* the back button isn't under the scroll bar
-	maybe make the panel more like the files panel
-
-* add a refresh button?
-*/
