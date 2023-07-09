@@ -50,9 +50,16 @@ func GetFilesPanelInstance(
 }
 
 func (this *filesPanel) initializeUi() {
+	this.CreateListBox()
+	this.CreateFooter()
+}
+
+func (this *filesPanel) CreateListBox() {
 	this.scrollableListBox = uiWidgets.CreateScrollableListBox()
 	this.Grid().Attach(this.scrollableListBox, 0, 0, 4, 2)
+}
 
+func (this *filesPanel) CreateFooter() {
 	this.actionFooter = uiWidgets.CreateActionFooter(
 		this.Scaled(40),
 		this.Scaled(40),
@@ -281,8 +288,8 @@ func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
 }
 
 func (this *filesPanel) addItem(
-	fileResponse *dataModels.FileResponse,
-	index int,
+	fileResponse		*dataModels.FileResponse,
+	index				int,
 ) {
 	/*
 		Object hierarchy:
@@ -294,7 +301,6 @@ func (this *filesPanel) addItem(
 						infoAndActionRow (a Box)
 						previewRow (a Box)
 	*/
-
 
 	listItemBox := this.createListItemBox()
 
@@ -373,12 +379,7 @@ func (this *filesPanel) createListItemButton(
 	index				int,
 	isFolder			bool,
 ) *gtk.Button {
-	listItemButton, _ := gtk.ButtonNew()
-	listItemButtonStyleContext, _ := listItemButton.GetStyleContext()
-	listItemButtonStyleContext.AddClass("list-item-button")
-	if index % 2 != 0 {
-		listItemButtonStyleContext.AddClass("list-item-nth-child-even")
-	}
+	listItemButton := uiWidgets.CreateListItemButton(index)
 
 	if isFolder {
 		listItemButton.Connect("clicked", func() {
@@ -435,19 +436,19 @@ func (this *filesPanel) addThumbnail(
 		return;
 	}
 
-	logger.Debugf("FilesPanel.addItem() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
+	logger.Debugf("FilesPanel.addThumbnail() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
 
 	octoScreenConfig := utils.GetOctoScreenConfigInstance()
 	octoPrintConfig := octoScreenConfig.OctoPrintConfig
 	thumbnailUrl := fmt.Sprintf("%s/%s", octoPrintConfig.Server.Host, fileResponse.Thumbnail)
-	logger.Debugf("FilesPanel.addItem() - thumbnailPath is: %q" , thumbnailUrl)
+	logger.Debugf("FilesPanel.addThumbnail() - thumbnailPath is: %q" , thumbnailUrl)
 
 	previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
 	if imageFromUrlErr != nil {
 		return
 	}
 
-	logger.Debugf("FilesPanel.addItem() - no error from ImageNewFromPixbuf, now trying to add it...")
+	logger.Debugf("FilesPanel.addThumbnail() - no error from ImageNewFromPixbuf, now trying to add it...")
 
 	bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
 
