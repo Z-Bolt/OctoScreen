@@ -22,9 +22,12 @@ import (
 type filesPanel struct {
 	CommonPanel
 
-	scrollableListBox	*uiWidgets.ScrollableListBox
-	actionFooter		*uiWidgets.ActionFooter
-	locationHistory		utils.LocationHistory
+	scrollableListBox		*uiWidgets.ScrollableListBox
+	filesListBoxRows		[]*uiWidgets.FilesListBoxRow
+	actionFooter			*uiWidgets.ActionFooter
+
+	locationHistory			utils.LocationHistory
+	currentFileResponses	[]*dataModels.FileResponse
 }
 
 var filesPanelInstance *filesPanel
@@ -41,6 +44,7 @@ func GetFilesPanelInstance(
 			CommonPanel: CreateCommonPanel("FilesPanel", ui),
 			locationHistory: locationHistory,
 		}
+
 		instance.initializeUi()
 		instance.initializeData()
 		filesPanelInstance = instance
@@ -63,18 +67,38 @@ func (this *filesPanel) CreateFooter() {
 	this.actionFooter = uiWidgets.CreateActionFooter(
 		this.Scaled(40),
 		this.Scaled(40),
+
+		// this.doClear, // just for testing
 		this.doLoadFiles,
+
 		this.goBack,
 	)
 	this.Grid().Attach(this.actionFooter, 2, 2, 2, 1)
 }
 
 func (this *filesPanel) initializeData() {
+	logger.TraceEnter("FilesPanel.initializeData()")
+
 	this.doLoadFiles()
+
+	logger.TraceLeave("FilesPanel.initializeData()")
+}
+
+// doClear() is here just for testing
+func (this *filesPanel) doClear() {
+	logger.TraceEnter("FilesPanel.doClear()")
+
+	listBoxContainer := this.scrollableListBox.ListBoxContainer()
+	utils.EmptyTheContainer(listBoxContainer)
+
+	logger.TraceLeave("FilesPanel.doClear()")
 }
 
 func (this *filesPanel) doLoadFiles() {
-	utils.EmptyTheContainer(this.scrollableListBox.ListBoxContainer())
+	logger.TraceEnter("FilesPanel.doLoadFiles()")
+
+	listBoxContainer := this.scrollableListBox.ListBoxContainer()
+	utils.EmptyTheContainer(listBoxContainer)
 
 	atRootLevel := this.displayRootLocations()
 	// If we are at the "root" level (where the option for Local (OctoPrint) and SD are displayed),
@@ -91,10 +115,25 @@ func (this *filesPanel) doLoadFiles() {
 		this.addRootLocations()
 	} else {
 		sortedFiles := this.getSortedFiles()
+
+		/*
+		logger.Debugf("FilesPanel.doLoadFiles() sortedFiles:")
+		for i := 0; i < len(sortedFiles); i++ {
+			sortedFile := sortedFiles[i]
+			isFolder := "false"
+			if sortedFile.IsFolder() {
+				isFolder = "TRUE"
+			}
+			logger.Debugf("FilesPanel.doLoadFiles() - sortedFiles[%d]:%s, isFolder:%s", i, sortedFile.Name, isFolder)
+		}
+		*/
+
 		this.addSortedFiles(sortedFiles)
 	}
 
 	this.scrollableListBox.ShowAll()
+
+	logger.TraceLeave("FilesPanel.doLoadFiles()")
 }
 
 func (this *filesPanel) sdIsReady() bool {
@@ -199,7 +238,7 @@ func (this *filesPanel) addMessage(message string) {
 	topBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
 	topBox.Add(labelsBox)
 
-	listItemBox := this.createListItemBox()
+	listItemBox := uiWidgets.CreateVerticalLayoutBox()
 	listItemBox.Add(topBox)
 
 	listItemFrame, _ := gtk.FrameNew("")
@@ -243,7 +282,6 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 	labelsBox := uiWidgets.CreateLabelsBox(nameLabel, infoLabel)
 	topBox.Add(labelsBox)
 
-
 	var actionImage *gtk.Image
 	if location == dataModels.Local {
 		actionImage = uiWidgets.CreateOpenLocationImage(0, this.Scaled(40), this.Scaled(40))
@@ -272,203 +310,135 @@ func (this *filesPanel) createRootLocationButton(location dataModels.Location) *
 func (this *filesPanel) addSortedFiles(sortedFiles []*dataModels.FileResponse) {
 	var index int = 0
 
+	this.currentFileResponses = make([]*dataModels.FileResponse, 0)
+
 	for _, fileResponse := range sortedFiles {
 		if fileResponse.IsFolder() {
-			this.addItem(fileResponse, index)
+			this.currentFileResponses = append(this.currentFileResponses, fileResponse)
+
+			filesListBoxRow := uiWidgets.CreateFilesListBoxRow(
+				fileResponse,
+				this.Scaled(35),
+				this.Scaled(35),
+				this.Scaled(40),
+				this.Scaled(40),
+				index,
+				this.handleFolderClick,
+			)
+			this.filesListBoxRows = append(this.filesListBoxRows, filesListBoxRow)
+			this.scrollableListBox.Add(filesListBoxRow)
+
 			index++
 		}
 	}
 
 	for _, fileResponse := range sortedFiles {
 		if !fileResponse.IsFolder() {
-			this.addItem(fileResponse, index)
+			this.currentFileResponses = append(this.currentFileResponses, fileResponse)
+
+			filesListBoxRow := uiWidgets.CreateFilesListBoxRow(
+				fileResponse,
+				this.Scaled(35),
+				this.Scaled(35),
+				this.Scaled(40),
+				this.Scaled(40),
+				index,
+				this.handleFileClick,
+			)
+			this.filesListBoxRows = append(this.filesListBoxRows, filesListBoxRow)
+			this.scrollableListBox.Add(filesListBoxRow)
+
 			index++
 		}
 	}
 }
 
-func (this *filesPanel) addItem(
-	fileResponse		*dataModels.FileResponse,
-	index				int,
-) {
-	/*
-		Object hierarchy:
+func (this *filesPanel) handleFolderClick(button *gtk.Button, rowIndex int) {
+	logger.TraceEnter("FilesPanel.handleFolderClick()")
 
-		listBox
-			listBoxRow
-				listItemButton (to handle to click for the entire item amd all of the child controls)
-					listItemBox (to layout the objects, in this case the two rows within the button)
-						infoAndActionRow (a Box)
-						previewRow (a Box)
+	logger.Debugf("FilesPanel.handleFolderClick() - rowIndex: %d", rowIndex)
+
+	if this.currentFileResponses == nil {
+		logger.Fatalf("FilesPanel.handleFolderClick() - currentFileResponses is nil")
+	}
+
+	fileResponsesLength := len(this.currentFileResponses)
+	if rowIndex >= fileResponsesLength {
+		logger.Fatalf(
+			"FilesPanel.handleFolderClick() - rowIndex is out of range.  The length of currentFileResponses is %d but rowIndex is %d",
+			fileResponsesLength,
+			rowIndex,
+		)
+	}
+
+	fileResponse := this.currentFileResponses[rowIndex]
+
+	/*
+	isFolder := fileResponse.IsFolder()
+	if isFolder == true {
+		logger.Debugf("FilesPanel.handleFolderClick() - isFolder is true")
+	} else {
+		logger.Debugf("FilesPanel.handleFolderClick() - isFolder is false")
+	}
 	*/
 
-	listItemBox := this.createListItemBox()
+	logger.Debugf("FilesPanel.handleFolderClick() - fileResponse name: %s", fileResponse.Name)
 
-	isFolder := fileResponse.IsFolder()
-	infoAndActionRow := this.createInfoAndActionRow(fileResponse, index, isFolder)
-	listItemBox.Add(infoAndActionRow)
-	if !isFolder {
-		previewRow := this.createPreviewRow(fileResponse)
-		listItemBox.Add(previewRow)
-	}
+	this.locationHistory.GoForward(fileResponse.Name)
+	this.doLoadFiles()
 
-	listItemButton := this.createListItemButton(fileResponse, index, isFolder)
-	listItemButton.Add(listItemBox)
-
-	listBoxRow, _ := gtk.ListBoxRowNew()
-	listBoxRowStyleContext, _ := listBoxRow.GetStyleContext()
-	listBoxRowStyleContext.AddClass("list-box-row")
-	if index % 2 != 0 {
-		listBoxRowStyleContext.AddClass("list-item-nth-child-even")
-	}
-	listBoxRow.Add(listItemButton)
-
-	this.scrollableListBox.Add(listBoxRow)
+	logger.TraceLeave("FilesPanel.handleFolderClick()")
 }
 
-func (this *filesPanel) createInfoAndActionRow(
-	fileResponse *dataModels.FileResponse,
-	index int,
-	isFolder bool,
-) *gtk.Box {
-	infoAndActionRow := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
+func (this *filesPanel) handleFileClick(button *gtk.Button, rowIndex int) {
+	logger.TraceEnter("FilesPanel.handleFileClick()")
 
-	// Column 1: Folder or File icon
-	var itemImage *gtk.Image
-	if isFolder {
-		itemImage = utils.MustImageFromFileWithSize("folder.svg", this.Scaled(35), this.Scaled(35))
-	} else {
-		itemImage = utils.MustImageFromFileWithSize("file-gcode.svg", this.Scaled(35), this.Scaled(35))
-	}
-	infoAndActionRow.Add(itemImage)
+	logger.Debugf("FilesPanel.handleFileClick() - rowIndex: %d", rowIndex)
 
-
-	// Column 2: File name and file info
-	name := fileResponse.Name
-	nameLabel := uiWidgets.CreateNameLabel(name)
-	infoLabel := uiWidgets.CreateInfoLabel(fileResponse, isFolder)
-	labelsBox := uiWidgets.CreateLabelsBox(nameLabel, infoLabel)
-	infoAndActionRow.Add(labelsBox)
-
-
-	// Column 3: printer image
-	var actionImage *gtk.Image
-	if isFolder {
-		actionImage = uiWidgets.CreateOpenLocationImage(index, this.Scaled(40), this.Scaled(40))
-	} else {
-		actionImage = uiWidgets.CreatePrintImage(this.Scaled(40), this.Scaled(40))
+	if this.currentFileResponses == nil {
+		logger.Fatalf("FilesPanel.handleFileClick() - currentFileResponses is nil")
 	}
 
-	actionBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 5)
-	actionBox.Add(actionImage)
+	fileResponsesLength := len(this.currentFileResponses)
+	if rowIndex >= fileResponsesLength {
+		logger.Fatalf(
+			"FilesPanel.handleFileClick() - rowIndex is out of range.  The length of currentFileResponses is %d but rowIndex is %d",
+			fileResponsesLength,
+			rowIndex,
+		)
+	}
 
-	infoAndActionRow.Add(actionBox)
+	fileResponse := this.currentFileResponses[rowIndex]
 
-	return infoAndActionRow
-}
-
-func (this *filesPanel) createPreviewRow(fileResponse *dataModels.FileResponse) *gtk.Box {
-	previewRow := this.createListItemBox()
-	this.addThumbnail(fileResponse, previewRow)
-
-	return previewRow
-}
-
-func (this *filesPanel) createListItemButton(
-	fileResponse		*dataModels.FileResponse,
-	index				int,
-	isFolder			bool,
-) *gtk.Button {
-	listItemButton := uiWidgets.CreateListItemButton(index)
-
-	if isFolder {
-		listItemButton.Connect("clicked", func() {
-			this.locationHistory.GoForward(fileResponse.Name)
-			this.doLoadFiles()
-		})
+	message := ""
+	strLen := len(fileResponse.Name)
+	if strLen <= 20 {
+		message = fmt.Sprintf("Do you wish to print %s?", fileResponse.Name)
 	} else {
-		message := ""
-		strLen := len(fileResponse.Name)
-		if strLen <= 20 {
-			message = fmt.Sprintf("Do you wish to print %s?", fileResponse.Name)
-		} else {
-			truncatedFileName := utils.TruncateString(fileResponse.Name, 40)
-			message = fmt.Sprintf("Do you wish to print\n%s?", truncatedFileName)
+		truncatedFileName := utils.TruncateString(fileResponse.Name, 40)
+		message = fmt.Sprintf("Do you wish to print\n%s?", truncatedFileName)
+	}
+
+	utils.MustConfirmDialogBox(this.UI.window, message, func() {
+		selectFileRequest := &octoprintApis.SelectFileRequest{}
+
+		// Set the location to "local" or "sdcard"
+		selectFileRequest.Location = this.locationHistory.Locations[0]
+
+		selectFileRequest.Path = fileResponse.Path
+		selectFileRequest.Print = true
+
+		logger.Infof("Loading file %q", fileResponse.Name)
+		if err := selectFileRequest.Do(this.UI.Client); err != nil {
+			logger.LogError("FilesPanel.handleFileClick()", "Do(SelectFileRequest)", err)
+			return
 		}
 
-		listItemButton.Connect("clicked", utils.MustConfirmDialogBox(this.UI.window, message, func() {
-			selectFileRequest := &octoprintApis.SelectFileRequest{}
+		this.UI.GoToPreviousPanel()
+	})()
 
-			// Set the location to "local" or "sdcard"
-			selectFileRequest.Location = this.locationHistory.Locations[0]
-
-			selectFileRequest.Path = fileResponse.Path
-			selectFileRequest.Print = true
-
-			logger.Infof("Loading file %q", fileResponse.Name)
-			if err := selectFileRequest.Do(this.UI.Client); err != nil {
-				logger.LogError("FilesPanel.createLoadAndPrintButton()", "Do(SelectFileRequest)", err)
-				return
-			}
-
-			this.UI.GoToPreviousPanel()
-		}))
-	}
-
-	return listItemButton
+	logger.TraceLeave("FilesPanel.handleFileClick()")
 }
-
-func (this *filesPanel) createListItemBox() *gtk.Box {
-	listItemBox := utils.MustBox(gtk.ORIENTATION_VERTICAL, 0)
-	listItemBox.SetMarginTop(0)
-	listItemBox.SetMarginBottom(0)
-	listItemBox.SetMarginStart(0)
-	listItemBox.SetMarginEnd(0)
-
-	return listItemBox
-}
-
-func (this *filesPanel) addThumbnail(
-	fileResponse *dataModels.FileResponse,
-	listItemBox *gtk.Box,
-) {
-	if fileResponse.Thumbnail == "" {
-		return;
-	}
-
-	logger.Debugf("FilesPanel.addThumbnail() - fileResponse.Thumbnail is %s", fileResponse.Thumbnail)
-
-	octoScreenConfig := utils.GetOctoScreenConfigInstance()
-	octoPrintConfig := octoScreenConfig.OctoPrintConfig
-	thumbnailUrl := fmt.Sprintf("%s/%s", octoPrintConfig.Server.Host, fileResponse.Thumbnail)
-	logger.Debugf("FilesPanel.addThumbnail() - thumbnailPath is: %q" , thumbnailUrl)
-
-	previewImage, imageFromUrlErr := utils.ImageFromUrl(thumbnailUrl)
-	if imageFromUrlErr != nil {
-		return
-	}
-
-	logger.Debugf("FilesPanel.addThumbnail() - no error from ImageNewFromPixbuf, now trying to add it...")
-
-	bottomBox := utils.MustBox(gtk.ORIENTATION_HORIZONTAL, 0)
-
-	// Initially was setting the horizontal alignment with CSS, but different resolutions
-	// (eg 800x480 vs 480x320) didn't align correctly, so I added a blank SVG to offset
-	// the preview thumbnail image.
-	spacerImage := utils.MustImageFromFileWithSize("blank.svg", this.Scaled(35), this.Scaled(35))
-	bottomBox.Add(spacerImage)
-
-	// Still need some CSS for the bottom margin.
-	previewImageStyleContext, _ := previewImage.GetStyleContext()
-	previewImageStyleContext.AddClass("preview-image-list-item")
-
-	// OK, now add the preview image.
-	bottomBox.Add(previewImage)
-
-	// ...and finally add everything to the bottom box/container.
-	listItemBox.Add(bottomBox)
-}
-
 
 /*
 func (this *filesPanel) isReady() bool {
