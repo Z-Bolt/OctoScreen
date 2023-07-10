@@ -18,21 +18,15 @@ func CreateListBoxRow(
 	padding				int,
 ) *ListBoxRow {
 	/*
-		Object hierarchy:
-		(for a static, non-clickable list item)
-
+		Object hierarchy (for a static, non-clickable list item):
 		ScrollableListBox (ScrolledWindow + ListBox)
 			ListBoxRow
 				ContentsBox (to layout the objects)
 
-
-		Object hierarchy:
-		(for a clickable list item/button)
-
+		Object hierarchy (for a clickable list item/button):
 		ScrollableListBox (ScrolledWindow + ListBox)
 			ClickableListBoxRow
 				listItemButton (to handle to click for the entire item amd all of the child controls)
-					ContentsBox (to layout the objects)
 	*/
 
 	base := createListBoxRow(rowIndex)
