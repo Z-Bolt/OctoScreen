@@ -33,9 +33,9 @@ func CreateListBoxRow(
 	// ctx1, _ := base.GetStyleContext()
 	// ctx1.AddClass("blue-background")
 
-	contentsBox := createContentsBox(padding) // jab rename
+	contentsBox := createContentsBox(padding)
 	// ctx2, _ := contentsBox.GetStyleContext()
-	// ctx2.AddClass("cyan-background-JAB-NO-USE")
+	// ctx2.AddClass("cyan-background")
 
 	base.Add(contentsBox)
 
