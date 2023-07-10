@@ -10,7 +10,6 @@ type ClickableListBoxRow struct {
 	gtk.ListBoxRow
 
 	ListItemButton		*gtk.Button
-	ContentsBox			*gtk.Box
 	RowIndex			int
 }
 
@@ -20,21 +19,15 @@ func CreateClickableListBoxRow(
 	rowClickHandler		func (button *gtk.Button, rowIndex int),
 ) *ClickableListBoxRow {
 	/*
-		Object hierarchy:
-		(for a static, non-clickable list item)
-
+		Object hierarchy (for a static, non-clickable list item):
 		ScrollableListBox (ScrolledWindow + ListBox)
 			ListBoxRow
 				ContentsBox (to layout the objects)
 
-
-		Object hierarchy:
-		(for a clickable list item/button)
-
+		Object hierarchy (for a clickable list item/button):
 		ScrollableListBox (ScrolledWindow + ListBox)
 			ClickableListBoxRow
 				listItemButton (to handle to click for the entire item amd all of the child controls)
-					ContentsBox (to layout the objects)
 	*/
 
 	base := createListBoxRow(rowIndex)
@@ -44,16 +37,9 @@ func CreateClickableListBoxRow(
 	listItemButton := createListItemButton(rowIndex, rowClickHandler)
 	base.Add(listItemButton)
 
-	contentsBox := createContentsBox(padding)
-	// ctx3, _ := contentsBox.GetStyleContext()
-	// ctx3.AddClass("magenta-background")
-	listItemButton.Add(contentsBox)
-
-
 	instance := &ClickableListBoxRow {
 		ListBoxRow:				*base,
 		ListItemButton:			listItemButton,
-		ContentsBox:			contentsBox,
 		RowIndex:				rowIndex,
 	}
 
@@ -68,9 +54,8 @@ func CreateClickableListBoxRow(
 //
 // 	Object hierarchy:
 //		gtk.ListBoxRow (base)
-//			gtk.Box (ContentsBox)
 func (this *ClickableListBoxRow) Add(widget gtk.IWidget) {
-	this.ContentsBox.Add(widget)
+	this.ListItemButton.Add(widget)
 }
 
 func createListItemButton(
@@ -82,8 +67,6 @@ func createListItemButton(
 
 	listItemButtonStyleContext, _ := listItemButton.GetStyleContext()
 	listItemButtonStyleContext.AddClass("list-item-button")
-
-	// buttonStyleContext.AddClass("cyan-background")
 
 	if rowIndex % 2 == 0 {
 		listItemButtonStyleContext.AddClass("list-item-nth-child-odd-background-color")
