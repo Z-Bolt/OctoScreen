@@ -16,10 +16,11 @@ import (
 type FilamentManagerListBoxRow struct {
 	ClickableListBoxRow
 
-	FilamentManagerSpool				*dataModels.FilamentManagerSpool
+	ContentsBox							*gtk.Box
 	FilamentSpoolImage					*gtk.Image
 	FilamentSpoolWithCheckMarkImage		*gtk.Image
 	SvgImageRadioButton					*SvgImageRadioButton
+	FilamentManagerSpool				*dataModels.FilamentManagerSpool
 }
 
 func CreateFilamentManagerListBoxRow(
@@ -34,17 +35,22 @@ func CreateFilamentManagerListBoxRow(
 
 	instance := &FilamentManagerListBoxRow {
 		ClickableListBoxRow:				*base,
-		FilamentManagerSpool:				filamentManagerSpool,
+		ContentsBox:						nil,
 		FilamentSpoolImage:					nil,
 		FilamentSpoolWithCheckMarkImage:	nil,
 		SvgImageRadioButton:				nil,
+		FilamentManagerSpool:				filamentManagerSpool,
 	}
 
+	instance.ContentsBox = createContentsBox(ROW_PADDING)
+
 	instance.SvgImageRadioButton = instance.createSvgImageRadioButton(spoolIsSelected, nil)
-	instance.Add(instance.SvgImageRadioButton)
+	instance.ContentsBox.Add(instance.SvgImageRadioButton)
 
 	spoolInfoBox := instance.createSpoolInfoBox(extruderCount)
-	instance.Add(spoolInfoBox)
+	instance.ContentsBox.Add(spoolInfoBox)
+
+	instance.Add(instance.ContentsBox)
 
 	return instance
 }
