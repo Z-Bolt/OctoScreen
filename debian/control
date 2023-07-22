@@ -23,7 +23,8 @@ Depends: ${shlibs:Depends},
          libgtk-3-0 (>= 3.14),
          librsvg2-common,
          xserver-xorg,
-         xinit
+         xinit,
+         x11-xserver-utils
 Provides: x-display-manager
 Description: A OctoPrint touch interface for TFT touch modules based on GTK+3
  OOctoScreen OOctoScreen, a touch interface for TFT touch modules
