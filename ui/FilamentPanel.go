@@ -182,7 +182,9 @@ func (this *filamentPanel) addFilamentManagerButton(column int) {
 
 	if filamentManagerSelectionsResponse != nil {
 		this.filamentManagerButton = utils.MustButtonImageStyle(
-			"Filament Manager", "filament-manager.svg", "color2",
+			"Filament Mgr.",
+			"filament-manager.svg",
+			"color2",
 			func() {
 				filamentManagerPanelInstance := GetFilamentManagerPanelInstance(
 					this.UI,

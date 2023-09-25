@@ -16,6 +16,7 @@ import (
 type FilamentManagerListBoxRow struct {
 	ClickableListBoxRow
 
+	ScreenWidth							int
 	ContentsBox							*gtk.Box
 	FilamentSpoolImage					*gtk.Image
 	FilamentSpoolWithCheckMarkImage		*gtk.Image
@@ -24,6 +25,7 @@ type FilamentManagerListBoxRow struct {
 }
 
 func CreateFilamentManagerListBoxRow(
+	screenWidth				int,
 	extruderCount			int,
 	filamentManagerSpool	*dataModels.FilamentManagerSpool,
 	spoolIsSelected			bool,
@@ -35,6 +37,7 @@ func CreateFilamentManagerListBoxRow(
 
 	instance := &FilamentManagerListBoxRow {
 		ClickableListBoxRow:				*base,
+		ScreenWidth:						screenWidth,
 		ContentsBox:						nil,
 		FilamentSpoolImage:					nil,
 		FilamentSpoolWithCheckMarkImage:	nil,
@@ -183,15 +186,29 @@ func (this *FilamentManagerListBoxRow) createSpoolInfoBox(extruderCount int) *gt
 
 	// Warning: this has to potential to expand the screen if the name is too long.
 	// If bug reports come in, the name will need to be truncated more.
-	truncatedName := ""
+	maxNameLength := 0
 	if extruderCount >= 2 {
 		// If there are multiple extruders, the extruder step button will be visible, and the
 		// width available to display the name will be less.
-		truncatedName = utils.TruncateString(this.FilamentManagerSpool.Name, 30)
+
+		if (this.ScreenWidth >= 760) {
+			maxNameLength = 30
+		} else if (this.ScreenWidth >= 600) {
+			maxNameLength = 22
+		} else {
+			maxNameLength = 15
+		}
 	} else {
-		truncatedName = utils.TruncateString(this.FilamentManagerSpool.Name, 45)
+		if (this.ScreenWidth >= 760) {
+			maxNameLength = 45
+		} else if (this.ScreenWidth >= 600) {
+			maxNameLength = 32
+		} else {
+			maxNameLength = 20
+		}
 	}
 
+	truncatedName := utils.TruncateString(this.FilamentManagerSpool.Name, maxNameLength)
 	nameLabel := utils.MustLabel("<big>%s</big>", truncatedName)
 	nameLabel.SetHAlign(gtk.ALIGN_START)
 	spoolInfoBox.Add(nameLabel)

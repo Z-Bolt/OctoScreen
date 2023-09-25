@@ -124,6 +124,8 @@ func (this *filamentManagerPanel) createListBox(extruderCount int) {
 }
 
 func (this *filamentManagerPanel) createListBoxRows(extruderCount int) {
+	allocatedWidth := this.UI.window.GetAllocatedWidth()
+
 	for i := 0; i < len(this.filamentManagerSpools); i++ {
 		spool := this.filamentManagerSpools[i]
 
@@ -131,6 +133,7 @@ func (this *filamentManagerPanel) createListBoxRows(extruderCount int) {
 		spoolIsSelected := (this.spoolSelectionIds[0] == spool.Id)
 
 		filamentManagerListBoxRow := uiWidgets.CreateFilamentManagerListBoxRow(
+			allocatedWidth,
 			extruderCount,
 			spool,
 			spoolIsSelected,

@@ -11,7 +11,7 @@ import (
 
 func CreateNameLabel(name string) *gtk.Label {
 	label := utils.MustLabel(name)
-	truncatedName := utils.TruncateString(name, 30)
+	truncatedName := utils.TruncateString(name, 28)
 	markup := fmt.Sprintf("<big>%s</big>", truncatedName)
 	label.SetMarkup(markup)
 	label.SetHExpand(true)
