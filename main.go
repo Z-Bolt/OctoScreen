@@ -85,8 +85,9 @@ func main() {
 
 	octoScreenConfig := utils.GetOctoScreenConfigInstance()
 	if octoScreenConfig.RequiredConfigsAreSet() != true {
-		message := fmt.Sprintf("Required setting is not set: %s", octoScreenConfig.MissingRequiredConfigName())
-		panic(message)
+		missingRequiredConfigName := octoScreenConfig.MissingRequiredConfigName()
+		msg := fmt.Sprintf("Required setting is not set: '%s'.  Be sure to read the docs on setting up OctoScreen and set this setting.", missingRequiredConfigName)
+		panic(msg)
 	}
 
 	setLogLevel(octoScreenConfig.LogLevel)

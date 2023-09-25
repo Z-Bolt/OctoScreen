@@ -108,7 +108,7 @@ func (this *octoScreenConfig) setWidthAndHeight() {
 		this.Height = DefaultWindowHeight
 		logger.TraceLeave("OctoScreenConfig.setWidthAndHeight()")
 		return
-	} 
+	}
 
 	var err error = nil
 	width := -1
@@ -167,7 +167,7 @@ func (this *octoScreenConfig) MissingRequiredConfigName() string {
 	}
 
 	if this.CssStyleFilePath == "" {
-		return "CssStyleFilePath"
+		return "CssStyleFilePath" // jab OCTOSCREEN_STYLE_PATH
 	}
 
 	logger.TraceLeave("OctoScreenConfig.MissingRequiredConfigName()")

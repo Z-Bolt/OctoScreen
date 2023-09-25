@@ -45,20 +45,22 @@ func ReadOctoPrintConfig() *OctoPrintConfig {
 	}
 
 	if configFilePath == "" {
-		panic("OctoPrintConfig.ReadOctoPrintConfig() - configFilePath is empty")
+		panic("OctoPrintConfig.ReadOctoPrintConfig() - the configFilePath is empty and is not set.  Be sure to read the docs on setting up OctoScreen and set OCTOPRINT_CONFIG_FILE.")
 	}
 
 	logger.Infof("Path to OctoPrint's config file: %q", configFilePath)
 
 	data, err := ioutil.ReadFile(configFilePath)
 	if err != nil {
-		panic(fmt.Sprintf("OctoPrintConfig.ReadOctoPrintConfig() - ReadFile() returned an error: %q", err))
+		msg := fmt.Sprintf("OctoPrintConfig.ReadOctoPrintConfig() - ReadFile() returned an error: %q.  Be sure to read the docs on setting up OctoScreen and set OCTOPRINT_CONFIG_FILE.", err)
+		panic(msg)
 	}
 
 	cfg := &OctoPrintConfig{}
 	err = yaml.Unmarshal([]byte(data), cfg)
 	if err != nil {
-		panic(fmt.Sprintf("OctoPrintConfig.ReadOctoPrintConfig() - error decoding YAML config file %q: %s", configFilePath, err))
+		msg := fmt.Sprintf("OctoPrintConfig.ReadOctoPrintConfig() - error decoding YAML config file %q: %s", configFilePath, err)
+		panic(msg)
 	}
 
 	logger.Infof("OctoPrintConfig.ReadOctoPrintConfig() - server host is: %q", cfg.Server.Host)
@@ -135,8 +137,8 @@ func (this *OctoPrintConfig) UpdateValues() {
 		// And the second ":" is for the trailing port.
 
 		if this.Server.Port != NoServerPort {
-			logger.Warn("WARNING!  Server.Host includes a port value, but Server.Port has also been defined") 
-			logger.Warn("WARNING!  Ignoring Server.Port and just using Server.Host") 
+			logger.Warn("WARNING!  Server.Host includes a port value, but Server.Port has also been defined")
+			logger.Warn("WARNING!  Ignoring Server.Port and just using Server.Host")
 		}
 	} else {
 		// The Host doesn't specify a port.
@@ -146,7 +148,7 @@ func (this *OctoPrintConfig) UpdateValues() {
 			this.Server.Host = fmt.Sprintf("%s:%d", this.Server.Host, this.Server.Port)
 		}
 	}
-	
+
 	logger.TraceLeave("OctoPrintConfig.UpdateValues()")
 }
 
