@@ -24,12 +24,12 @@ type printStatusPanel struct {
 	PrintWasCanceled bool
 
 	// Tools
-	tool0Button				*uiWidgets.ToolPrintingButton
-	tool1Button				*uiWidgets.ToolPrintingButton
-	tool2Button				*uiWidgets.ToolPrintingButton
-	tool3Button				*uiWidgets.ToolPrintingButton
+	tool0Button			*uiWidgets.ToolPrintingButton
+	tool1Button			*uiWidgets.ToolPrintingButton
+	tool2Button			*uiWidgets.ToolPrintingButton
+	tool3Button			*uiWidgets.ToolPrintingButton
 	tool4Button				*uiWidgets.ToolPrintingButton
-	bedButton  				*uiWidgets.ToolPrintingButton
+	bedButton  			*uiWidgets.ToolPrintingButton
 
 	// Statistics/Info
 	fileLabelWithImage		*utils.LabelWithImage
@@ -45,7 +45,7 @@ type printStatusPanel struct {
 	progressBar				*gtk.ProgressBar
 
 	// Toolbar buttons
-	pauseButton				*gtk.Button
+	pauseButton			*gtk.Button
 	cancelButton			*gtk.Button
 	controlButton			*gtk.Button
 	completedButton			*gtk.Button
@@ -491,7 +491,7 @@ func (this *printStatusPanel) handlePauseClicked() {
 	}
 
 	logger.TraceLeave("PrintStatusPanel.handlePauseClicked()")
-}
+	}
 
 func (this *printStatusPanel) handleCancelClicked() {
 	userResponse := this.confirmCancelDialogBox(
@@ -499,14 +499,14 @@ func (this *printStatusPanel) handleCancelClicked() {
 		"Are you sure you want to cancel the current print?",
 	)
 
-	if userResponse == int(gtk.RESPONSE_YES) {
+	if userResponse == gtk.RESPONSE_YES {
 		this.cancelPrintJob()
 	}
 }
 
 func (this *printStatusPanel) handleControlClicked() {
 	this.UI.GoToPanel(GetPrintMenuPanelInstance(this.UI))
-}
+	}
 
 func (this *printStatusPanel) handleCompleteClicked() {
 	this.UI.WaitingForUserToContinue = false
@@ -515,31 +515,31 @@ func (this *printStatusPanel) handleCompleteClicked() {
 func (this *printStatusPanel) confirmCancelDialogBox(
 	parentWindow		*gtk.Window,
 	message				string,
-) int {
-	dialogBox := gtk.MessageDialogNewWithMarkup(
-		parentWindow,
-		gtk.DIALOG_MODAL,
-		gtk.MESSAGE_INFO,
-		gtk.BUTTONS_YES_NO,
-		"",
-	)
+) gtk.ResponseType {
+		dialogBox := gtk.MessageDialogNewWithMarkup(
+			parentWindow,
+			gtk.DIALOG_MODAL,
+			gtk.MESSAGE_INFO,
+			gtk.BUTTONS_YES_NO,
+			"",
+		)
 
-	dialogBox.SetMarkup(utils.CleanHTML(message))
-	defer dialogBox.Destroy()
+		dialogBox.SetMarkup(utils.CleanHTML(message))
+		defer dialogBox.Destroy()
 
-	box, _ := dialogBox.GetContentArea()
-	box.SetMarginStart(15)
-	box.SetMarginEnd(15)
-	box.SetMarginTop(15)
-	box.SetMarginBottom(15)
+		box, _ := dialogBox.GetContentArea()
+		box.SetMarginStart(15)
+		box.SetMarginEnd(15)
+		box.SetMarginTop(15)
+		box.SetMarginBottom(15)
 
-	ctx, _ := dialogBox.GetStyleContext()
-	ctx.AddClass("dialog")
+		ctx, _ := dialogBox.GetStyleContext()
+		ctx.AddClass("dialog")
 
-	userResponse := dialogBox.Run()
+		userResponse := dialogBox.Run()
 
 	return userResponse
-}
+			}
 
 func (this *printStatusPanel) cancelPrintJob() {
 	logger.TraceEnter("PrintStatusPanel.cancelPrintJob()")
@@ -551,10 +551,10 @@ func (this *printStatusPanel) cancelPrintJob() {
 		this.controlButton.SetSensitive(false)
 	} else {
 		logger.LogError("PrintStatusPanel.cancelPrintJob()", "Do(CancelRequest)", err)
-	}
+		}
 
 	logger.TraceLeave("PrintStatusPanel.cancelPrintJob()")
-}
+	}
 
 func formattedDuration(duration time.Duration) string {
 	hours := duration / time.Hour

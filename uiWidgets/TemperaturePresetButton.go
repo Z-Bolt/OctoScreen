@@ -36,11 +36,7 @@ func CreateTemperaturePresetButton(
 		temperaturePreset:			temperaturePreset,
 		callback:					callback,
 	}
-	_, err := instance.Button.Connect("clicked", instance.handleClicked)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateTemperaturePresetButton()", "instance.Button.Connect()", err)
-		panic(err)
-	}
+	instance.Button.Connect("clicked", instance.handleClicked)
 
 	return instance
 }

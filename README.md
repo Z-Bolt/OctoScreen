@@ -79,7 +79,7 @@ You will also need to set up the video drivers for the display you are using.  I
 
 ### Install From a .deb Package
 
-There are two ways to install OctoScreen: the recommended and supported way is to install from a .deb package, or you can choose to install from building the sources yourself.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian Stretch based distributions such as Raspbian and OctoPi.
+There are two ways to install OctoScreen: the recommended and supported way is to install from a .deb package, or you can choose to install from building the sources yourself.  The recommended way to install OctoScreen is use the `.deb` packages from the [Releases](https://github.com/Z-Bolt/OctoScreen/releases) page.  The packages are available for Debian based distributions such as Raspbian and OctoPi.
 
 For example, to install on a new RaspberryPi with OctoPi:
 ```sh
@@ -115,10 +115,10 @@ make build
 ls -1 build/
 ```
 
-The default build is for the STRETCH release of debian, but BUSTER and JESSIE are also possible.  To build one of these targets, you just have to specify the package during make.
-Example for BUSTER:
+The default build is for the BUSTER release of debian, but BULLSEYE is also possible.  To build one of these targets, you just have to specify the package during make.
+Example for BULLSEYE:
 ```sh
-make build DEBIAN_PACKAGES=BUSTER
+make build DEBIAN_PACKAGES=BULLSEYE
 ls -1 build/
 ```
 

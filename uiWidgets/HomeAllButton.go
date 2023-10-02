@@ -23,11 +23,7 @@ func CreateHomeAllButton(
 		Button:				base,
 		client:				client,
 	}
-	_, err := instance.Button.Connect("clicked", instance.handleClicked)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateHomeAllButton()", "instance.Button.Connect()", err)
-		panic(err)
-	}
+	instance.Button.Connect("clicked", instance.handleClicked)
 
 	return instance
 }

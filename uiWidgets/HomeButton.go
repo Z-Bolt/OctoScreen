@@ -28,11 +28,7 @@ func CreateHomeButton(
 		client:				client,
 		axes:				axes,
 	}
-	_, err := instance.Button.Connect("clicked", instance.handleClicked)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateHomeButton()", "instance.Button.Connect()", err)
-		panic(err)
-	}
+	instance.Button.Connect("clicked", instance.handleClicked)
 
 	return instance
 }

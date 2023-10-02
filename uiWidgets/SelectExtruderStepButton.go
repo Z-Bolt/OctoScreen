@@ -5,17 +5,16 @@ import (
 	// "strconv"
 	// "strings"
 
-	"github.com/Z-Bolt/OctoScreen/logger"
 	"github.com/Z-Bolt/OctoScreen/octoprintApis"
 	// "github.com/Z-Bolt/OctoScreen/octoprintApis/dataModels"
 	"github.com/Z-Bolt/OctoScreen/utils"
 )
 
 func CreateSelectExtruderStepButton(
-	client							*octoprintApis.Client,
-	includeBed						bool,
-	colorVariation					int,
-	clicked							func(),
+	client *octoprintApis.Client,
+	includeBed bool,
+	colorVariation int,
+	clicked func(),
 ) *SelectToolStepButton {
 	extruderCount := utils.GetExtruderCount(client)
 
@@ -25,12 +24,12 @@ func CreateSelectExtruderStepButton(
 		if i == 0 && extruderCount == 1 {
 			label = "Extruder"
 		} else {
-			label = fmt.Sprintf("Extruder %d", i + 1)
+			label = fmt.Sprintf("Extruder %d", i+1)
 		}
 
-		step := Step {
+		step := Step{
 			label,
-			utils.GetExtruderFileName(i + 1, extruderCount),
+			utils.GetExtruderFileName(i+1, extruderCount),
 			nil,
 			fmt.Sprintf("tool%d", i),
 		}
@@ -42,15 +41,11 @@ func CreateSelectExtruderStepButton(
 		steps = append(steps, Step{"Bed", "bed.svg", nil, "bed"})
 	}
 
-	base, err := CreateStepButton(
+	base := CreateStepButton(
 		colorVariation,
 		clicked,
 		steps...,
 	)
-	if err != nil {
-		logger.LogError("PANIC!!! - CreateSelectExtruderStepButton()", "CreateStepButton()", err)
-		panic(err)
-	}
 
 	instance := &SelectToolStepButton{
 		StepButton: base,
