@@ -55,8 +55,8 @@ func GetOctoPrintResponseManagerInstance(ui *UI) (*octoPrintResponseManager) {
 func (this *octoPrintResponseManager) createBackgroundTask() {
 	logger.TraceEnter("OctoPrintResponseManager.createBackgroundTask()")
 
-	// Default timeout of 10 seconds.
-	duration := utils.GetExperimentalFrequency(10, "EXPERIMENTAL_OCTO_PRINT_RESPONSE_MANGER_UPDATE_FREQUENCY")
+	// Default timeout of 1 second.
+	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_OCTO_PRINT_RESPONSE_MANGER_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
 	this.backgroundTask.Start()
 
@@ -174,20 +174,20 @@ func (this *octoPrintResponseManager) update() {
 	fullStateResponse, err := (&octoprintApis.FullStateRequest{}).Do(this.UI.Client)
 	if err != nil {
 		logger.LogError("OctoPrintResponseManager.update()", "Do(FullStateRequest)", err)
-	
+
 		connectionManager.ReInitializeConnectionState()
 		GoToConnectionPanel(this.UI)
-	
+
 		logger.TraceLeave("OctoPrintResponseManager.update()")
 		return
 	}
 
 	if fullStateResponse == nil /*|| fullStateResponse.Temperature == nil*/ || fullStateResponse.Temperature.CurrentTemperatureData == nil {
 		logger.Error("OctoPrintResponseManager.update() - fullStateResponse.Temperature.CurrentTemperatureData is invalid")
-	
+
 		connectionManager.ReInitializeConnectionState()
 		GoToConnectionPanel(this.UI)
-	
+
 		logger.TraceLeave("OctoPrintResponseManager.update()")
 		return
 	}
@@ -241,7 +241,7 @@ func (this *octoPrintResponseManager) IsConnected() bool {
 // 		t2 := time.Now()
 // 		logger.Debug("ConnectionManager.UpdateStatus() - finished calling ConnectionRequest.Do()")
 // 		logger.Debugf("time elapsed: %q", t2.Sub(t1))
-		
+
 // 		if err != nil {
 // 			logger.LogError("ConnectionManager.UpdateStatus()", "ConnectionRequest.Do()", err)
 // 								// newUIState, splashMessage = this.getUiStateAndMessageFromError(err, newUIState, splashMessage)
@@ -251,11 +251,11 @@ func (this *octoPrintResponseManager) IsConnected() bool {
 // 			logger.TraceLeave("ConnectionManager.UpdateStatus()")
 // 			return
 // 		}
-		
+
 // 		logger.Debug("ConnectionManager.UpdateStatus() - ConnectionRequest.Do() succeeded")
-		
+
 // 		this.IsConnectedToOctoPrint = true
-		
+
 // 		jsonResponse, err := StructToJson(connectionResponse)
 // 		if err != nil {
 // 			logger.LogError("ConnectionManager.UpdateStatus()", "StructToJson()", err)
@@ -265,7 +265,7 @@ func (this *octoPrintResponseManager) IsConnected() bool {
 // 		} else {
 // 			logger.Debugf("ConnectionManager.UpdateStatus() - connectionResponse is: %s", jsonResponse)
 // 		}
-		
+
 // 		/*
 // 		Example JSON response:
 // 		{
@@ -301,7 +301,7 @@ func (this *octoPrintResponseManager) IsConnected() bool {
 // 			}
 // 		}
 // 		*/
-		
+
 // 		printerConnectionState := connectionResponse.Current.State
 // 		if printerConnectionState.IsOffline() || printerConnectionState.IsError() {
 // 			this.IsConnectedToPrinter = false
