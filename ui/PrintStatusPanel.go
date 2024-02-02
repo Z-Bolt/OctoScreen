@@ -248,6 +248,7 @@ func (this *printStatusPanel) createBackgroundTask() {
 func (this *printStatusPanel) update() {
 	logger.TraceEnter("PrintStatusPanel.update()")
 
+	octoPrintResponseManager := GetOctoPrintResponseManagerInstance(this.UI)
 	if octoPrintResponseManager == nil {
 		logger.Errorf("PrintStatusPanel.update() - YIKES! octoPrintResponseManager is nil!")
 		return
