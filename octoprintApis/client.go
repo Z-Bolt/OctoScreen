@@ -63,6 +63,10 @@ func (this *Client) doJsonRequest(
 		return nil, err
 	}
 
+	if bytes == nil {
+		logger.Debug("Client.doJsonRequest() - warning: bytes is nil")
+	}
+
 	// Use the following only for debugging.
 	if logger.LogLevel() == "debug" {
 		logger.Debug("Client.doJsonRequest() - converting bytes to JSON")
@@ -160,9 +164,10 @@ func (this *Client) handleResponse(
 	}
 
 	if httpResponse.StatusCode == 204 {
-		logger.Error("Client.handleResponse() - StatusCode is 204")
-		logger.TraceLeave("Client.handleResponse()")
-		return nil, nil
+		// 204 was returned, which indicates that the request was successful,
+		// but no content was returned to the client.
+		logger.Info("Client.handleResponse() - StatusCode is 204")
+		// In our situation here, just continue on as if the status was 200.
 	}
 
 	body, err := ioutil.ReadAll(httpResponse.Body)
