@@ -53,11 +53,15 @@ func getConnectionPanelInstance(ui *UI) *connectionPanel {
 }
 
 func GoToConnectionPanel(ui *UI) {
+	logger.TraceEnter("ConnectionPanel.GoToConnectionPanel()")
+
 	if ui.UiState != Connecting {
 		ui.UiState = Connecting
 		instance := getConnectionPanelInstance(ui)
 		ui.GoToPanel(instance)
 	}
+
+	logger.TraceLeave("ConnectionPanel.GoToConnectionPanel()")
 }
 
 func (this *connectionPanel) initialize() {
@@ -141,8 +145,8 @@ func (this *connectionPanel) createBackgroundTask() {
 
 	this.initializeConnectionState()
 
-	// Default timeout of 5 seconds.
-	duration := utils.GetExperimentalFrequency(5, "EXPERIMENTAL_CONNECTION_PANEL_UPDATE_FREQUENCY")
+	// Default timeout of 1 second.
+	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_CONNECTION_PANEL_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
 	this.backgroundTask.Start()
 
@@ -175,7 +179,7 @@ func (this *connectionPanel) update() {
 			msg = fmt.Sprintf("Attempting to connect to the printer...%d", connectionManager.ConnectAttempts + 1)
 		}
 	}
-	
+
 	if msg != "" {
 		logger.Debugf("Attempting to connect.  The message is: '%s'", msg)
 		this.Label.SetText(msg)
@@ -183,7 +187,7 @@ func (this *connectionPanel) update() {
 		logger.TraceLeave("ConnectionPanel.update()")
 		return
 	}
-	
+
 	octoPrintResponseManager := GetOctoPrintResponseManagerInstance(this.UI)
 	if octoPrintResponseManager.IsConnected() != true {
 		// If not connected, do nothing and leave.
@@ -215,25 +219,38 @@ func (this *connectionPanel) update() {
 					GoToIdleStatusPanel(this.UI)
 				}
 			}
+			break
 
+		case "Starting":
 		case "Printing":
 			if this.UI.UiState != Printing {
 				this.UI.UiState = Printing
 				this.UI.WaitingForUserToContinue = true
 				GoToPrintStatusPanel(this.UI)
 			}
+			break
+
+		case "Pausing":
+			break
+
+		case "Paused":
+			break
 
 		case "Cancelling":
 			break
 
-		case "Paused":
+		case "Finishing":
 			break
 
 		default:
 			logger.Debugf("unknown FullStateResponse.State: '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
 			logger.Debugf("State flags is: '%+v'", octoPrintResponseManager.FullStateResponse.State.Flags)
 			logger.Debugf("UiState is: '%s'", this.UI.UiState)
-			logger.Panicf("unknown FullStateResponse.State: '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
+			logLevel := logger.LogLevel()
+			if logLevel == "debug" {
+				logger.Panicf("ConnectionPanel.update() - unknown octoPrintResponseManager.FullStateResponse.State: '%s'", octoPrintResponseManager.FullStateResponse.State)
+			}
+			break
 	}
 
 	logger.TraceLeave("ConnectionPanel.update()")
