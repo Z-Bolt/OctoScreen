@@ -44,7 +44,7 @@ type zOffsetCalibrationPanel struct {
 var zOffsetCalibrationPanelInstance *zOffsetCalibrationPanel
 
 func GetZOffsetCalibrationPanelInstance(
-	ui 					*UI,
+	ui					*UI,
 ) *zOffsetCalibrationPanel {
 	if zOffsetCalibrationPanelInstance == nil {
 		instance := &zOffsetCalibrationPanel {

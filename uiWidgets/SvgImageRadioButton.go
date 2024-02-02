@@ -20,7 +20,7 @@ type SvgImageRadioButton struct {
 
 	Index						int
 	IsSelected					bool
-	clicked 					func(*SvgImageRadioButton)
+	clicked						func(*SvgImageRadioButton)
 }
 
 func CreateSvgImageRadioButton(
@@ -34,7 +34,7 @@ func CreateSvgImageRadioButton(
 
 	index						int,
 	isSelected					bool,
-	clicked 					func(*SvgImageRadioButton),
+	clicked						func(*SvgImageRadioButton),
 ) *SvgImageRadioButton {
 	var base *gtk.Button
 	if isSelected {

@@ -29,7 +29,7 @@ type StepButton struct {
 func CreateStepButton(
 	colorVariation			int,
 	clicked					func(),
-	steps 					...Step,
+	steps					...Step,
 ) (*StepButton, error) {
 	stepCount := len(steps)
 	if stepCount < 1 {

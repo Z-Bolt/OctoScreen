@@ -21,7 +21,7 @@ type controlPanel struct {
 var controlPanelInstance *controlPanel
 
 func GetControlPanelInstance(
-	ui 				*UI,
+	ui				*UI,
 ) *controlPanel {
 	if controlPanelInstance == nil {
 		instance := &controlPanel {

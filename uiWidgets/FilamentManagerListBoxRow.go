@@ -60,7 +60,7 @@ func CreateFilamentManagerListBoxRow(
 
 func (this *FilamentManagerListBoxRow) createSvgImageRadioButton(
 	isSelected					bool,
-	clicked 					func (*SvgImageRadioButton),
+	clicked						func (*SvgImageRadioButton),
 ) *SvgImageRadioButton {
 	spoolColor := this.getSpoolColor()
 	filamentSpoolImage, _ := utils.CreateFilamentSpoolImage(spoolColor)

@@ -26,8 +26,8 @@ func CreateBackgroundTask(
 ) *BackgroundTask {
 	thisInstance := &BackgroundTask{
 		task:			task,
-		duration: 		duration,
-		close: 			make(chan bool, 1),
+		duration:		duration,
+		close:			make(chan bool, 1),
 		isRunning:		false,
 	}
 
@@ -101,6 +101,6 @@ func GetExperimentalFrequency(
 			logger.LogError("BackgroundTask.GetExperimentalFrequency()", "strconv.Atoi()", err)
 		}
 	}
-	
+
 	return duration
 }

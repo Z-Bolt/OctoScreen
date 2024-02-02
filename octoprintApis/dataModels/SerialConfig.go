@@ -9,7 +9,7 @@ type SerialConfig struct {
 	// Baudrate is the default baudrate, defaults to unset (= AUTO)
 	Baudrate int `json:"baudrate"`
 
-	// 	Available serial ports
+	// Available serial ports
 	PortOptions []string `json:"portOptions"`
 
 	//	Available serial baudrates
