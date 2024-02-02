@@ -116,7 +116,7 @@ func (this *filamentPanel) initialize() {
 	// The select tool step button is needed by some of the other controls (to get the name/ID of the tool
 	// to send the command to), but only display it if multiple extruders are present.
 	extruderCount := utils.GetExtruderCount(this.UI.Client)
-	if extruderCount >= 2 {
+	if extruderCount > 1 {
 		this.Grid().Attach(this.selectExtruderStepButton, 0, 2, 1, 1)
 	}
 
@@ -133,8 +133,12 @@ func (this *filamentPanel) createBackgroundTask() {
 	// Default timeout of 1 second.
 	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_IDLE_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
-	// Update the UI every second, but the data is only updated once every 10 seconds.
-	// See OctoPrintResponseManager.update().
+	// Update the UI every second, but the data is only updated when OctoPrintResponseManager
+	// makes a HTTP API call to OctoPrint.  (See OctoPrintResponseManager.update() for more details)
+	// This is an optimization to prevent OctoScreen from calling OctoPrint too often.
+	//
+	// The default values for the UI update frequency and the data retrieve frequency are each
+	// set to 1 second, but this might need to be increased for slower machines.
 	this.backgroundTask.Start()
 
 	logger.TraceLeave("FilamentPanel.createBackgroundTask()")
