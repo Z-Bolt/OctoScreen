@@ -94,8 +94,12 @@ func (this *temperaturePanel) createBackgroundTask() {
 	// Default timeout of 1 second.
 	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_IDLE_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
-	// Update the UI every second, but the data is only updated once every 10 seconds.
-	// See OctoPrintResponseManager.update().
+	// Update the UI every second, but the data is only updated when OctoPrintResponseManager
+	// makes a HTTP API call to OctoPrint.  (See OctoPrintResponseManager.update() for more details)
+	// This is an optimization to prevent OctoScreen from calling OctoPrint too often.
+	//
+	// The default values for the UI update frequency and the data retrieve frequency are each
+	// set to 1 second, but this might need to be increased for slower machines.
 	this.backgroundTask.Start()
 
 	logger.TraceLeave("TemperaturePanel.createBackgroundTask()")
