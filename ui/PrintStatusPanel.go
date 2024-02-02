@@ -24,42 +24,47 @@ type printStatusPanel struct {
 	PrintWasCanceled bool
 
 	// Tools
-	tool0Button				*uiWidgets.ToolPrintingButton
-	tool1Button				*uiWidgets.ToolPrintingButton
-	tool2Button				*uiWidgets.ToolPrintingButton
-	tool3Button				*uiWidgets.ToolPrintingButton
-	tool4Button				*uiWidgets.ToolPrintingButton
-	bedButton  				*uiWidgets.ToolPrintingButton
+	tool0Button						*uiWidgets.ToolPrintingButton
+	tool1Button						*uiWidgets.ToolPrintingButton
+	tool2Button						*uiWidgets.ToolPrintingButton
+	tool3Button						*uiWidgets.ToolPrintingButton
+	tool4Button						*uiWidgets.ToolPrintingButton
+	bedButton						*uiWidgets.ToolPrintingButton
 
 	// Statistics/Info
-	fileLabelWithImage		*utils.LabelWithImage
-	timeLabelWithImage		*utils.LabelWithImage
-	timeLeftLabelWithImage	*utils.LabelWithImage
-	// layerLabelWithImage	*utils.LabelWithImage
+	fileLabelWithImage				*utils.LabelWithImage
+	timeLabelWithImage				*utils.LabelWithImage
+	timeLeftLabelWithImage			*utils.LabelWithImage
+	// layerLabelWithImage			*utils.LabelWithImage
 	// The info for the current / total layers is not available
 	// See https://community.octoprint.org/t/layer-number-and-total-layers-from-api/8005/4
 	// and https://docs.octoprint.org/en/master/api/datamodel.html#sec-api-datamodel-jobs-job
 	// Darn.
-	
+
 	// Progress
-	progressBar				*gtk.ProgressBar
+	progressBar						*gtk.ProgressBar
 
 	// Toolbar buttons
-	pauseButton				*gtk.Button
-	cancelButton			*gtk.Button
-	controlButton			*gtk.Button
-	completedButton			*gtk.Button
+	pauseButton						*gtk.Button
+	cancelButton					*gtk.Button
+	controlButton					*gtk.Button
+	completedButton					*gtk.Button
 
-	backgroundTask			*utils.BackgroundTask
+	backgroundTask					*utils.BackgroundTask
+
+	CachedJobResponseState			string
+	InitialValueForWarmingUpHack	float64
 }
 
 var printStatusPanelInstance *printStatusPanel
 
 func getPrintStatusPanelInstance(ui *UI) *printStatusPanel {
 	if printStatusPanelInstance == nil {
-		printStatusPanelInstance = &printStatusPanel {
+	printStatusPanelInstance = &printStatusPanel {
 			CommonPanel: CreateTopLevelCommonPanel("PrintStatusPanel", ui),
 			PrintWasCanceled: false,
+			CachedJobResponseState: "",
+			InitialValueForWarmingUpHack: 0.0,
 		}
 		printStatusPanelInstance.initialize()
 		printStatusPanelInstance.createBackgroundTask()
@@ -69,9 +74,20 @@ func getPrintStatusPanelInstance(ui *UI) *printStatusPanel {
 }
 
 func GoToPrintStatusPanel(ui *UI) {
+	logger.TraceEnter("PrintStatusPanel.GoToPrintStatusPanel()")
+
 	instance := getPrintStatusPanelInstance(ui)
-	instance.progressBar.SetText("0%")
+
+	// Set up the UI.
+	instance.PrintWasCanceled = false
+	instance.CachedJobResponseState = ""
+	instance.InitialValueForWarmingUpHack = 0.0
+
 	ui.GoToPanel(instance)
+
+	instance.update()
+
+	logger.TraceLeave("PrintStatusPanel.GoToPrintStatusPanel()")
 }
 
 func (this *printStatusPanel) initialize() {
@@ -129,7 +145,7 @@ func (this *printStatusPanel) createToolButtons() {
 			this.Grid().Attach(this.tool3Button, 1, 1, 1, 1)
 			// this.Grid().Attach(this.tool4Button, 0, 2, 1, 1)
 			// this.Grid().Attach(this.bedButton,   1, 2, 1, 1)
-			// ...there's not enough sceen realestate for the 5th toolhead button,
+			// ...there's not enough screen real estate for the 5th toolhead button,
 			// ...so use the same layout as the "4 toolhead" version:
 			this.Grid().Attach(this.bedButton,   0, 2, 1, 1)
 	}
@@ -218,8 +234,12 @@ func (this *printStatusPanel) createBackgroundTask() {
 	// Default timeout of 1 second.
 	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_PRINT_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
-	// Update the UI every second, but the data is only updated once every 10 seconds.
-	// See OctoPrintResponseManager.update(). 
+	// Update the UI every second, but the data is only updated when OctoPrintResponseManager
+	// makes a HTTP API call to OctoPrint.  (See OctoPrintResponseManager.update() for more details)
+	// This is an optimization to prevent OctoScreen from calling OctoPrint too often.
+	//
+	// The default values for the UI update frequency and the data retrieve frequency are each
+	// set to 1 second, but this might need to be increased for slower machines.
 	this.backgroundTask.Start()
 
 	logger.TraceLeave("PrintStatusPanel.createBackgroundTask()")
@@ -228,7 +248,15 @@ func (this *printStatusPanel) createBackgroundTask() {
 func (this *printStatusPanel) update() {
 	logger.TraceEnter("PrintStatusPanel.update()")
 
-	octoPrintResponseManager := GetOctoPrintResponseManagerInstance(this.UI)
+	if octoPrintResponseManager == nil {
+		logger.Errorf("PrintStatusPanel.update() - YIKES! octoPrintResponseManager is nil!")
+		return
+	}
+	// Should octoPrintResponseManager.FullStateResponse be checked for nil?
+	// No, octoPrintResponseManager.FullStateResponse is not a pointer.
+
+	fullStateResponse := octoPrintResponseManager.FullStateResponse
+
 	if octoPrintResponseManager.IsConnected() != true {
 		// If not connected, do nothing and leave.
 		logger.Debugf("PrintStatusPanel.update() - not connected, now exiting")
@@ -236,6 +264,9 @@ func (this *printStatusPanel) update() {
 		return
 	}
 
+	// PrintStatusPanel.update() is the place where JobRequest.Do() is called, and
+	// this is the only place where it is used.  If it needs to be called in other code,
+	// make a "manger" class for it.
 	jobResponse, err := (&octoprintApis.JobRequest{}).Do(this.UI.Client)
 	if err != nil {
 		logger.LogError("PrintStatusPanel.update()", "Do(JobRequest)", err)
@@ -245,40 +276,24 @@ func (this *printStatusPanel) update() {
 
 	logger.Debugf("PrintStatusPanel.update() - jobResponse.State is %s", jobResponse.State)
 
-	this.updateStates(jobResponse)
-	this.updateToolTemperatures(&octoPrintResponseManager.FullStateResponse.Temperature)
+	this.handleCancellingState(jobResponse)
+	this.updateToolTemperatures(&fullStateResponse.Temperature)
 	this.updateInfoBox(jobResponse)
-	this.updateProgress(jobResponse)
+	this.updateProgress(&fullStateResponse, jobResponse)
 	this.updateToolBarButtons(jobResponse)
+	this.updateUiWhenFinished(jobResponse)
 
 	logger.TraceLeave("PrintStatusPanel.update()")
 }
 
-func (this *printStatusPanel) updateStates(jobResponse *dataModels.JobResponse) {
+func (this *printStatusPanel) handleCancellingState(jobResponse *dataModels.JobResponse) {
+	logger.TraceEnter("PrintStatusPanel.handleCancellingState()")
+
 	if jobResponse.State == "Cancelling" {
 		this.PrintWasCanceled = true
 	}
 
-	if jobResponse.State == "Printing" || jobResponse.State == "Operational" {
-		if jobResponse.Progress.PrintTimeLeft <= 0.0 {
-			// Special case for handling the buttons
-			this.pauseButton.SetSensitive(false)
-			this.pauseButton.Hide()
-	
-			this.cancelButton.SetSensitive(false)
-			this.cancelButton.Hide()
-	
-			this.controlButton.SetSensitive(false)
-			this.controlButton.Hide()
-
-			this.completedButton.Show()
-			this.completedButton.SetSensitive(true)
-
-			this.progressBar.Hide();
-
-			this.timeLeftLabelWithImage.Label.SetLabel("Print time left: 00:00:00")
-		}
-	}
+	logger.TraceLeave("PrintStatusPanel.handleCancellingState()")
 }
 
 func (this *printStatusPanel) updateToolTemperatures(temperature *dataModels.TemperatureStateResponse) {
@@ -322,7 +337,7 @@ func (this *printStatusPanel) updateToolTemperatures(temperature *dataModels.Tem
 func (this *printStatusPanel) updateInfoBox(jobResponse *dataModels.JobResponse) {
 	logger.TraceEnter("PrintStatusPanel.updateInfoBox()")
 
-	if jobResponse.State != "Printing" {
+	if jobResponse.State != "Starting" && jobResponse.State != "Printing" {
 		logger.TraceLeave("PrintStatusPanel.updateInfoBox()")
 		return;
 	}
@@ -351,7 +366,7 @@ func (this *printStatusPanel) updateInfoBox(jobResponse *dataModels.JobResponse)
 			break
 
 		default:
-			logger.Info(jobResponse.Progress.PrintTime)
+			logger.Infof("Print time: %f", jobResponse.Progress.PrintTime)
 			printTimeDuration := time.Duration(int64(jobResponse.Progress.PrintTime) * 1e9)
 			printTimeLeftDuration := time.Duration(int64(jobResponse.Progress.PrintTimeLeft) * 1e9)
 			timeSpent = fmt.Sprintf("Print time: %s", formattedDuration(printTimeDuration))
@@ -365,38 +380,55 @@ func (this *printStatusPanel) updateInfoBox(jobResponse *dataModels.JobResponse)
 	logger.TraceLeave("PrintStatusPanel.updateInfoBox()")
 }
 
-func (this *printStatusPanel) updateProgress(jobResponse *dataModels.JobResponse) {
+func (this *printStatusPanel) updateProgress(fullStateResponse *dataModels.FullStateResponse, jobResponse *dataModels.JobResponse) {
 	logger.TraceEnter("PrintStatusPanel.updateProgress()")
 	logger.Debugf("PrintStatusPanel.updateProgress() - jobResponse.State is: '%s'", jobResponse.State)
 
-	if jobResponse.State != "Printing" {
+	if jobResponse.State != "Starting" && jobResponse.State != "Printing" {
 		this.progressBar.SetText(jobResponse.State)
+		logger.Debug("PrintStatusPanel.updateProgress() - jobResponse.State is not Starting or Printing, now leaving")
 		logger.TraceLeave("PrintStatusPanel.updateProgress()")
 		return;
 	}
 
-	// Use the following for the percentage of time taken
-	if jobResponse.Progress.PrintTime <= 0.0 {
-		// logger.Debugf("Error! jobResponse.Progress.PrintTime is: %f", jobResponse.Progress.PrintTime)
-		// this.progressBar.SetText("0%")
+	// Use the following for the percentage of time taken.
+	progressBarFraction := jobResponse.Progress.PrintTime / (jobResponse.Progress.PrintTime + jobResponse.Progress.PrintTimeLeft)
+	progressPercentage := int64(progressBarFraction * 100.0)
+
+	if progressBarFraction <= 0.01 {
 		this.progressBar.SetText("Warming up")
 		logger.TraceLeave("PrintStatusPanel.updateProgress()")
 		return
 	}
 
-	progresBarFraction := jobResponse.Progress.PrintTime / (jobResponse.Progress.PrintTime + jobResponse.Progress.PrintTimeLeft)
-	this.progressBar.SetFraction(progresBarFraction)
-	progresssPercentage := int64(progresBarFraction * 100.0)
-	this.progressBar.SetText(fmt.Sprintf("%d%%", progresssPercentage))
+	this.progressBar.SetFraction(progressBarFraction)
+
+	// jobResponse.Progress.Completion could be used to track thr progress, but it's not very accurate,
+	// and calculating the progress using PrintTime and PrintTimeLeft seems to be more appropriate.
+	this.progressBar.SetText(fmt.Sprintf("%d%%", int64(jobResponse.Progress.Completion)))
+	this.progressBar.SetText(fmt.Sprintf("%d%%", progressPercentage))
 
 	logger.TraceLeave("PrintStatusPanel.updateProgress()")
 }
 
 func (this *printStatusPanel) updateToolBarButtons(jobResponse *dataModels.JobResponse) {
 	logger.TraceEnter("PrintStatusPanel.updateToolBarButtons()")
+
+	logger.Debugf("PrintStatusPanel.updateToolBarButtons() - CachedJobResponseState is: '%s'", this.CachedJobResponseState)
 	logger.Debugf("PrintStatusPanel.updateToolBarButtons() - jobResponse.State is: '%s'", jobResponse.State)
+	if this.CachedJobResponseState == jobResponse.State {
+		logger.Debugf("PrintStatusPanel.updateToolBarButtons() - CachedJobResponseState is the same as jobResponse.State, now leaving...")
+		logger.TraceLeave("PrintStatusPanel.updateToolBarButtons()")
+		return
+	}
+
+	this.CachedJobResponseState = jobResponse.State
 
 	switch jobResponse.State {
+		case "Operational": // aka Idle
+			break
+
+		case "Starting":
 		case "Printing":
 			this.pauseButton.SetLabel("Pause")
 			pauseImage := utils.MustImageFromFile("pause.svg")
@@ -412,7 +444,9 @@ func (this *printStatusPanel) updateToolBarButtons(jobResponse *dataModels.JobRe
 
 			this.completedButton.SetSensitive(false)
 			this.completedButton.Hide()
-			break;
+
+			this.progressBar.Show();
+			break
 
 		case "Pausing":
 			this.pauseButton.SetSensitive(false)
@@ -426,7 +460,7 @@ func (this *printStatusPanel) updateToolBarButtons(jobResponse *dataModels.JobRe
 
 			this.completedButton.SetSensitive(false)
 			this.completedButton.Hide()
-			break;
+			break
 
 		case "Paused":
 			this.pauseButton.SetLabel("Resume")
@@ -443,7 +477,7 @@ func (this *printStatusPanel) updateToolBarButtons(jobResponse *dataModels.JobRe
 
 			this.completedButton.SetSensitive(false)
 			this.completedButton.Hide()
-			break;
+			break
 
 		case "Cancelling":
 			this.pauseButton.SetSensitive(false)
@@ -457,23 +491,50 @@ func (this *printStatusPanel) updateToolBarButtons(jobResponse *dataModels.JobRe
 
 			this.completedButton.SetSensitive(false)
 			this.completedButton.Hide()
-			break;
+			break
 
 		case "Finishing":
-			break;
-
-		case "Operational":
-			break;
+			break
 
 		default:
+			logger.Debugf("PrintStatusPanel.updateToolBarButtons() - unknown jobResponse.State: '%s'", jobResponse.State)
+			logger.Debugf("UiState is: '%s'", this.UI.UiState)
+
 			logLevel := logger.LogLevel()
 			if logLevel == "debug" {
-				logger.Debugf("PrintStatusPanel.updateToolBarButtons() - unknown jobResponse.State: '%s'", jobResponse.State)
 				logger.Panicf("PrintStatusPanel.updateToolBarButtons() - unknown jobResponse.State: '%s'", jobResponse.State)
 			}
+			break
 	}
 
 	logger.TraceLeave("PrintStatusPanel.updateToolBarButtons()")
+}
+
+func (this *printStatusPanel) updateUiWhenFinished(jobResponse *dataModels.JobResponse) {
+	logger.TraceEnter("PrintStatusPanel.updateUiWhenFinished()")
+
+	if jobResponse.State == "Starting" || jobResponse.State == "Printing" || jobResponse.State == "Operational" {
+		if jobResponse.Progress.PrintTimeLeft <= 0.0 {
+			// Special case for handling the buttons
+			this.pauseButton.SetSensitive(false)
+			this.pauseButton.Hide()
+
+			this.cancelButton.SetSensitive(false)
+			this.cancelButton.Hide()
+
+			this.controlButton.SetSensitive(false)
+			this.controlButton.Hide()
+
+			this.completedButton.Show()
+			this.completedButton.SetSensitive(true)
+
+			this.progressBar.Hide();
+
+			this.timeLeftLabelWithImage.Label.SetLabel("Print time left: 00:00:00")
+		}
+	}
+
+	logger.TraceLeave("PrintStatusPanel.updateUiWhenFinished()")
 }
 
 func (this *printStatusPanel) handlePauseClicked() {
