@@ -95,7 +95,7 @@ func (this *temperaturePanel) createBackgroundTask() {
 	duration := utils.GetExperimentalFrequency(1, "EXPERIMENTAL_IDLE_UPDATE_FREQUENCY")
 	this.backgroundTask = utils.CreateBackgroundTask(duration, this.update)
 	// Update the UI every second, but the data is only updated once every 10 seconds.
-	// See OctoPrintResponseManager.update(). 
+	// See OctoPrintResponseManager.update().
 	this.backgroundTask.Start()
 
 	logger.TraceLeave("TemperaturePanel.createBackgroundTask()")
