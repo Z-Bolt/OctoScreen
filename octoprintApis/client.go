@@ -109,6 +109,7 @@ func (this *Client) doRequest(
 	req.Header.Add("User-Agent", userAgent)
 
 	if contentType != "" {
+		logger.Debugf("contentType: %s", contentType)
 		req.Header.Add("Content-Type", contentType)
 	}
 
@@ -116,7 +117,9 @@ func (this *Client) doRequest(
 	// logger.Debugf("API key: %s", this.APIKey)
 	req.Header.Add("X-Api-Key", this.APIKey)
 
+	logger.Debug("about to call httpClient.Do()...")
 	response, err := this.httpClient.Do(req)
+	logger.Debug("...finished calling httpClient.Do()...")
 	if err != nil {
 		logger.LogError("Client.doRequest()", "this.httpClient.Do()", err)
 		logger.TraceLeave("Client.doRequest()")
@@ -125,12 +128,20 @@ func (this *Client) doRequest(
 		logger.Debug("Client.doRequest() - httpClient.Do() passed")
 	}
 
+	if response == nil {
+		logger.Error("Client.doRequest() - response is nil")
+	}
+
 	bytes, err := this.handleResponse(response, statusMapping, isRequired)
 	if err != nil {
 		logOptionalError("Client.doRequest()", "this.handleResponse()", err, isRequired)
 		bytes = nil
 	} else {
 		logger.Debug("Client.doRequest() - handleResponse() passed")
+	}
+
+	if bytes == nil {
+		logger.Error("Client.doRequest() - bytes is nil")
 	}
 
 	logger.TraceLeave("Client.doRequest()")
