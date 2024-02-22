@@ -59,7 +59,7 @@ var (
 // 	Exclude []string
 // }
 
-// // FullStateResponse contains informantion about the current state of the printer.
+// // FullStateResponse contains information about the current state of the printer.
 // type FullStateResponse struct {
 // 	// TemperatureStateResponse is the printer’s temperature state data.
 // 	Temperature TemperatureStateResponse `json:"temperature"`
@@ -146,7 +146,7 @@ type TemperatureDataRequest struct {
 	// Exclude []string
 }
 
-// FullStateResponse contains informantion about the current state of the printer.
+// FullStateResponse contains information about the current state of the printer.
 type TemperatureDataResponse struct {
 	// TemperatureStateResponse is the printer’s temperature state data.
 	TemperatureStateResponse TemperatureStateResponse `json:"temperature"`
