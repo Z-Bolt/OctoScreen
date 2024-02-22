@@ -167,7 +167,7 @@ func (this *octoScreenConfig) MissingRequiredConfigName() string {
 	}
 
 	if this.CssStyleFilePath == "" {
-		return "CssStyleFilePath" // jab OCTOSCREEN_STYLE_PATH
+		return "CssStyleFilePath"
 	}
 
 	logger.TraceLeave("OctoScreenConfig.MissingRequiredConfigName()")
