@@ -200,7 +200,6 @@ func (this *connectionPanel) update() {
 	currentPanelName := currentPanel.Name()
 
 	logger.Debugf("ConnectionPanel.update() - current panel is '%s'", currentPanelName)
-	logger.Debugf("ConnectionPanel.update() - current response state is '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
 
 	if octoPrintResponseManager.FullStateResponse.State.Text == "" {
 		// ?????, do nothing and leave.
@@ -209,12 +208,34 @@ func (this *connectionPanel) update() {
 		return
 	}
 
+	logger.Debugf("ConnectionPanel.update() - FullStateResponse.State.Text is '%s'", octoPrintResponseManager.FullStateResponse.State.Text)
+	logger.Debugf("ConnectionPanel.update() - UI.UiState is '%s'", this.UI.UiState)
+
 	this.UI.Update()
 
 	switch octoPrintResponseManager.FullStateResponse.State.Text {
 		case "Operational": // aka Idle
 			if this.UI.UiState != Idle {
-				if this.UI.WaitingForUserToContinue != true {
+				if this.UI.UiState == Printing {
+					// Going from a state of PRINTING to OPERATIONAL (aka Idle).
+					// Call printStatusPanel.Update() to force an update and make
+					// sure UI.WaitingForUserToContinue is up to date.
+					printStatusPanel := getPrintStatusPanelInstance(this.UI)
+					printStatusPanel.Update()
+
+					logger.Debugf("ConnectionPanel.update() - UI.WaitingForUserToContinue is '%t'", this.UI.WaitingForUserToContinue)
+
+					if this.UI.WaitingForUserToContinue == true {
+						// The print job successfully completed, and now
+						// waiting for the user to tap the "Continue" button.
+						// Don't do anything else for the moment.
+					} else {
+						// Either the print finished and the "Continue" button was tapped,
+						// or the print was most likely canceled.
+						this.UI.UiState = Idle
+						GoToIdleStatusPanel(this.UI)
+					}
+				} else {
 					this.UI.UiState = Idle
 					GoToIdleStatusPanel(this.UI)
 				}
@@ -225,7 +246,6 @@ func (this *connectionPanel) update() {
 		case "Printing":
 			if this.UI.UiState != Printing {
 				this.UI.UiState = Printing
-				this.UI.WaitingForUserToContinue = true
 				GoToPrintStatusPanel(this.UI)
 			}
 			break
